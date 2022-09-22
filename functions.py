@@ -182,7 +182,8 @@ def IMF_kroupa(m):
 
 def T_coal(m1,m2,a0,e0):
     '''
-    GW coalescence timescale (I. Mandel 2021 fit).
+    GW coalescence timescale (I. Mandel 2021 fit to Peters timescale),
+    including 1st order pN correction effects [Zwick et al., MNRAS 495, 2321 (2020)]
     
     @in m1: primary   mass component in kg
     @in m2: secondary mass component in kg
@@ -195,7 +196,10 @@ def T_coal(m1,m2,a0,e0):
     # coalescence timescale for circular orbit:
     Tc = 5*c_light**5*a0**4/(256*G_Newt**3*m1*m2*(m1+m2))
     
-    return Tc*(1+0.27*e0**10+0.33*e0**20+0.2*e0**1000)*(1-e0**2)**(7/2)
+    # 1st order pN correction:
+    S = 8**(1-np.sqrt(1-e0)) * np.exp( 5*G_Newt*(m1+m2)/c_light**2/a0/(1-e0) )
+    
+    return Tc*(1+0.27*e0**10+0.33*e0**20+0.2*e0**1000)*(1-e0**2)**(7/2) * S
 
 def fGW(a,e,M):
     '''
