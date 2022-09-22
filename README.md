@@ -108,7 +108,7 @@ Passing the argument $$\tt\$ RANDOM$$ in the -s flag, simulates the star cluster
 
 At the end of each simulation the code generates three .txt files, one with the black hole masses of all first generation black holes that are initially retained in the cluster, a second file with information about all dynamical mergers that took place during the simulation, and finally a file that keeps track of time-dependent quantities.
 
-a) Column description of mergers file: 
+a) Column description of mergers .txt file: 
 
 | Column | Variable | Description |
 |:--- |:--- |:--- |
@@ -139,7 +139,7 @@ a) Column description of mergers file:
 | 25 | $M_{\rm cl,0}$ | Initial cluster mass $(M_\odot)$ |
 | 27 | $z_{\rm cl,\ form}$ | Cluster formation redshift |
 
-b) Column description of evolution file:
+b) Column description of evolution .txt file:
 
 | Columnn | Variable | Description |
 |:--- |:--- |:--- |
