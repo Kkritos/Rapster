@@ -18,6 +18,12 @@ Date: September 22, 2022
 
 ---
 
+##### Abbreviations:
+
+- BH: black hole
+- BBH: binary black hole
+- GW: gravitational wave
+
 ### 1. Overview
 
 The repository provides the source codes, files ./main.py and ./functions.py, and all necessary data files in folder ./MzamsMrem/, for the rapid evolution of dense star cluster environments and the dynamical assembly of binary black hole mergers.
@@ -27,7 +33,7 @@ The modeling accounts for the necessary physical processes regarding the formati
 ##### Note:
 For computational efficiency, the folder ./MzamsMrem/ contains 12 files with pre-calculated tables of stellar remnants masses on a grid of zero-age main sequence values up to 340$M_\odot$ and 12 values of absolute metallicity in the range from $10^{-4}$ to $1.7\times10^{-2}$ as calculated with the $\tt SEVN$ code [M. Spera & M. Mapelli, (2017)](https://academic.oup.com/mnras/article/470/4/4739/3883764).
 
-### 2. Depedancies:
+### 2. Depedancies
 
 The following Python packages are required
 
@@ -45,7 +51,7 @@ The code is tested with packages in the versions shown in parentheses above, how
 ##### Note:
 It is suggested that the $\tt precession$ package is used in its latest version 1.0.3 [D. Gerosa & M. Kesden, (2016)](https://journals.aps.org/prd/abstract/10.1103/PhysRevD.93.124066).
 
-### 3. Input parameters:
+### 3. Input parameters
 
 Our code accepts parameters with flag options.
 
@@ -54,3 +60,133 @@ For a description of all input parameters, run the following command in the comm
 > python main.py --help
 
 or see Table 1 from [K. Kritos, V. Strkov, V. Baibhav, E. Berti, to appear].
+
+For the user’s convenience we paste the list of optional arguments in the form of a Table here as well:
+
+| Flag | Description | Type | Default |
+|:--- |:--- |:--- |:--- |
+| -Mcl, --ClusterMass | Initial cluster mass $(M_\odot)$ | float | $10^6M_\odot$ |
+| -rh, --HalfMassRadius | Initial half-mass radius (pc) | float | 1pc |
+| -rhoC, --CentralDensity | Initial central star density $(M_\odot{\rm pc}^{-3})$ | float | $4\times10^5M_\odot{\rm pc}^{-3}$ |
+| -Rgal, --GalactocentricRadius | Initial galactocentric radius (kpc) | float | 8kpc |
+| -Z, --Metallicity | Cluster metallicity $(Z_\odot)$ | float | $0.1Z_\odot$ |
+| -fb, --BinaryFraction | Initial binary star fraction | float | 10\% |
+| -w, --NatalKickParameter | Natal velocity kick parameter of BHs (km/s) | float | 256km/s |
+| -chi, --NatalSpinParameter | Natal spin parameter of first generation (1g) BHs | float | 0 |
+| -SM, --NatalSpinDistribution | Natal spin distribution (1 for monochromatic, 0 for uniform) | int | 0 |
+| -tMax, --SimulationTime | Maximum simulation time (Myr) | float | 13,800Myr |
+| -dtMin, --MinimumTimeStep | Minimum simulation timestep (Myr) | float | 0.1Myr |
+| -dtMax, --MaximumTimeStep | Maximum simulation timestep (Myr) | float | 50Myr |
+| -z, --FormationRedshift | Redshift of cluster formation | float | 3 |
+| -aIMF, --HighMassIMFslope | High mass initial star mass function slope | floar | -2.3 |
+| -ZAMSmax, --MaximumZAMSmass | Maximum ZAMS star mass $(M_\odot)$ | float | $150M_\odot$ |
+| -c, --ConcentrationNFW | Concentration parameter of the NFW profile | float | 10 |
+| -Rs, --ScaleRadiusNFW | Scale radius of the NFW profile (kpc) | float | 50kpc |
+| -Mh, --DarkMatterHaloMass | Total DM halo mass of the host galaxy $(M_\odot)$ | float | $10^{12}M_\odot$ |
+| -s, --Seed | Random number generator seed | int | 123456789 |
+| -MF, --MergersFile | Name of output file with BBH merger source parameters | str | ``mergers'' |
+| -EF, --EvolutionFile | Name of output file with time-dependent quantities | str | ``evolution'' |
+| -BF, --BlackHoleFile | Name of output file containing the masses of all 1g BHs in $M_\odot$ | str | ``blackholes'' |
+
+### 4. Running a simulation
+
+usage: main.py [-h] [-Mcl ] [-rh ] [-rhoC ] [-Rgal ] [-Z ] [-fB ] [-w ] [-chi ] [-SM ] [-tMax ] [-dtMin ] [-dtMax ] [-z ] [-aIMF ] [-ZAMSmax ] [-c ] [-Rs ] [-Mh ] [-s ] [-MF ] [-EF ] [-BF ]
+
+As an example we give the commands that produce data used to generate the results in Fig.4 of [K. Kritos, V. Strokov, V. Baibhav, E. Berti, to appear]:
+
+> python main.py -Mcl 1e5 -rhoC 5e4 -MF merg_5 -EF evol_5 -BF bh_5
+> python main.py -Mcl 1e6 -rhoC 5e5 -MF merg_6 -EF evol_6 -BF bh_6
+> python main.py -Mcl 1e7 -rhoC 5e6 -MF merg_7 -EF evol_7 -BF bh_7
+
+The default values are assumed for other parameters not entered in the commands above.
+
+##### Suggestion:
+Taking different values of seed number corresponds to different realizations of the system under the same initial conditions. 
+Passing the argument $$\tt\$ RANDOM$$ in the -s flag, simulates the star cluster with a pseudo-randomly generated number.
+
+### 5. Output files:
+
+At the end of each simulation the code generates three .txt files, one with the black hole masses of all first generation black holes that are initially retained in the cluster, a second file with information about all dynamical mergers that took place during the simulation, and finally a file that keeps track of time-dependent quantities.
+
+a) Column description of mergers file: 
+
+| Column | Variable | Description |
+|:--- |:--- |:--- |
+| 1 | channel | Formation mechanism of BBH |
+| 2 | $a$ | Semimajor axis (AU) when BBH enters the GW regime |
+| 3 | $e$ | Eccentricity of BBH when BBH enters the GW regime |
+| 4 | $m_1$ | Primary mass $(M_\odot)$ |
+| 5 | $m_2$ | Secondary mass $(M_\odot)$ |
+| 6 | $\chi_1$ | Primary dimensionless spin parameter |
+| 7 | $\chi_2$ | Secondary dimensionless spin parameter |
+| 8 | $g_1$ | Generation of primary |
+| 9 | $g_2$ | Generation of secondary |
+| 10 | $t_{\rm form}$ | Time (Myr) BBH formed since simulation started |
+| 11 | $t_{\rm merge}$ | Time (Myr) BBH merged since simulation started |
+| 12 | $z_{\rm form}$ | Redshift BBH formed |
+| 13 | $z_{\rm merge}$ | Redshift BBH merged |
+| 14 | $N_{\rm har}$ | Number of hardening interactions |
+| 15 | $N_{\rm sub}$ | Number of BH exchanges |
+| 16 | $\theta_1$ | Polar angle (rad) of primary's spin with orbital angular momentum |
+| 17 | $\theta_2$ | Polar angle (rad) of secondary's spin with orbital angular momentum |
+| 18 | $\Delta\phi$ | Azimuthal angle (rad) between BH spins in the orbital plane |
+| 19 | $m_{\rm rem}$ | Remnant mass $(M_\odot)$ |
+| 20 | $\chi_{\rm rem}$ | Dimensionless remnant spin parameter |
+| 21 | $g_{\rm rem}$ | Remnant generation |
+| 22 | $v_{\rm GW}$ | GW kick (km/s) of remnant BH |
+| 23 | $j_1$ | Reference to primary’s progenitor BBH (if hierarchical product) |
+| 24 | $j_2$ | Reference to secondary’s progenitor BBH (if hierarchical product) |
+| 25 | $M_{\rm cl,0}$ | Initial cluster mass $(M_\odot)$ |
+| 27 | $z_{\rm cl,\ form}$ | Cluster formation redshift |
+
+b) Column description of evolution file:
+
+| Columnn | Variable | Description |
+|:--- |:--- |:--- |
+| 1 | $t$                             |  Simulation time (Myr) |
+| 2 | $z$                            |  Redshift |
+| 3 | $M_{\rm cl}$                   |   Cluster mass $(M_\odot)$  |
+| 4 | $r_{\rm h}$                    |         Cluster half-mass radius (pc) |
+| 5 | $R_{\rm gal}$                  |        Cluster’s galactocentric radius (kpc) |
+| 6 | $N_{\rm BH}$                   |    Total number of BHs in cluster |
+| 7 | $N_{\rm BH,\ sin}$            |    Number of single BHs in cluster |             
+| 8 | $N_{\rm BH-star}$             |    Number of BH-star pairs in cluster |
+| 9 | $N_{\rm BBH}$                 |    Number of BBHs in cluster |
+| 10 | $N_{\rm triples}$            |      Number of triple BHs in cluster |
+| 11 | $N_{\rm me}$                 |      Number of BBH mergers in total |
+| 12 | $N_{\rm me,\ re}$            |        Number of retained mergers |
+| 13 | $N_{\rm me,\ ej}$            |         Number of ejected mergers |
+| 14 | $N_{\rm me,\ out}$           |     Number of dynamical BBHs that merge in field |
+| 15 | $N_{\rm ZLK}$                |      Number of ZLK mergers |
+| 16 | $N_{\rm cap}$                |       Number of captured BBHs |
+| 17 | $N_{\rm ej}$                 |          Number of BBH ejections |
+| 18 | $v_{\rm esc}$                |           Escape velocity (km/s) |
+| 19 | $n_{\rm star-star}$          |        Number density of binary stars $({\rm pc}^{-3})$ |
+| 20 | $\overline{V_{\rm seg}}$     |            Mean segregation volume of BHs $({\rm pc}^3)$ |
+| 21 | $\xi$                       |        Equipartition parameter |
+| 22 | $v_{\rm star}$              |            Stellar velocity (km/s) |
+| 23 | $v_{\rm BH}$                 |          Mean BH velocity (km/s) |
+
+### 6. Applications of the code
+
+The code can be useful when executed multiple times, for instance when simulating a set of clusters and generating a population of dynamically formed binary black hole mergers.
+
+Although the program itself is not computationally expensive (we have tested in a laptop that we generate a few binary black hole mergers per second), independent parallelization is still encouraged when simulating a very large number of star clusters for efficiency.
+
+### 7. Citing this work
+
+If you utilize this code in your research, please cite the following reference:
+
+[K. Kritos, V. Strokov, V. Baibhav, E. Berti, to appear].
+
+### 8. Reporting bugs
+
+If you find a bug in the code, please contact us in kkritos1@jhu.edu with a description of the bug.
+
+Suggestions and pull requests are welcome :)
+
+### 9. Thanks
+
+V. Strokov, V. Baibhav, E. Berti, A. Antonelli, M. Cheung, R. Cotesta, G. Franciolini, T. Helfer, V. Kapil, L. Reali, C. Rodriguez.
+
+
