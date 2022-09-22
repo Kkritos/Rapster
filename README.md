@@ -31,7 +31,7 @@ The repository provides the source codes, files ./main.py and ./functions.py, an
 The modeling accounts for the necessary physical processes regarding the formation of binary black holes employing semi-analytic prescriptions as described in Sec. 2 of [K. Kritos, V. Strokov, V. Baibhav, E. Berti, to appear].
 
 ##### Note:
-For computational efficiency, the folder ./MzamsMrem/ contains 12 files with pre-calculated tables of stellar remnants masses on a grid of zero-age main sequence values up to 340$M_\odot$ and 12 values of absolute metallicity in the range from $10^{-4}$ to $1.7\times10^{-2}$ as calculated with the $\tt SEVN$ code [M. Spera & M. Mapelli, (2017)](https://academic.oup.com/mnras/article/470/4/4739/3883764).
+For computational efficiency, the folder ./MzamsMrem/ contains 12 files with pre-calculated tables of stellar remnants masses on a grid of zero-age main sequence values up to $340M_\odot$ and 12 values of absolute metallicity in the range from $10^{-4}$ to $1.7\times10^{-2}$ as calculated with the $\tt SEVN$ code [M. Spera & M. Mapelli, (2017)](https://academic.oup.com/mnras/article/470/4/4739/3883764).
 
 ### 2. Depedancies
 
