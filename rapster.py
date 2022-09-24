@@ -537,93 +537,93 @@ if __name__=="__main__":
     nStarStar = ((3*meanVseg/4/np.pi)**(1/3)/rh)**3*aStarStar.size / meanVseg
 
     # Calculation of timescales
-        # -----------------------------------------------------------------------------------------------------------------------
+    # -----------------------------------------------------------------------------------------------------------------------
 
-        # Single-single capture:
-        if N_BH_sin < 2: # no captures possible if there are less than two single black holes available in the system
-        # (ignore captures from multiple body interactions)
+    # Single-single capture:
+    if N_BH_sin < 2: # no captures possible if there are less than two single black holes available in the system
+    # (ignore captures from multiple body interactions)
             
-            tauCap = 1e100*yr
+        tauCap = 1e100*yr
         
-        else:
+    else:
             
-            tauCap = 1/RateCapture(meanBHmass,meanBHmass,N_BH_sin,nBHsin,xi,mAvg,Mcl,rh)
+        tauCap = 1/RateCapture(meanBHmass,meanBHmass,N_BH_sin,nBHsin,xi,mAvg,Mcl,rh)
 
-        # BHBHBH induced BBH:
-        if N_BH_sin < 3: # need at least three single BHs for this channel
+    # BHBHBH induced BBH:
+    if N_BH_sin < 3: # need at least three single BHs for this channel
             
-            tau3bBH = 1e100*yr
+        tau3bBH = 1e100*yr
         
-        else:
+    else:
             
-            # minimum binary hardness ratio:
-            etaMin = 5
+        # minimum binary hardness ratio:
+        etaMin = 5
             
-            # (division by the mean segregation volume allows to convert rate density into total rate):
-            tau3bBH = 1/Rate3body(meanBHmass,nBHsin,veloDisp(meanBHmass,xi,mAvg,Mcl,rh),etaMin)/meanVseg
+        # (division by the mean segregation volume allows to convert rate density into total rate):
+        tau3bBH = 1/Rate3body(meanBHmass,nBHsin,veloDisp(meanBHmass,xi,mAvg,Mcl,rh),etaMin)/meanVseg
 
-        # Binary star -> BH-star exchange:
-        if N_BH_sin < 1 or len(aStarStar)==0\
-            or nStarStar*meanVseg<1: # need at least two single BHs to perform the exchange and at least one hard star binary
+    # Binary star -> BH-star exchange:
+    if N_BH_sin < 1 or len(aStarStar)==0\
+        or nStarStar*meanVseg<1: # need at least two single BHs to perform the exchange and at least one hard star binary
             
-            tauPair = 1e100*yr
+        tauPair = 1e100*yr
         
-        else:
+    else:
             
-            # (factor of `2` included to account for the possibility of either star being exchanged):
-            tauPair = 1/RateExchange(mAvg,mAvg,meanBHmass,nStarStar,N_BH_sin,np.mean(aStarStar),xi,mAvg,Mcl,rh)/2
+        # (factor of `2` included to account for the possibility of either star being exchanged):
+        tauPair = 1/RateExchange(mAvg,mAvg,meanBHmass,nStarStar,N_BH_sin,np.mean(aStarStar),xi,mAvg,Mcl,rh)/2
 
-        # BH-star -> BBH exchange:
-        if N_BHstar < 1 or N_BH_sin<1: # need at least one BH-star pair and a single BH for this channel
+    # BH-star -> BBH exchange:
+    if N_BHstar < 1 or N_BH_sin<1: # need at least one BH-star pair and a single BH for this channel
             
-            tauEx = 1e100*yr
+        tauEx = 1e100*yr
         
-        else:
+    else:
             
-            # mean BH mass which participates in BH-star pairs:
-            meanBHpairMass = np.mean(np.transpose(pairs)[:][1])
+        # mean BH mass which participates in BH-star pairs:
+        meanBHpairMass = np.mean(np.transpose(pairs)[:][1])
             
-            # BH-star -> BBH exchange timescale:
-            tauEx = 1/RateExchange(mAvg,meanBHpairMass,meanBHmass,N_BHstar/meanVseg,\
-                N_BH_sin,np.mean(np.transpose(pairs)[:][0]),xi,mAvg,Mcl,rh)
+        # BH-star -> BBH exchange timescale:
+        tauEx = 1/RateExchange(mAvg,meanBHpairMass,meanBHmass,N_BHstar/meanVseg,\
+            N_BH_sin,np.mean(np.transpose(pairs)[:][0]),xi,mAvg,Mcl,rh)
 
-        # BBH-BBH strong encounter:
-        if N_BBH < 2: # need at least two BBHs to have a binary-binary encounter
+    # BBH-BBH strong encounter:
+    if N_BBH < 2: # need at least two BBHs to have a binary-binary encounter
             
-            tauBB = 1e100*yr
+        tauBB = 1e100*yr
         
-        else:
+    else:
             
-            # mean BBH mass:
-            meanBBHmass = np.mean(np.transpose(binaries)[:][3]+np.transpose(binaries)[:][4])
+        # mean BBH mass:
+        meanBBHmass = np.mean(np.transpose(binaries)[:][3]+np.transpose(binaries)[:][4])
 
-            # mean BBH sma:
-            meanBBHsma = np.mean(np.transpose(binaries)[:][1])
+        # mean BBH sma:
+        meanBBHsma = np.mean(np.transpose(binaries)[:][1])
 
-            # number density of BBHs:
-            nBBH = (N_BBH-1)/meanVseg
+        # number density of BBHs:
+        nBBH = (N_BBH-1)/meanVseg
 
-            # BBH-BBH strong encounter timescale:
-            tauBB = 1/RateInter(meanBBHmass,meanBBHmass,N_BBH,nBBH,7*meanBBHsma,xi,mAvg,Mcl,rh)
+        # BBH-BBH strong encounter timescale:
+        tauBB = 1/RateInter(meanBBHmass,meanBBHmass,N_BBH,nBBH,7*meanBBHsma,xi,mAvg,Mcl,rh)
 
-        # BHstar - BHstar strong encounter:
-        if N_BHstar < 2: # need at least two BH-star pairs to have a pair-pair encounter
+    # BHstar - BHstar strong encounter:
+    if N_BHstar < 2: # need at least two BH-star pairs to have a pair-pair encounter
             
-            tauPP = 1e100*yr
+        tauPP = 1e100*yr
         
-        else:
+    else:
             
-            # mean BH-star mass:
-            meanBHstarMass = np.mean(np.transpose(pairs)[:][1])+mAvg
+        # mean BH-star mass:
+        meanBHstarMass = np.mean(np.transpose(pairs)[:][1])+mAvg
 
-            # mean BH-star sma:
-            meanBHstarSma = np.mean(np.transpose(pairs)[:][0])
+        # mean BH-star sma:
+        meanBHstarSma = np.mean(np.transpose(pairs)[:][0])
 
-            # number density of BH-stars:
-            nBHstar = (N_BHstar-1)/meanVseg
+        # number density of BH-stars:
+        nBHstar = (N_BHstar-1)/meanVseg
 
-            # BHstar - BHstar mean interaction timescale:
-            tauPP = 1/RateInter(meanBHstarMass,meanBHstarMass,N_BHstar,nBHstar,7*meanBHstarSma,xi,mAvg,Mcl,rh)
+        # BHstar - BHstar mean interaction timescale:
+        tauPP = 1/RateInter(meanBHstarMass,meanBHstarMass,N_BHstar,nBHstar,7*meanBHstarSma,xi,mAvg,Mcl,rh)
     
     # append evolution params [t,z,Mcl,rh,Rgal,N_BH,N_BH_sin,N_BHstar,N_BBH,N_Triples,N_me,
     #                          N_meRe,N_meEj,N_meOut,N_ZLK,N_cap,N_ej,vEsc,nStarStar,meanVseg,xi,vStar,vBH,tCap,tEx1,tEx2,t3bb,tBB,tPP]:
