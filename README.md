@@ -143,6 +143,13 @@ a) Column description of mergers .txt file:
 | 27 | $M_{\rm cl,0}$ | Initial cluster mass $(M_\odot)$ |
 | 28 | $z_{\rm cl,\ form}$ | Cluster formation redshift |
 
+##### Note:
+BBH assembly channel (first column of mergers file), the ``-'' sign means BBH was ejected from the cluster:
+- (-)1: exchange processes
+- (-)2: two-body capture
+- (-)3: three-BH binary induced
+- (-)4: von Zeipel-Lidov-Kozai merger
+
 b) Column description of evolution .txt file:
 
 | Columnn | Variable | Description |
@@ -170,6 +177,12 @@ b) Column description of evolution .txt file:
 | 21 | $\xi$                       |        Equipartition parameter |
 | 22 | $v_{\rm star}$              |            Stellar velocity (km/s) |
 | 23 | $v_{\rm BH}$                 |          Mean BH velocity (km/s) |
+| 24 | $\tau_{\rm cap}$             | Mean capture timescale (Myr) |
+| 25 | $\tau_{\rm ex,1}$            | Mean star-star $\to$ BH-star timescale (Myr) |
+| 26 | $\tau_{\rm ex,2}$            | Mean BH-star $\to$ BBH timescale (Myr) |
+| 27 | $\tau_{\rm 3bb}$             | Mean 3bb formation timescale (Myr) |
+| 28 | $\tau_{bb}$ | Mean binary-binary interaction timescale (Myr) |
+| 29 | $\tau_{pp}$ | Mean BH-star $-$ BH-star interaction timescale (Myr) |
 
 ### 6. Applications of the code
 
