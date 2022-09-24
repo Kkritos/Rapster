@@ -2216,6 +2216,10 @@ if __name__=="__main__":
                         
                         # number of triples updated:
                         N_Triples = N_Triples - 1
+                        
+                        # (when a merger occurs, the number of BHs reduces by 1)
+                        # Update number of BHs in cluster:
+                        N_BH = N_BH - 1
 
                         # Find location of BH progentitors in the merger tree:
                         jBH_0 = np.squeeze(np.where(np.transpose(mergers)[:][20]==m0))+0
