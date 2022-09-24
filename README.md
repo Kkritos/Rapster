@@ -57,7 +57,7 @@ Our code accepts parameters with flag options.
 
 For a description of all input parameters, run the following command in the command line interface:
 
-> python main.py --help
+> python3 main.py --help
 
 or see Table 1 from [K. Kritos et al. (2022)]().
 
@@ -94,11 +94,11 @@ usage: main.py [-h] [-Mcl ] [-rh ] [-rhoC ] [-Rgal ] [-Z ] [-fB ] [-w ] [-chi ] 
 
 As an example we give the commands that produce data used to generate the results in Fig.4 of [K. Kritos, V. Strokov, V. Baibhav, E. Berti, to appear]:
 
-> python rapster.py -Mcl 1e5 -rhoC 5e4 -MF merg_5 -EF evol_5 -BF bh_5
+> python3 rapster.py -Mcl 1e5 -rhoC 5e4 -MF merg_5 -EF evol_5 -BF bh_5
 
-> python rapster.py -Mcl 1e6 -rhoC 5e5 -MF merg_6 -EF evol_6 -BF bh_6
+> python3 rapster.py -Mcl 1e6 -rhoC 5e5 -MF merg_6 -EF evol_6 -BF bh_6
 
-> python rapster.py -Mcl 1e7 -rhoC 5e6 -MF merg_7 -EF evol_7 -BF bh_7
+> python3 rapster.py -Mcl 1e7 -rhoC 5e6 -MF merg_7 -EF evol_7 -BF bh_7
 
 The default values are assumed for other parameters not entered in the commands above.
 
