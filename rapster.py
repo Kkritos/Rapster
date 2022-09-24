@@ -2463,7 +2463,7 @@ if __name__=="__main__":
                                     +' '+str(mergers[i][14])+' '+str(mergers[i][15])\
                                         +' '+str(mergers[i][16])+' '+str(mergers[i][17])+' '+str(mergers[i][18])+' '+\
                   str(mergers[i][19])+' '+str(mergers[i][20]/Msun)+' '+str(mergers[i][21])+' '+\
-                  str(mergers[i][22])+' '+str(mergers[i][23]/1e3)+' '+str(mergers[i][24])+str(mergers[i][25])+' '+\
+                  str(mergers[i][22])+' '+str(mergers[i][23]/1e3)+' '+str(mergers[i][24])+' '+str(mergers[i][25])+' '+\
                             str(Mcl0/Msun)+' '+str(zClForm))
             f_mergers.write('\n')
 
