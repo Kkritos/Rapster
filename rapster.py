@@ -393,8 +393,8 @@ if __name__=="__main__":
     mergers = np.zeros(shape=(1,26))
 
     # evolut = [t,z,Mcl,rh,Rgal,N_BH,N_BH_sin,N_BHstar,N_BBH,N_Triples,N_me,N_meRe,N_meEj,
-    #           N_meOut,N_ZLK,N_cap,N_ej,vEsc,nStarStar,meanVseg,xi,vStar,vBH]
-    evolut = np.zeros(shape=(1,23))
+    #           N_meOut,N_ZLK,N_cap,N_ej,vEsc,nStarStar,meanVseg,xi,vStar,vBH,tCap,tEx1,tEx2,t3bb,tBB,tPP]
+    evolut = np.zeros(shape=(1,29))
 
     # BBH assembly channel: (- sign means BBH was ejected from the cluster)
     #      0: original binary
@@ -537,10 +537,11 @@ if __name__=="__main__":
     nStarStar = ((3*meanVseg/4/np.pi)**(1/3)/rh)**3*aStarStar.size / meanVseg
 
     # append evolution params [t,z,Mcl,rh,Rgal,N_BH,N_BH_sin,N_BHstar,N_BBH,N_Triples,N_me,
-    #                          N_meRe,N_meEj,N_meOut,N_ZLK,N_cap,N_ej,vEsc,nStarStar,meanVseg,xi,vStar,vBH]:
-    evolut = np.append(evolut,[[t,z,Mcl,rh,Rgal,\
-        N_BH,N_BH_sin,N_BHstar,N_BBH,N_Triples,N_me,N_meRe,N_meEj,N_meOut,N_ZLK,N_cap,N_ej,vEscape(Mcl,rh),\
-            nStarStar,meanVseg,xi,np.sqrt(0.4*G_Newt*Mcl/rh),veloDisp(meanBHmass,xi,mAvg,Mcl,rh)]],axis=0)
+    #                          N_meRe,N_meEj,N_meOut,N_ZLK,N_cap,N_ej,vEsc,nStarStar,meanVseg,xi,vStar,vBH,tCap,tEx1,tEx2,t3bb,tBB,tPP]:
+    evolut = np.append(evolut,[[t/Myr,z,Mcl/Msun,rh/pc,Rgal/kpc,\
+        N_BH,N_BH_sin,N_BHstar,N_BBH,N_Triples,N_me,N_meRe,N_meEj,N_meOut,N_ZLK,N_cap,N_ej,vEscape(Mcl,rh)/1e3,\
+            nStarStar*pc**3,meanVseg/pc**3,xi,np.sqrt(0.4*G_Newt*Mcl/rh)/1e3,veloDisp(meanBHmass,xi,mAvg,Mcl,rh)/1e3,\
+                               tauCap/Myr,tauPair/Myr,tauEx/Myr,tau3bBH/Myr,tauBB/Myr,tauPP/Myr]],axis=0)
 
     # save masses of 1g black holes:
     with open(str(blackholeFile)+'.txt','w') as f_blackholes:
@@ -1447,10 +1448,11 @@ if __name__=="__main__":
                     binaries[iHard][2] = eInner
 
         # append evolution params [t,z,Mcl,rh,Rgal,N_BH,N_BH_sin,N_BHstar,N_BBH,N_Triples,N_me,
-        #                          N_meRe,N_meEj,N_meOut,N_ZLK,N_cap,N_ej,vEsc,nStarStar,meanVseg,xi,vStar,vBH]:
-        evolut = np.append(evolut,[[t,z,Mcl,rh,Rgal,\
-            N_BH,N_BH_sin,N_BHstar,N_BBH,N_Triples,N_me,N_meRe,N_meEj,N_meOut,N_ZLK,N_cap,N_ej,vEscape(Mcl,rh),\
-                nStarStar,meanVseg,xi,np.sqrt(0.4*G_Newt*Mcl/rh),veloDisp(meanBHmass,xi,mAvg,Mcl,rh)]],axis=0)
+        #                          N_meRe,N_meEj,N_meOut,N_ZLK,N_cap,N_ej,vEsc,nStarStar,meanVseg,xi,vStar,vBH,tCap,tEx1,tEx2,t3bb,tBB,tPP]:
+        evolut = np.append(evolut,[[t/Myr,z,Mcl/Msun,rh/pc,Rgal/kpc,\
+            N_BH,N_BH_sin,N_BHstar,N_BBH,N_Triples,N_me,N_meRe,N_meEj,N_meOut,N_ZLK,N_cap,N_ej,vEscape(Mcl,rh)/1e3,\
+                nStarStar*pc**3,meanVseg/pc**3,xi,np.sqrt(0.4*G_Newt*Mcl/rh)/1e3,veloDisp(meanBHmass,xi,mAvg,Mcl,rh)/1e3,\
+                                   tauCap/Myr,tauPair/Myr,tauEx/Myr,tau3bBH/Myr,tauBB/Myr,tauPP/Myr]],axis=0)
 
         # BBH evolution (hardening, exchanges, dissociation, ejection)
         # -----------------------------------------------------------------------------------------------------------------------
@@ -2484,7 +2486,10 @@ if __name__=="__main__":
                               +str(evolut[i][16])+' '+str(evolut[i][17])+' '\
                               +str(evolut[i][18])+' '+str(evolut[i][19])+' '\
                               +str(evolut[i][20])+' '+str(evolut[i][21])+' '\
-                              +str(evolut[i][22]))
+                              +str(evolut[i][22])+' '+str(evolut[i][23])+' '\
+                              +str(evolut[i][24])+' '+str(evolut[i][25])+' '\
+                              +str(evolut[i][26])+' '+str(evolut[i][27])+' '\
+                              +str(evolut[i][28]))
             f_evolution.write('\n')
 
 # End of source code
