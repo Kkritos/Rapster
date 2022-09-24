@@ -547,7 +547,7 @@ if __name__=="__main__":
         
         for i in range(0,N_BH):
             
-            f_blackholes.write(str(mBH/Msun))
+            f_blackholes.write(str(mBH[i]/Msun))
             f_blackholes.write('\n')
 
     # Simulation block
