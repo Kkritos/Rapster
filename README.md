@@ -129,17 +129,19 @@ a) Column description of mergers .txt file:
 | 13 | $z_{\rm merge}$ | Redshift BBH merged |
 | 14 | $N_{\rm har}$ | Number of hardening interactions |
 | 15 | $N_{\rm sub}$ | Number of BH exchanges |
-| 16 | $\theta_1$ | Polar angle (rad) of primary's spin with orbital angular momentum |
-| 17 | $\theta_2$ | Polar angle (rad) of secondary's spin with orbital angular momentum |
-| 18 | $\Delta\phi$ | Azimuthal angle (rad) between BH spins in the orbital plane |
-| 19 | $m_{\rm rem}$ | Remnant mass $(M_\odot)$ |
-| 20 | $\chi_{\rm rem}$ | Dimensionless remnant spin parameter |
-| 21 | $g_{\rm rem}$ | Remnant generation |
-| 22 | $v_{\rm GW}$ | GW kick (km/s) of remnant BH |
-| 23 | $j_1$ | Reference to primary’s progenitor BBH (if hierarchical product) |
-| 24 | $j_2$ | Reference to secondary’s progenitor BBH (if hierarchical product) |
-| 25 | $M_{\rm cl,0}$ | Initial cluster mass $(M_\odot)$ |
-| 27 | $z_{\rm cl,\ form}$ | Cluster formation redshift |
+| 16 | $q$ | Mass ratio |
+| 17 | $\chi_{\rm eff}$ | Effective spin parameter |
+| 18 | $\theta_1$ | Polar angle (rad) of primary's spin with orbital angular momentum |
+| 19 | $\theta_2$ | Polar angle (rad) of secondary's spin with orbital angular momentum |
+| 20 | $\Delta\phi$ | Azimuthal angle (rad) between BH spins in the orbital plane |
+| 21 | $m_{\rm rem}$ | Remnant mass $(M_\odot)$ |
+| 22 | $\chi_{\rm rem}$ | Dimensionless remnant spin parameter |
+| 23 | $g_{\rm rem}$ | Remnant generation |
+| 24 | $v_{\rm GW}$ | GW kick (km/s) of remnant BH |
+| 25 | $j_1$ | Reference to primary’s progenitor BBH (if hierarchical product) |
+| 26 | $j_2$ | Reference to secondary’s progenitor BBH (if hierarchical product) |
+| 27 | $M_{\rm cl,0}$ | Initial cluster mass $(M_\odot)$ |
+| 28 | $z_{\rm cl,\ form}$ | Cluster formation redshift |
 
 b) Column description of evolution .txt file:
 
