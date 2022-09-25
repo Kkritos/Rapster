@@ -70,7 +70,7 @@ For the user’s convenience we paste the list of optional arguments in the form
 | -rhoC, --CentralDensity | Initial central star density $(M_\odot{\rm pc}^{-3})$ | float | $4\times10^5M_\odot{\rm pc}^{-3}$ |
 | -Rgal, --GalactocentricRadius | Initial galactocentric radius (kpc) | float | 8kpc |
 | -Z, --Metallicity | Cluster metallicity $(Z_\odot)$ | float | $0.1Z_\odot$ |
-| -fb, --BinaryFraction | Initial binary star fraction | float | 10\% |
+| -fb, --BinaryFraction | Initial binary star fraction (%) | float | 10\% |
 | -w, --NatalKickParameter | Natal velocity kick parameter of BHs (km/s) | float | 256km/s |
 | -chi, --NatalSpinParameter | Natal spin parameter of first generation (1g) BHs | float | 0 |
 | -SM, --NatalSpinDistribution | Natal spin distribution (1 for monochromatic, 0 for uniform) | int | 0 |
