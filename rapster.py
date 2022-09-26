@@ -2586,7 +2586,7 @@ if __name__=="__main__":
                               +str(evolut[i][28]))
             f_evolution.write('\n')
 
-    np.savez(blackholeFile, mBH_ini=mBH_1g, mBH_fin=mBH)
+    np.savez(blackholeFile, mBH_ini=mBH_1g/Msun, mBH_fin=mBH/Msun)
     
 # End of source code
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
