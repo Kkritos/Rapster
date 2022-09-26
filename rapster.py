@@ -125,13 +125,13 @@ parser.add_argument('-s'    ,'--Seed'                ,type=int  ,metavar=' ',def
     help='Random number generator seed')
 
 parser.add_argument('-MF'   ,'--MergersFile'         ,type=str  ,metavar=' ',default='mergers'    ,\
-    help='Name of output file containing binary BH merger source parameters')
+    help='Name of output .txt file containing binary BH merger source parameters')
 
 parser.add_argument('-EF'   ,'--EvolutionFile'       ,type=str  ,metavar=' ',default='evolution'    ,\
-    help='Name of output file containing time-dependent quantities of interest')
+    help='Name of output .txt file containing time-dependent quantities of interest')
 
 parser.add_argument('-BF'   ,'--BlackHoleFile'      ,type=str  ,metavar=' ',default='blackholes'    ,\
-    help='Name of output file containing all the masses of 1g black holes')
+    help='Name of output .npz file containing all the masses of black holes at the initial and final state')\
 
 args = parser.parse_args()
 
@@ -633,13 +633,16 @@ if __name__=="__main__":
                                tauCap/Myr,tauPair/Myr,tauEx/Myr,tau3bBH/Myr,tauBB/Myr,tauPP/Myr]],axis=0)
 
     # save masses of 1g black holes:
+    mBH_1g = mBH
+    '''
     with open(str(blackholeFile)+'.txt','w') as f_blackholes:
         
         for i in range(0,N_BH):
             
             f_blackholes.write(str(mBH[i]/Msun))
             f_blackholes.write('\n')
-
+    '''
+    
     # Simulation block
     # ---------------------------------------------------------------------------------------------------------------------------
 
@@ -2583,5 +2586,7 @@ if __name__=="__main__":
                               +str(evolut[i][28]))
             f_evolution.write('\n')
 
+    np.savez(blackholeFile, mBH_ini=mBH_1g, mBH_fin=mBH)
+    
 # End of source code
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
