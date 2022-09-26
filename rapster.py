@@ -2096,9 +2096,8 @@ if __name__=="__main__":
                                         if jBH_2.size==0: # then this is 1g BH
                                             jBH_2 = -1
 
-                                        mRem = 0
-                                        sRem = 0
-                                        gRem = 0
+                                        # get remnant mass, remnant spin and GW kick velocity:
+                                        mRem,sRem,vGW = mergerRemnant(m1,m2,s1,s2,theta1,theta2,dPhi)
 
                                         # Append merger [channel,a,e,m1,m2,s1,s2,g1,g1,tForm,tMerge,zForm,
                                         #                zMerge,Nhar,Nsub,q,chiEff,theta1,theta2,dPhi,mRem,sRem,gRem,vGW,j1,j2],
