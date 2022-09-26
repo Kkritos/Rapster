@@ -2099,6 +2099,9 @@ if __name__=="__main__":
                                         # get remnant mass, remnant spin and GW kick velocity:
                                         mRem,sRem,vGW = mergerRemnant(m1,m2,s1,s2,theta1,theta2,dPhi)
 
+                                        # merger remnant generation:
+                                        gRem = np.max([g1, g2]) + 1
+                                        
                                         # Append merger [channel,a,e,m1,m2,s1,s2,g1,g1,tForm,tMerge,zForm,
                                         #                zMerge,Nhar,Nsub,q,chiEff,theta1,theta2,dPhi,mRem,sRem,gRem,vGW,j1,j2],
                                         # (negative `channel` means BBH merges outside outside):
