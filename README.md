@@ -94,11 +94,11 @@ usage: main.py [-h] [-Mcl ] [-rh ] [-rhoC ] [-Rgal ] [-Z ] [-fB ] [-w ] [-chi ] 
 
 As an example we give the commands that produce data used to generate the results in Fig.4 of [K. Kritos, V. Strokov, V. Baibhav, E. Berti, to appear]:
 
-> python3 rapster.py -Mcl 1e5 -rhoC 5e4 -MF merg_5 -EF evol_5 -BF bh_5
+  > python3 rapster.py -Mcl  1.36e5 -rh 1.6 -rhoC  5.6e4 -EF ev_a -MF me_a -BF bh_a -Z 0.08 -z 3 -Rgal  8 -fB 0.1
 
-> python3 rapster.py -Mcl 1e6 -rhoC 5e5 -MF merg_6 -EF evol_6 -BF bh_6
+  > python3 rapster.py -Mcl  5.40e5 -rh 1.6 -rhoC 26.9e4 -EF ev_b -MF me_b -BF bh_b -Z 0.08 -z 3 -Rgal  8 -fB 0.1
 
-> python3 rapster.py -Mcl 1e7 -rhoC 5e6 -MF merg_7 -EF evol_7 -BF bh_7
+  > python3 rapster.py -Mcl 10.82e5 -rh 1.6 -rhoC 15.1e4 -EF ev_c -MF me_c -BF bh_c -Z 0.03 -z 3 -Rgal 20 -fB 0.1
 
 The default values are assumed for other parameters not entered in the commands above.
 
