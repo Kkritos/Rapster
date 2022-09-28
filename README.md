@@ -183,6 +183,12 @@ b) Column description of evolution .txt file:
 | 27 | $\tau_{\rm 3bb}$             | Mean 3bb formation timescale (Myr) |
 | 28 | $\tau_{bb}$ | Mean binary-binary interaction timescale (Myr) |
 | 29 | $\tau_{pp}$ | Mean BH-star $-$ BH-star interaction timescale (Myr) |
+| 30 | ${\cal N}_{\rm ex,1}$ | Cumulative number of star-star$\to$BH-star interactions |
+| 31 | ${\cal N}_{\rm ex,2}$ | Cumulative number of BH-star$\to$BBH interactions |
+| 32 | ${\cal N}_{\rm 3bb}$ | Cumulative number of 3bb interactions |
+| 33 | ${\cal N}_{\rm cap}$ | Cumulative number of capture interactions |
+| 34 | ${\cal N}_{bb}$ | Cumulative number of BBH$-$BBH interactions |
+| 35 | ${\cal N}_{pp}$ | Cumulative number of BH-star$-$BH-star interactions |
 
 ### 6. Applications of the code
 
