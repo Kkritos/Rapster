@@ -641,14 +641,6 @@ if __name__=="__main__":
 
     # save masses of 1g black holes:
     mBH_1g = mBH
-    '''
-    with open(str(blackholeFile)+'.txt','w') as f_blackholes:
-        
-        for i in range(0,N_BH):
-            
-            f_blackholes.write(str(mBH[i]/Msun))
-            f_blackholes.write('\n')
-    '''
     
     # Simulation block
     # ---------------------------------------------------------------------------------------------------------------------------
