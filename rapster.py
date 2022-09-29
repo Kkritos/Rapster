@@ -2535,9 +2535,8 @@ if __name__=="__main__":
         # sound speed:
         c_s = 100e3
 
-        for i in range(mBH.size):
-            # Bondi accretion:
-            mBH[i] = mBH[i] + dt1 * 4*np.pi*rho_g*(G_Newt*mBH[i])**2/c_s**3
+        # Bondi accretion:
+        mBH = mBH + dt1 * 4*np.pi*rho_g*(G_Newt*mBH)**2/c_s**3
         
         # update number of iterations performed:
         Niter+=1
