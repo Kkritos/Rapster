@@ -1090,7 +1090,7 @@ if __name__=="__main__":
                 if jBH_2.size==0: # then this is 1g BH
                     jBH_2 = -1
 
-                # Append merger [channel,a,e,m1,m2,s1,s2,g1,g1,tForm,tMerge,zForm,zMerge,Nhar,Nsub,q,chiEff,theta1,theta2,dPhi,
+                # Append merger [channel,a,e,m1,m2,s1,s2,g1,g2,tForm,tMerge,zForm,zMerge,Nhar,Nsub,q,chiEff,theta1,theta2,dPhi,
                 #                mRem,sRem,gRem,vGW,jBH_1,jBH_2]
                 mergers = np.append(mergers,[[2,sma,eccen,m1,m2,s1,s2,g1,g2,t,t+tCoal,z,redd(t_lbb(zClForm)-t-tCoal),0,0,\
                     np.min([m1,m2])/np.max([m1,m2]),chiEff,theta1,theta2,dPhi,\
@@ -2566,6 +2566,8 @@ if __name__=="__main__":
             mergers[i][6 ] = chi1
             mergers[i][7 ] = int(g2)
             mergers[i][8 ] = int(g1)
+            mergers[i][24] = int(jBH_2)
+            mergers[i][25] = int(jBH_1)
 
     # Exporting data
     # ---------------------------------------------------------------------------------------------------------------------------
