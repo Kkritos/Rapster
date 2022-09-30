@@ -27,12 +27,12 @@ Date: September 22, 2022
 <a name="overview"></a>
 ### 1. Overview
 
-The repository provides the source codes, files ./rapster.py and ./functions.py, and all necessary data files in folder ./MzamsMrem/, for the rapid evolution of dense star cluster environments and the dynamical assembly of binary black hole mergers.
+The repository provides the source codes, files ``./rapster.py`` and ``./functions.py``, and all necessary data files in folder ``./MzamsMrem/``, for the rapid evolution of dense star cluster environments and the dynamical assembly of binary black hole mergers.
 
 The modeling accounts for the necessary physical processes regarding the formation of binary black holes employing semi-analytic prescriptions as described in Sec. 2 of [K. Kritos et al. (2022)]().
 
 ##### Note:
-For computational efficiency, the folder ./MzamsMrem/ contains 12 files with pre-calculated tables of stellar remnants masses on a grid of zero-age main sequence values up to $340M_\odot$ and 12 values of absolute metallicity in the range from $10^{-4}$ to $1.7\times10^{-2}$ as calculated with the $\tt SEVN$ code [M. Spera & M. Mapelli (2017)](https://academic.oup.com/mnras/article/470/4/4739/3883764).
+For computational efficiency, the folder ``./MzamsMrem/`` contains 12 files with pre-calculated tables of stellar remnants masses on a grid of zero-age main sequence values up to $340M_\odot$ and 12 values of absolute metallicity in the range from $10^{-4}$ to $1.7\times10^{-2}$ as calculated with the $\tt SEVN$ code [M. Spera & M. Mapelli (2017)](https://academic.oup.com/mnras/article/470/4/4739/3883764).
 
 <a name="requirements"></a>
 ### 2. Requirements
@@ -105,6 +105,13 @@ As an example we give the commands that produce data used to generate the result
   > python3 rapster.py -Mcl 10.82e5 -rh 1.6 -rhoC 15.1e4 -EF ev_c -MF me_c -BF bh_c -Z 0.03 -z 3 -Rgal 20
 
 The default values are assumed for other parameters not entered in the commands above.
+
+##### Note:
+To test the code, execute the program with all default values:
+
+  > python3 rapster.py
+  
+This should create three files ``mergers.txt``, ``evolution.txt``, and ``blackholes.npz`` in your current directory. To check and verify wheather you have produced these files correctly, we include the corresponding files ``mergers_TEST.txt``, ``evolution_TEST.txt``, and ``blackholes_TEST.npz`` in folder ``./Testing/`` in this repository with data that should match your ouput.
 
 ##### Suggestion:
 Taking different values of seed number corresponds to different realizations of the system under the same initial conditions. 
