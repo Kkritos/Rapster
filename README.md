@@ -211,6 +211,6 @@ Suggestions and pull requests are welcome :)
 
 ### 9. Thanks
 
-V. Strokov, V. Baibhav, E. Berti, A. Antonelli, M. Cheung, R. Cotesta, G. Franciolini, T. Helfer, V. Kapil, L. Reali, C. Rodriguez.
+V. Strokov, V. Baibhav, E. Berti, A. Antonelli, M. Cheung, R. Cotesta, G. Franciolini, T. Helfer, V. Kapil, I. Krommydas, L. Reali, C. Rodriguez.
 
 
