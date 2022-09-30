@@ -16,51 +16,16 @@
  
 '''
 
-# Imports
+# Imports and global constants
 # ----------------------------------------------------------------------------------------------------------------------------
 
-import numpy as np
-import precession as pre
-import scipy.integrate as integrate
-import scipy.special as scs
-import time
-import math
-import astropy.units as u
-import argparse
-from scipy.stats import poisson
-from scipy.stats import maxwell
-from cmath import isnan
-from scipy import interpolate
-from astropy.cosmology import FlatLambdaCDM
-from scipy.optimize import fsolve
 from functions import *
 
-# Global constants in S.I.
-# ----------------------------------------------------------------------------------------------------------------------------
+# Hydrogen mass (kg):
+mH = 1.67e-27
 
-yr       = 365*24*60*60  # year
-kyr      = 1e3*yr        # kilo year
-Myr      = 1e6*yr        # mega year
-Gyr      = 1e9*yr        # giga year
-pc       = 3.01e16       # parsec
-kpc      = 1e3*pc        # kilo parsec
-Mpc      = 1e6*pc        # mega parsec
-Gpc      = 1e9*pc        # giga parsec
-Msun     = 1.99e30       # solar mass
-Zsun     = 0.013         # solar metallicity
-Rsun     = 6.957e8       # solar radius
-AU       = 1.5e11        # astronomical unit
-c_light  = 3e8           # speed of light
-G_Newt   = 6.7e-11       # Newton constant
-OmegaK0  = 0             # curvature density parameter
-OmegaR0  = 5.38e-5       # radiation density parameter
-OmegaV   = 0.685         # vacuum density parameter
-OmegaM0  = 0.315         # matter density paramter
-h        = 0.674         # Hubble reduced parameter
-H0       = 100*h*1e3/Mpc # Hubble constant
-zEq      = 3402          # radiation-matter redshift
-cosmo    = FlatLambdaCDM(H0=100*h * u.km / u.s / u.Mpc, Tcmb0=2.725 * u.K, Om0=OmegaM0) # define cosmology
-T_Hubble = cosmo.age(0).value * Gyr # Hubble time
+# centimeter (m):
+cm = 1e-2
 
 # User inputs
 # ----------------------------------------------------------------------------------------------------------------------------
@@ -161,8 +126,8 @@ mergersFile   = args.MergersFile
 evolutionFile = args.EvolutionFile
 blackholeFile = args.BlackHoleFile
 
-rho_g = args.gasDensity
-c_s = args.soundSpeed
+rho_gas = args.gasDensity * mH / cm**3
+c_sound = args.soundSpeed * 1e3
 
 Mcl0  = Mcl  # initial cluster mass
 rh0   = rh   # initial half-mass radius
@@ -2523,20 +2488,8 @@ if __name__=="__main__":
         # Bondi accretion onto BHs:
         # -----------------------------------------------------------------------------------------------------------------------
         
-        # Hydrogen mass (kg):
-        mH = 1.67e-27
-        
-        # centimeter (m):
-        cm = 1e-2
-        
-        # gas density (km/m^-3):
-        rho_g = rho_g*mH/cm**3
-        
-        # sound speed (km/s):
-        c_s = c_s*1e3
-
         # Bondi accretion:
-        mBH = mBH + dt1 * 4*np.pi*rho_g*(G_Newt*mBH)**2/c_s**3
+        mBH = mBH + dt1 * 4*np.pi*rho_gas*(G_Newt*mBH)**2/c_sound**3
         
         # update number of iterations performed:
         Niter+=1
