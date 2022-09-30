@@ -87,9 +87,9 @@ For the user’s convenience we paste the list of optional arguments in the form
 | -Rs, --ScaleRadiusNFW | Scale radius of the NFW profile (kpc) | float | 50kpc |
 | -Mh, --DarkMatterHaloMass | Total DM halo mass of the host galaxy $(M_\odot)$ | float | $10^{12}M_\odot$ |
 | -s, --Seed | Random number generator seed | int | 123456789 |
-| -MF, --MergersFile | Name of output file with BBH merger source parameters | str | ``mergers'' |
-| -EF, --EvolutionFile | Name of output file with time-dependent quantities | str | ``evolution'' |
-| -BF, --BlackHoleFile | Name of output file containing the masses of all 1g BHs in $M_\odot$ | str | ``blackholes'' |
+| -MF, --MergersFile | Name of output file with BBH merger source parameters | str | ``mergers`` |
+| -EF, --EvolutionFile | Name of output file with time-dependent quantities | str | ``evolution`` |
+| -BF, --BlackHoleFile | Name of output file containing the masses of all 1g BHs in $M_\odot$ | str | ``blackholes`` |
 
 <a name="runningasimulation"></a>
 ### 4. Running a simulation
@@ -149,7 +149,7 @@ a) Column description of mergers .txt file:
 | 28 | $z_{\rm cl,\ form}$ | Cluster formation redshift |
 
 ##### Note:
-BBH assembly channel (first column of mergers file), the ``-'' sign means BBH was ejected from the cluster:
+BBH assembly channel (first column of mergers file), the ``-`` sign means BBH was ejected from the cluster:
 - (-)1: exchange processes
 - (-)2: two-body capture
 - (-)3: three-BH binary induced
@@ -195,6 +195,8 @@ b) Column description of evolution .txt file:
 | 34 | ${\cal N}_{bb}$ | Cumulative number of BBH$-$BBH interactions |
 | 35 | ${\cal N}_{pp}$ | Cumulative number of BH-star$-$BH-star interactions |
 | 36 | $\overline{m_{\rm BH}}$ | Mean BH mass $(M_\odot)$ in cluster |
+
+c) The blackholes .npz file contains two arrays, called ``mBH_ini`` and ``mBH_fin`` which provide in $M_\odot$ the masses of all single BHs at the start and the end of the simulation.
 
 <a name="applicationsofthecode"></a>
 ### 6. Applications of the code
