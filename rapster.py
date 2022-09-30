@@ -131,7 +131,10 @@ parser.add_argument('-EF'   ,'--EvolutionFile'       ,type=str  ,metavar=' ',def
     help='Name of output .txt file containing time-dependent quantities of interest')
 
 parser.add_argument('-BF'   ,'--BlackHoleFile'      ,type=str  ,metavar=' ',default='blackholes'    ,\
-    help='Name of output .npz file containing all the masses of black holes at the initial and final state')\
+    help='Name of output .npz file containing all the masses of black holes at the initial and final state')
+
+parser.add_argument('-rhog', '--gasDensity', type=float, metavar=' ', default=0, help='Ambient gas density of hydrogen in cm^-3')
+parser.add_argument('-cs', '--soundSpeed', type=float, metavar=' ', default=100, help='Sound speed of ISM in km/s')
 
 args = parser.parse_args()
 
@@ -157,6 +160,9 @@ SEED          = args.Seed
 mergersFile   = args.MergersFile
 evolutionFile = args.EvolutionFile
 blackholeFile = args.BlackHoleFile
+
+rho_g = args.gasDensity
+c_s = args.soundSpeed
 
 Mcl0  = Mcl  # initial cluster mass
 rh0   = rh   # initial half-mass radius
@@ -2513,6 +2519,24 @@ if __name__=="__main__":
         print('Simulation time:',format(time.time()-startTimeGlobal,'.2f'),\
             'sec (',format((time.time()-startTimeGlobal)/60,'.2f'),'min )')
         print('\n')
+        
+        # Bondi accretion onto BHs:
+        # -----------------------------------------------------------------------------------------------------------------------
+        
+        # Hydrogen mass (kg):
+        mH = 1.67e-27
+        
+        # centimeter (m):
+        cm = 1e-2
+        
+        # gas density (km/m^-3):
+        rho_g = rho_g*mH/cm**3
+        
+        # sound speed (km/s):
+        c_s = c_s*1e3
+
+        # Bondi accretion:
+        mBH = mBH + dt1 * 4*np.pi*rho_g*(G_Newt*mBH)**2/c_s**3
         
         # update number of iterations performed:
         Niter+=1
