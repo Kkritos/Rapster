@@ -96,7 +96,7 @@ For the user’s convenience we paste the list of optional arguments in the form
 
 usage: rapster.py [-h] [-Mcl ] [-rh ] [-rhoC ] [-Rgal ] [-Z ] [-fB ] [-w ] [-chi ] [-SM ] [-tMax ] [-dtMin ] [-dtMax ] [-z ] [-aIMF ] [-ZAMSmax ] [-c ] [-Rs ] [-Mh ] [-s ] [-MF ] [-EF ] [-BF ]
 
-As an example we give the commands that produce data used to generate the results in Fig.4 of [K. Kritos, V. Strokov, V. Baibhav, E. Berti, to appear]:
+As an example we give the commands that produce data used to generate the results in Fig.4 of [K. Kritos et al. (2022)]():
 
   > python3 rapster.py -Mcl  1.36e5 -rh 1.6 -rhoC  5.6e4 -EF ev_a -MF me_a -BF bh_a -Z 0.08 -z 3 -Rgal  8
 
