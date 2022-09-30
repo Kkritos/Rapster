@@ -2513,24 +2513,6 @@ if __name__=="__main__":
         print('Simulation time:',format(time.time()-startTimeGlobal,'.2f'),\
             'sec (',format((time.time()-startTimeGlobal)/60,'.2f'),'min )')
         print('\n')
-
-        # Bondi accretion onto BHs:
-        # -----------------------------------------------------------------------------------------------------------------------
-        
-        # Hydrogen mass:
-        mH = 1.67e-27
-        
-        # centimeter:
-        cm = 1e-2
-        
-        # gas density:
-        rho_g = 1e6*mH/cm**3
-        
-        # sound speed:
-        c_s = 100e3
-
-        # Bondi accretion:
-        mBH = mBH + dt1 * 4*np.pi*rho_g*(G_Newt*mBH)**2/c_s**3
         
         # update number of iterations performed:
         Niter+=1
