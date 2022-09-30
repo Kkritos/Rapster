@@ -90,7 +90,7 @@ For the user’s convenience we paste the list of optional arguments in the form
 
 ### 4. Running a simulation
 
-usage: main.py [-h] [-Mcl ] [-rh ] [-rhoC ] [-Rgal ] [-Z ] [-fB ] [-w ] [-chi ] [-SM ] [-tMax ] [-dtMin ] [-dtMax ] [-z ] [-aIMF ] [-ZAMSmax ] [-c ] [-Rs ] [-Mh ] [-s ] [-MF ] [-EF ] [-BF ]
+usage: rapster.py [-h] [-Mcl ] [-rh ] [-rhoC ] [-Rgal ] [-Z ] [-fB ] [-w ] [-chi ] [-SM ] [-tMax ] [-dtMin ] [-dtMax ] [-z ] [-aIMF ] [-ZAMSmax ] [-c ] [-Rs ] [-Mh ] [-s ] [-MF ] [-EF ] [-BF ]
 
 As an example we give the commands that produce data used to generate the results in Fig.4 of [K. Kritos, V. Strokov, V. Baibhav, E. Berti, to appear]:
 
