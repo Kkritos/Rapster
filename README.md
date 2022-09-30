@@ -57,7 +57,7 @@ Our code accepts parameters with flag options.
 
 For a description of all input parameters, run the following command in the command line interface:
 
-> python3 main.py --help
+> python3 rapster.py --help
 
 or see Table 1 from [K. Kritos et al. (2022)]().
 
