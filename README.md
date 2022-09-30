@@ -189,6 +189,7 @@ b) Column description of evolution .txt file:
 | 33 | ${\cal N}_{\rm cap}$ | Cumulative number of capture interactions |
 | 34 | ${\cal N}_{bb}$ | Cumulative number of BBH$-$BBH interactions |
 | 35 | ${\cal N}_{pp}$ | Cumulative number of BH-star$-$BH-star interactions |
+| 36 | $\overline{m_{\rm BH}}$ | Mean BH mass $(M_\odot)$ in cluster |
 
 ### 6. Applications of the code
 
