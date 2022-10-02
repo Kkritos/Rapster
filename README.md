@@ -43,7 +43,7 @@ The following Python packages are required
 - $\tt astropy$ (5.0.4)
 - $\tt argparse$ (1.1)
 - $\tt cmath$
-- $\tt numpy$ (1.12.3)
+- $\tt numpy$ (>=1.12.3)
 - $\tt scipy$ (1.8.0)
 - $\tt math$
 - $\tt time$
