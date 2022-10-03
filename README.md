@@ -6,15 +6,15 @@ Author: Konstantinos Kritos <kkritos1@jhu.edu>
 Date: September 22, 2022
 
 ### Contents:
-1. Overview
-2. Requirements
-3. Input parameters
-4. Running a simulation
-5. Output files
-6. Applications of the code
-7. Citing this work
-8. Reporting bugs
-9. Thanks
+1. [Overview](#overview)
+2. [Requirements](#requirements)
+3. [Input parameters](#inputparameters)
+4. [Running a simulation](#runningasimulation)
+5. [Output files](#outputfiles)
+6. [Applications of the code](#applicationsofthecode)
+7. [Citing this work](#citingthiswork)
+8. [Reporting bugs](#reportingbugs)
+9. [Thanks](#thanks)
 
 ---
 
@@ -24,15 +24,17 @@ Date: September 22, 2022
 - BBH: binary black hole
 - GW: gravitational wave
 
+<a name="overview"></a>
 ### 1. Overview
 
-The repository provides the source codes, files ./rapster.py and ./functions.py, and all necessary data files in folder ./MzamsMrem/, for the rapid evolution of dense star cluster environments and the dynamical assembly of binary black hole mergers.
+The repository provides the source codes, files ``./rapster.py`` and ``./functions.py``, and all necessary data files in folder ``./MzamsMrem/``, for the rapid evolution of dense star cluster environments and the dynamical assembly of binary black hole mergers.
 
-The modeling accounts for the necessary physical processes regarding the formation of binary black holes employing semi-analytic prescriptions as described in Sec. 2 of [K. Kritos et al. (2022)]().
+The modeling accounts for the necessary physical processes regarding the formation of binary black holes employing semi-analytic prescriptions as described in Sec. 2 of [K. Kritos et al. (2022), to appear]().
 
 ##### Note:
-For computational efficiency, the folder ./MzamsMrem/ contains 12 files with pre-calculated tables of stellar remnants masses on a grid of zero-age main sequence values up to $340M_\odot$ and 12 values of absolute metallicity in the range from $10^{-4}$ to $1.7\times10^{-2}$ as calculated with the $\tt SEVN$ code [M. Spera & M. Mapelli (2017)](https://academic.oup.com/mnras/article/470/4/4739/3883764).
+For computational efficiency, the folder ``./MzamsMrem/`` contains 12 files with pre-calculated tables of stellar remnants masses on a grid of zero-age main sequence values up to $340M_\odot$ and 12 values of absolute metallicity in the range from $10^{-4}$ to $1.7\times10^{-2}$ as calculated with the $\tt SEVN$ code [M. Spera & M. Mapelli (2017)](https://academic.oup.com/mnras/article/470/4/4739/3883764).
 
+<a name="requirements"></a>
 ### 2. Requirements
 
 The following Python packages are required
@@ -41,7 +43,7 @@ The following Python packages are required
 - $\tt astropy$ (5.0.4)
 - $\tt argparse$ (1.1)
 - $\tt cmath$
-- $\tt numpy$ (1.12.3)
+- $\tt numpy$ (>=1.12.3)
 - $\tt scipy$ (1.8.0)
 - $\tt math$
 - $\tt time$
@@ -51,15 +53,16 @@ The code is tested with packages in the versions shown in parentheses above, how
 ##### Note:
 It is suggested that the $\tt precession$ package is used in its latest version 1.0.3 [D. Gerosa & M. Kesden (2016)](https://journals.aps.org/prd/abstract/10.1103/PhysRevD.93.124066).
 
+<a name="inputparameters"></a>
 ### 3. Input parameters
 
 Our code accepts parameters with flag options.
 
 For a description of all input parameters, run the following command in the command line interface:
 
-> python3 main.py --help
+> python3 rapster.py --help
 
-or see Table 1 from [K. Kritos et al. (2022)]().
+or see Table 1 from [K. Kritos et al. (2022), to appear]().
 
 For the user’s convenience we paste the list of optional arguments in the form of a Table here as well:
 
@@ -84,15 +87,16 @@ For the user’s convenience we paste the list of optional arguments in the form
 | -Rs, --ScaleRadiusNFW | Scale radius of the NFW profile (kpc) | float | 50kpc |
 | -Mh, --DarkMatterHaloMass | Total DM halo mass of the host galaxy $(M_\odot)$ | float | $10^{12}M_\odot$ |
 | -s, --Seed | Random number generator seed | int | 123456789 |
-| -MF, --MergersFile | Name of output file with BBH merger source parameters | str | ``mergers'' |
-| -EF, --EvolutionFile | Name of output file with time-dependent quantities | str | ``evolution'' |
-| -BF, --BlackHoleFile | Name of output file containing the masses of all 1g BHs in $M_\odot$ | str | ``blackholes'' |
+| -MF, --MergersFile | Name of output file with BBH merger source parameters | str | ``mergers`` |
+| -EF, --EvolutionFile | Name of output file with time-dependent quantities | str | ``evolution`` |
+| -BF, --BlackHoleFile | Name of output file containing the masses of all 1g BHs in $M_\odot$ | str | ``blackholes`` |
 
+<a name="runningasimulation"></a>
 ### 4. Running a simulation
 
-usage: main.py [-h] [-Mcl ] [-rh ] [-rhoC ] [-Rgal ] [-Z ] [-fB ] [-w ] [-chi ] [-SM ] [-tMax ] [-dtMin ] [-dtMax ] [-z ] [-aIMF ] [-ZAMSmax ] [-c ] [-Rs ] [-Mh ] [-s ] [-MF ] [-EF ] [-BF ]
+usage: rapster.py [-h] [-Mcl ] [-rh ] [-rhoC ] [-Rgal ] [-Z ] [-fB ] [-w ] [-chi ] [-SM ] [-tMax ] [-dtMin ] [-dtMax ] [-z ] [-aIMF ] [-ZAMSmax ] [-c ] [-Rs ] [-Mh ] [-s ] [-MF ] [-EF ] [-BF ]
 
-As an example we give the commands that produce data used to generate the results in Fig.4 of [K. Kritos, V. Strokov, V. Baibhav, E. Berti, to appear]:
+As an example we give the commands that produce data used to generate the results in Fig.4 of [K. Kritos et al. (2022), to appear]():
 
   > python3 rapster.py -Mcl  1.36e5 -rh 1.6 -rhoC  5.6e4 -EF ev_a -MF me_a -BF bh_a -Z 0.08 -z 3 -Rgal  8
 
@@ -102,10 +106,18 @@ As an example we give the commands that produce data used to generate the result
 
 The default values are assumed for other parameters not entered in the commands above.
 
+##### Note:
+To test the code, execute the program with all default values:
+
+  > python3 rapster.py
+  
+This should create three files ``mergers.txt``, ``evolution.txt``, and ``blackholes.npz`` in your current directory. To check and verify wheather you have produced these files correctly, we include the corresponding files ``mergers_TEST.txt``, ``evolution_TEST.txt``, and ``blackholes_TEST.npz`` in folder ``./Testing/`` in this repository with data that should match your ouput.
+
 ##### Suggestion:
 Taking different values of seed number corresponds to different realizations of the system under the same initial conditions. 
 Passing the argument $$\tt\$ RANDOM$$ in the -s flag, simulates the star cluster with a pseudo-randomly generated number.
 
+<a name="outputfiles"></a>
 ### 5. Output files:
 
 At the end of each simulation the code generates three .txt files, one with the black hole masses of all first generation black holes that are initially retained in the cluster, a second file with information about all dynamical mergers that took place during the simulation, and finally a file that keeps track of time-dependent quantities.
@@ -144,7 +156,7 @@ a) Column description of mergers .txt file:
 | 28 | $z_{\rm cl,\ form}$ | Cluster formation redshift |
 
 ##### Note:
-BBH assembly channel (first column of mergers file), the ``-'' sign means BBH was ejected from the cluster:
+BBH assembly channel (first column of mergers file), the ``-`` sign means BBH was ejected from the cluster:
 - (-)1: exchange processes
 - (-)2: two-body capture
 - (-)3: three-BH binary induced
@@ -191,26 +203,32 @@ b) Column description of evolution .txt file:
 | 35 | ${\cal N}_{pp}$ | Cumulative number of BH-star$-$BH-star interactions |
 | 36 | $\overline{m_{\rm BH}}$ | Mean BH mass $(M_\odot)$ in cluster |
 
+c) The blackholes .npz file contains two arrays, called ``mBH_ini`` and ``mBH_fin`` which provide in $M_\odot$ the masses of all single BHs at the start and the end of the simulation.
+
+<a name="applicationsofthecode"></a>
 ### 6. Applications of the code
 
 The code can be useful when executed multiple times, for instance when simulating a set of clusters and generating a population of dynamically formed binary black hole mergers.
 
 Although the program itself is not computationally expensive (we have tested in a laptop that we generate a few binary black hole mergers per second), independent parallelization is still encouraged when simulating a very large number of star clusters for efficiency.
 
+<a name="citingthiswork"></a>
 ### 7. Citing this work
 
 If you utilize this code in your research, please cite the following reference:
 
-[K. Kritos et al. (2022)]().
+[K. Kritos et al. (2022), to appear]().
 
+<a name="reportingbugs"></a>
 ### 8. Reporting bugs
 
 If you find a bug in the code, please contact us in kkritos1@jhu.edu with a description of the bug.
 
 Suggestions and pull requests are welcome :)
 
+<a name="thanks"></a>
 ### 9. Thanks
 
-V. Strokov, V. Baibhav, E. Berti, A. Antonelli, M. Cheung, R. Cotesta, G. Franciolini, T. Helfer, V. Kapil, L. Reali, C. Rodriguez.
+V. Strokov, V. Baibhav, E. Berti, A. Antonelli, M. Cheung, R. Cotesta, G. Franciolini, T. Helfer, V. Kapil, I. Krommydas, L. Reali, C. Rodriguez.
 
 
