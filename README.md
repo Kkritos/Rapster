@@ -1,6 +1,8 @@
 # Rapster
 Rapid population synthesis code for binary black hole mergers in dynamical environments.
 
+$\tt Rapster$ stands for $\rm \it rapid\ cluster$.
+
 Author: Konstantinos Kritos <kkritos1@jhu.edu>
 
 Date: September 22, 2022
