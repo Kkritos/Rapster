@@ -30,6 +30,12 @@ cm = 1e-2
 # Boltzmann constant (SI):
 kB = 1.38e-23
 
+# proton mass (kg):
+m_proton = mH
+
+# Thomson scattering cross section (m^2):
+sThomson = 6.65e-29
+
 # User inputs
 # ----------------------------------------------------------------------------------------------------------------------------
 
@@ -103,6 +109,7 @@ parser.add_argument('-BF'   ,'--BlackHoleFile'      ,type=str  ,metavar=' ',defa
 
 parser.add_argument('-rhog', '--gasDensity', type=float, metavar=' ', default=0, help='Ambient gas density of hydrogen in cm^-3')
 parser.add_argument('-cs', '--soundSpeed', type=float, metavar=' ', default=100, help='Sound speed of ISM in km/s')
+parser.add_argument('-ep', '--radiativeEfficiency', type=float, metavar=' ', default=0.1, help='Radiative efficiency in black hole accretion')
 
 args = parser.parse_args()
 
@@ -129,8 +136,9 @@ mergersFile   = args.MergersFile
 evolutionFile = args.EvolutionFile
 blackholeFile = args.BlackHoleFile
 
-rho_gas = args.gasDensity * mH / cm**3
-c_sound = args.soundSpeed * 1e3
+rho_gas       = args.gasDensity * mH / cm**3
+c_sound       = args.soundSpeed * 1e3
+epsilon_acc   = args.radiativeEfficiency
 
 Mcl0  = Mcl  # initial cluster mass
 rh0   = rh   # initial half-mass radius
@@ -2491,8 +2499,24 @@ if __name__=="__main__":
         # Bondi accretion onto BHs:
         # -----------------------------------------------------------------------------------------------------------------------
         
-        # Bondi accretion:
-        mBH = mBH + dt1 * 4*np.pi*rho_gas*(G_Newt*mBH)**2/c_sound**3
+        # Eddington accretion limit:
+        dMdt_Edd = 4 * np.pi * G_Newt * mBH * m_proton / epsilon_acc / sThomson / c_light
+        
+        # Bondi accretion rate:
+        dMdt_Bondi = 4 * np.pi * rho_gas * (G_Newt * mBH)**2 / c_sound**3
+        
+        # Bondi rate should not exceed the Eddington limit:
+        def accretion_rate(r_bon_i, r_edd_i):
+            return np.piecewise(r_bon_i, [(r_bon_i<r_edd_i), (r_bon_i>=r_edd_i)], [r_bon_i, r_edd_i]) + 0
+        accretion_rate_vector = np.vectorize(accretion_rate)
+        
+        # accretion rate:
+        dMdt = accretion_rate_vector(dMdt_Bondi, dMdt_Edd)
+        
+        # adjust BH masses due to gas accretion:
+        mBH = mBH + dt1 * dMdt
+        
+        # -----------------------------------------------------------------------------------------------------------------------
         
         # update number of iterations performed:
         Niter+=1
