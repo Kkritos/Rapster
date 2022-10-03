@@ -5,6 +5,8 @@ Author: Konstantinos Kritos <kkritos1@jhu.edu>
 
 Date: September 22, 2022
 
+![LOGO](./LOGO.png)
+
 ### Contents:
 1. [Overview](#overview)
 2. [Requirements](#requirements)
