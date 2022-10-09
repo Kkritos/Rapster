@@ -2485,16 +2485,16 @@ if __name__=="__main__":
         
         # update number of iterations performed:
         Niter+=1
-
-        # append evolution params [t,z,Mcl,rh,Rgal,N_BH,N_BH_sin,N_BHstar,N_BBH,N_Triples,N_me,
-        #                          N_meRe,N_meEj,N_meOut,N_ZLK,N_cap,N_ej,vEsc,nStarStar,meanVseg,xi,vStar,vBH,tCap,tEx1,tEx2,t3bb,tBB,tPP,
-        #                          N_ex1,N_ex2,N_3bb,N_bb,N_pp,mBHmean]:
-        evolut = np.append(evolut,[[t/Myr,z,Mcl/Msun,rh/pc,Rgal/kpc,\
+        
+# append evolution params [t,z,Mcl,rh,Rgal,N_BH,N_BH_sin,N_BHstar,N_BBH,N_Triples,N_me,
+#                          N_meRe,N_meEj,N_meOut,N_ZLK,N_cap,N_ej,vEsc,nStarStar,meanVseg,xi,vStar,vBH,tCap,tEx1,tEx2,t3bb,tBB,tPP,
+#                          N_ex1,N_ex2,N_3bb,N_bb,N_pp,mBHmean]:
+evolut = np.append(evolut,[[t/Myr,z,Mcl/Msun,rh/pc,Rgal/kpc,\
             N_BH,N_BH_sin,N_BHstar,N_BBH,N_Triples,N_me,N_meRe,N_meEj,N_meOut,N_ZLK,N_cap,N_ej,vEscape(Mcl,rh)/1e3,\
                 nStarStar*pc**3,meanVseg/pc**3,xi,np.sqrt(0.4*G_Newt*Mcl/rh)/1e3,veloDisp(meanBHmass,xi,mAvg,Mcl,rh)/1e3,\
                                    tauCap/Myr,tauPair/Myr,tauEx/Myr,tau3bBH/Myr,tauBB/Myr,tauPP/Myr,N_ex1,N_ex2,N_3bb,N_bb,N_pp,\
                                    meanBHmass/Msun]],axis=0)
-        
+     
     # Primary->1, Secondary->2
     # ---------------------------------------------------------------------------------------------------------------------------
 
