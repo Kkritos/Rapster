@@ -475,6 +475,7 @@ if __name__=="__main__":
     # current number of single black holes:
     N_BH_sin = mBH.size
 
+    ''' BUG
     # mean BH mass which participates in BH-star pairs:
     meanBHpairMass = np.mean(np.transpose(pairs)[:][1])
     
@@ -493,6 +494,10 @@ if __name__=="__main__":
     
     # mean BH mass:
     meanBHmass = (meanSingleBHmass+meanBHpairMass+meanBBHmass)/4
+    '''
+    
+    # mean BH mass:
+    meanBHmass = (np.sum(mBH) + np.sum(np.transpose(binaries)[:][3]+np.transpose(binaries)[:][4]) + np.sum(np.transpose(pairs)[:][1])) / NBH
     
     # individual mass ratio:
     q__ = meanBHmass / mAvg
@@ -652,6 +657,7 @@ if __name__=="__main__":
         # current number of single black holes:
         N_BH_sin = mBH.size
 
+        ''' BUG
         # mean BH mass which participates in BH-star pairs:
         meanBHpairMass = np.mean(np.transpose(pairs)[:][1])
         
@@ -670,6 +676,10 @@ if __name__=="__main__":
         
         # mean BH mass:
         meanBHmass = (meanSingleBHmass+meanBHpairMass+meanBBHmass)/4
+        '''
+        
+        # mean BH mass:
+        meanBHmass = (np.sum(mBH) + np.sum(np.transpose(binaries)[:][3]+np.transpose(binaries)[:][4]) + np.sum(np.transpose(pairs)[:][1])) / NBH
 
         # individual mass ratio:
         q__ = meanBHmass / mAvg
