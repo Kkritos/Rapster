@@ -111,7 +111,7 @@ parser.add_argument('-BF'   ,'--BlackHoleFile'      ,type=str  ,metavar=' ',defa
 #parser.add_argument('-cs', '--soundSpeed', type=float, metavar=' ', default=100, help='Sound speed of ISM in km/s')
 parser.add_argument('-ep', '--radiativeEfficiency', type=float, metavar=' ', default=0.1, help='Radiative efficiency in black hole accretion')
 parser.add_argument('-eSF', '--starFormationEfficiency', type=float, metavar=' ', default=0.3, help='Star formation efficiency')
-parser.add_argument('-ET', '--expulsionType', type=int, metavar=' ', default=0, help='Expulsion type (0 for exponential, 1 for linear)')
+parser.add_argument('-tM', '--expulsionTimescale', type=int, metavar=' ', default=-1, help='Expulsion type in Myr (<0 for default residual gas removal)')
 
 args = parser.parse_args()
 
@@ -142,7 +142,7 @@ blackholeFile = args.BlackHoleFile
 #c_sound     = args.soundSpeed * 1e3
 epsilon_acc = args.radiativeEfficiency
 epsilon_SF  = args.starFormationEfficiency
-ET          = int(args.expulsionType)
+tM          = int(args.expulsionTimescale) * Myr
 
 Mcl0  = Mcl  # initial cluster mass (stars+gas)
 rh0   = rh   # initial half-mass radius
@@ -2558,7 +2558,10 @@ if __name__=="__main__":
         mBH = mBH + dt1 * dMdt
         
         # gas expulsion timescale:
-        t_expulsion = 7.1e-3 * Myr * (1 - epsilon_SF) * Mcl / epsilon_SF / 1e5 / Msun * pc / rh
+        if tM<0:
+            t_expulsion = 7.1e-3 * Myr * (1 - epsilon_SF) * Mcl / epsilon_SF / 1e5 / Msun * pc / rh
+        else:
+            t_expulsion = tM
         
         # update half-mass radius of the gas:
         rh_gas = rh_gas0 * (1 + np.sqrt(t / t_expulsion))
