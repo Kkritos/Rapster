@@ -108,7 +108,7 @@ parser.add_argument('-BF'   ,'--BlackHoleFile'      ,type=str  ,metavar=' ',defa
     help='Name of output .npz file containing all the masses of black holes at the initial and final state')
 
 #parser.add_argument('-rhog', '--gasDensity', type=float, metavar=' ', default=0, help='Ambient gas density of hydrogen in cm^-3')
-parser.add_argument('-cs', '--soundSpeed', type=float, metavar=' ', default=100, help='Sound speed of ISM in km/s')
+#parser.add_argument('-cs', '--soundSpeed', type=float, metavar=' ', default=100, help='Sound speed of ISM in km/s')
 parser.add_argument('-ep', '--radiativeEfficiency', type=float, metavar=' ', default=0.1, help='Radiative efficiency in black hole accretion')
 parser.add_argument('-eSF', '--starFormationEfficiency', type=float, metavar=' ', default=0.3, help='Star formation efficiency')
 parser.add_argument('-ET', '--expulsionType', type=int, metavar=' ', default=0, help='Expulsion type (0 for exponential, 1 for linear)')
@@ -139,7 +139,7 @@ evolutionFile = args.EvolutionFile
 blackholeFile = args.BlackHoleFile
 
 #rho_gas     = args.gasDensity * mH / cm**3
-c_sound     = args.soundSpeed * 1e3
+#c_sound     = args.soundSpeed * 1e3
 epsilon_acc = args.radiativeEfficiency
 epsilon_SF  = args.starFormationEfficiency
 ET          = int(args.expulsionType)
@@ -2531,8 +2531,11 @@ if __name__=="__main__":
         # Bondi accretion onto BHs (limited by the Eddington limit) and intracluster gas evolution:
         # -----------------------------------------------------------------------------------------------------------------------
         
+        # sound speed (virial temperature):
+        c_sound = np.sqrt(0.4 * G_Newt * Mcl / rh)
+        
         # compute gas density in the core of the cluster:
-        rho_gas = 3 * M_gas / (4 * np.pi * (rh_gas / 1.3)**3)
+        rho_gas = 3 * M_gas / (4 * np.pi * (rh / 1.3)**3)
         
         # Eddington accretion limit:
         dMdt_Edd = 4 * np.pi * G_Newt * mBH * m_proton / epsilon_acc / sThomson / c_light
