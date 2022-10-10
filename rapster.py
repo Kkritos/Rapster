@@ -107,9 +107,11 @@ parser.add_argument('-EF'   ,'--EvolutionFile'       ,type=str  ,metavar=' ',def
 parser.add_argument('-BF'   ,'--BlackHoleFile'      ,type=str  ,metavar=' ',default='blackholes'    ,\
     help='Name of output .npz file containing all the masses of black holes at the initial and final state')
 
-parser.add_argument('-rhog', '--gasDensity', type=float, metavar=' ', default=0, help='Ambient gas density of hydrogen in cm^-3')
+#parser.add_argument('-rhog', '--gasDensity', type=float, metavar=' ', default=0, help='Ambient gas density of hydrogen in cm^-3')
 parser.add_argument('-cs', '--soundSpeed', type=float, metavar=' ', default=100, help='Sound speed of ISM in km/s')
 parser.add_argument('-ep', '--radiativeEfficiency', type=float, metavar=' ', default=0.1, help='Radiative efficiency in black hole accretion')
+parser.add_argument('-eSF', '--starFormationEfficiency', type=float, metavar=' ', default=0.3, help='Star formation efficiency')
+parser.add_argument('-ET', '--expulsionType', type=int, metavar=' ', default=0, help='Expulsion type (0 for exponential, 1 for linear)')
 
 args = parser.parse_args()
 
@@ -136,13 +138,33 @@ mergersFile   = args.MergersFile
 evolutionFile = args.EvolutionFile
 blackholeFile = args.BlackHoleFile
 
-rho_gas       = args.gasDensity * mH / cm**3
-c_sound       = args.soundSpeed * 1e3
-epsilon_acc   = args.radiativeEfficiency
+#rho_gas     = args.gasDensity * mH / cm**3
+c_sound     = args.soundSpeed * 1e3
+epsilon_acc = args.radiativeEfficiency
+epsilon_SF  = args.starFormationEfficiency
+ET          = int(args.expulsionType)
 
-Mcl0  = Mcl  # initial cluster mass
+Mcl0  = Mcl  # initial cluster mass (stars+gas)
 rh0   = rh   # initial half-mass radius
 rhoC0 = rhoC # initial central density
+
+# initial gas half-mass radius:
+rh_gas0 = rh0
+
+# initial residual gas not converted into stars:
+M_gas0 = (1-epsilon_SF) * Mcl0
+
+# mass converted in stars:
+Mcl_stars = epsilon_SF * Mcl0
+
+# initial central gas density:
+rho_gas0 = 3 * M_gas0 / (4 * np.pi * (rh0 / 1.3)**3)
+
+# current gas mass:
+M_gas = M_gas0
+
+# current gas radius:
+rh_gas = rh_gas0
 
 # Initialize pseudo-number generator
 # ----------------------------------------------------------------------------------------------------------------------------
@@ -162,7 +184,7 @@ if __name__=="__main__":
           /integrate.quad(lambda x:   IMF_kroupa(np.array([x])),0.08,120)[0] * Msun
 
     # total initial number of stars in cluster:
-    Nstar = Mcl/mAvg
+    Nstar = Mcl_stars/mAvg
 
     # central number density of stars:
     nStar = rhoC/mAvg
@@ -186,8 +208,8 @@ if __name__=="__main__":
     MstarMassive_min = 20
 
     # initial number of stars with mass above MstarMassive_min = 20 solar masses:
-    Nstar_massive = int(Mcl/Msun*integrate.quad(lambda x:   IMF_kroupa(np.array([x])),MstarMassive_min,Mstar_max)[0]\
-                                /integrate.quad(lambda x: x*IMF_kroupa(np.array([x])),Mstar_min,Mstar_max)[0])
+    Nstar_massive = int(Mcl_stars/Msun*integrate.quad(lambda x:   IMF_kroupa(np.array([x])), MstarMassive_min, Mstar_max)[0]\
+                                      /integrate.quad(lambda x: x*IMF_kroupa(np.array([x])), Mstar_min       , Mstar_max)[0])
 
     # star masses drawn from Kroupa (2002) IMF with inverse sampling (we allow for possibly different high-mass slope):
     u_star = np.random.rand(Nstar_massive)
@@ -2506,8 +2528,11 @@ if __name__=="__main__":
             'sec (',format((time.time()-startTimeGlobal)/60,'.2f'),'min )')
         print('\n')
         
-        # Bondi accretion onto BHs:
+        # Bondi accretion onto BHs (limited by the Eddington limit) and intracluster gas evolution:
         # -----------------------------------------------------------------------------------------------------------------------
+        
+        # compute gas density in the core of the cluster:
+        rho_gas = 3 * M_gas / (4 * np.pi * (rh_gas / 1.3)**3)
         
         # Eddington accretion limit:
         dMdt_Edd = 4 * np.pi * G_Newt * mBH * m_proton / epsilon_acc / sThomson / c_light
@@ -2523,8 +2548,38 @@ if __name__=="__main__":
         # accretion rate:
         dMdt = accretion_rate_vector(dMdt_Bondi, dMdt_Edd)
         
+        # accreted matter by all BHs:
+        dM_gas_accreted = np.sum(dt1 * dMdt)
+        
         # adjust BH masses due to gas accretion:
         mBH = mBH + dt1 * dMdt
+        
+        # gas expulsion timescale:
+        t_expulsion = 7.1e-3 * Myr * (1 - epsilon_SF) * Mcl / epsilon_SF / 1e5 / Msun * pc / rh
+        
+        # update half-mass radius of the gas:
+        rh_gas = rh_gas0 * (1 + np.sqrt(t / t_expulsion))
+        
+        # update gas reservoir in cluster:
+        if   ET==0: # expontial expulsion
+            M_gas1 = M_gas0 * np.exp(-t / t_expulsion)
+        elif ET==1: # linear expulsion
+            M_gas1 = M_gas0 * (1 - t / t_expulsion)
+        else:
+            pass
+        
+        # amoung of gas ejected due to stellar feedback (UV, winds, SNe):
+        dM_gas_removed = M_gas - M_gas1
+        
+        dM_gas = dM_gas_removed + dM_gas_accreted
+        
+        # subtract matter accreted:
+        M_gas = M_gas - dM_gas
+        
+        # update cluster mass:
+        Mcl = Mcl - dM_gas
+        
+        M_gas = M_gas1
         
         # -----------------------------------------------------------------------------------------------------------------------
         
