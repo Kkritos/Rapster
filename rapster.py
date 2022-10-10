@@ -2581,6 +2581,7 @@ if __name__=="__main__":
         
         # update cluster mass:
         Mcl = Mcl - dM_gas
+        print(Mcl/Msun, M_gas/Msun)
         
         M_gas = M_gas1
         
