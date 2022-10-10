@@ -2567,12 +2567,7 @@ if __name__=="__main__":
         rh_gas = rh_gas0 * (1 + np.sqrt(t / t_expulsion))
         
         # update gas reservoir in cluster:
-        if   ET==0: # expontial expulsion
-            M_gas1 = M_gas0 * np.exp(-t / t_expulsion)
-        elif ET==1: # linear expulsion
-            M_gas1 = M_gas0 * (1 - t / t_expulsion)
-        else:
-            pass
+        M_gas1 = M_gas0 * np.exp(-t / t_expulsion) # expontial expulsion
         
         # amoung of gas ejected due to stellar feedback (UV, winds, SNe):
         dM_gas_removed = M_gas - M_gas1
