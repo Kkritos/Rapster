@@ -519,7 +519,7 @@ if __name__=="__main__":
     '''
     
     # mean BH mass:
-    meanBHmass = (np.sum(mBH) + np.sum(np.transpose(binaries)[:][3]+np.transpose(binaries)[:][4]) + np.sum(np.transpose(pairs)[:][1])) / NBH
+    meanBHmass = (np.sum(mBH) + np.sum(np.transpose(binaries)[:][3]+np.transpose(binaries)[:][4]) + np.sum(np.transpose(pairs)[:][1])) / N_BH
     
     # individual mass ratio:
     q__ = meanBHmass / mAvg
@@ -701,7 +701,7 @@ if __name__=="__main__":
         '''
         
         # mean BH mass:
-        meanBHmass = (np.sum(mBH) + np.sum(np.transpose(binaries)[:][3]+np.transpose(binaries)[:][4]) + np.sum(np.transpose(pairs)[:][1])) / NBH
+        meanBHmass = (np.sum(mBH) + np.sum(np.transpose(binaries)[:][3]+np.transpose(binaries)[:][4]) + np.sum(np.transpose(pairs)[:][1])) / N_BH
 
         # individual mass ratio:
         q__ = meanBHmass / mAvg
