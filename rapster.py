@@ -1112,7 +1112,10 @@ if __name__=="__main__":
                 g2 = gBH[k2] # generation of second BH
 
                 # sample initial hardness of newly formed BBH:
-                eta = hardness_sampler(np.random.rand(),m1,m2,meanBHmass,mAvg,xi,etamin=5)
+                try:
+                    eta = hardness_sampler(np.random.rand(),m1,m2,meanBHmass,mAvg,xi,etamin=5)
+                except:
+                    eta = 5.0
                 
                 # BBH semimajor axis:
                 sma = G_Newt*m1*m2/eta/mAvg/veloDisp(mAvg,1,mAvg,Mcl,rh)**2
