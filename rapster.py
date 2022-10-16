@@ -2581,6 +2581,10 @@ if __name__=="__main__":
         # subtract matter accreted:
         M_gas = M_gas - dM_gas
         
+        # check if M_gas is negative value:
+        if M_gas<0:
+            M_gas = 0.0
+        
         # update cluster mass:
         Mcl = Mcl - dM_gas
         
