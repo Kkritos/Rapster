@@ -380,7 +380,12 @@ def H_rate(a,q):
     @out : hardening rate
     '''
 
-    return A_sma_interpol(q)*(1+a/a0_sma_interpol(q))**gamma_sma_interpol(q)
+    try:
+        Hrate = A_sma_interpol(q)*(1+a/a0_sma_interpol(q))**gamma_sma_interpol(q)
+    except:
+        Hrate = 15.0
+      
+    return Hrate
 
 # Binary-single eccentricity growth rate: K = A*(1+a/a0)**gamma + B; best fit params:
 
@@ -418,8 +423,11 @@ def K_rate(a,e,q):
     
     @out : eccentricity growth rate
     '''
-
-    Krate = A_ecc_interpol(q,e)*(1+a/a0_ecc_interpol(q,e))**gamma_ecc_interpol(q,e)+B_ecc_interpol(q,e)
+  
+    try:
+        Krate = A_ecc_interpol(q,e)*(1+a/a0_ecc_interpol(q,e))**gamma_ecc_interpol(q,e)+B_ecc_interpol(q,e)
+    except:
+        Krate = 0.0
     
     return Krate[0]
 
