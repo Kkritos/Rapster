@@ -1114,6 +1114,10 @@ if __name__=="__main__":
             sBH = np.append(sBH, sBH_temporary) # append remnant spins
             gBH = np.append(gBH, gBH_temporary) # append remnant generations
 
+        # all BHs could have depleted at this point:
+        if mBH.size==0:
+            break
+            
         # Binary assembly via BHBHBH -> BBH
         # -----------------------------------------------------------------------------------------------------------------------
 
