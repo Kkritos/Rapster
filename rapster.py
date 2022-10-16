@@ -1121,6 +1121,8 @@ if __name__=="__main__":
         # Binary assembly via BHBHBH -> BBH
         # -----------------------------------------------------------------------------------------------------------------------
 
+        N_BH_sin = mBH.size
+        
         # make sure there are available BHs as they evolve in the current step:
         k3bBH = np.min([k3bBH,int(N_BH_sin/3)])
         
