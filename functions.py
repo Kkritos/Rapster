@@ -483,7 +483,7 @@ def Mrem(M,Z):
     return out
 
 #def tRelax(N,rh,m):
-def tRelax(Mcl, N, rh, m)
+def tRelax(Mcl, N, rh, m):
     '''
     Half-mass relaxation timescale.
 
