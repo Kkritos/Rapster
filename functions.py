@@ -482,18 +482,21 @@ def Mrem(M,Z):
     
     return out
 
-def tRelax(N,rh,m):
+#def tRelax(N,rh,m):
+def tRelax(Mcl, N, rh, m)
     '''
     Half-mass relaxation timescale.
 
-    @in N : Number of objects
-    @in rh: half-mass radius
-    @in m : average mass
+    @in Mcl: cluster total mass (stars+gas)
+    @in N  : Number of objects
+    @in rh : half-mass radius
+    @in m  : average mass
 
     @out  : half-mass relaxation timescale in seconds
     '''
     
-    return 0.138*N**(1/2)*rh**(3/2)/m**(1/2)/G_Newt**(1/2)/np.log(0.4*N)
+    #return 0.138*N**(1/2)*rh**(3/2)/m**(1/2)/G_Newt**(1/2)/np.log(0.4*N)
+    return 128 * Myr * (Mcl/1e5/Msun)**(1/2) * (rh/pc)**(3/2) * 0.6*Msun/m * 8/ np.log(0.02*N)
 
 def RateCapture(m1,m2,n1,n2,xi,mAvg,Mcl,rh):
     '''
