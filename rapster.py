@@ -199,7 +199,7 @@ if __name__=="__main__":
     vStar = veloDisp(mAvg,1,mAvg,Mcl,rh)
     
     # initial half-mass relaxation timescale:
-    tRel0 = tRelax(Mcl0/mAvg,rh0,mAvg)
+    tRel0 = tRelax(Mcl0, Mcl0/mAvg,rh0,mAvg)
 
     # Black holes in cluster
     # ---------------------------------------------------------------------------------------------------------------------------
@@ -483,7 +483,7 @@ if __name__=="__main__":
     N_triples_cumul = 0                     # cumul. num. of triples
 
     # half-mass relaxation timescale, updated:
-    tRel = tRelax(Mcl/mAvg,rh,mAvg)
+    tRel = tRelax(Mcl, Mcl/mAvg,rh,mAvg)
 
     # velocity dispersion of stars (updated):
     vStar = veloDisp(mAvg,1,mAvg,Mcl,rh)
@@ -665,7 +665,7 @@ if __name__=="__main__":
         startTimeLocal = time.time()
 
         # half-mass relaxation timescale, updated:
-        tRel = tRelax(Mcl/mAvg,rh,mAvg)
+        tRel = tRelax(Mcl, Mcl/mAvg,rh,mAvg)
 
         # velocity dispersion of stars (updated):
         vStar = veloDisp(mAvg,1,mAvg,Mcl,rh)
@@ -897,7 +897,8 @@ if __name__=="__main__":
         zetaBurn = 0.0926
         
         # evolve cluster's half-mass radius (due to BH heating):
-        rh = rh0*(1+3/2*zetaBurn*(t-tBurn)/tRel0)**(2/3)
+        #rh = rh0*(1+3/2*zetaBurn*(t-tBurn)/tRel0)**(2/3)
+        rh = rh * (1 + zetaBurn * dt1 / tRelax(Mcl, Mcl/mAvg, rh, mAvg))
 
         # Ubdate number density of star-star binaries (creation by triple-star interaction)
         # -----------------------------------------------------------------------------------------------------------------------
