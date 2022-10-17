@@ -659,7 +659,7 @@ if __name__=="__main__":
     startTimeGlobal = time.time()
 
     # simulate while termination criteria is not met:
-    while t < tMax and N_BH > 1 and z > 0 and Rgal > 0:
+    while t < tMax and N_BH > 1 and z > 0 and Rgal > 0 and Mcl>0:
 
         # start local clock:
         startTimeLocal = time.time()
