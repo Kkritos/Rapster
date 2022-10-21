@@ -33,7 +33,7 @@ Date: September 22, 2022
 
 The repository provides the source codes, files ``./rapster.py`` and ``./functions.py``, and all necessary data files in folder ``./MzamsMrem/``, for the rapid evolution of dense star cluster environments and the dynamical assembly of binary black hole mergers.
 
-The modeling accounts for the necessary physical processes regarding the formation of binary black holes employing semi-analytic prescriptions as described in Sec. 2 of [K. Kritos et al. (2022), to appear]().
+The modeling accounts for the necessary physical processes regarding the formation of binary black holes employing semi-analytic prescriptions as described in Sec. 2 of [K. Kritos et al. (2022)](https://arxiv.org/abs/2210.10055).
 
 ##### Note:
 For computational efficiency, the folder ``./MzamsMrem/`` contains 12 files with pre-calculated tables of stellar remnants masses on a grid of zero-age main sequence values up to $340M_\odot$ and 12 values of absolute metallicity in the range from $10^{-4}$ to $1.7\times10^{-2}$ as calculated with the $\tt SEVN$ code [M. Spera & M. Mapelli (2017)](https://academic.oup.com/mnras/article/470/4/4739/3883764).
@@ -66,7 +66,7 @@ For a description of all input parameters, run the following command in the comm
 
 > python3 rapster.py --help
 
-or see Table 1 from [K. Kritos et al. (2022), to appear]().
+or see Table 1 from [K. Kritos et al. (2022)](https://arxiv.org/abs/2210.10055).
 
 For the user’s convenience we paste the list of optional arguments in the form of a Table here as well:
 
@@ -221,7 +221,7 @@ Although the program itself is not computationally expensive (we have tested in 
 
 If you utilize this code in your research, please cite the following reference:
 
-[K. Kritos et al. (2022), to appear]().
+[K. Kritos et al. (2022)](https://arxiv.org/abs/2210.10055).
 
 <a name="reportingbugs"></a>
 ### 8. Reporting bugs
