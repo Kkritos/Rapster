@@ -402,7 +402,7 @@ if __name__=="__main__":
     # Black holes in cluster
     # ---------------------------------------------------------------------------------------------------------------------------
     
-    print(starMasses.min(), starMasses.max(), Z)
+    starMasses = starMasses[starMasses > MstarMassive_min]
     
     # remnant masses from SEVN interpolant:
     remnantMasses = Mrem(starMasses,Z) * Msun
