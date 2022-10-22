@@ -199,11 +199,26 @@ if __name__=="__main__":
     vStar = veloDisp(mAvg,1,mAvg,Mcl,rh)
     
     # initial half-mass relaxation timescale:
-    tRel0 = tRelax(Mcl0, Mcl0/mAvg,rh0,mAvg)
+    tRel0 = tRelax(Mcl0, epsilon_SF * Mcl0 / mAvg,rh0,mAvg)
 
-    # Black holes in cluster
+    # Core collapse:
     # ---------------------------------------------------------------------------------------------------------------------------
+    
+    # core-collapse time:
+    t_cc = 0.20 * tRel0
+    
+    # lifetime of massive stars (rough estimate):
+    t_star = 3 * Myr
+    
+    # initialize simulation time:
+    t = np.min([t_cc, t_star])
+    
+    # initialize redshift:
+    z = redd(t_lbb(zClForm)-t)
 
+    # Massive stars:
+    # ---------------------------------------------------------------------------------------------------------------------------
+    
     # lightest massive star (solar masses) DO NOT CHANGE THIS VALUE should be set at `20`:
     MstarMassive_min = 20
 
@@ -216,6 +231,14 @@ if __name__=="__main__":
     starMasses = (u_star*(Mstar_max**(alphaIMF+1)-MstarMassive_min**(alphaIMF+1))\
                   +MstarMassive_min**(alphaIMF+1))**(1/(alphaIMF+1))
 
+    # early phase of stellar mergers:
+    # ---------------------------------------------------------------------------------------------------------------------------
+    
+    ...
+    
+    # Black holes in cluster
+    # ---------------------------------------------------------------------------------------------------------------------------
+    
     # remnant masses from SEVN interpolant:
     remnantMasses = Mrem(starMasses,Z) * Msun
 
@@ -467,23 +490,17 @@ if __name__=="__main__":
     N_me_1_3 = 0 # number of 1g+3g mergers
     N_me_2_3 = 0 # number of 2g+3g mergers
     N_me_3_3 = 0 # number of 3g+3g mergers
-
-    # initialize simulation time:
-    t = 0
     
     # initialize number of iterations:
     Niter = 0
     
-    # initialize redshift:
-    z = zClForm
-
     # Cumulative number of associations formed:
     N_bhstars_cumul = N_BHstar_original_ret # cumul. num. of BH-stars
     N_bbhs_cumul    = N_BBH_original_ret    # cumul. num. of BBHs
     N_triples_cumul = 0                     # cumul. num. of triples
 
     # half-mass relaxation timescale, updated:
-    tRel = tRelax(Mcl, Mcl/mAvg,rh,mAvg)
+    tRel = tRelax(Mcl, epsilon_SF * Mcl/mAvg,rh,mAvg)
 
     # velocity dispersion of stars (updated):
     vStar = veloDisp(mAvg,1,mAvg,Mcl,rh)
@@ -665,7 +682,7 @@ if __name__=="__main__":
         startTimeLocal = time.time()
 
         # half-mass relaxation timescale, updated:
-        tRel = tRelax(Mcl, Mcl/mAvg,rh,mAvg)
+        tRel = tRelax(Mcl, epsilon_SF * Mcl/mAvg,rh,mAvg)
 
         # velocity dispersion of stars (updated):
         vStar = veloDisp(mAvg,1,mAvg,Mcl,rh)
