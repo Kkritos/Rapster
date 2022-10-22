@@ -229,7 +229,7 @@ if __name__=="__main__":
     
     if t_cc < 3*Myr: # stellar mergers dominate the initial evolution of the cluster
      
-        mZAMS = np.linspace(mZAMS_min, mZAMS_max, 10**6)
+        mZAMS = np.linspace(Mstar_min, Mstar_max, 10**6)
         pdf_mZAMS = IMF_kroupa(mZAMS)
         cdf_mZAMS = integrate.cumulative_trapezoid(pdf_mZAMS, mZAMS, initial=0)
         inv_cdf_mZAMS = interpolate.interp1d(cdf_mZAMS/cdf_mZAMS[-1], mZAMS)
