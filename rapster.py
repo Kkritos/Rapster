@@ -224,6 +224,9 @@ if __name__=="__main__":
     # early phase of stellar mergers:
     # ---------------------------------------------------------------------------------------------------------------------------
     
+    # runaway star mass:
+    m_r = 0.0
+    
     if t_cc < tLives.min(): # stellar mergers dominate the initial evolution of the cluster
      
         mZAMS = np.linspace(mZAMS_min, mZAMS_max, 10**6)
@@ -524,6 +527,32 @@ if __name__=="__main__":
     # dynamical array of generations (initially all black holes are first generation by definition):
     gBH = np.ones(N_BH_iso_ret)
 
+    # Collapse of the runaway star into BH:
+    if m_r > 0.0:
+        
+        # mass of runaway remnant:
+        m_r_BH = Mrem_Fryer2012(m_r, Z) * Msun
+        
+        # check if remnant is a BH:
+        if m_r_BH > Mbh_min:
+        
+            # append runaway remnant into BH masses array:
+            mBH = np.append(mBH, m_r_BH)
+
+            if spinModel==1: # natal spin distribution chosen monochromatic:
+                s_r_BH = chiNatal
+            else: # natal spin distribution chosen uniform:
+                s_r_BH = np.random.uniform(0,chiNatal,size=1)
+
+            # append runaway spin into BH spins array:
+            sBH = np.append(sBH, s_r_BH)
+
+            # append generation array:
+            gBH = np.append(gBH, 1)
+
+            # increase number of BHs in cluster by 1, corresponding to the runaway star collapsing into a BH:
+            N_BH += 1
+    
     # define `empty` allocatable arrays of bound systems in cluster:
 
     # binaries = [channel,a,e,m1,m2,chi1,chi2,g1,g2,tForm,zForm,Nhar,Nsub]
