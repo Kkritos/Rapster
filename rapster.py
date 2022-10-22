@@ -235,7 +235,7 @@ if __name__=="__main__":
         inv_cdf_mZAMS = interpolate.interp1d(cdf_mZAMS/cdf_mZAMS[-1], mZAMS)
 
         # sample all cluster stars:
-        mZAMS = inv_cdf_mZAMS(np.random.rand(Nstar)) * Msun
+        mZAMS = inv_cdf_mZAMS(np.random.rand(int(Nstar))) * Msun
 
         # Compute stellar ages:
         tLives = np.zeros(mZAMS.size)
