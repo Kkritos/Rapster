@@ -282,10 +282,9 @@ if __name__=="__main__":
         mZAMS_collapsed = []
         
         NZAMS_massive = mZAMS[mZAMS/Msun>MstarMassive_min].size
-        NZAMS_collapsed = 0
         f_collapsed = 0.50
         
-        while tMS(m_r, Z)-t_r > t_coll and Nstar > 0 and NZAMS_collapsed < f_collapsed*NZAMS_massive: # evolve the runaway star
+        while tMS(m_r, Z)-t_r > t_coll and Nstar > 0 and len(mZAMS_collapsed) < f_collapsed*NZAMS_massive: # evolve the runaway star
         
             # Remove stars that evolve beyond MS to their death (leaving behind a remnant NS or BH)
             jEvolved = np.where(tLives < t)
@@ -293,7 +292,6 @@ if __name__=="__main__":
             mZAMS_collapsed = mZAMS_collapsed + list(mZAMS_evolved)
             mZAMS = np.delete(mZAMS, jEvolved)
             tLives = np.delete(tLives, jEvolved)
-            NZAMS_collapsed += jEvolved.size
             
             # collision timescale:
             t_coll = 1 / (2.2e-4 * Nstar / tRelax(Mcl, Mcl_stars/mAvg, rh, mAvg))
