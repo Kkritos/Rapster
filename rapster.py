@@ -107,6 +107,9 @@ parser.add_argument('-EF'   ,'--EvolutionFile'       ,type=str  ,metavar=' ',def
 parser.add_argument('-BF'   ,'--BlackHoleFile'      ,type=str  ,metavar=' ',default='blackholes'    ,\
     help='Name of output .npz file containing all the masses of black holes at the initial and final state')
 
+parser.add_argument('-CF'   ,'--CollisionsFile'     ,type=str  ,metavar=' ',default='collisions' ,\
+    help='Name of output .npz file containing information regarding initial phase of stellar collisions giving rise to runaway')
+
 #parser.add_argument('-rhog', '--gasDensity', type=float, metavar=' ', default=0, help='Ambient gas density of hydrogen in cm^-3')
 #parser.add_argument('-cs', '--soundSpeed', type=float, metavar=' ', default=100, help='Sound speed of ISM in km/s')
 parser.add_argument('-ep', '--radiativeEfficiency', type=float, metavar=' ', default=0.1, help='Radiative efficiency in black hole accretion')
@@ -137,6 +140,8 @@ SEED          = args.Seed
 mergersFile   = args.MergersFile
 evolutionFile = args.EvolutionFile
 blackholeFile = args.BlackHoleFile
+
+collisionFile = args.CollisionsFile
 
 #rho_gas     = args.gasDensity * mH / cm**3
 #c_sound     = args.soundSpeed * 1e3
@@ -180,8 +185,8 @@ if __name__=="__main__":
     Mstar_min = 0.08
 
     # average stellar mass in solar masses:
-    mAvg = integrate.quad(lambda x: x*IMF_kroupa(np.array([x])),0.08,120)[0]\
-          /integrate.quad(lambda x:   IMF_kroupa(np.array([x])),0.08,120)[0] * Msun
+    mAvg = integrate.quad(lambda x: x*IMF_kroupa(np.array([x])),Mstar_min,Mstar_max)[0]\
+          /integrate.quad(lambda x:   IMF_kroupa(np.array([x])),Mstar_min,Mstar_max)[0] * Msun
 
     # total initial number of stars in cluster:
     Nstar = Mcl_stars/mAvg
@@ -201,40 +206,155 @@ if __name__=="__main__":
     # initial half-mass relaxation timescale:
     tRel0 = tRelax(Mcl0, epsilon_SF * Mcl0 / mAvg,rh0,mAvg)
 
+    # lightest massive star (solar masses) DO NOT CHANGE THIS VALUE should be set at `20`:
+    MstarMassive_min = 20
+    
     # Core collapse:
     # ---------------------------------------------------------------------------------------------------------------------------
     
     # core-collapse time:
     t_cc = 0.20 * tRel0
     
-    # lifetime of massive stars (rough estimate):
-    t_star = 3 * Myr
-    
     # initialize simulation time:
-    t = np.min([t_cc, t_star])
+    t = t_cc
     
     # initialize redshift:
     z = redd(t_lbb(zClForm)-t)
-
-    # Massive stars:
-    # ---------------------------------------------------------------------------------------------------------------------------
     
-    # lightest massive star (solar masses) DO NOT CHANGE THIS VALUE should be set at `20`:
-    MstarMassive_min = 20
-
-    # initial number of stars with mass above MstarMassive_min = 20 solar masses:
-    Nstar_massive = int(Mcl_stars/Msun*integrate.quad(lambda x:   IMF_kroupa(np.array([x])), MstarMassive_min, Mstar_max)[0]\
-                                      /integrate.quad(lambda x: x*IMF_kroupa(np.array([x])), Mstar_min       , Mstar_max)[0])
-
-    # star masses drawn from Kroupa (2002) IMF with inverse sampling (we allow for possibly different high-mass slope):
-    u_star = np.random.rand(Nstar_massive)
-    starMasses = (u_star*(Mstar_max**(alphaIMF+1)-MstarMassive_min**(alphaIMF+1))\
-                  +MstarMassive_min**(alphaIMF+1))**(1/(alphaIMF+1))
-
     # early phase of stellar mergers:
     # ---------------------------------------------------------------------------------------------------------------------------
     
-    ...
+    if t_cc < tLives.min(): # stellar mergers dominate the initial evolution of the cluster
+     
+        mZAMS = np.linspace(mZAMS_min, mZAMS_max, 10**6)
+        pdf_mZAMS = IMF_kroupa(mZAMS)
+        cdf_mZAMS = integrate.cumulative_trapezoid(pdf_mZAMS, mZAMS, initial=0)
+        inv_cdf_mZAMS = interpolate.interp1d(cdf_mZAMS/cdf_mZAMS[-1], mZAMS)
+
+        # sample all cluster stars:
+        mZAMS = inv_cdf_mZAMS(np.random.rand(Nstar)) * Msun
+
+        # Compute stellar ages:
+        tLives = np.zeros(mZAMS.size)
+        for k in range(tLives.size):
+            tLives[k] = tMS(mZAMS[k], Z)
+     
+        # seed runaway star:
+        m_seed = mZAMS.max()
+       
+        # index position of seed runaway:
+        jHeaviest = int(np.where(mZAMS==m_seed)[0])
+        
+        # remove mass of seed from star list:
+        mZAMS = np.delete(mZAMS, jHeaviest)
+        
+        # remove age of seed from star list:
+        tLives = np.delete(tLives, jHeaviest)
+        
+        # runaway mass:
+        m_r = m_seed
+        
+        # rejuvenation efficiency:
+        frejuv = 1.0
+        
+        # collision timescale:
+        t_coll = 1/(2.2e-4 * Nstar / tRel0)
+        
+        # age of runaway star when it first collides (at moment of core collapse):
+        t_r = t_cc
+        
+        i = 0
+        
+        redshift__ = []
+        time__ = []
+        m_runaway__ = []
+        m_increase__ = []
+        t_collision__ = []
+        t_age__ = []
+        
+        mZAMS_collapsed = []
+        
+        while tMS(m_r, Z)-t_r > t_coll and M_cl > 0: # evolve the runaway star
+        
+            # Remove stars that evolve beyond MS to their death (leaving behind a remnant NS or BH)
+            jEvolved = np.where(tLives < t)
+            mZAMS_evolved = mZAMS[jEvolved]
+            mZAMS_collapsed = mZAMS_collapsed + list(mZAMS_evolved)
+            mZAMS = np.delete(mZAMS, jEvolved)
+            tLives = np.delete(tLives, jEvolved)
+            
+            # collision timescale:
+            t_coll = 1 / (2.2e-4 * Nstar / tRel0)
+            
+            # local simulation timestep:
+            dt = t_coll
+            
+            # smallest star segregated by time t:
+            m_f = 1.9*Msun * Myr/t * (rh0/pc)**(3/2) * (Mcl/Msun)**(1/2) / np.log(0.1*Nstar)
+
+            # segregated stars by time t:
+            mZAMS_candidates = mZAMS[mZAMS > m_f]
+
+            # sampling probability:
+            power = 1.5
+            p = mZAMS_candidates**power / np.sum(mZAMS_candidates**power)
+            
+            # mass increase in the collision:
+            dm = np.random.choice(mZAMS_candidates, size=1, p=p)[0]
+
+            jDelete = int(np.where(mZAMS==dm)[0][0])
+            mZAMS = np.delete(mZAMS, jDelete)
+            tLives = np.delete(tLives, jDelete)
+
+            # mass ratio:
+            q = np.min([m_r, dm])/np.max([m_r, dm])
+
+            redshift__.append(z)
+            time__.append(t/Myr)
+            m_runaway__.append(m_r/Msun)
+            m_increase__.append(dm/Msun)
+            t_collision__.append(t_coll/Myr)
+            t_age__.append(t_r/Myr)
+
+            # update number of stars:
+            Nstar = Nstar - 1
+
+            # collision remnant age:
+            t_r = frejuv * tMS(m_r+dm, Z)/(m_r+dm)*(m_r*t_r/tMS(m_r, Z) + dm*t/tMS(dm, Z))
+
+            # update runaway mass (some fraction is lost):
+            m_r = (m_r + dm)*(1 - 0.3*q/(1+q)**2)
+
+            # time update:
+            t = t + dt
+
+            # redshift update:
+            z = redd(t_lbb(zClForm)-t)
+            
+            i = i + 1
+            
+        redshift__ = np.array(redshift__)
+        time__ = np.array(time__)
+        m_runaway__ = np.array(m_runaway__)
+        m_increase__ = np.array(m_increase__)
+        t_collision__ = np.array(t_collision__)
+        t_age__ = np.array(t_age__)
+        
+        np.savez(collisionFile, z=redshift__, t=time__, mr=m_runaway__, dm=m_increase__, tc=t_collision__, ta=t_age__)
+    
+        # remaining massive stars that collapse to compact objects:
+        starMasses = np.array(mZAMS_collapsed + list(mZAMS[mZAMS/Msun>MstarMassive_min]))
+    
+    else: # no runaway stellar collisions immediately after core collapse
+     
+        # initial number of stars with mass above MstarMassive_min = 20 solar masses:
+        Nstar_massive = int(Mcl_stars/Msun*integrate.quad(lambda x:   IMF_kroupa(np.array([x])), MstarMassive_min, Mstar_max)[0]\
+                                          /integrate.quad(lambda x: x*IMF_kroupa(np.array([x])), Mstar_min       , Mstar_max)[0])
+
+        # star masses drawn from Kroupa (2002) IMF with inverse sampling (we allow for possibly different high-mass slope):
+        u_star = np.random.rand(Nstar_massive)
+        starMasses = (u_star*(Mstar_max**(alphaIMF+1)-MstarMassive_min**(alphaIMF+1))\
+                      +MstarMassive_min**(alphaIMF+1))**(1/(alphaIMF+1))
     
     # Black holes in cluster
     # ---------------------------------------------------------------------------------------------------------------------------
@@ -500,13 +620,13 @@ if __name__=="__main__":
     N_triples_cumul = 0                     # cumul. num. of triples
 
     # half-mass relaxation timescale, updated:
-    tRel = tRelax(Mcl, epsilon_SF * Mcl/mAvg,rh,mAvg)
+    tRel = tRelax(Mcl, Mcl_stars/mAvg,rh,mAvg)
 
     # velocity dispersion of stars (updated):
     vStar = veloDisp(mAvg,1,mAvg,Mcl,rh)
 
     # update central density of stars (self-similarly):
-    rhoC = (Mcl/Mcl0) * (rh0/rh)**3 * rhoC0
+    rhoC = (Mcl_stars / epsilon_SF / Mcl0) * (rh0/rh)**3 * rhoC0
 
     # central number density of stars (updated):
     nStar = rhoC/mAvg
@@ -514,27 +634,6 @@ if __name__=="__main__":
     # current number of single black holes:
     N_BH_sin = mBH.size
 
-    ''' BUG
-    # mean BH mass which participates in BH-star pairs:
-    meanBHpairMass = np.mean(np.transpose(pairs)[:][1])
-    
-    # mean BBH mass:
-    meanBBHmass = np.mean(np.transpose(binaries)[:][3]+np.transpose(binaries)[:][4])
-
-    if not isnan(np.mean(mBH)) and mBH.size>0:
-        
-        # mean single BH mass:
-        meanSingleBHmass = np.mean(mBH)
-        
-    else:
-        
-        # there are no single BHs in the core:
-        meanSingleBHmass = 0
-    
-    # mean BH mass:
-    meanBHmass = (meanSingleBHmass+meanBHpairMass+meanBBHmass)/4
-    '''
-    
     # mean BH mass:
     meanBHmass = (np.sum(mBH) + np.sum(np.transpose(binaries)[:][3]+np.transpose(binaries)[:][4]) + np.sum(np.transpose(pairs)[:][1])) / N_BH
     
@@ -682,40 +781,22 @@ if __name__=="__main__":
         startTimeLocal = time.time()
 
         # half-mass relaxation timescale, updated:
-        tRel = tRelax(Mcl, epsilon_SF * Mcl/mAvg,rh,mAvg)
+        tRel = tRelax(Mcl, Mcl_stars/mAvg,rh,mAvg)
 
         # velocity dispersion of stars (updated):
         vStar = veloDisp(mAvg,1,mAvg,Mcl,rh)
 
         # update central density of stars (self-similarly):
-        rhoC = (Mcl/Mcl0) * (rh0/rh)**3 * rhoC0
+        rhoC = (Mcl_stars / epsilon_SF / Mcl0) * (rh0/rh)**3 * rhoC0
 
         # central number density of stars (updated):
         nStar = rhoC/mAvg
+        
+        # current number of stars:
+        Nstar = Mcl_stars / mAvg
 
         # current number of single black holes:
         N_BH_sin = mBH.size
-
-        ''' BUG
-        # mean BH mass which participates in BH-star pairs:
-        meanBHpairMass = np.mean(np.transpose(pairs)[:][1])
-        
-        # mean BBH mass:
-        meanBBHmass = np.mean(np.transpose(binaries)[:][3]+np.transpose(binaries)[:][4])
-
-        if not isnan(np.mean(mBH)) and mBH.size>0:
-            
-            # mean single BH mass:
-            meanSingleBHmass = np.mean(mBH)
-        
-        else:
-            
-            # there are no single BHs in the core:
-            meanSingleBHmass = 0
-        
-        # mean BH mass:
-        meanBHmass = (meanSingleBHmass+meanBHpairMass+meanBBHmass)/4
-        '''
         
         # mean BH mass:
         meanBHmass = (np.sum(mBH) + np.sum(np.transpose(binaries)[:][3]+np.transpose(binaries)[:][4]) + np.sum(np.transpose(pairs)[:][1])) / N_BH
@@ -842,7 +923,7 @@ if __name__=="__main__":
         # Calculate time step (should not be below minimum or above some maximum threshold)
         # -----------------------------------------------------------------------------------------------------------------------
 
-        dt1 = np.min([ dtMax , np.max([ dtMin , np.min([tauCap,tauPair,tauEx,tau3bBH,tauBB,tauPP]) ]) ])
+        dt1 = np.min([dtMax , np.max([ dtMin , np.min([tauCap,tauPair,tauEx,tau3bBH,tauBB,tauPP]) ]) ])
 
         # Draw number of incidents for each channel in the given time step
         # -----------------------------------------------------------------------------------------------------------------------
@@ -853,7 +934,7 @@ if __name__=="__main__":
         k3bBH = poisson.rvs(mu=dt1/tau3bBH, size=1)[0] # num. of BH+BH+BH  -> BH-BH + BH 3bb    events in this step
         kBB   = poisson.rvs(mu=dt1/tauBB  , size=1)[0] # num. of BH-BH + BH-BH            interactions in this step
         kPP   = poisson.rvs(mu=dt1/tauPP  , size=1)[0] # num. of BH-star + BH-star        interactions in this step
-
+        
         # simulation time update:
         t = t + dt1
         
@@ -898,24 +979,36 @@ if __name__=="__main__":
         # internal timescale:
         tIso = 17*Gyr*(Mcl/(2e5*Msun))
         
-        # evolve cluster's mass:
-        Mcl = Mcl - Mcl*dt1/np.min([tTid,tIso])
+        # residual gas mass removed by galactic tides:
+        dM_gas = M_gas * dt1 / tTid
         
-        if(Mcl < 0):
+        # stellar mass removed by galactic tides and internal processes:
+        dMcl_stars = Mcl_stars * dt1 / np.min([tTid,tIso]))
+        
+        # evolve gas mass:
+        M_gas = M_gas - dM_gas
+        
+        # evolve stellar mass:
+        Mcl_stars = Mcl_stars - dMcl_stars
+        
+        # evolve cluster mass:
+        Mcl = Mcl - dMcl_stars - dM_gas
+        
+        if Mcl < 0 or Mcl_stars < 0:
             
             print('Cluster mass negative during time step.')
             
             break
 
         # moment black hole burning initiates; assume `immediately`:
-        tBurn = 0
+        tBurn = t_cc
         
         # burning efficinency parameter (Henon, 1965):
         zetaBurn = 0.0926
         
         # evolve cluster's half-mass radius (due to BH heating):
         #rh = rh0*(1+3/2*zetaBurn*(t-tBurn)/tRel0)**(2/3)
-        rh = rh * (1 + zetaBurn * dt1 / tRelax(Mcl, Mcl/mAvg, rh, mAvg))
+        rh = rh * (1 + zetaBurn * dt1 / tRelax(Mcl, Mcl_stars/mAvg, rh, mAvg))
 
         # Ubdate number density of star-star binaries (creation by triple-star interaction)
         # -----------------------------------------------------------------------------------------------------------------------
