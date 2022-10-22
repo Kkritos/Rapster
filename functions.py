@@ -713,4 +713,125 @@ def f_fb(Mzams):
     
     return ffb
 
+# From Hurley et al. (2000):
+   
+alpha_a1 = 1.593890e3
+beta_a1  = 2.053038e3
+gamma_a1 = 1.231226e3
+eta_a1   = 2.327785e2
+mu_a1    = 0.0e0
+
+alpha_a2 = 2.706708e3
+beta_a2  = 1.483131e3
+gamma_a2 = 5.772723e2
+eta_a2   = 7.411230e1
+mu_a2    = 0.0e0
+
+alpha_a3 = 1.466143e2
+beta_a3  = -1.048442e2
+gamma_a3 = -6.795374e1
+eta_a3   = -1.391127e1
+mu_a3    = 0.0e0
+
+alpha_a4 = 4.141960e-2
+beta_a4  = 4.564888e-2
+gamma_a4 = 2.958542e-2
+eta_a4   = 5.571483e-3
+mu_a4    = 0.0e0
+
+alpha_a5 = 3.426349e-1
+beta_a5  = 0.0e0
+gamma_a5 = 0.0e0
+eta_a5   = 0.0e0
+mu_a5    = 0.0e0
+
+alpha_a6 = 1.949814e1
+beta_a6  = 1.758178e0
+gamma_a6 = -6.008212e0
+eta_a6   = -4.470533e0
+mu_a6    = 0.0e0
+
+alpha_a7 = 4.903830e0
+beta_a7  = 0.0e0
+gamma_a7 = 0.0e0
+eta_a7   = 0.0e0
+mu_a7    = 0.0e0
+
+alpha_a8 = 5.212154e-2
+beta_a8  = 3.166411e-2
+gamma_a8 = -2.750074e-3
+eta_a8   = -2.271549e-3
+mu_a8    = 0.0e0
+
+alpha_a9 = 1.312179e0
+beta_a9  = -3.294936e-1
+gamma_a9 = 9.231860e-2
+eta_a9   = 2.610989e-2
+mu_a9    = 0.0e0
+
+alpha_a10 = 8.073972e-1
+beta_a10  = 0.0e0
+gamma_a10 = 0.0e0
+eta_a10   = 0.0e0
+mu_a10    = 0.0e0
+
+alpha_b36_ = 1.445216e-1
+beta_b36_  = -6.180219e-2
+gamma_b36_ = 3.093878e-2
+eta_b36_   = 1.567090e-2
+mu_b36_    = 0.0e0
+
+alpha_b37_ = 1.304129e0
+beta_b37_  = 1.395919e-1
+gamma_b37_ = 4.142455e-3
+eta_b37_   = -9.732503e-3
+mu_b37_    = 0.0e0
+
+alpha_b38_ = 5.114149e-1
+beta_b38_  = -1.160850e-2
+gamma_b38_ = 0.0e0
+eta_b38_   = 0.0e0
+mu_b38_    = 0.0e0   
+   
+def tBGB(M, Z):
+    '''
+    @in M: ZAMS mass in kg
+    @in Z: metallicity
+    '''
+  
+    M = M/Msun
+    
+    zeta = np.log10(Z/Zsun)
+    a1 = alpha_a1 + beta_a1*zeta + gamma_a1*zeta**2 + eta_a1*zeta**3 + mu_a1*zeta**4
+    a2 = alpha_a2 + beta_a2*zeta + gamma_a2*zeta**2 + eta_a2*zeta**3 + mu_a2*zeta**4
+    a3 = alpha_a3 + beta_a3*zeta + gamma_a3*zeta**2 + eta_a3*zeta**3 + mu_a3*zeta**4
+    a4 = alpha_a4 + beta_a4*zeta + gamma_a4*zeta**2 + eta_a4*zeta**3 + mu_a4*zeta**4
+    a5 = alpha_a5 + beta_a5*zeta + gamma_a5*zeta**2 + eta_a5*zeta**3 + mu_a5*zeta**4
+    
+    return (a1 + a2*M**4 + a3*M**(5.5) + M**7) / (a4*M**2 + a5*M**7) * Myr   
+   
+def tMS(M, Z):
+    '''
+    Main-sequence lifetime in sec.
+    
+    @in M: ZAMS mass in kg
+    @in Z: metallicity
+    '''
+    
+    M_ = M
+    M = M/Msun
+    
+    zeta = np.log10(Z/Zsun)
+    a6  = alpha_a6  + beta_a6 *zeta + gamma_a6 *zeta**2 + eta_a6 *zeta**3 + mu_a6 *zeta**4
+    a7  = alpha_a7  + beta_a7 *zeta + gamma_a7 *zeta**2 + eta_a7 *zeta**3 + mu_a7 *zeta**4
+    a8  = alpha_a8  + beta_a8 *zeta + gamma_a8 *zeta**2 + eta_a8 *zeta**3 + mu_a8 *zeta**4
+    a9  = alpha_a9  + beta_a9 *zeta + gamma_a9 *zeta**2 + eta_a9 *zeta**3 + mu_a9 *zeta**4
+    a10 = alpha_a10 + beta_a10*zeta + gamma_a10*zeta**2 + eta_a10*zeta**3 + mu_a10*zeta**4
+    
+    mu = np.max([0.5, 1.0 - 0.01*np.max([a6/M**a7, a8+a9/M**a10])])
+    x = np.max([0.95, np.min([0.95 - 0.03*(zeta + 0.30103), 0.99])])
+    tHook = mu*tBGB(M_, Z)/Myr
+    
+    return np.max([tHook, x*tBGB(M_, Z)/Myr]) * Myr   
+   
 # end of file
