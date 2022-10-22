@@ -281,7 +281,11 @@ if __name__=="__main__":
         
         mZAMS_collapsed = []
         
-        while tMS(m_r, Z)-t_r > t_coll and Nstar > 0 and t<10*Myr: # evolve the runaway star
+        NZAMS_massive = mZAMS[mZAMS/Msun>MstarMassive_min].size
+        NZAMS_collapsed = 0
+        f_collapsed = 0.50
+        
+        while tMS(m_r, Z)-t_r > t_coll and Nstar > 0 and NZAMS_collapsed < f_collapsed*NZAMS_massive: # evolve the runaway star
         
             # Remove stars that evolve beyond MS to their death (leaving behind a remnant NS or BH)
             jEvolved = np.where(tLives < t)
@@ -289,6 +293,7 @@ if __name__=="__main__":
             mZAMS_collapsed = mZAMS_collapsed + list(mZAMS_evolved)
             mZAMS = np.delete(mZAMS, jEvolved)
             tLives = np.delete(tLives, jEvolved)
+            NZAMS_collapsed += jevolved.size
             
             # collision timescale:
             t_coll = 1 / (2.2e-4 * Nstar / tRelax(Mcl, Mcl_stars/mAvg, rh, mAvg))
@@ -371,7 +376,7 @@ if __name__=="__main__":
 
             M_gas = M_gas1
             
-            print(i, t/Myr, m_r/Msun, t_r/Myr)
+            print('i=',i,' t/Myr=',t/Myr,' mr/Msun=',m_r/Msun,' tr/Myr=',t_r/Myr)
             
             i = i + 1
             
@@ -2732,7 +2737,7 @@ if __name__=="__main__":
         dMdt_Edd = 4 * np.pi * G_Newt * mBH * m_proton / epsilon_acc / sThomson / c_light
         
         # Bondi accretion rate:
-        dMdt_Bondi = 4 * np.pi * rho_gas * (G_Newt * mBH)**2 / c_sound**3
+        dMdt_Bondi = 4 * np.pi * rho_gas * (G_Newt * mBH)**2 / (c_sound**2 + veloDisp(mBH,xi,mAvg,Mcl,rh))**(3/2)
         
         # Bondi rate should not exceed the Eddington limit:
         def accretion_rate(r_bon_i, r_edd_i):
