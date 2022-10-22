@@ -293,7 +293,7 @@ if __name__=="__main__":
             mZAMS_collapsed = mZAMS_collapsed + list(mZAMS_evolved)
             mZAMS = np.delete(mZAMS, jEvolved)
             tLives = np.delete(tLives, jEvolved)
-            NZAMS_collapsed += jevolved.size
+            NZAMS_collapsed += jEvolved.size
             
             # collision timescale:
             t_coll = 1 / (2.2e-4 * Nstar / tRelax(Mcl, Mcl_stars/mAvg, rh, mAvg))
