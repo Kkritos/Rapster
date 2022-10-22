@@ -834,4 +834,83 @@ def tMS(M, Z):
     
     return np.max([tHook, x*tBGB(M_, Z)/Myr]) * Myr   
    
+def McHe(M, Z):
+    '''
+    Helium core mass in solar masses.
+    
+    @in M: ZAMS mass in kg
+    @in Z: metallicity
+    '''
+  
+    M_ = M
+    M = M/Msun
+    zeta = np.log10(Z/Zsun)
+    
+    b36_ = alpha_b36_ + beta_b36_*zeta + gamma_b36_*zeta**2 + eta_b36_*zeta**3 + mu_b36_*zeta**4
+    b37_ = alpha_b37_ + beta_b37_*zeta + gamma_b37_*zeta**2 + eta_b37_*zeta**3 + mu_b37_*zeta**4
+    b38_ = alpha_b38_ + beta_b38_*zeta + gamma_b38_*zeta**2 + eta_b38_*zeta**3 + mu_b38_*zeta**4
+    
+    b36 = b36_**4
+    b37 = 4.0*b37_
+    b38 = b38_**4
+    
+    McBAGB = (b36*M**b37 + b38)**(1/4)
+    
+    return McBAGB
+
+def Mrem_Fryer2012(M, Z):
+    '''
+    Remnant mass in solar masses based on the Fryer et al. (2012) prescriptions.
+    
+    @in M: ZAMS mass in kg
+    @in Z: metallicity
+    '''
+  
+    Mc_He = McHe(M, Z)
+    
+    M = M/Msun
+    Z = Z/Zsun
+    
+    Mppisn = 34
+    Mpisn = 64
+    Mdc_low = 45
+    Mdc_high = 130
+    
+    if np.log10(Z)>-3:
+        MNS_lower = 9.0 + 0.9*np.log10(Z)
+    else:
+        MNS_lower = 6.3
+    
+    if M<11:
+        
+        if M>MNS_lower:
+            return 1.36
+        else:
+            return 0.0
+        
+    
+    elif M>11 and M<=30:
+        
+        return 1.1 + 0.2*np.exp((M-11.0)/4.) - (2.0+Z)*np.exp(0.4*(M-26.0))
+    
+    elif M>30:
+    
+        Mrem_1 = np.min([33.35 + (4.75+1.25*Z)*(M-34), M - Z**(1/2)*(1.3*M-18.35)])
+        Mrem_2 = 1.8 + 0.04*(90-M)
+        if M>90:
+            Mrem_2 = 1.8 + np.log10(M-89)
+            
+        Mrem = np.max([Mrem_1, Mrem_2])
+        
+        if Mrem > Mdc_low:
+            return np.piecewise(Mc_He, [(Mc_He<Mppisn),(Mc_He>=Mppisn)*(Mc_He<Mpisn), (Mc_He>=Mpisn)*(Mc_He<Mdc_high),
+                                  (Mc_He>=Mdc_high)],
+                           [Mrem, Mdc_low, 0, Mrem])
+        else:
+            return Mrem*np.heaviside(Mrem, 0)
+    
+    else:
+     
+        return 0
+   
 # end of file
