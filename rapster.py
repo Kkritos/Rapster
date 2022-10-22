@@ -334,6 +334,8 @@ if __name__=="__main__":
             # redshift update:
             z = redd(t_lbb(zClForm)-t)
             
+            print(i, t/Myr, m_r/Msun)
+            
             i = i + 1
             
         redshift__ = np.array(redshift__)
