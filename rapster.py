@@ -386,7 +386,7 @@ if __name__=="__main__":
         np.savez(collisionFile, z=redshift__, t=time__, mr=m_runaway__, dm=m_increase__, tc=t_collision__, ta=t_age__)
     
         # remaining massive stars that collapse to compact objects:
-        starMasses = np.array(mZAMS_collapsed + list(mZAMS[mZAMS/Msun>MstarMassive_min]))
+        starMasses = np.array(mZAMS_collapsed + list(mZAMS[mZAMS/Msun>MstarMassive_min])) / Msun
     
     else: # no runaway stellar collisions immediately after core collapse
      
