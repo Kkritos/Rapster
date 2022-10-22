@@ -334,7 +334,7 @@ if __name__=="__main__":
             # redshift update:
             z = redd(t_lbb(zClForm)-t)
             
-            print(i, t/Myr, m_r/Msun)
+            print(i, t/Myr, m_r/Msun, t_r/Myr)
             
             i = i + 1
             
