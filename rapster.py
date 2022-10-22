@@ -1012,7 +1012,7 @@ if __name__=="__main__":
         dM_gas = M_gas * dt1 / tTid
         
         # stellar mass removed by galactic tides and internal processes:
-        dMcl_stars = Mcl_stars * dt1 / np.min([tTid,tIso]))
+        dMcl_stars = Mcl_stars * dt1 / np.min([tTid,tIso])
         
         # evolve gas mass:
         M_gas = M_gas - dM_gas
