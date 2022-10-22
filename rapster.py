@@ -227,7 +227,7 @@ if __name__=="__main__":
     # runaway star mass:
     m_r = 0.0
     
-    if t_cc < tLives.min(): # stellar mergers dominate the initial evolution of the cluster
+    if t_cc < 3*Myr: # stellar mergers dominate the initial evolution of the cluster
      
         mZAMS = np.linspace(mZAMS_min, mZAMS_max, 10**6)
         pdf_mZAMS = IMF_kroupa(mZAMS)
