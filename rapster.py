@@ -227,6 +227,9 @@ if __name__=="__main__":
     # runaway star mass:
     m_r = 0.0
     
+    # initialize half-mass radius:
+    rh = rh0
+    
     if t_cc < 3*Myr: # stellar mergers dominate the initial evolution of the cluster
      
         mZAMS = np.linspace(Mstar_min, Mstar_max, 10**6)
@@ -274,6 +277,7 @@ if __name__=="__main__":
         m_increase__ = []
         t_collision__ = []
         t_age__ = []
+        radius__ = []
         
         mZAMS_collapsed = []
         
@@ -287,13 +291,13 @@ if __name__=="__main__":
             tLives = np.delete(tLives, jEvolved)
             
             # collision timescale:
-            t_coll = 1 / (2.2e-4 * Nstar / tRel0)
+            t_coll = 1 / (2.2e-4 * Nstar / tRelax(Mcl, Mcl_stars/mAvg, rh, mAvg))
             
             # local simulation timestep:
             dt = t_coll
             
             # smallest star segregated by time t:
-            m_f = 1.9*Msun * Myr/t * (rh0/pc)**(3/2) * (Mcl/Msun)**(1/2) / np.log(0.1*Nstar)
+            m_f = 1.9*Msun * Myr/t * (rh/pc)**(3/2) * (Mcl/Msun)**(1/2) / np.log(0.1*Nstar)
 
             # segregated stars by time t:
             mZAMS_candidates = mZAMS[mZAMS > m_f]
@@ -318,6 +322,7 @@ if __name__=="__main__":
             m_increase__.append(dm/Msun)
             t_collision__.append(t_coll/Myr)
             t_age__.append(t_r/Myr)
+            radius__.append(rh/pc)
 
             # update number of stars:
             Nstar = Nstar - 1
@@ -334,6 +339,38 @@ if __name__=="__main__":
             # redshift update:
             z = redd(t_lbb(zClForm)-t)
             
+            # burning efficinency parameter (Henon, 1965):
+            zetaBurn = 0.0926
+            
+            # evolve cluster's half-mass radius (due to core heating):
+            rh = rh * (1 + zetaBurn * dt / tRelax(Mcl, Mcl_stars/mAvg, rh, mAvg))
+            
+            # gas expulsion timescale:
+            if tM<0:
+                t_expulsion = 7.1e-3 * Myr * (1 - epsilon_SF) * Mcl / epsilon_SF / 1e5 / Msun * pc / rh
+            else:
+                t_expulsion = tM
+
+            # update gas reservoir in cluster:
+            M_gas1 = M_gas0 * np.exp(-t / t_expulsion) # expontial expulsion
+
+            # amoung of gas ejected due to stellar feedback (UV, winds, SNe):
+            dM_gas_removed = M_gas - M_gas1
+
+            dM_gas = dM_gas_removed
+
+            # subtract matter accreted:
+            M_gas = M_gas - dM_gas
+
+            # check if M_gas is negative value:
+            if M_gas<0:
+                M_gas = 0.0
+
+            # update cluster mass:
+            Mcl = Mcl - dM_gas
+
+            M_gas = M_gas1
+            
             print(i, t/Myr, m_r/Msun, t_r/Myr)
             
             i = i + 1
@@ -344,6 +381,7 @@ if __name__=="__main__":
         m_increase__ = np.array(m_increase__)
         t_collision__ = np.array(t_collision__)
         t_age__ = np.array(t_age__)
+        radius__ = np.array(radius__)
         
         np.savez(collisionFile, z=redshift__, t=time__, mr=m_runaway__, dm=m_increase__, tc=t_collision__, ta=t_age__)
     
