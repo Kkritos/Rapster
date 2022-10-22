@@ -277,7 +277,7 @@ if __name__=="__main__":
         
         mZAMS_collapsed = []
         
-        while tMS(m_r, Z)-t_r > t_coll and M_cl > 0: # evolve the runaway star
+        while tMS(m_r, Z)-t_r > t_coll and Nstar > 0: # evolve the runaway star
         
             # Remove stars that evolve beyond MS to their death (leaving behind a remnant NS or BH)
             jEvolved = np.where(tLives < t)
