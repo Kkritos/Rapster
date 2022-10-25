@@ -2722,6 +2722,9 @@ if __name__=="__main__":
             'sec (',format((time.time()-startTimeGlobal)/60,'.2f'),'min )')
         print('\n')
         
+        if mBH.size==0:
+            break
+        
         # Bondi accretion onto BHs (limited by the Eddington limit) and intracluster gas evolution:
         # -----------------------------------------------------------------------------------------------------------------------
         
