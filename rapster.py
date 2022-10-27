@@ -1310,6 +1310,11 @@ if __name__=="__main__":
         # make sure there are available BHs as they evolve in the current step:
         k3bBH = np.min([k3bBH,int(N_BH_sin/3)])
         
+        # make sure there is at least a single 3bb in the cluster at all times;
+        # in the absence of hard binaries, the central density will always rise by core collapse until a hard 3bb forms:
+        if N_BBH==0 & k3bBH==0:
+            k3bBH=1
+        
         if k3bBH > 0:
 
             for i in range(0,k3bBH):
