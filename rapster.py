@@ -1074,6 +1074,11 @@ if __name__=="__main__":
         # make sure there are available BHs as they evolve in the current step:
         k3bBH = np.min([k3bBH,int(N_BH_sin/3)])
         
+        # make sure there is at least a single 3bb in the cluster at all times;
+        # in the absence of hard binaries, the central density will always rise by core collapse until a hard 3bb forms:
+        if N_BBH==0 & k3bBH==0:
+            k3bBH=1
+        
         if k3bBH > 0:
 
             for i in range(0,k3bBH):
@@ -2489,15 +2494,18 @@ if __name__=="__main__":
         # update number of iterations performed:
         Niter+=1
         
-    # append evolution params [t,z,Mcl,rh,Rgal,N_BH,N_BH_sin,N_BHstar,N_BBH,N_Triples,N_me,
-    #                          N_meRe,N_meEj,N_meOut,N_ZLK,N_cap,N_ej,vEsc,nStarStar,meanVseg,xi,vStar,vBH,tCap,tEx1,tEx2,t3bb,tBB,tPP,
-    #                          N_ex1,N_ex2,N_3bb,N_bb,N_pp,mBHmean]:
-    evolut = np.append(evolut,[[t/Myr,z,Mcl/Msun,rh/pc,Rgal/kpc,\
-        N_BH,N_BH_sin,N_BHstar,N_BBH,N_Triples,N_me,N_meRe,N_meEj,N_meOut,N_ZLK,N_cap,N_ej,vEscape(Mcl,rh)/1e3,\
-            nStarStar*pc**3,meanVseg/pc**3,xi,np.sqrt(0.4*G_Newt*Mcl/rh)/1e3,veloDisp(meanBHmass,xi,mAvg,Mcl,rh)/1e3,\
-                tauCap/Myr,tauPair/Myr,tauEx/Myr,tau3bBH/Myr,tauBB/Myr,tauPP/Myr,N_ex1,N_ex2,N_3bb,N_bb,N_pp,\
-                    meanBHmass/Msun]],axis=0)
-     
+    try:
+        # append evolution params [t,z,Mcl,rh,Rgal,N_BH,N_BH_sin,N_BHstar,N_BBH,N_Triples,N_me,
+        #                          N_meRe,N_meEj,N_meOut,N_ZLK,N_cap,N_ej,vEsc,nStarStar,meanVseg,xi,vStar,vBH,tCap,tEx1,tEx2,t3bb,tBB,tPP,
+        #                          N_ex1,N_ex2,N_3bb,N_bb,N_pp,mBHmean]:
+        evolut = np.append(evolut,[[t/Myr,z,Mcl/Msun,rh/pc,Rgal/kpc,\
+            N_BH,N_BH_sin,N_BHstar,N_BBH,N_Triples,N_me,N_meRe,N_meEj,N_meOut,N_ZLK,N_cap,N_ej,vEscape(Mcl,rh)/1e3,\
+                nStarStar*pc**3,meanVseg/pc**3,xi,np.sqrt(0.4*G_Newt*Mcl/rh)/1e3,veloDisp(meanBHmass,xi,mAvg,Mcl,rh)/1e3,\
+                    tauCap/Myr,tauPair/Myr,tauEx/Myr,tau3bBH/Myr,tauBB/Myr,tauPP/Myr,N_ex1,N_ex2,N_3bb,N_bb,N_pp,\
+                        meanBHmass/Msun]],axis=0)
+    except:
+        pass
+    
     # Primary->1, Secondary->2
     # ---------------------------------------------------------------------------------------------------------------------------
 
