@@ -1065,6 +1065,9 @@ if __name__=="__main__":
         # evolve stellar mass:
         Mcl_stars = Mcl_stars - dMcl_stars
         
+        # previous-step cluster mass:
+        Mcl_pre = Mcl
+        
         # evolve cluster mass:
         Mcl = Mcl - dMcl_stars - dM_gas
         
@@ -1082,7 +1085,7 @@ if __name__=="__main__":
         
         # evolve cluster's half-mass radius (due to BH heating):
         #rh = rh0*(1+3/2*zetaBurn*(t-tBurn)/tRel0)**(2/3)
-        rh = rh * (1 + zetaBurn * dt1 / tRelax(Mcl, Mcl_stars/mAvg, rh, mAvg))
+        rh = rh * (1 + zetaBurn * dt1 / tRelax(Mcl, Mcl_stars/mAvg, rh, mAvg) + 2*(1-Mcl_pre/Mcl))
 
         # Ubdate number density of star-star binaries (creation by triple-star interaction)
         # -----------------------------------------------------------------------------------------------------------------------
