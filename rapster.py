@@ -2746,7 +2746,7 @@ if __name__=="__main__":
         dMdt_Edd = 4 * np.pi * G_Newt * mBH * m_proton / epsilon_acc / sThomson / c_light
         
         # Bondi accretion rate:
-        dMdt_Bondi = 4 * np.pi * rho_gas * (G_Newt * mBH)**2 / (c_sound**2 + veloDisp(mBH,xi,mAvg,Mcl,rh))**(3/2)
+        dMdt_Bondi = 4 * np.pi * rho_gas * (G_Newt * mBH)**2 / (c_sound**2 + veloDisp(mBH,xi,mAvg,Mcl,rh)**2)**(3/2)
         
         # Bondi rate should not exceed the Eddington limit:
         def accretion_rate(r_bon_i, r_edd_i):
