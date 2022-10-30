@@ -2563,8 +2563,8 @@ if __name__=="__main__":
             mergers[i][6 ] = chi1
             mergers[i][7 ] = int(g2)
             mergers[i][8 ] = int(g1)
-            mergers[i][24] = int(jBH_2)
-            mergers[i][25] = int(jBH_1)
+            mergers[i][24] = jBH_2
+            mergers[i][25] = jBH_1
 
     # Exporting data
     # ---------------------------------------------------------------------------------------------------------------------------
