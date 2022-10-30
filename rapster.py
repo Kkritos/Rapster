@@ -184,7 +184,9 @@ if __name__=="__main__":
        
     elif ind_RP==2: # remnant masses from Fryer+2012 analytical model:
     
-        remnantMasses = Mrem_Fryer2012(starMasses,Z) * Msun
+        remnantMasses = np.zeros(starMasses.size)
+        for i in range(remnantMasses.size):
+            remnantMasses[i] = Mrem_Fryer2012(starMasses[i],Z) * Msun
 
     # minimum natal black hole mass:
     Mbh_min = 3*Msun
