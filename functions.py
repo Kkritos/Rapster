@@ -457,7 +457,7 @@ Mzams = np.linspace(20,340,Npoints)
 # interpolate:
 MremInterpol = interpolate.interp2d(Mzams,Zvalues,Mrem_delayed,kind='linear',bounds_error=True)
 
-def Mrem(M,Z):
+def Mrem_SEVN(M,Z):
     '''
     Remnant mass as a function of progenitor metallicity and ZAMS mass.
 
@@ -701,4 +701,162 @@ def f_fb(Mzams):
     
     return ffb
 
+alpha_a1 = 1.593890e3
+beta_a1  = 2.053038e3
+gamma_a1 = 1.231226e3
+eta_a1   = 2.327785e2
+mu_a1    = 0.0e0
+
+alpha_a2 = 2.706708e3
+beta_a2  = 1.483131e3
+gamma_a2 = 5.772723e2
+eta_a2   = 7.411230e1
+mu_a2    = 0.0e0
+
+alpha_a3 = 1.466143e2
+beta_a3  = -1.048442e2
+gamma_a3 = -6.795374e1
+eta_a3   = -1.391127e1
+mu_a3    = 0.0e0
+
+alpha_a4 = 4.141960e-2
+beta_a4  = 4.564888e-2
+gamma_a4 = 2.958542e-2
+eta_a4   = 5.571483e-3
+mu_a4    = 0.0e0
+
+alpha_a5 = 3.426349e-1
+beta_a5  = 0.0e0
+gamma_a5 = 0.0e0
+eta_a5   = 0.0e0
+mu_a5    = 0.0e0
+
+alpha_a6 = 1.949814e1
+beta_a6  = 1.758178e0
+gamma_a6 = -6.008212e0
+eta_a6   = -4.470533e0
+mu_a6    = 0.0e0
+
+alpha_a7 = 4.903830e0
+beta_a7  = 0.0e0
+gamma_a7 = 0.0e0
+eta_a7   = 0.0e0
+mu_a7    = 0.0e0
+
+alpha_a8 = 5.212154e-2
+beta_a8  = 3.166411e-2
+gamma_a8 = -2.750074e-3
+eta_a8   = -2.271549e-3
+mu_a8    = 0.0e0
+
+alpha_a9 = 1.312179e0
+beta_a9  = -3.294936e-1
+gamma_a9 = 9.231860e-2
+eta_a9   = 2.610989e-2
+mu_a9    = 0.0e0
+
+alpha_a10 = 8.073972e-1
+beta_a10  = 0.0e0
+gamma_a10 = 0.0e0
+eta_a10   = 0.0e0
+mu_a10    = 0.0e0
+
+alpha_b36_ = 1.445216e-1
+beta_b36_  = -6.180219e-2
+gamma_b36_ = 3.093878e-2
+eta_b36_   = 1.567090e-2
+mu_b36_    = 0.0e0
+
+alpha_b37_ = 1.304129e0
+beta_b37_  = 1.395919e-1
+gamma_b37_ = 4.142455e-3
+eta_b37_   = -9.732503e-3
+mu_b37_    = 0.0e0
+
+alpha_b38_ = 5.114149e-1
+beta_b38_  = -1.160850e-2
+gamma_b38_ = 0.0e0
+eta_b38_   = 0.0e0
+mu_b38_    = 0.0e0
+
+def McHe(M, Z):
+    '''
+    He-core mass in solar masses.
+    
+    @in M: ZAMS mass in solar masses
+    @in Z: absolute metallicity
+    '''
+  
+    M_ = M
+    #M = M/Msun
+    zeta = np.log10(Z/Zsun)
+    
+    b36_ = alpha_b36_ + beta_b36_*zeta + gamma_b36_*zeta**2 + eta_b36_*zeta**3 + mu_b36_*zeta**4
+    b37_ = alpha_b37_ + beta_b37_*zeta + gamma_b37_*zeta**2 + eta_b37_*zeta**3 + mu_b37_*zeta**4
+    b38_ = alpha_b38_ + beta_b38_*zeta + gamma_b38_*zeta**2 + eta_b38_*zeta**3 + mu_b38_*zeta**4
+    
+    b36 = b36_**4
+    b37 = 4.0*b37_
+    b38 = b38_**4
+    
+    McBAGB = (b36*M**b37 + b38)**(1/4)
+    
+    return McBAGB
+   
+def Mrem_Fryer2012(M, Z):
+    '''
+    Remnant mass analytic prescription of Fryer+(2012).
+    
+    @in M: ZAMS mass in solar masses
+    @in Z: absolute metallicity
+    @out: remnant mass in solar masses
+    '''
+    
+    Mc_He = McHe(M, Z)
+    
+    #M = M/Msun
+    Z = Z/Zsun
+    
+    Mppisn = 34
+    Mpisn = 64
+    Mdc_low = 45
+    Mdc_high = 130
+    
+    if np.log10(Z)>-3:
+        MNS_lower = 9.0 + 0.9*np.log10(Z)
+    else:
+        MNS_lower = 6.3
+    
+    if M<11:
+        
+        if M>MNS_lower:
+            return 1.36
+        else:
+            return 0.0
+        
+    
+    elif M>11 and M<=30:
+        
+        return 1.1 + 0.2*np.exp((M-11.0)/4.) - (2.0+Z)*np.exp(0.4*(M-26.0))
+    
+    elif M>30:
+    
+        Mrem_1 = np.min([33.35 + (4.75+1.25*Z)*(M-34), M - Z**(1/2)*(1.3*M-18.35)])
+        Mrem_2 = 1.8 + 0.04*(90-M)
+        if M>90:
+            Mrem_2 = 1.8 + np.log10(M-89)
+            
+        Mrem = np.max([Mrem_1, Mrem_2])
+        
+        if Mrem > Mdc_low:
+            return np.piecewise(Mc_He, [(Mc_He<Mppisn),(Mc_He>=Mppisn)*(Mc_He<Mpisn), (Mc_He>=Mpisn)*(Mc_He<Mdc_high),
+                                  (Mc_He>=Mdc_high)],
+                           [Mrem, Mdc_low, 0, Mrem])
+        else:
+            return Mrem*np.heaviside(Mrem, 0)
+    
+    else:
+     
+        return 0   
+   
 # end of file
