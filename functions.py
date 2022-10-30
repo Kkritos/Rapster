@@ -33,6 +33,7 @@ from cmath import isnan
 from scipy import interpolate
 from astropy.cosmology import FlatLambdaCDM
 from scipy.optimize import fsolve
+import os
 
 # Global constants in S.I.
 # ----------------------------------------------------------------------------------------------------------------------------
