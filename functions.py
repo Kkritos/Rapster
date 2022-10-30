@@ -858,5 +858,22 @@ def Mrem_Fryer2012(M, Z):
     else:
      
         return 0   
-   
+
+def Mrem_SSE(M,Z):
+    '''
+    Hurley et al. (2000)
+    Remnant mass implementing the SSE prescrition.
+    
+    @in M: ZAMS mass in solar masses
+    @in Z: metallicity
+    '''
+    
+    os.chdir("/Users/konstantinoskritos/Documents/GitHub/Rapster_stellar_uncertainty")
+    
+    os.system("echo "+str(M)+" "+str(Z)+" 1000 | ./sse.exe | tail -2 | head -1 | awk '{print $NF}' > a")
+    
+    Mrem = np.loadtxt('a', unpack=True)
+    
+    return Mrem+0
+     
 # end of file
