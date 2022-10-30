@@ -92,6 +92,9 @@ parser.add_argument('-EF'   ,'--EvolutionFile'       ,type=str  ,metavar=' ',def
 parser.add_argument('-BF'   ,'--BlackHoleFile'      ,type=str  ,metavar=' ',default='blackholes'    ,\
     help='Name of output .npz file containing all the masses of black holes at the initial and final state')\
 
+parser.add_argument('-RP', '--RemnantPrescription', type=int, metavar=' ', default=1, \
+                    help='ZAMS mass - remnant mass presctiption (=1 SEVN, =2 Fryer+2012)')
+
 args = parser.parse_args()
 
 Mcl           = args.ClusterMass * Msun
@@ -115,6 +118,10 @@ Mhalo         = args.DarkMatterHaloMass * Msun
 SEED          = args.Seed
 mergersFile   = args.MergersFile
 evolutionFile = args.EvolutionFile
+blackholeFile = args.BlackHoleFile
+
+ind_RP = args.RemnantPrescription
+
 blackholeFile = args.BlackHoleFile
 
 Mcl0  = Mcl  # initial cluster mass
@@ -171,8 +178,13 @@ if __name__=="__main__":
     starMasses = (u_star*(Mstar_max**(alphaIMF+1)-MstarMassive_min**(alphaIMF+1))\
                   +MstarMassive_min**(alphaIMF+1))**(1/(alphaIMF+1))
 
-    # remnant masses from SEVN interpolant:
-    remnantMasses = Mrem(starMasses,Z) * Msun
+    if   ind_RP==1: # remnant masses from SEVN interpolant:
+        
+        remnantMasses = Mrem_SEVN     (starMasses,Z) * Msun
+       
+    elif ind_RP==2: # remnant masses from Fryer+2012 analytical model:
+    
+        remnantMasses = Mrem_Fryer2012(starMasses,Z) * Msun
 
     # minimum natal black hole mass:
     Mbh_min = 3*Msun
