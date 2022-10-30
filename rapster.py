@@ -188,6 +188,12 @@ if __name__=="__main__":
         for i in range(remnantMasses.size):
             remnantMasses[i] = Mrem_Fryer2012(starMasses[i],Z) * Msun
 
+    elif ind_RP==3: # remnant masses from SSE code:
+    
+        remnantMasses = np.zeros(starMasses.size)
+        for i in range(remnantMasses.size):
+            remnantMasses[i] = Mrem_SSE(starMasses[i],Z) * Msun
+        
     # minimum natal black hole mass:
     Mbh_min = 3*Msun
 
