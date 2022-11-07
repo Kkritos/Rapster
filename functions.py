@@ -862,6 +862,11 @@ def Mrem_Fryer2012(M, Z):
         return 0   
 """
 
+# EDIT THIS NEXT LINE :
+############################################################################################################################################
+Path = "..."
+############################################################################################################################################
+
 def Mrem_SSE(M,Z):
     '''
     Hurley et al. (2000)
@@ -872,7 +877,7 @@ def Mrem_SSE(M,Z):
     @out remnant mass in solar masses
     '''
     
-    os.chdir("/Users/konstantinoskritos/Documents/GitHub/Rapster_stellar_uncertainty")
+    os.chdir(Path)
     
     os.system("echo "+str(M)+" "+str(Z)+" 1000 | ./sse.exe | tail -2 | head -1 | awk '{print $NF}' > a")
     
@@ -889,7 +894,7 @@ def Mrem_B02(M, Z):
     @out remnant mass in solar masses
     '''
     
-    os.chdir("/Users/konstantinoskritos/Documents/GitHub/Rapster_stellar_uncertainty")
+    os.chdir(Path)
     
     os.system("echo "+str(M)+" "+str(Z)+" 1 | ./sse_new.exe | tail -2 | head -1 | awk '{print $1 $2}' > s")
     os.system("echo "+str(M)+" "+str(Z)+" 1 | ./sse_new.exe | tail -2 | head -1 | awk '{print $NF}' > a")
@@ -921,7 +926,7 @@ def Mrem_B08(M, Z):
     @out remnant mass in solar masses
     '''
     
-    os.chdir("/Users/konstantinoskritos/Documents/GitHub/Rapster_stellar_uncertainty")
+    os.chdir(Path)
     
     os.system("echo "+str(M)+" "+str(Z)+" 2 | ./sse_new.exe | tail -2 | head -1 | awk '{print $1 $2}' > s")
     os.system("echo "+str(M)+" "+str(Z)+" 2 | ./sse_new.exe | tail -2 | head -1 | awk '{print $NF}' > a")
@@ -953,7 +958,7 @@ def Mrem_F12r(M, Z):
     @out remnant mass in solar masses
     '''
     
-    os.chdir("/Users/konstantinoskritos/Documents/GitHub/Rapster_stellar_uncertainty")
+    os.chdir(Path)
     
     os.system("echo "+str(M)+" "+str(Z)+" 3 | ./sse_new.exe | tail -2 | head -1 | awk '{print $1 $2}' > s")
     os.system("echo "+str(M)+" "+str(Z)+" 3 | ./sse_new.exe | tail -2 | head -1 | awk '{print $NF}' > a")
@@ -985,7 +990,7 @@ def Mrem_F12d(M, Z):
     @out remnant mass in solar masses
     '''
     
-    os.chdir("/Users/konstantinoskritos/Documents/GitHub/Rapster_stellar_uncertainty")
+    os.chdir(Path)
     
     os.system("echo "+str(M)+" "+str(Z)+" 4 | ./sse_new.exe | tail -2 | head -1 | awk '{print $1 $2}' > s")
     os.system("echo "+str(M)+" "+str(Z)+" 4 | ./sse_new.exe | tail -2 | head -1 | awk '{print $NF}' > a")
