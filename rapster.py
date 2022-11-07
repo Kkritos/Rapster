@@ -92,8 +92,8 @@ parser.add_argument('-EF'   ,'--EvolutionFile'       ,type=str  ,metavar=' ',def
 parser.add_argument('-BF'   ,'--BlackHoleFile'      ,type=str  ,metavar=' ',default='blackholes'    ,\
     help='Name of output .npz file containing all the masses of black holes at the initial and final state')\
 
-parser.add_argument('-RP', '--RemnantPrescription', type=int, metavar=' ', default=1, \
-                    help='ZAMS mass - remnant mass presctiption (=1 SEVN, =2 Fryer+2012)')
+parser.add_argument('-RP', '--RemnantPrescription', type=int, metavar=' ', default=0, \
+                    help='ZAMS mass - remnant mass presctiption (=0 SEVN, =1 B08, =2 B02, =3 F12r, =4 F12d)')
 
 args = parser.parse_args()
 
@@ -178,22 +178,39 @@ if __name__=="__main__":
     starMasses = (u_star*(Mstar_max**(alphaIMF+1)-MstarMassive_min**(alphaIMF+1))\
                   +MstarMassive_min**(alphaIMF+1))**(1/(alphaIMF+1))
 
-    if   ind_RP==1: # remnant masses from SEVN interpolant:
+    # Remnant mass prescription:
+    ##############################################################################################################
+    
+    if   ind_RP==0: # remnant masses from SEVN (delayed) model:
         
-        remnantMasses = Mrem_SEVN     (starMasses,Z) * Msun
+        remnantMasses = Mrem_SEVN(starMasses,Z) * Msun
        
-    elif ind_RP==2: # remnant masses from Fryer+2012 analytical model:
+    elif ind_RP==1: # remnant masses from Belczynski+(2002) model:
     
         remnantMasses = np.zeros(starMasses.size)
         for i in range(remnantMasses.size):
-            remnantMasses[i] = Mrem_Fryer2012(starMasses[i],Z) * Msun
+            remnantMasses[i] = Mrem_B02(starMasses[i],Z) * Msun
 
-    elif ind_RP==3: # remnant masses from SSE code:
+    elif ind_RP==2: # remnant masses from Belczynski+(2008) model:
     
         remnantMasses = np.zeros(starMasses.size)
         for i in range(remnantMasses.size):
-            remnantMasses[i] = Mrem_SSE(starMasses[i],Z) * Msun
+            remnantMasses[i] = Mrem_B08(starMasses[i],Z) * Msun
+    
+    elif ind_RP==3: # remnant masses from Fryer+(2012) rapid model:
+    
+        remnantMasses = np.zeros(starMasses.size)
+        for i in range(remnantMasses.size):
+            remnantMasses[i] = Mrem_F12r(starMasses[i],Z) * Msun
         
+    elif ind_RP==4: # emnant masses from Fryer+(2012) delayed model:
+    
+        remnantMasses = np.zeros(starMasses.size)
+        for i in range(remnantMasses.size):
+            remnantMasses[i] = Mrem_F12d(starMasses[i],Z) * Msun
+    
+    ##############################################################################################################
+    
     # minimum natal black hole mass:
     Mbh_min = 3*Msun
 
