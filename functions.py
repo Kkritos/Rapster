@@ -803,7 +803,8 @@ def McHe(M, Z):
     McBAGB = (b36*M**b37 + b38)**(1/4)
     
     return McBAGB
-   
+
+"""
 def Mrem_Fryer2012(M, Z):
     '''
     Remnant mass analytic prescription of Fryer+(2012).
@@ -859,6 +860,7 @@ def Mrem_Fryer2012(M, Z):
     else:
      
         return 0   
+"""
 
 def Mrem_SSE(M,Z):
     '''
@@ -867,6 +869,7 @@ def Mrem_SSE(M,Z):
     
     @in M: ZAMS mass in solar masses
     @in Z: metallicity
+    @out remnant mass in solar masses
     '''
     
     os.chdir("/Users/konstantinoskritos/Documents/GitHub/Rapster_stellar_uncertainty")
@@ -876,5 +879,133 @@ def Mrem_SSE(M,Z):
     Mrem = np.loadtxt('a', unpack=True)
     
     return Mrem+0
+
+def Mrem_B02(M, Z):
+    '''
+    Belczynski et al. (2002) remnant mass prescription model
+    
+    @in M: ZAMS mass in solar masses
+    @in Z: metallicity
+    @out remnant mass in solar masses
+    '''
+    
+    os.chdir("/Users/konstantinoskritos/Documents/GitHub/Rapster_stellar_uncertainty")
+    
+    os.system("echo "+str(M)+" "+str(Z)+" 1 | ./sse_new.exe | tail -2 | head -1 | awk '{print $1 $2}' > s")
+    os.system("echo "+str(M)+" "+str(Z)+" 1 | ./sse_new.exe | tail -2 | head -1 | awk '{print $NF}' > a")
+    
+    #open text file in read mode
+    text_file = open('s', "r")
+    
+    #read whole file to a string
+    flag = text_file.read()
+    
+    #close file
+    text_file.close()
+    
+    Mrem = np.loadtxt('a', unpack=True)
+
+    os.system("rm s a")
+    
+    if flag=='BlackHole\n':
+        return Mrem+0
+    else:
+        return 0.0
+     
+def Mrem_B08(M, Z):
+    '''
+    Belczynski et al. (2008) remnant mass prescription model
+    
+    @in M: ZAMS mass in solar masses
+    @in Z: metallicity
+    @out remnant mass in solar masses
+    '''
+    
+    os.chdir("/Users/konstantinoskritos/Documents/GitHub/Rapster_stellar_uncertainty")
+    
+    os.system("echo "+str(M)+" "+str(Z)+" 2 | ./sse_new.exe | tail -2 | head -1 | awk '{print $1 $2}' > s")
+    os.system("echo "+str(M)+" "+str(Z)+" 2 | ./sse_new.exe | tail -2 | head -1 | awk '{print $NF}' > a")
+    
+    #open text file in read mode
+    text_file = open('s', "r")
+    
+    #read whole file to a string
+    flag = text_file.read()
+    
+    #close file
+    text_file.close()
+    
+    Mrem = np.loadtxt('a', unpack=True)
+
+    os.system("rm s a")
+    
+    if flag=='BlackHole\n':
+        return Mrem+0
+    else:
+        return 0.0  
+
+def Mrem_F12r(M, Z):
+    '''
+    Fryer et al. (2012) rapid remnant mass prescription model
+    
+    @in M: ZAMS mass in solar masses
+    @in Z: metallicity
+    @out remnant mass in solar masses
+    '''
+    
+    os.chdir("/Users/konstantinoskritos/Documents/GitHub/Rapster_stellar_uncertainty")
+    
+    os.system("echo "+str(M)+" "+str(Z)+" 3 | ./sse_new.exe | tail -2 | head -1 | awk '{print $1 $2}' > s")
+    os.system("echo "+str(M)+" "+str(Z)+" 3 | ./sse_new.exe | tail -2 | head -1 | awk '{print $NF}' > a")
+    
+    #open text file in read mode
+    text_file = open('s', "r")
+    
+    #read whole file to a string
+    flag = text_file.read()
+    
+    #close file
+    text_file.close()
+    
+    Mrem = np.loadtxt('a', unpack=True)
+
+    os.system("rm s a")
+    
+    if flag=='BlackHole\n':
+        return Mrem+0
+    else:
+        return 0.0     
+
+def Mrem_F12d(M, Z):
+    '''
+    Fryer et al. (2002) delayed remnant mass prescription model
+    
+    @in M: ZAMS mass in solar masses
+    @in Z: metallicity
+    @out remnant mass in solar masses
+    '''
+    
+    os.chdir("/Users/konstantinoskritos/Documents/GitHub/Rapster_stellar_uncertainty")
+    
+    os.system("echo "+str(M)+" "+str(Z)+" 4 | ./sse_new.exe | tail -2 | head -1 | awk '{print $1 $2}' > s")
+    os.system("echo "+str(M)+" "+str(Z)+" 4 | ./sse_new.exe | tail -2 | head -1 | awk '{print $NF}' > a")
+    
+    #open text file in read mode
+    text_file = open('s', "r")
+    
+    #read whole file to a string
+    flag = text_file.read()
+    
+    #close file
+    text_file.close()
+    
+    Mrem = np.loadtxt('a', unpack=True)
+
+    os.system("rm s a")
+    
+    if flag=='BlackHole\n':
+        return Mrem+0
+    else:
+        return 0.0
      
 # end of file
