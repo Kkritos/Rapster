@@ -34,6 +34,7 @@ from scipy import interpolate
 from astropy.cosmology import FlatLambdaCDM
 from scipy.optimize import fsolve
 import os
+from subprocess import Popen, PIPE
 
 # Global constants in S.I.
 # ----------------------------------------------------------------------------------------------------------------------------
@@ -864,9 +865,9 @@ def Mrem_Fryer2012(M, Z):
 
 # EDIT THIS NEXT LINE :
 ############################################################################################################################################
-Path = "..."
+#Path = "..."
 ############################################################################################################################################
-
+"""
 def Mrem_SSE(M,Z):
     '''
     Hurley et al. (2000)
@@ -884,7 +885,8 @@ def Mrem_SSE(M,Z):
     Mrem = np.loadtxt('a', unpack=True)
     
     return Mrem+0
-
+"""
+    
 def Mrem_B02(M, Z):
     '''
     Belczynski et al. (2002) remnant mass prescription model
@@ -894,25 +896,14 @@ def Mrem_B02(M, Z):
     @out remnant mass in solar masses
     '''
     
-    os.chdir(Path)
+    flag_command = "echo "+str(M)+" "+str(Z)+" 1 | ./sse_new.exe | tail -2 | head -1 | awk '{print $1 $2}'"
+    Mrem_command = "echo "+str(M)+" "+str(Z)+" 1 | ./sse_new.exe | tail -2 | head -1 | awk '{print $NF}'"
     
-    os.system("echo "+str(M)+" "+str(Z)+" 1 | ./sse_new.exe | tail -2 | head -1 | awk '{print $1 $2}' > s")
-    os.system("echo "+str(M)+" "+str(Z)+" 1 | ./sse_new.exe | tail -2 | head -1 | awk '{print $NF}' > a")
+    flag = str((Popen(flag_command, shell=True, stdout=PIPE).stdout).read())
     
-    #open text file in read mode
-    text_file = open('s', "r")
+    Mrem = float((Popen(Mrem_command, shell=True, stdout=PIPE).stdout).read())
     
-    #read whole file to a string
-    flag = text_file.read()
-    
-    #close file
-    text_file.close()
-    
-    Mrem = np.loadtxt('a', unpack=True)
-
-    os.system("rm s a")
-    
-    if flag=='BlackHole\n':
+    if flag=="b'BlackHole\\n'":
         return Mrem+0
     else:
         return 0.0
@@ -926,28 +917,17 @@ def Mrem_B08(M, Z):
     @out remnant mass in solar masses
     '''
     
-    os.chdir(Path)
+    flag_command = "echo "+str(M)+" "+str(Z)+" 2 | ./sse_new.exe | tail -2 | head -1 | awk '{print $1 $2}'"
+    Mrem_command = "echo "+str(M)+" "+str(Z)+" 2 | ./sse_new.exe | tail -2 | head -1 | awk '{print $NF}'"
     
-    os.system("echo "+str(M)+" "+str(Z)+" 2 | ./sse_new.exe | tail -2 | head -1 | awk '{print $1 $2}' > s")
-    os.system("echo "+str(M)+" "+str(Z)+" 2 | ./sse_new.exe | tail -2 | head -1 | awk '{print $NF}' > a")
+    flag = str((Popen(flag_command, shell=True, stdout=PIPE).stdout).read())
     
-    #open text file in read mode
-    text_file = open('s', "r")
+    Mrem = float((Popen(Mrem_command, shell=True, stdout=PIPE).stdout).read())
     
-    #read whole file to a string
-    flag = text_file.read()
-    
-    #close file
-    text_file.close()
-    
-    Mrem = np.loadtxt('a', unpack=True)
-
-    os.system("rm s a")
-    
-    if flag=='BlackHole\n':
+    if flag=="b'BlackHole\\n'":
         return Mrem+0
     else:
-        return 0.0  
+        return 0.0
 
 def Mrem_F12r(M, Z):
     '''
@@ -958,28 +938,17 @@ def Mrem_F12r(M, Z):
     @out remnant mass in solar masses
     '''
     
-    os.chdir(Path)
+    flag_command = "echo "+str(M)+" "+str(Z)+" 3 | ./sse_new.exe | tail -2 | head -1 | awk '{print $1 $2}'"
+    Mrem_command = "echo "+str(M)+" "+str(Z)+" 3 | ./sse_new.exe | tail -2 | head -1 | awk '{print $NF}'"
     
-    os.system("echo "+str(M)+" "+str(Z)+" 3 | ./sse_new.exe | tail -2 | head -1 | awk '{print $1 $2}' > s")
-    os.system("echo "+str(M)+" "+str(Z)+" 3 | ./sse_new.exe | tail -2 | head -1 | awk '{print $NF}' > a")
+    flag = str((Popen(flag_command, shell=True, stdout=PIPE).stdout).read())
     
-    #open text file in read mode
-    text_file = open('s', "r")
+    Mrem = float((Popen(Mrem_command, shell=True, stdout=PIPE).stdout).read())
     
-    #read whole file to a string
-    flag = text_file.read()
-    
-    #close file
-    text_file.close()
-    
-    Mrem = np.loadtxt('a', unpack=True)
-
-    os.system("rm s a")
-    
-    if flag=='BlackHole\n':
+    if flag=="b'BlackHole\\n'":
         return Mrem+0
     else:
-        return 0.0     
+        return 0.0
 
 def Mrem_F12d(M, Z):
     '''
@@ -990,27 +959,16 @@ def Mrem_F12d(M, Z):
     @out remnant mass in solar masses
     '''
     
-    os.chdir(Path)
+    flag_command = "echo "+str(M)+" "+str(Z)+" 4 | ./sse_new.exe | tail -2 | head -1 | awk '{print $1 $2}'"
+    Mrem_command = "echo "+str(M)+" "+str(Z)+" 4 | ./sse_new.exe | tail -2 | head -1 | awk '{print $NF}'"
     
-    os.system("echo "+str(M)+" "+str(Z)+" 4 | ./sse_new.exe | tail -2 | head -1 | awk '{print $1 $2}' > s")
-    os.system("echo "+str(M)+" "+str(Z)+" 4 | ./sse_new.exe | tail -2 | head -1 | awk '{print $NF}' > a")
+    flag = str((Popen(flag_command, shell=True, stdout=PIPE).stdout).read())
     
-    #open text file in read mode
-    text_file = open('s', "r")
+    Mrem = float((Popen(Mrem_command, shell=True, stdout=PIPE).stdout).read())
     
-    #read whole file to a string
-    flag = text_file.read()
-    
-    #close file
-    text_file.close()
-    
-    Mrem = np.loadtxt('a', unpack=True)
-
-    os.system("rm s a")
-    
-    if flag=='BlackHole\n':
+    if flag=="b'BlackHole\\n'":
         return Mrem+0
     else:
         return 0.0
-     
+    
 # end of file
