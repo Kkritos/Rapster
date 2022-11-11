@@ -929,27 +929,27 @@ def Mrem_B08(M, Z):
     else:
         return 0.0
 
+N_grid = 500
+M_grid = np.linspace(20, 340, N_grid)
+Z_grid = np.logspace(np.log10(1e-4), np.log10(2e-2), N_grid)
+     
+Mremnants_F12r = np.loadtxt('MzamsMrem_F12r.txt', unpack=True)
+
+Mremnants_F12r = np.transpose(Mremnants_F12r)
+
+MremInterpol_F12r = interpolate.interp2d(M_grid, Z_grid, Mremnants_F12r, kind='linear', bounds_error=True)
+
 def Mrem_F12r(M, Z):
     '''
-    Fryer et al. (2012) rapid remnant mass prescription model
+    Fryer et al. (2002) rapid remnant mass prescription model
     
     @in M: ZAMS mass in solar masses
     @in Z: metallicity
     @out remnant mass in solar masses
     '''
     
-    flag_command = "echo "+str(M)+" "+str(Z)+" 3 | ./sse_new.exe | tail -2 | head -1 | awk '{print $1 $2}'"
-    Mrem_command = "echo "+str(M)+" "+str(Z)+" 3 | ./sse_new.exe | tail -2 | head -1 | awk '{print $NF}'"
-    
-    flag = str((Popen(flag_command, shell=True, stdout=PIPE).stdout).read())
-    
-    Mrem = float((Popen(Mrem_command, shell=True, stdout=PIPE).stdout).read())
-    
-    if flag=="b'BlackHole\\n'":
-        return Mrem+0
-    else:
-        return 0.0
-
+    return MremInterpol_F12r(M, Z)
+     
 N_grid = 500
 M_grid = np.linspace(20, 340, N_grid)
 Z_grid = np.logspace(np.log10(1e-4), np.log10(2e-2), N_grid)
