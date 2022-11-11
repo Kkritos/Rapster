@@ -950,6 +950,10 @@ def Mrem_F12r(M, Z):
     else:
         return 0.0
 
+N_grid = 500
+M_grid = np.linspace(20, 340, N_grid)
+Z_grid = np.logspace(np.log10(1e-4), np.log10(2e-2), N_grid)
+     
 Mremnants_F12d = np.loadtxt('MzamsMrem_F12d.txt', unpack=True)
 
 Mremnants_F12d = np.transpose(Mremnants_F12d)
