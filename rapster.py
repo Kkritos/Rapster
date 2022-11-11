@@ -374,7 +374,7 @@ if __name__=="__main__":
 
             M_gas = M_gas1
             
-            print('i=',i,' t/Myr=',t/Myr,' mr/Msun=',m_r/Msun,' tr/Myr=',t_r/Myr)
+            #print('i=',i,' t/Myr=',t/Myr,' mr/Msun=',m_r/Msun,' tr/Myr=',t_r/Myr)
             
             i = i + 1
             
@@ -408,7 +408,7 @@ if __name__=="__main__":
     starMasses = starMasses[starMasses > MstarMassive_min]
     
     # remnant masses from SEVN interpolant:
-    remnantMasses = Mrem(starMasses,Z) * Msun
+    remnantMasses = Mrem_F12d(starMasses, Z) * Msun #Mrem(starMasses,Z) * Msun
 
     # minimum natal black hole mass:
     Mbh_min = 3*Msun
@@ -576,7 +576,7 @@ if __name__=="__main__":
     if m_r > 0.0:
         
         # mass of runaway remnant:
-        m_r_BH = Mrem_Fryer2012(m_r, Z) * Msun
+        m_r_BH = Mrem_F12d_simul(m_r, Z) * Msun #Mrem_Fryer2012(m_r, Z) * Msun
         
         # check if remnant is a BH:
         if m_r_BH > Mbh_min:
