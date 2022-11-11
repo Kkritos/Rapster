@@ -950,6 +950,12 @@ def Mrem_F12r(M, Z):
     else:
         return 0.0
 
+Mremnants_F12d = np.loadtxt('MzamsMrem_F12d.txt', unpack=True)
+
+Mremnants_F12d = np.transpose(Mremnants_F12d)
+
+MremInterpol_F12d = interpolate.interp2d(M_grid, Z_grid, Mremnants_F12d, kind='linear', bounds_error=True)
+
 def Mrem_F12d(M, Z):
     '''
     Fryer et al. (2002) delayed remnant mass prescription model
@@ -959,16 +965,6 @@ def Mrem_F12d(M, Z):
     @out remnant mass in solar masses
     '''
     
-    flag_command = "echo "+str(M)+" "+str(Z)+" 4 | ./sse_new.exe | tail -2 | head -1 | awk '{print $1 $2}'"
-    Mrem_command = "echo "+str(M)+" "+str(Z)+" 4 | ./sse_new.exe | tail -2 | head -1 | awk '{print $NF}'"
-    
-    flag = str((Popen(flag_command, shell=True, stdout=PIPE).stdout).read())
-    
-    Mrem = float((Popen(Mrem_command, shell=True, stdout=PIPE).stdout).read())
-    
-    if flag=="b'BlackHole\\n'":
-        return Mrem+0
-    else:
-        return 0.0
+    return MremInterpol_F12d(M, Z)
     
 # end of file
