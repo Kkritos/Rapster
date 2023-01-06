@@ -1,13 +1,13 @@
 # Rapster
 Rapid population synthesis code for binary black hole mergers in dynamical environments.
 
-$\tt Rapster$ stands for $\rm \it rapid\ cluster$.
+$\tt Rapster$ stands for $\rm \it rapid\ cluster$ evolution.
 
 Author: Konstantinos Kritos <kkritos1@jhu.edu>
 
-Date: September 22, 2022
+Version: January 7, 2023
 
-![LOGO](./LOGO.png)
+![LOGO](./Rapster_LOGO.png)
 
 ### Contents:
 1. [Overview](#overview)
@@ -36,7 +36,7 @@ The repository provides the source codes, files ``./rapster.py`` and ``./functio
 The modeling accounts for the necessary physical processes regarding the formation of binary black holes employing semi-analytic prescriptions as described in Sec. 2 of [K. Kritos et al. (2022)](https://arxiv.org/abs/2210.10055).
 
 ##### Note:
-For computational efficiency, the folder ``./MzamsMrem/`` contains 12 files with pre-calculated tables of stellar remnants masses on a grid of zero-age main sequence values up to $340M_\odot$ and 12 values of absolute metallicity in the range from $10^{-4}$ to $1.7\times10^{-2}$ as calculated with the $\tt SEVN$ code [M. Spera & M. Mapelli (2017)](https://academic.oup.com/mnras/article/470/4/4739/3883764).
+For computational efficiency, the folder ``./MzamsMrem/`` contains 12 files with pre-calculated look-up tables of stellar remnants masses on a grid of zero-age main sequence values up to $340M_\odot$ and 12 values of absolute metallicity in the range from $10^{-4}$ to $1.7\times10^{-2}$ as calculated with the $\tt SEVN$ code [M. Spera & M. Mapelli (2017)](https://academic.oup.com/mnras/article/470/4/4739/3883764).
 
 <a name="requirements"></a>
 ### 2. Requirements
@@ -73,22 +73,22 @@ For the user’s convenience we paste the list of optional arguments in the form
 | Flag | Description | Type | Default |
 |:--- |:--- |:--- |:--- |
 | -Mcl, --ClusterMass | Initial cluster mass $(M_\odot)$ | float | $10^6M_\odot$ |
-| -rh, --HalfMassRadius | Initial half-mass radius (pc) | float | 1pc |
+| -rh, --HalfMassRadius | Initial half-mass radius (pc) | float | 1 pc |
 | -rhoC, --CentralDensity | Initial central star density $(M_\odot{\rm pc}^{-3})$ | float | $4\times10^5M_\odot{\rm pc}^{-3}$ |
-| -Rgal, --GalactocentricRadius | Initial galactocentric radius (kpc) | float | 8kpc |
+| -Rgal, --GalactocentricRadius | Initial galactocentric radius (kpc) | float | 8 kpc |
 | -Z, --Metallicity | Cluster metallicity $(Z_\odot)$ | float | $0.1Z_\odot$ |
 | -fb, --BinaryFraction | Initial binary star fraction | float | 10\% |
-| -w, --NatalKickParameter | Natal velocity kick parameter of BHs (km/s) | float | 256km/s |
+| -w, --NatalKickParameter | Natal velocity kick parameter of BHs (km/s) | float | 256 km/s |
 | -chi, --NatalSpinParameter | Natal spin parameter of first generation (1g) BHs | float | 0 |
 | -SM, --NatalSpinDistribution | Natal spin distribution (1 for monochromatic, 0 for uniform) | int | 0 |
-| -tMax, --SimulationTime | Maximum simulation time (Myr) | float | 13,800Myr |
-| -dtMin, --MinimumTimeStep | Minimum simulation timestep (Myr) | float | 0.1Myr |
-| -dtMax, --MaximumTimeStep | Maximum simulation timestep (Myr) | float | 50Myr |
+| -tMax, --SimulationTime | Maximum simulation time (Myr) | float | 13,800 Myr |
+| -dtMin, --MinimumTimeStep | Minimum simulation timestep (Myr) | float | 0.1 Myr |
+| -dtMax, --MaximumTimeStep | Maximum simulation timestep (Myr) | float | 50 Myr |
 | -z, --FormationRedshift | Redshift of cluster formation | float | 3 |
 | -aIMF, --HighMassIMFslope | High mass initial star mass function slope | floar | -2.3 |
 | -ZAMSmax, --MaximumZAMSmass | Maximum ZAMS star mass $(M_\odot)$ | float | $150M_\odot$ |
 | -c, --ConcentrationNFW | Concentration parameter of the NFW profile | float | 10 |
-| -Rs, --ScaleRadiusNFW | Scale radius of the NFW profile (kpc) | float | 50kpc |
+| -Rs, --ScaleRadiusNFW | Scale radius of the NFW profile (kpc) | float | 50 kpc |
 | -Mh, --DarkMatterHaloMass | Total DM halo mass of the host galaxy $(M_\odot)$ | float | $10^{12}M_\odot$ |
 | -s, --Seed | Random number generator seed | int | 123456789 |
 | -MF, --MergersFile | Name of output file with BBH merger source parameters | str | ``mergers`` |
@@ -115,7 +115,7 @@ To test the code, execute the program with all default values:
 
   > python3 rapster.py
   
-This should create three files ``mergers.txt``, ``evolution.txt``, and ``blackholes.npz`` in your current directory. To check and verify wheather you have produced these files correctly, we include the corresponding files ``mergers_TEST.txt``, ``evolution_TEST.txt``, and ``blackholes_TEST.npz`` in folder ``./Testing/`` in this repository with data that should match your ouput.
+This should create three files ``mergers.txt``, ``evolution.txt``, and ``blackholes.npz`` in your current directory. To check and verify whether you have produced these files correctly, we include the corresponding files ``mergers_TEST.txt``, ``evolution_TEST.txt``, and ``blackholes_TEST.npz`` in folder ``./Testing/`` in this repository with data that should match your ouput.
 
 ##### Suggestion:
 Taking different values of seed number corresponds to different realizations of the system under the same initial conditions. 
@@ -160,11 +160,12 @@ a) Column description of mergers .txt file:
 | 28 | $z_{\rm cl,\ form}$ | Cluster formation redshift |
 
 ##### Note:
-BBH assembly channel (first column of mergers file), the ``-`` sign means BBH was ejected from the cluster:
+BBH assembly channel (first column of mergers file), the ``-`` sign means BBH was ejected and merged outside the cluster:
 - (-)1: exchange processes
-- (-)2: two-body capture
+-    2: two-body capture
 - (-)3: three-BH binary induced
-- (-)4: von Zeipel-Lidov-Kozai merger
+- (-)4: von Zeipel-Lidov-Kozai (ZLK) merger
+- (-)5: ZLK remnant BBH
 
 b) Column description of evolution .txt file:
 
@@ -211,7 +212,7 @@ c) The blackholes .npz file contains two arrays, called ``mBH_ini`` and ``mBH_fi
 <a name="applicationsofthecode"></a>
 ### 6. Applications of the code
 
-The code can be useful when executed multiple times, for instance when simulating a set of clusters and generating a population of dynamically formed binary black hole mergers.
+The code can be useful when executed multiple times, for instance when simulating a set of clusters and generating a population of dynamically formed BBH mergers.
 
 Although the program itself is not computationally expensive (we have tested in a laptop that we generate a few binary black hole mergers per second), independent parallelization is still encouraged when simulating a very large number of star clusters for efficiency.
 
