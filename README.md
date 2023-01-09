@@ -1,13 +1,14 @@
 # Rapster
-Rapid population synthesis code for binary black hole mergers in dynamical environments.
+Rapid population synthesis code for binary black-hole mergers in dynamical environments.
 
-$\tt Rapster$ stands for $\rm \it rapid\ cluster$ evolution.
+$\tt Rapster$ stands for $\rm RAPid\ cluSTEP$ evolution. (Thanks to M. Cheung for coming up with the short-hand version!)
 
 Author: Konstantinos Kritos <kkritos1@jhu.edu>
 
 Version: January 7, 2023
 
 ![LOGO](./Rapster_LOGO.png)
+(Thanks to H. Cruz for digitizing my hand-drawn logo!)
 
 ### Contents:
 1. [Overview](#overview)
@@ -22,21 +23,21 @@ Version: January 7, 2023
 
 ---
 
-##### Abbreviations:
-
-- BH: black hole
-- BBH: binary black hole
-- GW: gravitational wave
-
 <a name="overview"></a>
 ### 1. Overview
 
 The repository provides the source codes, files ``./rapster.py`` and ``./functions.py``, and all necessary data files in folder ``./MzamsMrem/``, for the rapid evolution of dense star cluster environments and the dynamical assembly of binary black hole mergers.
 
-The modeling accounts for the necessary physical processes regarding the formation of binary black holes employing semi-analytic prescriptions as described in Sec. 2 of [K. Kritos et al. (2022)](https://arxiv.org/abs/2210.10055).
+The modeling accounts for the necessary physical processes regarding the formation of binary black holes employing semi-analytic prescriptions as described in Sec. 2 of [K. Kritos et al. (2022)](https://arxiv.org/abs/2210.10055). This is our code paper we wrote together with V. Strokov, V. Baibhav, and E. Berti. (Thanks to C. Rodriguez and G. Fragione for suggesting improvements to our model!)
 
 ##### Note:
 For computational efficiency, the folder ``./MzamsMrem/`` contains 12 files with pre-calculated look-up tables of stellar remnants masses on a grid of zero-age main sequence values up to $340M_\odot$ and 12 values of absolute metallicity in the range from $10^{-4}$ to $1.7\times10^{-2}$ as calculated with the $\tt SEVN$ code [M. Spera & M. Mapelli (2017)](https://academic.oup.com/mnras/article/470/4/4739/3883764).
+
+##### Abbreviations:
+
+- BH: black hole
+- BBH: binary black hole
+- GW: gravitational wave
 
 <a name="requirements"></a>
 ### 2. Requirements
@@ -221,7 +222,11 @@ Although the program itself is not computationally expensive (we have tested in 
 
 If you utilize this code in your research, please cite the following reference:
 
-[K. Kritos et al. (2022)](https://arxiv.org/abs/2210.10055).
+[K. Kritos, V. Strokov, V. Baibhav & E. Berti (2022)](https://arxiv.org/abs/2210.10055).
+
+$\tt Rapster$ has been used in the following works:
+
+- [K. Kritos, E. Berti & J. Silk (2022)](https://arxiv.org/abs/2212.06845).
 
 <a name="reportingbugs"></a>
 ### 8. Reporting bugs
@@ -233,6 +238,6 @@ Suggestions and pull requests are welcome :)
 <a name="thanks"></a>
 ### 9. Thanks
 
-V. Strokov, V. Baibhav, E. Berti, A. Antonelli, M. Cheung, R. Cotesta, H. Cruz, G. Franciolini, T. Helfer, V. Kapil, I. Krommydas, L. Reali, C. Rodriguez.
+V. Strokov, V. Baibhav, E. Berti, A. Antonelli, M. Cheung, R. Cotesta, H. Cruz, G. Fragione, G. Franciolini, T. Helfer, V. Kapil, I. Krommydas, L. Reali, C. Rodriguez.
 
 
