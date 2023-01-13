@@ -238,6 +238,6 @@ Suggestions and pull requests are welcome :)
 <a name="thanks"></a>
 ### 9. Thanks
 
-V. Strokov, V. Baibhav, E. Berti, A. Antonelli, M. Cheung, R. Cotesta, H. Cruz, G. Fragione, G. Franciolini, T. Helfer, V. Kapil, I. Krommydas, L. Reali, C. Rodriguez.
+V. Strokov, V. Baibhav, E. Berti, A. Antonelli, M. Cheung, R. Cotesta, H. Cruz, G. Fragione, G. Franciolini, T. Helfer, V. Kapil, K. Kremer, I. Krommydas, L. Reali, C. Rodriguez.
 
 
