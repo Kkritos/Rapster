@@ -865,7 +865,7 @@ if __name__=="__main__":
             # num. of star+star+star -> star-star events in this step:
             kTripleStar = poisson.rvs(mu=dt1/tauTripleStar,size=1)[0]
 
-            if kTripleStar>0 and aStarStar_min < aStarStar_har: # new hard binary stars form;
+            if kTripleStar>0 and aBin_min < aStarStar_har: # new hard binary stars form;
             # also make sure the hardness sma is above the minimum allowed binary star separation
 
                 for i in range(0,kTripleStar):
@@ -877,7 +877,7 @@ if __name__=="__main__":
                     smaNEW = G_Newt*mAvg/etaValue/veloDisp(mAvg,1,mAvg,Mcl,rh)**2
 
                     # make sure stars in binary are not very close together; if so, draw hardness ratio again:
-                    while smaNEW < aStarStar_min:
+                    while smaNEW < aBin_min:
                         
                         # sample hardness ratio:
                         etaValue = hardness_sampler(np.random.rand(), mAvg, mAvg, mAvg, mAvg, 0.4, etamin=5)
