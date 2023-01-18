@@ -5,7 +5,7 @@ $\tt Rapster$ stands for $\rm RAPid\ cluSTEP$ evolution. (Thanks to M. Cheung fo
 
 Author: Konstantinos Kritos <kkritos1@jhu.edu>
 
-Version: January 7, 2023
+Version: January 18, 2023
 
 ![LOGO](./Rapster_LOGO.png)
 (Thanks to H. Cruz for digitizing my hand-drawn logo!)
