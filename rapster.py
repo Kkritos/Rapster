@@ -172,7 +172,7 @@ if __name__=="__main__":
                   +MstarMassive_min**(alphaIMF+1))**(1/(alphaIMF+1))
 
     # remnant masses from SEVN interpolant:
-    remnantMasses = Mrem(starMasses,Z) * Msun
+    remnantMasses = Mrem_SEVN(starMasses,Z) * Msun
 
     # minimum natal black hole mass:
     Mbh_min = 3*Msun
