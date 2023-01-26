@@ -79,7 +79,7 @@ For the user’s convenience we paste the list of optional arguments in the form
 | -Rgal, --GalactocentricRadius | Initial galactocentric radius (kpc) | float | 8 kpc |
 | -Z, --Metallicity | Cluster metallicity $(Z_\odot)$ | float | $0.1Z_\odot$ |
 | -fb, --BinaryFraction | Initial binary star fraction | float | 10\% |
-| -w, --NatalKickParameter | Natal velocity kick parameter of BHs (km/s) | float | 256 km/s |
+| -w, --NatalKickParameter | Natal velocity kick parameter of BHs (km/s) | float | 265 km/s |
 | -chi, --NatalSpinParameter | Natal spin parameter of first generation (1g) BHs | float | 0 |
 | -SM, --NatalSpinDistribution | Natal spin distribution (1 for monochromatic, 0 for uniform) | int | 0 |
 | -tMax, --SimulationTime | Maximum simulation time (Myr) | float | 13,800 Myr |
