@@ -856,7 +856,7 @@ if __name__=="__main__":
 
         # Ubdate number density of star-star binaries (creation by triple-star interaction)
         # -----------------------------------------------------------------------------------------------------------------------
-
+        '''
         try:
             
             # triple-star timescale:
@@ -891,7 +891,7 @@ if __name__=="__main__":
         except:
             
             print('An exception occured while evolving the number of hard binary stars.')
-
+        '''
         # Binary assembly via CAPTURE
         # -----------------------------------------------------------------------------------------------------------------------
 
@@ -1076,8 +1076,8 @@ if __name__=="__main__":
         
         # make sure there is at least a single 3bb in the cluster at all times;
         # in the absence of hard binaries, the central density will always rise by core collapse until a hard 3bb forms:
-        if N_BBH==0 & k3bBH==0:
-            k3bBH=1
+#        if N_BBH==0 & k3bBH==0:
+#            k3bBH=1
         
         if k3bBH > 0:
 
