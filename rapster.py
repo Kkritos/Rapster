@@ -1071,6 +1071,9 @@ if __name__=="__main__":
         # Binary assembly via BHBHBH -> BBH
         # -----------------------------------------------------------------------------------------------------------------------
 
+        # update number of single BHs (may have changed in this step):
+        N_BH_sin = mBH.size
+        
         # make sure there are available BHs as they evolve in the current step:
         k3bBH = np.min([k3bBH,int(N_BH_sin/3)])
         
@@ -1141,6 +1144,9 @@ if __name__=="__main__":
         # Pair assembly via STAR-STAR -> BH-STAR
         # -----------------------------------------------------------------------------------------------------------------------
 
+        # update number of single BHs (may have changed in this step):
+        N_BH_sin = mBH.size
+        
         # make sure there are available BHs as they evolve in the current step:
         kPair = np.min([kPair,N_BH_sin])
         
@@ -2296,9 +2302,6 @@ if __name__=="__main__":
                         # delete triple with merging inner pair:
                         triples = np.delete(triples,i,axis=0)
                         
-                        # update running iteration index:
-                        i = i - 1
-                        
                         # number of triples updated:
                         N_Triples = N_Triples - 1
                         
@@ -2314,6 +2317,9 @@ if __name__=="__main__":
                         if jBH_1.size==0: # then this is 1g BH
                             jBH_1 = -1
 
+                        # update running iteration index:
+                        i = i - 1
+                        
                         # append mergers [channel,a,e,m1,m2,chi1,chi2,g1,g2,tForm,tMerge,zForm,zMerge,
                         #                 Nhar,Nsub,q,chiEff,theta1,theta2,dPhi,mRem,sRem,gRem,vGW,j1,j2]:
                         mergers = np.append(mergers,[[4,aIn,np.sqrt(1-epsilonMIN),m0,m1,s0,s1,g0,g1,\
@@ -2321,6 +2327,9 @@ if __name__=="__main__":
                                 0,0,np.min([m0,m1])/np.max([m0,m1]),chiEff,theta0,theta1,dPhi,\
                                                      mRem,sRem,gRem,vGW,jBH_0,jBH_1]],axis=0)
 
+                        # update running iteration index:
+                        #i = i - 1
+                        
                         # new outer binary disrupts due to merger kick:
                         if vGW > np.sqrt(1*G_Newt*(m2+mRem)/aOut):
                             
