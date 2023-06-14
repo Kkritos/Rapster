@@ -56,7 +56,7 @@ The following Python packages are required
 The code is tested with packages in the versions shown in parentheses above, however it is likely that other versions work too.
 
 ##### Note:
-It is suggested that the $\tt precession$ package is used in its latest version 1.0.3 [D. Gerosa & M. Kesden (2016)](https://journals.aps.org/prd/abstract/10.1103/PhysRevD.93.124066).
+It is suggested that the $\tt precession$ package is used in the version 1.0.3 [D. Gerosa & M. Kesden (2016)](https://journals.aps.org/prd/abstract/10.1103/PhysRevD.93.124066).
 
 <a name="inputparameters"></a>
 ### 3. Input parameters
@@ -120,7 +120,7 @@ This should create three files ``mergers.txt``, ``evolution.txt``, and ``blackho
 
 ##### Suggestion:
 Taking different values of seed number corresponds to different realizations of the system under the same initial conditions. 
-Passing the argument $$\tt\$ RANDOM$$ in the -s flag, simulates the star cluster with a pseudo-randomly generated number.
+Passing the argument $$\tt\$ RANDOM$$ in the -s flag, simulates the star cluster with a pseudo-randomly generated number. Notice this syntax works only in the bash environment.
 
 <a name="outputfiles"></a>
 ### 5. Output files:
@@ -238,6 +238,6 @@ Suggestions and pull requests are welcome :)
 <a name="thanks"></a>
 ### 9. Thanks
 
-Vladimir Strokov, Vishal Baibhav, Emanuele Berti, Andrea Antonelli, Mark Cheung, Roberto Cotesta, Hector Cruz, Giacomo Fragione, Gabriele Franciolini, Thomas Helfer, Veome Kapil, Kyle Kremer, Iason Krommydas, Luca Reali, Carl Rodriguez, Xiao-Xiao Kou.
+Vladimir Strokov, Vishal Baibhav, Emanuele Berti, Andrea Antonelli, Muhsin Aljaf, Mark Cheung, Roberto Cotesta, Hector Cruz, Giacomo Fragione, Gabriele Franciolini, Thomas Helfer, Veome Kapil, Kyle Kremer, Iason Krommydas, Luca Reali, Carl Rodriguez, Xiao-Xiao Kou.
 
 
