@@ -40,7 +40,7 @@ parser.add_argument('-z', '--cluster_formation_redshift', type=float, metavar=' 
 
 parser.add_argument('-n', '--central_stellar_density', type=float, metavar=' ', default=1e6, help='Central stellar number density [pc^-3]')
 
-parser.add_argument('-fb', '--binary_fraction', type=float, metavar=' ', default=0.05, help='Initial binary star fraction')
+parser.add_argument('-fb', '--binary_fraction', type=float, metavar=' ', default=0.1, help='Initial binary star fraction')
 
 parser.add_argument('-S', '--seed', type=int, metavar=' ', default=1234567890, help='Seed number')
 
@@ -52,7 +52,7 @@ parser.add_argument('-tM', '--maximum_time', type=float, metavar=' ', default=14
 
 parser.add_argument('-wK', '--supernova_kick_parameter', type=float, metavar=' ', default=265, help='One-dimensional supernova kick parameter [km/s]')
 
-parser.add_argument('-K', '--natal_kick_prescription', type=int, metavar=' ', default=0, help='Natal kick prescription (=0 fallback, =1 momentum conservation)')
+parser.add_argument('-K', '--natal_kick_prescription', type=int, metavar=' ', default=1, help='Natal kick prescription (0 for fallback, 1 for momentum conservation)')
 
 parser.add_argument('-R', '--galactocentric_radius', type=float, metavar=' ', default=8, help='Initial galactocentric radius [kpc]')
 
@@ -62,27 +62,27 @@ parser.add_argument('-s', '--spin_parameter', type=float, metavar=' ', default=0
 
 parser.add_argument('-SD', '--spin_distribution', type=int, metavar=' ', default=0, help='Natal spin distribution model (0 for uniform, 1 for monochromatic)')
 
-parser.add_argument('-P', '--print_information', type=int, metavar=' ', default=1, help='Print runtime information (=0 no, =1 yes)')
+parser.add_argument('-P', '--print_information', type=int, metavar=' ', default=1, help='Print runtime information (0 for no, 1 for yes)')
 
 parser.add_argument('-Mi', '--mergers_file_indicator', type=int, metavar=' ', default=1, help='Export mergers file (0 for no, 1 for yes)')
 
-parser.add_argument('-MF', '--mergers_file_name', type=str, metavar=' ', default='mergers', help='Name of mergers file')
+parser.add_argument('-MF', '--mergers_file_name', type=str, metavar=' ', default='mergers', help='Name of .txt output file with BBH merger source parameters')
 
 parser.add_argument('-Ei', '--evolution_file_indicator', type=int, metavar=' ', default=1, help='Export evolution file (0 for no, 1 for yes)')
 
-parser.add_argument('-EF', '--evolution_file_name', type=str, metavar=' ', default='evolution', help='Name of evolution file')
+parser.add_argument('-EF', '--evolution_file_name', type=str, metavar=' ', default='evolution', help='Name of .txt output file with time-dependent quantities')
 
 parser.add_argument('-Hi', '--hardening_file_indicator', type=int, metavar=' ', default=1, help='Export hardening file (0 for no, 1 for yes)')
 
-parser.add_argument('-HF', '--hardening_file_name', type=str, metavar=' ', default='hardening', help='Name of hardening file')
+parser.add_argument('-HF', '--hardening_file_name', type=str, metavar=' ', default='hardening', help='Name of .txt output file with BBH time evolution information')
 
-parser.add_argument('-Bi', '--blackhole_file_indicator', type=int, metavar=' ', default=0, help='Use external BH file (0 for no, 1 for yes)')
+parser.add_argument('-BIi', '--blackholes_in_file_indicator', type=int, metavar=' ', default=0, help='Use external BH file (0 for no, 1 for yes)')
 
-parser.add_argument('-BF', '--blackhole_file_name', type=str, metavar=' ', default='input_BH_file.npz', help='Name of input black hole file')
+parser.add_argument('-BIF', '--blackholes_in_file_name', type=str, metavar=' ', default='input_BHs.npz', help='Name of .npz input file with initial BH masses')
 
-parser.add_argument('-BMi', '--blackholemasses_file_indicator', type=int, metavar=' ', default=0, help='Export BH masses file (0 for no, 1 for yes)')
+parser.add_argument('-BOi', '--blackholes_out_file_indicator', type=int, metavar=' ', default=1, help='Export BH masses file (0 for no, 1 for yes)')
 
-parser.add_argument('-BMF', '--blackholemasses_file_name', type=str, metavar=' ', default='bhmasses.npz', help='Name of output blackholemasses file')
+parser.add_argument('-BOF', '--blackholes_out_file_name', type=str, metavar=' ', default='output_BHs.npz', help='Name of .npz file with the masses of all BHs in solar masses')
 
 parser.add_argument('-RP', '--remnant_mass_prescription', type=int, metavar=' ', default=1, help='Remnant mass prescription (1 for SEVN delayed, 2 for Fryer+2012 delayed)')
 
@@ -108,15 +108,15 @@ evolution_file = args.evolution_file_name
 hardening_file = args.hardening_file_name
 fb = args.binary_fraction
 print_info = args.print_information
-Bi = args.blackhole_file_indicator
-input_BH_file = args.blackhole_file_name
+Bi = args.blackholes_in_file_indicator
+input_BH_file = args.blackholes_in_file_name
 s1g_max = args.spin_parameter
 SD = args.spin_distribution
 Mi = args.mergers_file_indicator
 Ei = args.evolution_file_indicator
 Hi = args.hardening_file_indicator
-BMi = args.blackholemasses_file_indicator
-BMF = args.blackholemasses_file_name
+BOi = args.blackholes_out_file_indicator
+BOF = args.blackholes_out_file_name
 RP = args.remnant_mass_prescription
 
 # initial conditions:
@@ -258,8 +258,8 @@ if __name__ == "__main__":
     # mergers [seed, ind, channel, a, e, m1, m2, s1, s2, g1, g2, theta1, theta2, dPhi, t_form, z_form, t_merge, z_merge, m_rem, s_rem, g_rem, vGW_kick, s_eff, q]:
     mergers = np.zeros(shape=(1, 24))
     
-    # evolution [t, dt, m_avg, Mcl, rh, R_gal, v_gal, t_rlx, tBH_rlx, n_star, N_BH, mBH_avg, mBH_max, rh_BH, rc_BH, S, xi, psi, psi_BH, t_3bb, t_2cap, k_3bb, k_2cap, N_me, N_BBH, N_meRe, N_meEj, v_star, vBH, nh_BH, nc_BH, na_BH, N_3bb, N_2cap, N_3cap, N_BHej, N_BBHej, N_dis, N_ex, t_bb, N_bb, N_meFi, N_me2b, t_ex1, t_ex2, k_ex1, k_ex2, N_ex1, N_ex2, N_BHstar, t_pp, k_pp, N_pp, v_esc, vBH_esc, N_Triples, N_ZLK]:
-    evolution = np.zeros(shape=(1, 57))
+    # evolution [t, z, dt, m_avg, Mcl, rh, R_gal, v_gal, t_rlx, tBH_rlx, n_star, N_BH, mBH_avg, mBH_max, rh_BH, rc_BH, S, xi, psi, psi_BH, t_3bb, t_2cap, k_3bb, k_2cap, N_me, N_BBH, N_meRe, N_meEj, v_star, vBH, nh_BH, nc_BH, na_BH, N_3bb, N_2cap, N_3cap, N_BHej, N_BBHej, N_dis, N_ex, t_bb, N_bb, N_meFi, N_me2b, t_ex1, t_ex2, k_ex1, k_ex2, N_ex1, N_ex2, N_BHstar, t_pp, k_pp, N_pp, v_esc, vBH_esc, N_Triples, N_ZLK]:
+    evolution = np.zeros(shape=(1, 58))
     
     # hardening [t, dt, t_local, dt_local, ind, a, e, m1, m2, q, condition]:
     hardening = np.zeros(shape=(1, 11))
@@ -483,7 +483,7 @@ if __name__ == "__main__":
             
         if dt > t and t>0:
             dt = t
-        
+            
         # Binary BH formation:
         
         # number of 3bbs (cannot exceed 3*N_BHsin):
@@ -604,7 +604,7 @@ if __name__ == "__main__":
         t_df = 0.45e3 * (R_gal / 1e3)**2 * v_gal * (Mcl / 1e5) / 2
         
         # append evolution:
-        evolution = np.append(evolution, [[t, dt, m_avg, Mcl, rh, R_gal, v_gal, t_rlx, tBH_rlx, n_star, N_BH, mBH_avg, mBH_max, rh_BH, rc_BH, S, 
+        evolution = np.append(evolution, [[t, z, dt, m_avg, Mcl, rh, R_gal, v_gal, t_rlx, tBH_rlx, n_star, N_BH, mBH_avg, mBH_max, rh_BH, rc_BH, S, 
                                            xi, psi, psi_BH, t_3bb, t_2cap, k_3bb, k_2cap, N_me, N_BBH, N_meRe, N_meEj, v_star, vBH, 
                                            nh_BH, nc_BH, na_BH, N_3bb, N_2cap, N_3cap, N_BHej, N_BBHej, N_dis, N_ex, t_bb, N_bb, 
                                            N_meFi, N_me2b, t_ex1, t_ex2, k_ex1, k_ex2, N_ex1, N_ex2, N_BHstar, t_pp, k_pp, N_pp, 2*v_star, 
@@ -701,8 +701,8 @@ if __name__ == "__main__":
     
     mBH_fin = mBH
     
-    if BMi==1:
-        np.savez(BMF, mBH_ini=mBH_ini, mBH_fin=mBH_fin)
+    if BOi==1:
+        np.savez(BOF, mBH_ini=mBH_ini, mBH_fin=mBH_fin)
     
     if Mi==1: # export mergers file
         with open(mergers_file+'.txt', 'w') as f_mergers:
@@ -725,7 +725,7 @@ if __name__ == "__main__":
                                   str(evolution[i][36])+' '+str(evolution[i][37])+' '+str(evolution[i][38])+' '+str(evolution[i][39])+' '+str(evolution[i][40])+' '+str(evolution[i][41])+' '+\
                                   str(evolution[i][42])+' '+str(evolution[i][43])+' '+str(evolution[i][44])+' '+str(evolution[i][45])+' '+str(evolution[i][46])+' '+str(evolution[i][47])+' '+\
                                   str(evolution[i][48])+' '+str(evolution[i][49])+' '+str(evolution[i][50])+' '+str(evolution[i][51])+' '+str(evolution[i][52])+' '+str(evolution[i][53])+' '+\
-                                  str(evolution[i][54])+' '+str(evolution[i][55])+' '+str(evolution[i][56]))
+                                  str(evolution[i][54])+' '+str(evolution[i][55])+' '+str(evolution[i][56])+' '+str(evolution[i][57]))
                 f_evolution.write('\n')
             
     if Hi==1: # export hardening file
