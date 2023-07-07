@@ -5,7 +5,7 @@ $\tt Rapster$ stands for $\rm RAPid\ cluSTEP$ evolution. (Thanks to M. Cheung fo
 
 Author: Konstantinos Kritos <kkritos1@jhu.edu>
 
-Version: January 18, 2023
+Version: July 7, 2023
 
 ![LOGO](./Rapster_LOGO.png)
 (Thanks to H. Cruz for digitizing my hand-drawn logo!)
@@ -13,25 +13,29 @@ Version: January 18, 2023
 ### Contents:
 1. [Overview](#overview)
 2. [Requirements](#requirements)
-3. [Input parameters](#inputparameters)
-4. [Running a simulation](#runningasimulation)
-5. [Output files](#outputfiles)
-6. [Applications of the code](#applicationsofthecode)
-7. [Citing this work](#citingthiswork)
-8. [Reporting bugs](#reportingbugs)
-9. [Thanks](#thanks)
+3. [Units](#units)
+4. [Input parameters](#inputparameters)
+5. [Running a simulation](#runningasimulation)
+6. [Output files](#outputfiles)
+7. [Applications of the code](#applicationsofthecode)
+8. [Citing this work](#citingthiswork)
+9. [Reporting bugs](#reportingbugs)
+10. [Thank you](#thanks)
 
 ---
 
 <a name="overview"></a>
 ### 1. Overview
 
-The repository provides the source codes, files ``./rapster.py`` and ``./functions.py``, and all necessary data files in folder ``./MzamsMrem/``, for the rapid evolution of dense star cluster environments and the dynamical assembly of binary black hole mergers.
+The repository provides the source codes of the current version, files ``./rapster2.py``, ``./functions2.py``, ``./constants2.py``, ``ThreeBodyBinary2.py``, ``BBHevol2.py``, ``TwoBodyCapture2.py``, ``Exchanges2.py``, ``triples2.py``, ``Planck18_lookup_table.npz``, and all necessary data files in folder ``./MzamsMrem/``, for the rapid evolution of dense star cluster environments and the dynamical assembly of binary black hole mergers.
 
-The modeling accounts for the necessary physical processes regarding the formation of binary black holes employing semi-analytic prescriptions as described in Sec. 2 of [K. Kritos et al. (2022)](https://arxiv.org/abs/2210.10055). This is our code paper we wrote together with V. Strokov, V. Baibhav, and E. Berti. (Thanks to C. Rodriguez and G. Fragione for suggesting improvements to our model!)
+The modeling accounts for the necessary physical processes regarding the formation of binary black holes employing semi-analytic prescriptions as described in Sec. 2 of [K. Kritos et al. (2022)](https://arxiv.org/abs/2210.10055). This is our code paper we wrote together with V. Strokov, V. Baibhav, and E. Berti.
 
 ##### Note:
 For computational efficiency, the folder ``./MzamsMrem/`` contains 12 files with pre-calculated look-up tables of stellar remnants masses on a grid of zero-age main sequence values up to $340M_\odot$ and 12 values of absolute metallicity in the range from $10^{-4}$ to $1.7\times10^{-2}$ as calculated with the $\tt SEVN$ code [M. Spera & M. Mapelli (2017)](https://academic.oup.com/mnras/article/470/4/4739/3883764).
+
+In the current version, we have also included look-up tables for the Mandel-Muller, and the Fryer et al. (2012) delayed and rapid remnant-mass prescription models in files ``Mueller_Mandel.txt``, ``MzamsMrem_F12d.txt``, and ``MzamsMrem_F12r.txt``, respectively.
+Finally, ``Planck18_lookup_table.npz`` is a look-up table for the redshidt-lookback time and lookback time-redshift relations assuming the Planck 2018 cosmology.
 
 ##### Abbreviations:
 
@@ -47,10 +51,8 @@ The following Python packages are required
 - $\tt precession$ (1.0.3)
 - $\tt astropy$ (5.0.4)
 - $\tt argparse$ (1.1)
-- $\tt cmath$
 - $\tt numpy$ (>=1.12.3)
 - $\tt scipy$ (1.8.0)
-- $\tt math$
 - $\tt time$
 
 The code is tested with packages in the versions shown in parentheses above, however it is likely that other versions work too.
@@ -58,14 +60,24 @@ The code is tested with packages in the versions shown in parentheses above, how
 ##### Note:
 It is suggested that the $\tt precession$ package is used in the version 1.0.3 [D. Gerosa & M. Kesden (2016)](https://journals.aps.org/prd/abstract/10.1103/PhysRevD.93.124066).
 
-<a name="inputparameters"></a>
-### 3. Input parameters
+<a name="units"></a>
+### 3. Units
 
-Our code accepts parameters with flag options.
+The current version of the code uses astrophysical units:
+ - Mass: solar mass ($M_\odot$)
+ - Distance: parsec ($\rm pc$)
+ - Time: $\rm Myr$
+ - Velocity: $\rm km\ s^{-1}$
+ - Gravitational constant: $G=1/232$
+
+<a name="inputparameters"></a>
+### 4. Input parameters
+
+The code accepts parameters with flag options.
 
 For a description of all input parameters, run the following command in the command line interface:
 
-> python3 rapster.py --help
+> python3 rapster2.py --help
 
 or see Table 1 from [K. Kritos et al. (2022)](https://arxiv.org/abs/2210.10055).
 
@@ -73,92 +85,96 @@ For the user’s convenience we paste the list of optional arguments in the form
 
 | Flag | Description | Type | Default |
 |:--- |:--- |:--- |:--- |
-| -Mcl, --ClusterMass | Initial cluster mass $(M_\odot)$ | float | $10^6M_\odot$ |
-| -rh, --HalfMassRadius | Initial half-mass radius (pc) | float | 1 pc |
-| -rhoC, --CentralDensity | Initial central star density $(M_\odot{\rm pc}^{-3})$ | float | $4\times10^5M_\odot{\rm pc}^{-3}$ |
-| -Rgal, --GalactocentricRadius | Initial galactocentric radius (kpc) | float | 8 kpc |
-| -Z, --Metallicity | Cluster metallicity $(Z_\odot)$ | float | $0.1Z_\odot$ |
-| -fb, --BinaryFraction | Initial binary star fraction | float | 10\% |
-| -w, --NatalKickParameter | Natal velocity kick parameter of BHs (km/s) | float | 265 km/s |
-| -chi, --NatalSpinParameter | Natal spin parameter of first generation (1g) BHs | float | 0 |
-| -SM, --NatalSpinDistribution | Natal spin distribution (1 for monochromatic, 0 for uniform) | int | 0 |
-| -tMax, --SimulationTime | Maximum simulation time (Myr) | float | 13,800 Myr |
-| -dtMin, --MinimumTimeStep | Minimum simulation timestep (Myr) | float | 0.1 Myr |
-| -dtMax, --MaximumTimeStep | Maximum simulation timestep (Myr) | float | 50 Myr |
-| -z, --FormationRedshift | Redshift of cluster formation | float | 3 |
-| -aIMF, --HighMassIMFslope | High mass initial star mass function slope | floar | -2.3 |
-| -ZAMSmax, --MaximumZAMSmass | Maximum ZAMS star mass $(M_\odot)$ | float | $150M_\odot$ |
-| -c, --ConcentrationNFW | Concentration parameter of the NFW profile | float | 10 |
-| -Rs, --ScaleRadiusNFW | Scale radius of the NFW profile (kpc) | float | 50 kpc |
-| -Mh, --DarkMatterHaloMass | Total DM halo mass of the host galaxy $(M_\odot)$ | float | $10^{12}M_\odot$ |
-| -s, --Seed | Random number generator seed | int | 123456789 |
-| -MF, --MergersFile | Name of output file with BBH merger source parameters | str | ``mergers`` |
-| -EF, --EvolutionFile | Name of output file with time-dependent quantities | str | ``evolution`` |
-| -BF, --BlackHoleFile | Name of output file containing the masses of all 1g BHs in $M_\odot$ | str | ``blackholes`` |
+| -N, --number | Initial number of stars | int | ``1000000`` |
+| -r, --half_mass_radius | Initial half-mass radius [pc] | float | ``1`` |
+| -mm, --minimum_star_mass | Smallest ZAMS mass [Msun] | float | ``0.08`` |
+| -mM, --maximum_star_mass | Largest ZAMS mass [Msun] | float | ``150`` |
+| -Z, --metallicity | Absolute metallicity | float | ``0.001`` |
+| -z, --cluster_formation_redshift | Redshift of cluster formation | float | ``3.0`` |
+| -n, --central_stellar_density | Central stellar number density [pc^-3] | float | ``1e6`` |
+| -fb, --binary_fraction | Initial binary star fraction | float | ``0.1`` |
+| -S, --seed | Seed number | int | ``1234567890`` |
+| -dtm, --minimum_time_step | Minimum simulation time-step [Myr] | float | ``0.1`` |
+| -dtM, --maximum_time_step | Maximum simulation time-step [Myr] | float | ``50.0`` |
+| -tM, --maximum_time | Maximum simulation time [Myr] | float | ``140000`` |
+| -wK, --supernova_kick_parameter | One-dimensional supernova kick parameter [km/s] | float | ``265.0`` |
+| -K, --natal_kick_prescription | Natal kick prescription (0 for fallback, 1 for momentum conservation) | int | ``0`` |
+| -R, --galactocentric_radius | Initial galactocentric radius [kpc] | float | ``8.0`` |
+| -vg, --galactocentric_velocity | Galactocentric circular velocity [km/s] | float | ``220.0`` |
+| -s, --spin_parameter | Natal spin parameter of first generation (1g) BHs | float | ``0.0`` |
+| -SD, --spin_distribution | Natal spin distribution model (0 for uniform, 1 for monochromatic) | int | ``0`` |
+| -P, --print_information | Print runtime information (0 for no, 1 for yes) | int | ``1`` |
+| -Mi, --mergers_file_indicator | Export mergers file (0 for no, 1 for yes) | int | ``1`` |
+| -MF, --mergers_file_name | Name of .txt output file with BBH merger source parameters | str | ``mergers`` |
+| -Ei, --evolution_file_indicator | Export evolution file (0 for no, 1 for yes) | int | ``1`` |
+| -EF, --evolution_file_name | Name of .txt output file with time-dependent quantities | str | ``evolution`` |
+| -Hi, --hardening_file_indicator | Export hardening file (0 for no, 1 for yes) | int | ``1`` |
+| -HF, --hardening_file_name | Name of .txt output file with BBH time evolution information | str | ``hardening`` |
+| -BIi, --blackholes_in_file_indicator | Use external BH file (0 for no, 1 for yes) | int | ``0`` |
+| -BIF, --blackholes_in_file_name | Name of .npz input file with initial BH masses | str | ``input_BHs.npz`` |
+| -BOi, --blackholes_out_file_indicator | Export BH masses file (0 for no, 1 for yes) | int | ``1`` |
+| -BOF, --blackholes_out_file_name | Name of .npz file with the masses of all BHs in solar masses | str | ``output_BHs.npz`` |
+| -RP, --remnant_mass_prescription | Remnant mass prescription (1 for SEVN delayed, 2 for Fryer+2012 delayed) | int | ``1`` |
 
 <a name="runningasimulation"></a>
-### 4. Running a simulation
+### 5. Running a simulation
 
-usage: rapster.py [-h] [-Mcl ] [-rh ] [-rhoC ] [-Rgal ] [-Z ] [-fB ] [-w ] [-chi ] [-SM ] [-tMax ] [-dtMin ] [-dtMax ] [-z ] [-aIMF ] [-ZAMSmax ] [-c ] [-Rs ] [-Mh ] [-s ] [-MF ] [-EF ] [-BF ]
+usage: rapster2.py [-h] [-N] [-r] [-mm] [-mM] [-Z] [-z] [-n] [-fb] [-S] [-dtm] [-dtM] [-tM] [-wK] [-K] [-R] [-vg] [-s] [-SD] [-P] [-Mi] [-MF] [-Ei] [-EF] [-Hi] [-HF] [-BIi] [-BIF] [-BOi] [-BOF] [-RP]
 
 As an example we give the commands that produce data used to generate the results in Fig.4 of [K. Kritos et al. (2022)](https://arxiv.org/abs/2210.10055):
 
-  > python3 rapster.py -Mcl  1.36e5 -rh 1.6 -rhoC  5.6e4 -EF ev_a -MF me_a -BF bh_a -Z 0.08 -z 3 -Rgal  8
+  > python3 rapster2.py -N 200000 -r 1.6 -n 9.5e4 -R 8 -Z 0.001 -MF meA -EF evA -HF haA -BOF bhA
 
-  > python3 rapster.py -Mcl  5.40e5 -rh 1.6 -rhoC 26.9e4 -EF ev_b -MF me_b -BF bh_b -Z 0.08 -z 3 -Rgal  8
+  > python3 rapster2.py -N 800000 -r 1.6 -n 45.6e4 -R 8 -Z 0.001 -MF meB -EF evB -HF haB -BOF bhC
 
-  > python3 rapster.py -Mcl 10.82e5 -rh 1.6 -rhoC 15.1e4 -EF ev_c -MF me_c -BF bh_c -Z 0.03 -z 3 -Rgal 20
+  > python3 rapster2.py -N 1600000 -r 1.6 -n 257e4 -R 20 -Z 0.0005 -MF meC -EF evC -HF haC -BOF bhC
 
 The default values are assumed for other parameters not entered in the commands above.
 
 ##### Note:
 To test the code, execute the program with all default values:
 
-  > python3 rapster.py
+  > python3 rapster2.py
   
-This should create three files ``mergers.txt``, ``evolution.txt``, and ``blackholes.npz`` in your current directory. To check and verify whether you have produced these files correctly, we include the corresponding files ``mergers_TEST.txt``, ``evolution_TEST.txt``, and ``blackholes_TEST.npz`` in folder ``./Testing/`` in this repository with data that should match your ouput.
+This should create four files ``mergers.txt``, ``evolution.txt``, ``hardening.txt``, and output_BHs.npz in your current directory. To check and verify whether you have produced these files correctly, we include the corresponding files ``mergers_TEST.txt``, ``evolution_TEST.txt``, ``hardening_TEST.txt``, and ``output_BHs_TEST.npz`` in folder ``./Testing/`` in this repository with data that should match your ouput.
 
 ##### Suggestion:
 Taking different values of seed number corresponds to different realizations of the system under the same initial conditions. 
 Passing the argument $$\tt\$ RANDOM$$ in the -s flag, simulates the star cluster with a pseudo-randomly generated number. Notice this syntax works only in the bash environment.
 
 <a name="outputfiles"></a>
-### 5. Output files:
+### 6. Output files:
 
-At the end of each simulation the code generates three .txt files, one with the black hole masses of all first generation black holes that are initially retained in the cluster, a second file with information about all dynamical mergers that took place during the simulation, and finally a file that keeps track of time-dependent quantities.
+At the end of each simulation the code generates by default three .txt and one .npz file, one with information about all dynamical mergers that took place during the simulation, a second file that keeps track of time-dependent quantities, a third file that stores information about the hardening evolution of each BBH, and finally a file with the masses of the BHs that are initially retained and at end of the simulation, respectively.
 
 a) Column description of mergers .txt file: 
 
 | Column | Variable | Description |
 |:--- |:--- |:--- |
-| 1 | channel | Formation mechanism of BBH |
-| 2 | $a$ | Semimajor axis (AU) when BBH enters the GW regime |
-| 3 | $e$ | Eccentricity of BBH when BBH enters the GW regime |
-| 4 | $m_1$ | Primary mass $(M_\odot)$ |
-| 5 | $m_2$ | Secondary mass $(M_\odot)$ |
-| 6 | $\chi_1$ | Primary dimensionless spin parameter |
-| 7 | $\chi_2$ | Secondary dimensionless spin parameter |
-| 8 | $g_1$ | Generation of primary |
-| 9 | $g_2$ | Generation of secondary |
-| 10 | $t_{\rm form}$ | Time (Myr) BBH formed since simulation started |
-| 11 | $t_{\rm merge}$ | Time (Myr) BBH merged since simulation started |
-| 12 | $z_{\rm form}$ | Redshift BBH formed |
-| 13 | $z_{\rm merge}$ | Redshift BBH merged |
-| 14 | $N_{\rm har}$ | Number of hardening interactions |
-| 15 | $N_{\rm sub}$ | Number of BH exchanges |
-| 16 | $q$ | Mass ratio |
-| 17 | $\chi_{\rm eff}$ | Effective spin parameter |
-| 18 | $\theta_1$ | Polar angle (rad) of primary's spin with orbital angular momentum |
-| 19 | $\theta_2$ | Polar angle (rad) of secondary's spin with orbital angular momentum |
-| 20 | $\Delta\phi$ | Azimuthal angle (rad) between BH spins in the orbital plane |
-| 21 | $m_{\rm rem}$ | Remnant mass $(M_\odot)$ |
-| 22 | $\chi_{\rm rem}$ | Dimensionless remnant spin parameter |
-| 23 | $g_{\rm rem}$ | Remnant generation |
-| 24 | $v_{\rm GW}$ | GW kick (km/s) of remnant BH |
-| 25 | $j_1$ | Reference to primary’s progenitor BBH (if hierarchical product) |
-| 26 | $j_2$ | Reference to secondary’s progenitor BBH (if hierarchical product) |
-| 27 | $M_{\rm cl,0}$ | Initial cluster mass $(M_\odot)$ |
-| 28 | $z_{\rm cl,\ form}$ | Cluster formation redshift |
+| 1 | $\rm seed$ | seed of the simulation |
+| 2 | $\rm ind$ | Unique integer binary identifier |
+| 3 | $\rm channel$ | Formation mechanism of BBH |
+| 4 | $a$ | Semimajor axis ($\rm pc$) when BBH enters the GW regime |
+| 5 | $e$ | Eccentricity when BBH enters the GW regime |
+| 6 | $m_1$ | Primary mass ($M_\odot$) |
+| 7 | $m_2$ | Secondary mass ($M_\odot$) |
+| 8 | $\chi_1$ | Primary dimensionless spin parameter |
+| 9 | $\chi_2$ | Secondary dimensionless spin parameter |
+| 10 | $g_1$ | Generation of primary |
+| 11 | $g_2$ | Generation of secondary |
+| 12 | $\theta_1$ | Polar angle ($\rm rad$) of primary's spin with orbital angular momentum |
+| 13 | $\theta_2$ | Polar angle ($\rm rad$) of secondary's spin with orbital angular momentum |
+| 14 | $\Delta\phi$ | Azimuthal angle ($\rm rad$) between BH spins in the orbital plane |
+| 15 | $t_{\rm form}$ | Time ($\rm Myr$) BBH formed since simulation started |
+| 16 | $z_{\rm form}$ | Redshift BBH formed |
+| 17 | $t_{\rm merge}$ | Time ($\rm Myr$) BBH merged since simulation started |
+| 18 | $z_{\rm merge}$ | Redshift BBH merged |
+| 19 | $m_{\rm rem}$ | Remnant mass ($M_\odot$) |
+| 20 | $\chi_{\rm rem}$ | Remnant dimensionless spin parameter |
+| 21 | $g_{\rm rem}$ | Remnant generation |
+| 22 | $v_{\rm GW}$ | GW kick (km/s) of remnant BH |
+| 23 | $\chi_{\rm eff}$ | Effective dimensionless spin parameter |
+| 24 | $q$ | Mass ratio |
 
 ##### Note:
 BBH assembly channel (first column of mergers file), the ``-`` sign means BBH was ejected and merged outside the cluster:
@@ -167,58 +183,109 @@ BBH assembly channel (first column of mergers file), the ``-`` sign means BBH wa
 - (-)3: three-BH binary induced
 - (-)4: von Zeipel-Lidov-Kozai (ZLK) merger
 - (-)5: ZLK remnant BBH
+-    6: binary-single capture
 
 b) Column description of evolution .txt file:
 
 | Columnn | Variable | Description |
 |:--- |:--- |:--- |
-| 1 | $t$                             |  Simulation time (Myr) |
-| 2 | $z$                            |  Redshift |
-| 3 | $M_{\rm cl}$                   |   Cluster mass $(M_\odot)$  |
-| 4 | $r_{\rm h}$                    |         Cluster half-mass radius (pc) |
-| 5 | $R_{\rm gal}$                  |        Cluster’s galactocentric radius (kpc) |
-| 6 | $N_{\rm BH}$                   |    Total number of BHs in cluster |
-| 7 | $N_{\rm BH,\ sin}$            |    Number of single BHs in cluster |             
-| 8 | $N_{\rm BH-star}$             |    Number of BH-star pairs in cluster |
-| 9 | $N_{\rm BBH}$                 |    Number of BBHs in cluster |
-| 10 | $N_{\rm triples}$            |      Number of triple BHs in cluster |
-| 11 | $N_{\rm me}$                 |      Number of BBH mergers in total |
-| 12 | $N_{\rm me,\ re}$            |        Number of retained mergers |
-| 13 | $N_{\rm me,\ ej}$            |         Number of ejected mergers |
-| 14 | $N_{\rm me,\ out}$           |     Number of dynamical BBHs that merge in field |
-| 15 | $N_{\rm ZLK}$                |      Number of ZLK mergers |
-| 16 | $N_{\rm cap}$                |       Number of captured BBHs |
-| 17 | $N_{\rm ej}$                 |          Number of BBH ejections |
-| 18 | $v_{\rm esc}$                |           Escape velocity (km/s) |
-| 19 | $n_{\rm star-star}$          |        Number density of binary stars $({\rm pc}^{-3})$ |
-| 20 | $\overline{V_{\rm seg}}$     |            Mean segregation volume of BHs $({\rm pc}^3)$ |
-| 21 | $\xi$                       |        Equipartition parameter |
-| 22 | $v_{\rm star}$              |            Stellar velocity (km/s) |
-| 23 | $v_{\rm BH}$                 |          Mean BH velocity (km/s) |
-| 24 | $\tau_{\rm cap}$             | Mean capture timescale (Myr) |
-| 25 | $\tau_{\rm ex,1}$            | Mean star-star $\to$ BH-star timescale (Myr) |
-| 26 | $\tau_{\rm ex,2}$            | Mean BH-star $\to$ BBH timescale (Myr) |
-| 27 | $\tau_{\rm 3bb}$             | Mean 3bb formation timescale (Myr) |
-| 28 | $\tau_{bb}$ | Mean binary-binary interaction timescale (Myr) |
-| 29 | $\tau_{pp}$ | Mean BH-star $-$ BH-star interaction timescale (Myr) |
-| 30 | ${\cal N}_{\rm ex,1}$ | Cumulative number of star-star $\to$ BH-star interactions |
-| 31 | ${\cal N}_{\rm ex,2}$ | Cumulative number of BH-star $\to$ BBH interactions |
-| 32 | ${\cal N}_{\rm 3bb}$ | Cumulative number of 3bb interactions |
-| 33 | ${\cal N}_{bb}$ | Cumulative number of BBH$-$BBH interactions |
-| 34 | ${\cal N}_{pp}$ | Cumulative number of BH-star$-$BH-star interactions |
-| 35 | $\overline{m_{\rm BH}}$ | Mean BH mass $(M_\odot)$ in cluster |
+| 1 | $t$ | Simulation time ($\rm Myr$) |
+| 2 | $z$ | Redshift |
+| 2 | $dt$ | Timestep ($\rm Myr$) |
+| 3 | $\overline{m}$ | Average mass ($M_\odot$) |
+| 4 | $M_{\rm cl}$ | Cluster mass ($M_\odot$) |
+| 5 | $r_{\rm h}$ | Half-mass radius ($\rm pc$) |
+| 6 | $R_{\rm gal}$ | Galactocentric radius ($\rm kpc$) |
+| 7 | $v_{\rm gal}$ | Galactocentric velocity ($\rm km\ s^{-1}$) |
+| 8 | $\tau_{\rm rlx}$ | Half-mass relaxation timescale ($\rm Myr$) |
+| 9 | $\tau_{\rm rlx,BH}$ | BH half-mass relaxation time ($\rm Myr$) |
+| 10 | $n_{\rm star}$ | Stellar central number density ($\rm pc^{-3}$) |
+| 11 | $N_{\rm BH}$ | Number of BHs |
+| 12 | $\overline{m}_{\rm BH}$ | Average BH mass ($M_\odot$) |
+| 13 | $m_{\rm BH}^{\rm max}$ | Heaviest BH mass ($M_\odot$) |
+| 14 | $r_{\rm h,BH}$ | BH half-mass radius ($\rm pc$) |
+| 15 | $r_{\rm c,BH}$ | BH core radius ($\rm pc$) |
+| 16 | $S$ | Spitzer parameter |
+| 17 | $\xi$ | Equipartition parameter |
+| 18 | $\psi$ | Multimass relaxation factor |
+| 19 | $\psi_{\rm BH}$ | BH multimass relaxation factor |
+| 20 | $\tau_{\rm 3bb}$ | 3bb timescale ($\rm Myr$) |
+| 21 | $\tau_{\rm 2,cap}$ | 2-capture timescale ($\rm Myr$) |
+| 22 | $k_{\rm 3bb}$ | Number of 3bb in current step |
+| 23 | $k_{\rm 2,cap}$ | Number of 2-captures in current step |
+| 24 | $N_{\rm me}$ | Cumulative number of mergers |
+| 25 | $N_{\rm BBH}$ | Current number of BBHs |
+| 26 | $N_{\rm me,Re}$ | Cumulative number of ejected merger remnants |
+| 27 | $N_{\rm me,Ej}$ | Cumulative number of retained merger remnants |
+| 28 | $v_{\rm star}$ | Stellar velocity dispersion ($\rm km\ s^{-1}$) |
+| 29 | $v_{\rm BH}$ | BH velocity dispersion ($\rm km\ s^{-1}$) |
+| 30 | $n_{\rm h,BH}$ | Half-mass BH number density ($\rm pc^{-3}$) |
+| 31 | $n_{\rm c,BH}$ | Core BH number density ($\rm pc^{-3}$) |
+| 32 | $n_{\rm a,BH}$ | Average BH number density ($\rm pc^{-3}$) |
+| 33 | $N_{\rm 3bb}$ | Cumulative number of 3bb |
+| 34 | $N_{\rm 2,cap}$ | Cumulative number of 2-captures |
+| 35 | $N_{\rm 3,cap}$ | Cumulative number of 3-captures |
+| 36 | $N_{\rm BH,ej}$ | Cumulative number of single BH ejections |
+| 37 | $N_{\rm BBH,ej}$ | Cumulative number of BBH ejections |
+| 38 | $N_{\rm dis}$ | Cumulative number of BBH disruptions |
+| 39 | $N_{\rm ex}$ | Cumulative number of BBH-BH exchanges |
+| 40 | $\tau_{\rm bb}$ | BBH-BBH interaction timescale ($\rm Myr$) |
+| 41 | $N_{\rm bb}$ | Cumulative number of BBH-BBH interactions |
+| 42 | $N_{\rm me,Fi}$ | Cumulative number of field mergers |
+| 43 | $N_{\rm me,2b}$ | Cumulative number of in-cluster 2-body mergers |
+| 44 | $\tau_{\rm ex,1}$ | star-star$\to$BH-star timescale ($\rm Myr$) |
+| 45 | $\tau_{\rm ex,2}$ | BH-star$\to$BBH timescale ($\rm Myr$) |
+| 46 | $k_{\rm ex,1}$ | Number of star-star$\to$BH-star exchanges in this step |
+| 47 | $k_{\rm ex,2}$ | Number of BH-star$\to$BBH exchanges in this step |
+| 48 | $N_{\rm ex,1}$ | Cumulative number of star-star$\to$BH-star exchanges |
+| 49 | $N_{\rm ex,2}$ | Cumulative number of BH-star$\to$BBH exchanges |
+| 50 | $N_{\rm BH-star}$ | Current number of BH-star pairs |
+| 51 | $\tau_{\rm pp}$ | BH-star--BH-star interaction timescale ($\rm Myr$) |
+| 52 | $k_{\rm pp}$ | Number of BH-star--BH-star interactions in this step |
+| 53 | $N_{\rm pp}$ | Cumulative number of BH-star--BH-star interactions |
+| 54 | $v_{\rm esc}$ | Escape velocity ($\rm km\ s^{-1}$) |
+| 55 | $v_{\rm esc,BH}$ | Escape velocity from BH subsystem ($\rm km\ s^{-1}$) |
+| 56 | $N_{\rm triples}$ | Cumulative number of BH triples |
+| 57 | $N_{\rm ZLK}$ | Cumulative number of ZLK mergers |
 
-c) The blackholes .npz file contains two arrays, called ``mBH_ini`` and ``mBH_fin`` which provide in $M_\odot$ the masses of all single BHs at the start and the end of the simulation.
+c) Column description of hardening .txt file:
+
+| Columnn | Variable | Description |
+|:--- |:--- |:--- |
+| 1 | $t$ | Global time ($\rm Myr$) |
+| 2 | $dt$ | Global timestep ($\rm Myr$) |
+| 3 | $t_{\rm local}$ | Local time ($\rm Myr$) |
+| 4 | $dt_{\rm local}$ | Local timestep ($\rm Myr$) |
+| 5 | $\rm ind$ | Binary's unique integer identifier |
+| 6 | $a$ | Semimajor axis ($\rm pc$) |
+| 7 | $e$ | Eccentricity |
+| 8 | $m_1$ | Primary mass ($M_\odot$) |
+| 9 | $m_2$ | Secondary mass ($M_\odot$) |
+| 10 | $q$ | Mass ratio |
+| 11 | $\rm condition$ | BBH status |
+
+##### Note:
+Condition or binary status (last column of hardening file):
+- 0: BBH available to evolve (see the flowchart of our algorithm in Fig.3 of [K. Kritos et al. (2022)](https://arxiv.org/abs/2210.10055))
+- 1: local time exceeds global time
+- 2: 2-body merger (the BBH hardens and merges in the cluster after entering the GW regime)
+- 3: binary ionized
+- 4: binary-single capture
+- 5: binary ejected
+
+Unless ${\rm condition}=0$, the local simulation is terminated.
+
+d) The output_BHs.npz file (if exported) contains two arrays, called ``mBH_ini`` and ``mBH_fin`` which provide in $M_\odot$ the masses of all single BHs that are retained at the start and the end of the simulation.
 
 <a name="applicationsofthecode"></a>
-### 6. Applications of the code
+### 7. Applications of the code
 
 The code can be useful when executed multiple times, for instance when simulating a set of clusters and generating a population of dynamically formed BBH mergers.
 
 Although the program itself is not computationally expensive (we have tested in a laptop that we generate a few binary black hole mergers per second), independent parallelization is still encouraged when simulating a very large number of star clusters for efficiency.
 
 <a name="citingthiswork"></a>
-### 7. Citing this work
+### 8. Citing this work
 
 If you utilize this code in your research, please cite the following reference:
 
@@ -226,18 +293,22 @@ If you utilize this code in your research, please cite the following reference:
 
 $\tt Rapster$ has been used in the following works:
 
-- [K. Kritos, E. Berti & J. Silk (2022)](https://arxiv.org/abs/2212.06845).
+- [K. Kritos, E. Berti & J. Silk (2022)](https://arxiv.org/abs/2212.06845)
+
+- [A. Antonelli, K. Kritos, K. Ng, R. Cotesta, E. Berti (2023)](https://arxiv.org/abs/2306.11088)
+
+- [K. Ng, K. Kritos, A. Antonelli, R. Cotesta, E. Berti (2023)]()
 
 <a name="reportingbugs"></a>
-### 8. Reporting bugs
+### 9. Reporting bugs
 
 If you find a bug in the code, please contact us in kkritos1@jhu.edu with a description of the bug.
 
 Suggestions and pull requests are welcome :)
 
 <a name="thanks"></a>
-### 9. Thanks
+### 10. Thank you
 
-Vladimir Strokov, Vishal Baibhav, Emanuele Berti, Andrea Antonelli, Muhsin Aljaf, Mark Cheung, Roberto Cotesta, Hector Cruz, Giacomo Fragione, Gabriele Franciolini, Thomas Helfer, Veome Kapil, Kyle Kremer, Iason Krommydas, Luca Reali, Carl Rodriguez, Xiao-Xiao Kou.
+Vladimir Strokov, Vishal Baibhav, Emanuele Berti, Andrea Antonelli, Dany Atallah, Muhsin Aljaf, Mark Cheung, Roberto Cotesta, Hector Cruz, Giacomo Fragione, Gabriele Franciolini, Thomas Helfer, Veome Kapil, Kyle Kremer, Iason Krommydas, Miguel Martinez, Luca Reali, Carl Rodriguez, Newlin Weatherford, Xiao-Xiao Kou.
 
 
