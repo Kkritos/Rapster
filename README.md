@@ -136,7 +136,7 @@ To test the code, execute the program with all default values:
 
   > python3 rapster2.py
   
-This should create four files ``mergers.txt``, ``evolution.txt``, ``hardening.txt``, and output_BHs.npz in your current directory. To check and verify whether you have produced these files correctly, we include the corresponding files ``mergers_TEST.txt``, ``evolution_TEST.txt``, ``hardening_TEST.txt``, and ``output_BHs_TEST.npz`` in folder ``./Testing/`` in this repository with data that should match your ouput.
+This should create four files ``mergers.txt``, ``evolution.txt``, ``hardening.txt``, and ``output_BHs.npz`` in your current directory. To check and verify whether you have produced these files correctly, we include the corresponding files ``mergers_TEST.txt``, ``evolution_TEST.txt``, ``hardening_TEST.txt``, and ``output_BHs_TEST.npz`` in folder ``./Testing2/`` in this repository with data that should match your ouput.
 
 ##### Suggestion:
 Taking different values of seed number corresponds to different realizations of the system under the same initial conditions. 
