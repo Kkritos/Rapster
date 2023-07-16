@@ -144,7 +144,7 @@ def evolve_BBHs(seed, t, z, dt, zCl_form, binaries, hardening, mergers, mBH, sBH
                 if condition>0:
                     break
                 
-                if T_GW(m1, m2, a, e) < np.min([dt_local, dt, lookback(zCl_form) - t - t_local]): # 2-body in-cluster merger during the current time-step
+                if T_GW(m1, m2, a, e) < np.min([dt_local, dt, lookback_interp(zCl_form) - t - t_local]): # 2-body in-cluster merger during the current time-step
                     
                     theta1, theta2, dPhi = sample_angles()
                     
@@ -565,7 +565,7 @@ def evolve_BBHs(seed, t, z, dt, zCl_form, binaries, hardening, mergers, mBH, sBH
                 if v12_after > 2 * np.sqrt(v_star**2 + vBH**2):
                     
                     # check if BBH mergers in the field:
-                    if t + t_local + T_GW(m1, m2, a, e) < lookback(zCl_form): # BBH merges
+                    if t + t_local + T_GW(m1, m2, a, e) < lookback_interp(zCl_form): # BBH merges
                         
                         theta1, theta2, dPhi = sample_angles()
                         
