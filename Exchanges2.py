@@ -116,7 +116,7 @@ def BHstar_to_BBH(t, z, k_ex2, N_ex2, m_avg, mBH, sBH, gBH, pairs, binaries, N_B
             eccen = np.sqrt(np.random.rand())
             
             # append binary:
-            binaries = np.append(binaries, [[np.random.randint(0, 999999999), 1, sma, eccen, m1, m2, s1, s2, g1, g2, t, z]], axis=0)
+            binaries = np.append(binaries, [[np.random.randint(0, 999999999), 1, sma, eccen, m1, m2, s1, s2, g1, g2, t, z, 0]], axis=0)
             
             # delete pair:
             pairs = np.delete(pairs, kp, axis=0)

@@ -246,8 +246,8 @@ if __name__ == "__main__":
     N_Triples = 0 # number of BHBHBH hierarchical triples
     N_ZLK = 0 # number of ZLK mergers
     
-    # binaries [ind, channel, a, e, m1, m2, s1, s2, g1, g2, t_form, z_form]:
-    binaries = np.zeros(shape=(1, 12))
+    # binaries [ind, channel, a, e, m1, m2, s1, s2, g1, g2, t_form, z_form, Nex]:
+    binaries = np.zeros(shape=(1, 13))
     
     # pairs [a, m, s, g]:
     pairs = np.zeros(shape=(1, 4))
@@ -261,8 +261,8 @@ if __name__ == "__main__":
     # evolution [t, z, dt, m_avg, Mcl, rh, R_gal, v_gal, t_rlx, tBH_rlx, n_star, N_BH, mBH_avg, mBH_max, rh_BH, rc_BH, S, xi, psi, psi_BH, t_3bb, t_2cap, k_3bb, k_2cap, N_me, N_BBH, N_meRe, N_meEj, v_star, vBH, nh_BH, nc_BH, na_BH, N_3bb, N_2cap, N_3cap, N_BHej, N_BBHej, N_dis, N_ex, t_bb, N_bb, N_meFi, N_me2b, t_ex1, t_ex2, k_ex1, k_ex2, N_ex1, N_ex2, N_BHstar, t_pp, k_pp, N_pp, v_esc, vBH_esc, N_Triples, N_ZLK]:
     evolution = np.zeros(shape=(1, 58))
     
-    # hardening [t, dt, t_local, dt_local, ind, a, e, m1, m2, q, condition]:
-    hardening = np.zeros(shape=(1, 11))
+    # hardening [t, dt, t_local, dt_local, ind, a, e, m1, m2, q, condition, Nex]:
+    hardening = np.zeros(shape=(1, 12))
     N_hardening = 0
     
     # initialize time:
@@ -579,7 +579,7 @@ if __name__ == "__main__":
                 eccen = np.sqrt(np.random.rand())
                 
                 # append binary:
-                binaries = np.append(binaries, [[np.random.randint(0, 999999999), 1, sma, eccen, m1, m2, s1, s2, g1, g2, t, z]], axis=0)
+                binaries = np.append(binaries, [[np.random.randint(0, 999999999), 1, sma, eccen, m1, m2, s1, s2, g1, g2, t, z, 0]], axis=0)
                 
                 # destroy pairs:
                 pairs = np.delete(pairs, [k1, k2], axis=0)
@@ -733,7 +733,7 @@ if __name__ == "__main__":
             for i in range(N_hardening):
                 f_hardening.write(str(hardening[i][0 ])+' '+str(hardening[i][1 ])+' '+str(hardening[i][2 ])+' '+str(hardening[i][3 ])+' '+str(hardening[i][4 ])+' '+\
                                   str(hardening[i][5 ])+' '+str(hardening[i][6 ])+' '+str(hardening[i][7 ])+' '+str(hardening[i][8 ])+' '+str(hardening[i][9 ])+' '+\
-                                  str(hardening[i][10]))
+                                  str(hardening[i][10])+' '+str(hardening[i][11]))
                 f_hardening.write('\n')
     
     print('END OF SIMULATION. RUNTIME:', np.abs(time.time() - global_time_initial), 's')

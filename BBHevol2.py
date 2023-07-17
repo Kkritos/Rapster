@@ -101,6 +101,7 @@ def evolve_BBHs(seed, t, z, dt, zCl_form, binaries, hardening, mergers, mBH, sBH
                 q = np.min([m1, m2])/np.max([m1, m2])
                 t_form = binaries[i][10]
                 z_form = binaries[i][11]
+                Nex = binaries[i][12]
                 
                 # BBH-star interaction timescale:
                 t_BBH_star = 1e100 #1 / Rate_int(m1+m2+m_avg, n_star, v_star, kp_max * a)
@@ -138,7 +139,7 @@ def evolve_BBHs(seed, t, z, dt, zCl_form, binaries, hardening, mergers, mBH, sBH
                     dt_local = t_BBH_BBH
                     type_int = 3
                     
-                hardening = np.append(hardening, [[t, dt, t_local, dt_local, ind, a, e, m1, m2, q, condition]], axis=0)
+                hardening = np.append(hardening, [[t, dt, t_local, dt_local, ind, a, e, m1, m2, q, condition, Nex]], axis=0)
                 N_hardening+=1
                 
                 if condition>0:
@@ -482,6 +483,7 @@ def evolve_BBHs(seed, t, z, dt, zCl_form, binaries, hardening, mergers, mBH, sBH
                 if m3>np.min([m1, m2]) and rp<rp_c and type_int==2: # exchange occurs
 
                     N_ex+=1
+                    binaries[i][12]+=1
                     
                     if m1<m2:
 

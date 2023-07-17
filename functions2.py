@@ -84,6 +84,7 @@ def redshift(t):
     
     return z
 
+@njit
 def T_GW(m1, m2, a0, e0):
     """
     I. Mandel (2021) fit to Peters timescale.
@@ -104,6 +105,7 @@ def T_GW(m1, m2, a0, e0):
     
     return Tc * factor_e
 
+@njit
 def t_relax(Mcl, rh, m_avg, psi, logL):
     """
     @in Mcl: cluster's mass [Msun]
@@ -117,6 +119,7 @@ def t_relax(Mcl, rh, m_avg, psi, logL):
     
     return 0.138 * np.sqrt(Mcl * rh**3 / G_Newton) / m_avg / psi / logL
 
+@njit
 def v_esc(Mcl, rh):
     """
     @in Mcl: cluster mass [Msun]

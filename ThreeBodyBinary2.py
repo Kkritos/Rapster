@@ -64,7 +64,7 @@ def three_body_binary(t, z, k_3bb, mBH_avg, binaries, mBH, sBH, gBH, vBH, N_3bb,
             eccen = np.sqrt(np.random.rand())
             
             # append binary:
-            binaries = np.append(binaries, [[np.random.randint(0, 999999999), 3, sma, eccen, m1, m2, sBH[k1], sBH[k2], gBH[k1], gBH[k2], t, z]], axis=0)
+            binaries = np.append(binaries, [[np.random.randint(0, 999999999), 3, sma, eccen, m1, m2, sBH[k1], sBH[k2], gBH[k1], gBH[k2], t, z, 0]], axis=0)
             
             # update number of in-cluster BBHs:
             N_BBH+=1

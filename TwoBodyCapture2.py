@@ -169,14 +169,12 @@ def two_body_capture(seed, t, dt, z, zCl_form, k_2cap, mBH_avg, binaries, mBH, s
                                                redshift(lookback(zCl_form) - t + T_GW(m1, m2, sma, eccen)), m_rem, s_rem, g_rem, vGW_kick, s_eff, q]], axis=0)
 
             else:
-
-                # DESTROY THE BINARY IF SOFT
                 
                 # append binary:
-                binaries = np.append(binaries, [[ind, 2, sma, eccen, m1, m2, s1, s2, g1, g2, t, z]], axis=0)
+                binaries = np.append(binaries, [[ind, 2, sma, eccen, m1, m2, s1, s2, g1, g2, t, z, 0]], axis=0)
                 
                 N_BBH+=1
-
+                
         mBH_temp = np.array(mBH_temp)
         sBH_temp = np.array(sBH_temp)
         gBH_temp = np.array(gBH_temp)

@@ -180,7 +180,7 @@ def evolve_triples(seed, t, z, zCl_form, triples, binaries, mBH, sBH, gBH, mBH_a
                 else: # new outer binary survives
                     
                     # append binary:
-                    binaries = np.append(binaries, [[np.random.randint(0, 999999999), 5, a_out, np.sqrt(np.random.rand()), m2, m_rem, s2, s_rem, g2, g_rem, t + t_ZLK, redshift(lookback(zCl_form) - t - t_ZLK)]], axis=0)
+                    binaries = np.append(binaries, [[np.random.randint(0, 999999999), 5, a_out, np.sqrt(np.random.rand()), m2, m_rem, s2, s_rem, g2, g_rem, t + t_ZLK, redshift(lookback(zCl_form) - t - t_ZLK), 0]], axis=0)
                     
                     N_BBH+=1
                     N_meRe+=1
@@ -200,7 +200,7 @@ def evolve_triples(seed, t, z, zCl_form, triples, binaries, mBH, sBH, gBH, mBH_a
                 sBH = np.append(sBH, s2)
                 gBH = np.append(gBH, g2)
                 
-                binaries = np.append(binaries, [[ind_in, channel_in, a_in, e_in, m0, m1, s0, s1, g0, g1, t, z]], axis=0)
+                binaries = np.append(binaries, [[ind_in, channel_in, a_in, e_in, m0, m1, s0, s1, g0, g1, t, z, 0]], axis=0)
                 
             i+=1
             

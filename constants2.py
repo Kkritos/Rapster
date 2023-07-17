@@ -27,6 +27,7 @@ import astropy.units as u
 from astropy.cosmology import Planck18, z_at_value
 import pandas as pd
 import time
+from numba import njit
 
 # Use astrophysical units throughout:
 
@@ -107,7 +108,7 @@ nu_sev = 0.07
 zeta = 0.08
 
 # BH burning coefficient:
-zeta_BH = 0.08
+zeta_BH = zeta
 
 # High-mass IMF power index:
 alphaIMF = -2.3
