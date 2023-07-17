@@ -263,6 +263,7 @@ c) Column description of hardening .txt file:
 | 9 | $m_2$ | Secondary mass ($M_\odot$) |
 | 10 | $q$ | Mass ratio |
 | 11 | $\rm condition$ | BBH status |
+| 12 | $N_{\rm ex}$ | Number of BBH-BH exchanges |
 
 ##### Note:
 Condition or binary status (last column of hardening file):
@@ -309,6 +310,6 @@ Suggestions and pull requests are welcome :)
 <a name="thanks"></a>
 ### 10. Thank you
 
-Vladimir Strokov, Vishal Baibhav, Emanuele Berti, Andrea Antonelli, Dany Atallah, Muhsin Aljaf, Mark Cheung, Roberto Cotesta, Hector Cruz, Giacomo Fragione, Gabriele Franciolini, Thomas Helfer, Veome Kapil, Kyle Kremer, Iason Krommydas, Miguel Martinez, Luca Reali, Carl Rodriguez, Newlin Weatherford, Xiao-Xiao Kou.
+Vladimir Strokov, Vishal Baibhav, Emanuele Berti, Andrea Antonelli, Fabio Antonini, Dany Atallah, Muhsin Aljaf, Mark Cheung, Roberto Cotesta, Hector Cruz, Giacomo Fragione, Gabriele Franciolini, Thomas Helfer, Veome Kapil, Kyle Kremer, Iason Krommydas, Miguel Martinez, Luca Reali, Carl Rodriguez, Newlin Weatherford, Xiao-Xiao Kou.
 
 
