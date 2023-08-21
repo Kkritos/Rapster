@@ -601,7 +601,7 @@ if __name__ == "__main__":
         xi_e = xi_e0 * np.exp(10 * rh / rJ)
         
         # dynamical friction timescale:
-        t_df = 0.45e3 * (R_gal / 1e3)**2 * v_gal * (Mcl / 1e5) / 2
+        t_df = 0.45e3 * (R_gal / 1e3)**2 * v_gal / (Mcl / 1e5) / 2
         
         # append evolution:
         evolution = np.append(evolution, [[t, z, dt, m_avg, Mcl, rh, R_gal, v_gal, t_rlx, tBH_rlx, n_star, N_BH, mBH_avg, mBH_max, rh_BH, rc_BH, S, 
