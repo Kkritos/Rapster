@@ -114,7 +114,6 @@ def t_relax(Mcl, rh, m_avg, psi, logL):
     
     return 0.138 * np.sqrt(Mcl * rh**3 / G_Newton) / m_avg / psi / logL
 
-@njit
 def v_esc(Mcl, rh):
     """
     @in Mcl: cluster mass [Msun]
