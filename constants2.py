@@ -25,9 +25,7 @@ import scipy.integrate as integrate
 from scipy import interpolate
 import astropy.units as u
 from astropy.cosmology import Planck18, z_at_value
-import pandas as pd
 import time
-from numba import njit
 
 # Use astrophysical units throughout:
 
