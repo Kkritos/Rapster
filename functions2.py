@@ -40,7 +40,6 @@ def redshift_astropy(t):
     
     return z_at_value(Planck18.lookback_time, t * u.Myr)
 
-@njit
 def E_cosmo(z):
     """
     @in z: redshift
@@ -50,7 +49,6 @@ def E_cosmo(z):
     
     return np.sqrt(Omega_R * (1 + z)**4 + Omega_M * (1 + z)**3 + Omega_K * (1 + z)**2 + Omega_V)
 
-@njit
 def lookback(z):
     """
     @in z: redshift
@@ -67,7 +65,6 @@ def lookback(z):
     
     return tL
 
-@njit
 def redshift(t):
     """
     @in t: lookback time [Myr]
@@ -84,7 +81,6 @@ def redshift(t):
     
     return z
 
-@njit
 def T_GW(m1, m2, a0, e0):
     """
     I. Mandel (2021) fit to Peters timescale.
@@ -105,7 +101,6 @@ def T_GW(m1, m2, a0, e0):
     
     return Tc * factor_e
 
-@njit
 def t_relax(Mcl, rh, m_avg, psi, logL):
     """
     @in Mcl: cluster's mass [Msun]
