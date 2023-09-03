@@ -493,7 +493,10 @@ if __name__ == "__main__":
         
         # number of 3bbs (cannot exceed 3*N_BHsin):
         k_3bb = np.min([poisson.rvs(mu=dt / t_3bb), int((N_BH-2*N_BBH-N_BHstar-3*N_Triples) / 3)])
-        
+
+        if k_3bb = 0:
+            k_3bb = 1
+     
         # 3bb formation:
         t, z, k_3bb, mBH_avg, binaries, mBH, sBH, gBH, vBH, N_3bb, N_BBH = three_body_binary(t, z, k_3bb, mBH_avg, binaries, mBH, sBH, gBH, vBH, N_3bb, N_BBH)
         
