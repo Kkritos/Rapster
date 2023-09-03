@@ -496,5 +496,17 @@ def f_fb(Mzams):
         ffb = 1
         
     return ffb
+
+def get_SN_kick(mBH, wSN_kick):
+    """
+    Returns supernova kick drawn from Maxwellian with parameter wSN_kick * 1.4 / mBH.
+
+    @in mBH: BH mass (Msun), scalar
+    @in wSN_kick: neutron star 1D kick parameter (km/s), scalar
     
+    @out: SN kick (km/s), scalar
+    """
+    
+    return maxwell.rvs(loc=0, scale=np.sqrt(3) * wSN_kick * 1.4/mBH)
+
 # end of file
