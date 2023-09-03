@@ -84,7 +84,7 @@ parser.add_argument('-BOi', '--blackholes_out_file_indicator', type=int, metavar
 
 parser.add_argument('-BOF', '--blackholes_out_file_name', type=str, metavar=' ', default='output_BHs.npz', help='Name of .npz file with the masses of all BHs in solar masses')
 
-parser.add_argument('-RP', '--remnant_mass_prescription', type=int, metavar=' ', default=1, help='Remnant mass prescription (1 for SEVN delayed, 2 for Fryer+2012 delayed)')
+parser.add_argument('-RP', '--remnant_mass_prescription', type=int, metavar=' ', default=1, help='Remnant mass prescription (0 for SEVN delayed, 1 for Fryer+2012 delayed, 2 for Fryer+2012 rapid)')
 
 args = parser.parse_args()
 
@@ -188,10 +188,12 @@ if __name__ == "__main__":
     # remnant masses:
     m_rem = np.zeros(m_massive.size)
     for i in range(m_massive.size):
-        if RP==1:
+        if RP==0:
             m_rem[i] = Mrem_SEVN(m_massive[i], Z) + 0.01 * np.random.rand()
-        if RP==2:
+        if RP==1:
             m_rem[i] = Mrem_F12d(m_massive[i], Z) + 0.01 * np.random.rand()
+        if RP==2:
+            m_rem[i] = Mrem_F12r(m_massive[i], Z) + 0.01 * np.random.rand()
             
     # separate BHs from other remnants:
     mBH = m_rem[m_rem > mBH_min]
