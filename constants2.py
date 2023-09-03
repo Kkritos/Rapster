@@ -115,7 +115,7 @@ alphaIMF = -2.3
 # minimum BH mass:
 mBH_min = 3.0
 
-# minimum ZAMS mass of massive star that probably results into BH:
-mM_min = 20.0
+# minimum ZAMS mass of a massive star that probably results in BH:
+mM_min = 15.0
 
 # end of file
