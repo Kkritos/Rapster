@@ -175,7 +175,10 @@ if __name__ == "__main__":
         
         # filter only hard binary stars:
         ab = ab[ab < ab_hard]
-        
+
+    if RP==0:
+        mM_min = 20.0
+ 
     # number of massive stars:
     N_massive = int(Mcl * integrate.quad(lambda x: IMF_kroupa(np.array([x])), mM_min, m_max)[0] \
                     / integrate.quad(lambda x: x * IMF_kroupa(np.array([x])), m_min, m_max)[0])
