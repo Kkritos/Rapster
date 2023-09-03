@@ -53,9 +53,10 @@ The following Python packages are required
 - $\tt argparse$ (1.1)
 - $\tt numpy$ (>=1.12.3)
 - $\tt scipy$ (1.8.0)
+- $\tt pandas$
 - $\tt time$
 
-The code is tested with packages in the versions shown in parentheses above, however it is likely that other versions work too.
+The code is tested with packages in the versions shown in parentheses above, however, it is likely that other versions work too.
 
 ##### Note:
 It is suggested that the $\tt precession$ package is used in the version 1.0.3 [D. Gerosa & M. Kesden (2016)](https://journals.aps.org/prd/abstract/10.1103/PhysRevD.93.124066).
