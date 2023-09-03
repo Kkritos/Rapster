@@ -309,15 +309,18 @@ def Rate_exc(m1, m2, m3, n3, v_rel, a):
     
     return n3 * Sigma_exc * v_rel
     
-N_grid = 500
-M_grid = np.linspace(20, 340, N_grid)
+N_grid = 700
+M_grid = np.linspace(10, 340, N_grid)
 Z_grid = np.logspace(np.log10(1e-4), np.log10(2e-2), N_grid)
 
 Mremnants_F12d = np.loadtxt('./MzamsMrem/MzamsMrem_F12d.txt', unpack=True)
+Mremnants_F12r = np.loadtxt('./MzamsMrem/MzamsMrem_F12r.txt', unpack=True)
 
 Mremnants_F12d = np.transpose(Mremnants_F12d)
+Mremnants_F12r = np.transpose(Mremnants_F12r)
 
 MremInterpol_F12d = interpolate.interp2d(M_grid, Z_grid, Mremnants_F12d, kind='linear', bounds_error=True)
+MremInterpol_F12r = interpolate.interp2d(M_grid, Z_grid, Mremnants_F12r, kind='linear', bounds_error=True)
 
 def Mrem_F12d(M, Z):
     """
@@ -329,7 +332,45 @@ def Mrem_F12d(M, Z):
     @out : remnant mass [Msun]
     """
 
-    return MremInterpol_F12d(M, Z)
+    M_lowerEdge = 45  # absolute lower edge of the upper mass gap (in solar masses)
+    M_upperEdge = 120 # absolute upper edge of the upper mass gap (in solar masses)
+    
+    # check if mass input is an array or not:
+    if isinstance(M, np.ndarray): # M is array
+        
+        out = MremInterpol_F12d(M, Z) * (np.heaviside(M_lowerEdge * np.ones(M.size) - MremInterpol_F12d(M, Z), 0) \
+            + np.heaviside(MremInterpol_F12d(M, Z) - M_upperEdge * np.ones(M.size), 0))
+    else: # M is not array
+        
+        out = MremInterpol_F12d(M, Z) * (np.heaviside(M_lowerEdge - MremInterpol_F12d(M, Z), 0) \
+            + np.heaviside(MremInterpol_F12d(M, Z) - M_upperEdge, 0))
+    
+    return out
+
+def Mrem_F12r(M, Z):
+    """
+    Fryer et al. (2002) rapid remnant mass prescription model.
+    
+    @in M: ZAMS mass [Msun]
+    @in Z: metallicity
+
+    @out : remnant mass [Msun]
+    """
+
+    M_lowerEdge = 45  # absolute lower edge of the upper mass gap (in solar masses)
+    M_upperEdge = 120 # absolute upper edge of the upper mass gap (in solar masses)
+    
+    # check if mass input is an array or not:
+    if isinstance(M, np.ndarray): # M is array
+        
+        out = MremInterpol_F12r(M, Z) * (np.heaviside(M_lowerEdge * np.ones(M.size) - MremInterpol_F12r(M, Z), 0) \
+            + np.heaviside(MremInterpol_F12r(M, Z) - M_upperEdge * np.ones(M.size), 0))
+    else: # M is not array
+        
+        out = MremInterpol_F12r(M, Z) * (np.heaviside(M_lowerEdge - MremInterpol_F12r(M, Z), 0) \
+            + np.heaviside(MremInterpol_F12r(M, Z) - M_upperEdge, 0))
+    
+    return out
 
 # Reading files exported from SEVN code and stored according to metallicity for various ZAMS masses:
 MzamsMrem1  = np.load('./MzamsMrem/MzamsMrem1.npz' ); Mrem_delayed_1  = MzamsMrem1 ['Mrem1' ]
@@ -395,7 +436,7 @@ def sample_hardness():
 
 def f_fb(Mzams):
     """
-    Fraction of ejected supernova mass that falls back onto the newly-borned proto-comapct object.
+    Fraction of ejected supernova mass that falls back onto the newly-born proto-compact object.
     
     @in Mzams: ZAMS star mass [Msun]
     
