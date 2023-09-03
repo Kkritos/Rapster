@@ -411,7 +411,7 @@ def Mrem_SEVN(M, Z):
     @out : remnant mass in solar masses (scalar or array depending on M)
     '''
     
-    M_lowerEdge = 60  # absolute lower edge of the upper mass gap (in solar masses)
+    M_lowerEdge = 55  # absolute lower edge of the upper mass gap (in solar masses)
     M_upperEdge = 120 # absolute upper edge of the upper mass gap (in solar masses)
     
     # check if mass input is an array or not:
