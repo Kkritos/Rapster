@@ -52,7 +52,7 @@ parser.add_argument('-tM', '--maximum_time', type=float, metavar=' ', default=14
 
 parser.add_argument('-wK', '--supernova_kick_parameter', type=float, metavar=' ', default=265, help='One-dimensional supernova kick parameter [km/s]')
 
-parser.add_argument('-K', '--natal_kick_prescription', type=int, metavar=' ', default=1, help='Natal kick prescription (0 for fallback, 1 for momentum conservation)')
+parser.add_argument('-K', '--natal_kick_prescription', type=int, metavar=' ', default=1, help='Natal kick prescription (0 for fallback, 1 for momentum conservation kicks + fallback)')
 
 parser.add_argument('-R', '--galactocentric_radius', type=float, metavar=' ', default=8, help='Initial galactocentric radius [kpc]')
 
@@ -202,10 +202,10 @@ if __name__ == "__main__":
     mBH = m_rem[m_rem > mBH_min]
     
     # compute supernova kicks:
-    if NKP==0:
-        vSN_kick = (1 - np.vectorize(f_fb)(m_massive[m_rem > mBH_min])) * maxwell.rvs(loc=0, scale=np.sqrt(3) * wSN_kick, size=mBH.size)
-    elif NKP==1:
-        vSN_kick = 1.4 / mBH * maxwell.rvs(loc=0, scale=np.sqrt(3) * wSN_kick, size=mBH.size)
+    if NKP==0: # only fallback
+        vSN_kick = (1 - np.vectorize(f_fb)(m_massive[m_rem > mBH_min])) * np.vectorize(get_SN_kick)(1.4 * np.ones(mBH.size), wSN_kick)
+    elif NKP==1: # momentum-conservation + fallback
+        vSN_kick = (1 - np.vectorize(f_fb)(m_massive[m_rem > mBH_min])) * np.vectorize(get_SN_kick)(mBH, wSN_kick)
         
     # retain BHs with SN kick < escape velocity:
     mBH = mBH[vSN_kick < v_esc(Mcl, rh)]
