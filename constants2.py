@@ -71,7 +71,7 @@ N_IMS = 20
 kp_max = 2.0
 
 # Minimum binary hardness ratio:
-eta_min = 5.0
+eta_min = 20.0
 
 # Probability for 3bb formation:
 P_3bb = 0.80

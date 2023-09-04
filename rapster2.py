@@ -296,7 +296,7 @@ if __name__ == "__main__":
             N_BH = mBH.size
             i_aux1 = 1
             
-        if i_aux1==1 and N_BH==0:
+        if i_aux1==1 and N_BH<=0:
             print('BH SUBSYSTEM EVAPORATED')
             break
         
