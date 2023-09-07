@@ -121,7 +121,7 @@ RP = args.remnant_mass_prescription
 
 # initial conditions:
 
-if __name__ == "__main__":
+if __name__ == "__main__":    
     
     # initialize pseudo-random number generator:
     np.random.seed(seed)
@@ -175,10 +175,10 @@ if __name__ == "__main__":
         
         # filter only hard binary stars:
         ab = ab[ab < ab_hard]
-
+        
     if RP==0:
         mM_min = 20.0
- 
+        
     # number of massive stars:
     N_massive = int(Mcl * integrate.quad(lambda x: IMF_kroupa(np.array([x])), mM_min, m_max)[0] \
                     / integrate.quad(lambda x: x * IMF_kroupa(np.array([x])), m_min, m_max)[0])
@@ -205,7 +205,7 @@ if __name__ == "__main__":
     if NKP==0: # only fallback
         vSN_kick = (1 - np.vectorize(f_fb)(m_massive[m_rem > mBH_min])) * np.vectorize(get_SN_kick)(1.4 * np.ones(mBH.size), wSN_kick)
     elif NKP==1: # momentum-conservation + fallback
-        vSN_kick = (1 - np.vectorize(f_fb)(m_massive[m_rem > mBH_min])) * np.vectorize(get_SN_kick)(mBH, wSN_kick)
+        vSN_kick = np.vectorize(get_SN_kick)(mBH, wSN_kick)
         
     # retain BHs with SN kick < escape velocity:
     mBH = mBH[vSN_kick < v_esc(Mcl, rh)]
@@ -263,8 +263,8 @@ if __name__ == "__main__":
     # mergers [seed, ind, channel, a, e, m1, m2, s1, s2, g1, g2, theta1, theta2, dPhi, t_form, z_form, t_merge, z_merge, m_rem, s_rem, g_rem, vGW_kick, s_eff, q]:
     mergers = np.zeros(shape=(1, 24))
     
-    # evolution [t, z, dt, m_avg, Mcl, rh, R_gal, v_gal, t_rlx, tBH_rlx, n_star, N_BH, mBH_avg, mBH_max, rh_BH, rc_BH, S, xi, psi, psi_BH, t_3bb, t_2cap, k_3bb, k_2cap, N_me, N_BBH, N_meRe, N_meEj, v_star, vBH, nh_BH, nc_BH, na_BH, N_3bb, N_2cap, N_3cap, N_BHej, N_BBHej, N_dis, N_ex, t_bb, N_bb, N_meFi, N_me2b, t_ex1, t_ex2, k_ex1, k_ex2, N_ex1, N_ex2, N_BHstar, t_pp, k_pp, N_pp, v_esc, vBH_esc, N_Triples, N_ZLK]:
-    evolution = np.zeros(shape=(1, 58))
+    # evolution [seed, t, z, dt, m_avg, Mcl, rh, R_gal, v_gal, t_rlx, tBH_rlx, n_star, N_BH, mBH_avg, mBH_max, rh_BH, rc_BH, S, xi, psi, psi_BH, t_3bb, t_2cap, k_3bb, k_2cap, N_me, N_BBH, N_meRe, N_meEj, v_star, vBH, nh_BH, nc_BH, na_BH, N_3bb, N_2cap, N_3cap, N_BHej, N_BBHej, N_dis, N_ex, t_bb, N_bb, N_meFi, N_me2b, t_ex1, t_ex2, k_ex1, k_ex2, N_ex1, N_ex2, N_BHstar, t_pp, k_pp, N_pp, v_esc, vBH_esc, N_Triples, N_ZLK]:
+    evolution = np.zeros(shape=(1, 59))
     
     # hardening [t, dt, t_local, dt_local, ind, a, e, m1, m2, q, condition, Nex]:
     hardening = np.zeros(shape=(1, 12))
@@ -609,7 +609,7 @@ if __name__ == "__main__":
         t_df = 0.45e3 * (R_gal / 1e3)**2 * v_gal / (Mcl / 1e5) / 2
         
         # append evolution:
-        evolution = np.append(evolution, [[t, z, dt, m_avg, Mcl, rh, R_gal, v_gal, t_rlx, tBH_rlx, n_star, N_BH, mBH_avg, mBH_max, rh_BH, rc_BH, S, 
+        evolution = np.append(evolution, [[seed, t, z, dt, m_avg, Mcl, rh, R_gal, v_gal, t_rlx, tBH_rlx, n_star, N_BH, mBH_avg, mBH_max, rh_BH, rc_BH, S, 
                                            xi, psi, psi_BH, t_3bb, t_2cap, k_3bb, k_2cap, N_me, N_BBH, N_meRe, N_meEj, v_star, vBH, 
                                            nh_BH, nc_BH, na_BH, N_3bb, N_2cap, N_3cap, N_BHej, N_BBHej, N_dis, N_ex, t_bb, N_bb, 
                                            N_meFi, N_me2b, t_ex1, t_ex2, k_ex1, k_ex2, N_ex1, N_ex2, N_BHstar, t_pp, k_pp, N_pp, 2*v_star, 
@@ -730,7 +730,7 @@ if __name__ == "__main__":
                                   str(evolution[i][36])+' '+str(evolution[i][37])+' '+str(evolution[i][38])+' '+str(evolution[i][39])+' '+str(evolution[i][40])+' '+str(evolution[i][41])+' '+\
                                   str(evolution[i][42])+' '+str(evolution[i][43])+' '+str(evolution[i][44])+' '+str(evolution[i][45])+' '+str(evolution[i][46])+' '+str(evolution[i][47])+' '+\
                                   str(evolution[i][48])+' '+str(evolution[i][49])+' '+str(evolution[i][50])+' '+str(evolution[i][51])+' '+str(evolution[i][52])+' '+str(evolution[i][53])+' '+\
-                                  str(evolution[i][54])+' '+str(evolution[i][55])+' '+str(evolution[i][56])+' '+str(evolution[i][57]))
+                                  str(evolution[i][54])+' '+str(evolution[i][55])+' '+str(evolution[i][56])+' '+str(evolution[i][57])+' '+str(evolution[i][58]))
                 f_evolution.write('\n')
             
     if Hi==1: # export hardening file
