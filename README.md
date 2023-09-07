@@ -115,14 +115,14 @@ For the user’s convenience we paste the list of optional arguments in the form
 | -BIF, --blackholes_in_file_name | Name of .npz input file with initial BH masses | str | ``input_BHs.npz`` |
 | -BOi, --blackholes_out_file_indicator | Export BH masses file (0 for no, 1 for yes) | int | ``1`` |
 | -BOF, --blackholes_out_file_name | Name of .npz file with the masses of all BHs in solar masses | str | ``output_BHs.npz`` |
-| -RP, --remnant_mass_prescription | Remnant mass prescription (1 for SEVN delayed, 2 for Fryer+2012 delayed) | int | ``1`` |
+| -RP, --remnant_mass_prescription | Remnant mass prescription (0 for SEVN delayed, 1 for Fryer+2012 delayed, 2 for Fryer+2012 rapid) | int | ``1`` |
 
 <a name="runningasimulation"></a>
 ### 5. Running a simulation
 
 usage: rapster2.py [-h] [-N] [-r] [-mm] [-mM] [-Z] [-z] [-n] [-fb] [-S] [-dtm] [-dtM] [-tM] [-wK] [-K] [-R] [-vg] [-s] [-SD] [-P] [-Mi] [-MF] [-Ei] [-EF] [-Hi] [-HF] [-BIi] [-BIF] [-BOi] [-BOF] [-RP]
 
-As an example we give the commands that produce data used to generate the results in Fig.4 of [K. Kritos et al. (2022)](https://arxiv.org/abs/2210.10055):
+As an example, we give the commands that produce data used to generate the results in Fig.4 of [K. Kritos et al. (2022)](https://arxiv.org/abs/2210.10055):
 
   > python3 rapster2.py -N 200000 -r 1.6 -n 9.5e4 -R 8 -Z 0.001 -MF meA -EF evA -HF haA -BOF bhA
 
@@ -137,11 +137,11 @@ To test the code, execute the program with all default values:
 
   > python3 rapster2.py
   
-This should create four files ``mergers.txt``, ``evolution.txt``, ``hardening.txt``, and ``output_BHs.npz`` in your current directory. To check and verify whether you have produced these files correctly, we include the corresponding files ``mergers_TEST.txt``, ``evolution_TEST.txt``, ``hardening_TEST.txt``, and ``output_BHs_TEST.npz`` in folder ``./Testing2/`` in this repository with data that should match your ouput.
+This should create four files ``mergers.txt``, ``evolution.txt``, ``hardening.txt``, and ``output_BHs.npz`` in your current directory. To check and verify whether you have produced these files correctly, we include the corresponding files ``mergers_TEST.txt``, ``evolution_TEST.txt``, ``hardening_TEST.txt``, and ``output_BHs_TEST.npz`` in folder ``./Testing2/`` in this repository with data that should match your output.
 
 ##### Suggestion:
 Taking different values of seed number corresponds to different realizations of the system under the same initial conditions. 
-Passing the argument $$\tt\$ RANDOM$$ in the -s flag, simulates the star cluster with a pseudo-randomly generated number. Notice this syntax works only in the bash environment.
+Passing the argument $$\tt\$ RANDOM$$ in the -s flag simulates the star cluster with a pseudo-randomly generated number. Notice this syntax works only in the bash environment.
 
 <a name="outputfiles"></a>
 ### 6. Output files:
@@ -190,64 +190,65 @@ b) Column description of evolution .txt file:
 
 | Columnn | Variable | Description |
 |:--- |:--- |:--- |
-| 1 | $t$ | Simulation time ($\rm Myr$) |
-| 2 | $z$ | Redshift |
-| 2 | $dt$ | Timestep ($\rm Myr$) |
-| 3 | $\overline{m}$ | Average mass ($M_\odot$) |
-| 4 | $M_{\rm cl}$ | Cluster mass ($M_\odot$) |
-| 5 | $r_{\rm h}$ | Half-mass radius ($\rm pc$) |
-| 6 | $R_{\rm gal}$ | Galactocentric radius ($\rm kpc$) |
-| 7 | $v_{\rm gal}$ | Galactocentric velocity ($\rm km\ s^{-1}$) |
-| 8 | $\tau_{\rm rlx}$ | Half-mass relaxation timescale ($\rm Myr$) |
-| 9 | $\tau_{\rm rlx,BH}$ | BH half-mass relaxation time ($\rm Myr$) |
-| 10 | $n_{\rm star}$ | Stellar central number density ($\rm pc^{-3}$) |
-| 11 | $N_{\rm BH}$ | Number of BHs |
-| 12 | $\overline{m}_{\rm BH}$ | Average BH mass ($M_\odot$) |
-| 13 | $m_{\rm BH}^{\rm max}$ | Heaviest BH mass ($M_\odot$) |
-| 14 | $r_{\rm h,BH}$ | BH half-mass radius ($\rm pc$) |
-| 15 | $r_{\rm c,BH}$ | BH core radius ($\rm pc$) |
-| 16 | $S$ | Spitzer parameter |
-| 17 | $\xi$ | Equipartition parameter |
-| 18 | $\psi$ | Multimass relaxation factor |
-| 19 | $\psi_{\rm BH}$ | BH multimass relaxation factor |
-| 20 | $\tau_{\rm 3bb}$ | 3bb timescale ($\rm Myr$) |
-| 21 | $\tau_{\rm 2,cap}$ | 2-capture timescale ($\rm Myr$) |
-| 22 | $k_{\rm 3bb}$ | Number of 3bb in current step |
-| 23 | $k_{\rm 2,cap}$ | Number of 2-captures in current step |
-| 24 | $N_{\rm me}$ | Cumulative number of mergers |
-| 25 | $N_{\rm BBH}$ | Current number of BBHs |
-| 26 | $N_{\rm me,Re}$ | Cumulative number of ejected merger remnants |
-| 27 | $N_{\rm me,Ej}$ | Cumulative number of retained merger remnants |
-| 28 | $v_{\rm star}$ | Stellar velocity dispersion ($\rm km\ s^{-1}$) |
-| 29 | $v_{\rm BH}$ | BH velocity dispersion ($\rm km\ s^{-1}$) |
-| 30 | $n_{\rm h,BH}$ | Half-mass BH number density ($\rm pc^{-3}$) |
-| 31 | $n_{\rm c,BH}$ | Core BH number density ($\rm pc^{-3}$) |
-| 32 | $n_{\rm a,BH}$ | Average BH number density ($\rm pc^{-3}$) |
-| 33 | $N_{\rm 3bb}$ | Cumulative number of 3bb |
-| 34 | $N_{\rm 2,cap}$ | Cumulative number of 2-captures |
-| 35 | $N_{\rm 3,cap}$ | Cumulative number of 3-captures |
-| 36 | $N_{\rm BH,ej}$ | Cumulative number of single BH ejections |
-| 37 | $N_{\rm BBH,ej}$ | Cumulative number of BBH ejections |
-| 38 | $N_{\rm dis}$ | Cumulative number of BBH disruptions |
-| 39 | $N_{\rm ex}$ | Cumulative number of BBH-BH exchanges |
-| 40 | $\tau_{\rm bb}$ | BBH-BBH interaction timescale ($\rm Myr$) |
-| 41 | $N_{\rm bb}$ | Cumulative number of BBH-BBH interactions |
-| 42 | $N_{\rm me,Fi}$ | Cumulative number of field mergers |
-| 43 | $N_{\rm me,2b}$ | Cumulative number of in-cluster 2-body mergers |
-| 44 | $\tau_{\rm ex,1}$ | star-star$\to$BH-star timescale ($\rm Myr$) |
-| 45 | $\tau_{\rm ex,2}$ | BH-star$\to$BBH timescale ($\rm Myr$) |
-| 46 | $k_{\rm ex,1}$ | Number of star-star$\to$BH-star exchanges in this step |
-| 47 | $k_{\rm ex,2}$ | Number of BH-star$\to$BBH exchanges in this step |
-| 48 | $N_{\rm ex,1}$ | Cumulative number of star-star$\to$BH-star exchanges |
-| 49 | $N_{\rm ex,2}$ | Cumulative number of BH-star$\to$BBH exchanges |
-| 50 | $N_{\rm BH-star}$ | Current number of BH-star pairs |
-| 51 | $\tau_{\rm pp}$ | BH-star--BH-star interaction timescale ($\rm Myr$) |
-| 52 | $k_{\rm pp}$ | Number of BH-star--BH-star interactions in this step |
-| 53 | $N_{\rm pp}$ | Cumulative number of BH-star--BH-star interactions |
-| 54 | $v_{\rm esc}$ | Escape velocity ($\rm km\ s^{-1}$) |
-| 55 | $v_{\rm esc,BH}$ | Escape velocity from BH subsystem ($\rm km\ s^{-1}$) |
-| 56 | $N_{\rm triples}$ | Cumulative number of BH triples |
-| 57 | $N_{\rm ZLK}$ | Cumulative number of ZLK mergers |
+| 1 | $\rm seed$ | seed of the simulation |
+| 2 | $t$ | Simulation time ($\rm Myr$) |
+| 3 | $z$ | Redshift |
+| 4 | $dt$ | Timestep ($\rm Myr$) |
+| 5 | $\overline{m}$ | Average mass ($M_\odot$) |
+| 6 | $M_{\rm cl}$ | Cluster mass ($M_\odot$) |
+| 7 | $r_{\rm h}$ | Half-mass radius ($\rm pc$) |
+| 8 | $R_{\rm gal}$ | Galactocentric radius ($\rm kpc$) |
+| 9 | $v_{\rm gal}$ | Galactocentric velocity ($\rm km\ s^{-1}$) |
+| 10 | $\tau_{\rm rlx}$ | Half-mass relaxation timescale ($\rm Myr$) |
+| 11 | $\tau_{\rm rlx,BH}$ | BH half-mass relaxation time ($\rm Myr$) |
+| 12 | $n_{\rm star}$ | Stellar central number density ($\rm pc^{-3}$) |
+| 13 | $N_{\rm BH}$ | Number of BHs |
+| 14 | $\overline{m}_{\rm BH}$ | Average BH mass ($M_\odot$) |
+| 15 | $m_{\rm BH}^{\rm max}$ | Heaviest BH mass ($M_\odot$) |
+| 16 | $r_{\rm h,BH}$ | BH half-mass radius ($\rm pc$) |
+| 17 | $r_{\rm c,BH}$ | BH core radius ($\rm pc$) |
+| 18 | $S$ | Spitzer parameter |
+| 19 | $\xi$ | Equipartition parameter |
+| 20 | $\psi$ | Multimass relaxation factor |
+| 21 | $\psi_{\rm BH}$ | BH multimass relaxation factor |
+| 22 | $\tau_{\rm 3bb}$ | 3bb timescale ($\rm Myr$) |
+| 23 | $\tau_{\rm 2,cap}$ | 2-capture timescale ($\rm Myr$) |
+| 24 | $k_{\rm 3bb}$ | Number of 3bb in current step |
+| 25 | $k_{\rm 2,cap}$ | Number of 2-captures in current step |
+| 26 | $N_{\rm me}$ | Cumulative number of mergers |
+| 27 | $N_{\rm BBH}$ | Current number of BBHs |
+| 28 | $N_{\rm me,Re}$ | Cumulative number of ejected merger remnants |
+| 29 | $N_{\rm me,Ej}$ | Cumulative number of retained merger remnants |
+| 30 | $v_{\rm star}$ | Stellar velocity dispersion ($\rm km\ s^{-1}$) |
+| 31 | $v_{\rm BH}$ | BH velocity dispersion ($\rm km\ s^{-1}$) |
+| 32 | $n_{\rm h,BH}$ | Half-mass BH number density ($\rm pc^{-3}$) |
+| 33 | $n_{\rm c,BH}$ | Core BH number density ($\rm pc^{-3}$) |
+| 34 | $n_{\rm a,BH}$ | Average BH number density ($\rm pc^{-3}$) |
+| 35 | $N_{\rm 3bb}$ | Cumulative number of 3bb |
+| 36 | $N_{\rm 2,cap}$ | Cumulative number of 2-captures |
+| 37 | $N_{\rm 3,cap}$ | Cumulative number of 3-captures |
+| 38 | $N_{\rm BH,ej}$ | Cumulative number of single BH ejections |
+| 39 | $N_{\rm BBH,ej}$ | Cumulative number of BBH ejections |
+| 40 | $N_{\rm dis}$ | Cumulative number of BBH disruptions |
+| 41 | $N_{\rm ex}$ | Cumulative number of BBH-BH exchanges |
+| 42 | $\tau_{\rm bb}$ | BBH-BBH interaction timescale ($\rm Myr$) |
+| 43 | $N_{\rm bb}$ | Cumulative number of BBH-BBH interactions |
+| 44 | $N_{\rm me,Fi}$ | Cumulative number of field mergers |
+| 45 | $N_{\rm me,2b}$ | Cumulative number of in-cluster 2-body mergers |
+| 46 | $\tau_{\rm ex,1}$ | star-star$\to$BH-star timescale ($\rm Myr$) |
+| 47 | $\tau_{\rm ex,2}$ | BH-star$\to$BBH timescale ($\rm Myr$) |
+| 48 | $k_{\rm ex,1}$ | Number of star-star$\to$BH-star exchanges in this step |
+| 49 | $k_{\rm ex,2}$ | Number of BH-star$\to$BBH exchanges in this step |
+| 50 | $N_{\rm ex,1}$ | Cumulative number of star-star$\to$BH-star exchanges |
+| 51 | $N_{\rm ex,2}$ | Cumulative number of BH-star$\to$BBH exchanges |
+| 52 | $N_{\rm BH-star}$ | Current number of BH-star pairs |
+| 53 | $\tau_{\rm pp}$ | BH-star--BH-star interaction timescale ($\rm Myr$) |
+| 54 | $k_{\rm pp}$ | Number of BH-star--BH-star interactions in this step |
+| 55 | $N_{\rm pp}$ | Cumulative number of BH-star--BH-star interactions |
+| 56 | $v_{\rm esc}$ | Escape velocity ($\rm km\ s^{-1}$) |
+| 57 | $v_{\rm esc,BH}$ | Escape velocity from BH subsystem ($\rm km\ s^{-1}$) |
+| 58 | $N_{\rm triples}$ | Cumulative number of BH triples |
+| 59 | $N_{\rm ZLK}$ | Cumulative number of ZLK mergers |
 
 c) Column description of hardening .txt file:
 
