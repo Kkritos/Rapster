@@ -117,7 +117,7 @@ def evolve_BBHs(seed, t, z, dt, zCl_form, binaries, hardening, mergers, mBH, sBH
                     # BBH number density:
                     n_BBH = (N_BBH - 1) / Vc_BH
                     
-                    t_BBH_BBH = 1 / Rate_int(2 * np.mean(np.transpose(binaries)[:][4]+np.transpose(binaries)[:][5]), n_BBH, vBH, kp_max * a) + t_conv
+                    t_BBH_BBH = 1 / Rate_int(m1 + m2 + np.mean(np.transpose(binaries)[:][4]+np.transpose(binaries)[:][5]), n_BBH, vBH, kp_max * a) + t_conv
                 else:
                     t_BBH_BBH = 1e100
                     
@@ -317,7 +317,7 @@ def evolve_BBHs(seed, t, z, dt, zCl_form, binaries, hardening, mergers, mBH, sBH
                         
                     if k_soft <= i:
                         i = i - 1
-                        condition=7
+                        condition=4
                         hardening[i][10]=condition
                         break
                     else:
@@ -475,7 +475,7 @@ def evolve_BBHs(seed, t, z, dt, zCl_form, binaries, hardening, mergers, mBH, sBH
                         mBH = np.append(mBH, mC)
                         sBH = np.append(sBH, sC)
                         gBH = np.append(gBH, gC)
-
+                        
                         condition=6
                         hardening[i][10]=condition
                         break
@@ -613,7 +613,9 @@ def evolve_BBHs(seed, t, z, dt, zCl_form, binaries, hardening, mergers, mBH, sBH
                     condition=5
                     hardening[i][10]=condition
                     break
-                
+
+            hardening = np.append(hardening, [[t, dt, t_local, dt_local, ind, a, e, m1, m2, q, condition, Nex]], axis=0)
+            N_hardening+=1
             i+=1
             
     return seed, t, z, dt, zCl_form, binaries, hardening, mergers, mBH, sBH, gBH, n_star, v_star, vBH, t_rlx, m_avg, mBH_avg, na_BH, nc_BH, N_BH, N_BBH, N_me, N_me2b, N_3cap, N_meFi, N_meRe, N_meEj, N_dis, N_ex, N_BHej, N_BBHej, N_hardening, Vc_BH, N_bb, triples, N_Triples
