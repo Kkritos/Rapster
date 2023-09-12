@@ -270,11 +270,12 @@ c) Column description of hardening .txt file:
 ##### Note:
 Condition or binary status (last column of hardening file):
 - 0: BBH available to evolve (see the flowchart of our algorithm in Fig.3 of [K. Kritos et al. (2022)](https://arxiv.org/abs/2210.10055))
-- 1: local time exceeds global time
+- 1: Local time exceeds global time
 - 2: 2-body merger (the BBH hardens and merges in the cluster after entering the GW regime)
-- 3: binary ionized
-- 4: binary-single capture
-- 5: binary ejected
+- 3: binary ionized during binary-single interaction
+- 4: Binary ionized during binary-binary interaction
+- 5: Binary ejected
+- 6: Binary-single capture
 
 Unless ${\rm condition}=0$, the local simulation is terminated.
 
