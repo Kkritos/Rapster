@@ -493,7 +493,7 @@ if __name__ == "__main__":
         
         # number of 3bbs (cannot exceed 3*N_BHsin):
         k_3bb = np.min([poisson.rvs(mu=dt / t_3bb), int((N_BH-2*N_BBH-N_BHstar-3*N_Triples) / 3)])
-        
+
         # 3bb formation:
         t, z, k_3bb, mBH_avg, binaries, mBH, sBH, gBH, vBH, N_3bb, N_BBH = three_body_binary(t, z, k_3bb, mBH_avg, binaries, mBH, sBH, gBH, vBH, N_3bb, N_BBH)
         
@@ -617,12 +617,18 @@ if __name__ == "__main__":
         
         # Cluster evolution:
         
+        # average mass evolution:
+        if t>t_sev:
+            m_avg = m_avg0 * (t / t_sev)**0.07
+        else:
+            m_avg = m_avg0
+            
         # stellar mass loss:
         if t>t_sev:
             dMcl_sev = - nu_sev * Mcl * dt / t
         else:
             dMcl_sev = 0.0
-        
+            
         # relaxation mass loss:
         dMcl_rlx = - xi_e * Mcl * dt / t_rlx
         
