@@ -478,11 +478,11 @@ def sample_hardness():
     
     return eta_min * (1 - np.random.rand())**(-2/7)
 
-def M_CO_SSE(Mzams, Z):
+def M_CO_SSE(M, Z):
     """
     Carbon-oxygen mass, from Hurley et al. (2000).
     
-    @in Mzams: ZAMS star mass [Msun]
+    @in M: ZAMS star mass [Msun]
     @in Z: absolute metallicity
     
     @out: CO core mass [Msun]
@@ -493,16 +493,16 @@ def M_CO_SSE(Mzams, Z):
     
     zeta = np.log(Z / Z_sun)
     
-    bp_36 = (1.445216) + (-6.180219) * zeta + (3.093878) * zeta**2 + (1.567090) * zeta**3
-    bp_37 = (1.304129) + (1.395919) * zeta + (4.142455) * zeta**2 + (-9.732503) * zeta**3
-    bp_38 = (5.114149) + (-1.160850) * zeta + (0.0) * zeta**2 + (0.0) * zeta**3
+    bp_36 = (1.445216e-1) + (-6.180219e-2) * zeta + (3.093878e-2) * zeta**2 + (+1.567090e-2) * zeta**3
+    bp_37 = (1.304129e+0) + (+1.395919e-1) * zeta + (4.142455e-3) * zeta**2 + (-9.732503e-3) * zeta**3
+    bp_38 = (5.114149e-1) + (-1.160850e-2) * zeta + (0.000000e+0) * zeta**2 + (+0.000000e+0) * zeta**3
     
-    b_36 = bp_36**4 #4.36e-4
-    b_37 = 4.0 * bp_37 #5.22
-    b_38 = bp_38**4 #6.84e-2
+    b_36 = bp_36**4
+    b_37 = 4.0 * bp_37
+    b_38 = bp_38**4
     
     # core mass at the Base of the Asymptotic Giant Branch:
-    McBAGB = (b_36 * Mzams**b_37 + b_38)**(1/4)
+    McBAGB = (b_36 * M**b_37 + b_38)**(1/4)
     
     # Carbon/Oxygen core mass:
     M_CO = np.max([Mch, 0.773 * McBAGB - 0.35])
@@ -521,12 +521,12 @@ def M_CO_SEVN(Mzams, Z):
     
     return M_CO
 '''
-def f_fb_delayed(Mzams, M_CO):
+def f_fb_delayed(M, M_CO):
     """
     Fraction of ejected supernova mass that falls back onto the newly-born proto-compact object
     Delayed SN engine assumed.
     
-    @in Mzams: ZAMS star mass [Msun]
+    @in M: ZAMS star mass [Msun]
     @in M_CO: CO core mass [Msun]
     
     @out: fall-back fraction
@@ -550,18 +550,18 @@ def f_fb_delayed(Mzams, M_CO):
         M_proto = 1.6
 
     # Determine fall-back fraction:
-    a2 = 0.133 - 0.093 / (Mzams - M_proto)
+    a2 = 0.133 - 0.093 / (M - M_proto)
     b2 = -11 * a2 + 1
 
-    if   M_CO<2.5:
+    if   M_CO < 2.5:
 
         Mfb = 0.2
-        ffb = Mfb / (Mzams-M_proto)
+        ffb = Mfb / (M - M_proto)
 
     elif M_CO >= 2.5 and M_CO < 3.5:
 
         Mfb = 0.5 * M_CO - 1.05
-        ffb = Mfb / (Mzams - M_proto)
+        ffb = Mfb / (M - M_proto)
 
     elif M_CO >= 3.5 and M_CO < 11:
 
@@ -573,12 +573,12 @@ def f_fb_delayed(Mzams, M_CO):
         
     return ffb
 
-def f_fb_rapid(Mzams, M_CO):
+def f_fb_rapid(M, M_CO):
     """
     Fraction of ejected supernova mass that falls back onto the newly-born proto-compact object
     Rapid SN engine assumed.
     
-    @in Mzams: ZAMS star mass [Msun]
+    @in M: ZAMS star mass [Msun]
     @in M_CO: CO core mass [Msun]
     
     @out: fall-back fraction
@@ -588,7 +588,7 @@ def f_fb_rapid(Mzams, M_CO):
     M_proto = 1.0
 
     # Determine fall-back fraction:
-    a1 = 0.25 - 1.275 / (Mzams - M_proto)
+    a1 = 0.25 - 1.275 / (M - M_proto)
     b1 = -11 * a1 + 1
 
     if   M_CO < 2.5:
