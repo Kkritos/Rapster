@@ -84,7 +84,7 @@ parser.add_argument('-BOi', '--blackholes_out_file_indicator', type=int, metavar
 
 parser.add_argument('-BOF', '--blackholes_out_file_name', type=str, metavar=' ', default='output_BHs.npz', help='Name of .npz file with the masses of all BHs in solar masses')
 
-parser.add_argument('-RP', '--remnant_mass_prescription', type=int, metavar=' ', default=1, help='Remnant mass prescription (0 for SEVN delayed, 1 for Fryer+2012 delayed, 2 for Fryer+2012 rapid)')
+parser.add_argument('-RP', '--remnant_mass_prescription', type=int, metavar=' ', default=1, help='Remnant mass prescription (0 for SEVN delayed, 1 for Fryer+2012 delayed, 2 for SEVN rapid, 3 for Fryer+2012 rapid)')
 
 args = parser.parse_args()
 
@@ -176,9 +176,6 @@ if __name__ == "__main__":
         # filter only hard binary stars:
         ab = ab[ab < ab_hard]
         
-    if RP==0:
-        mM_min = 20.0
-        
     # number of massive stars:
     N_massive = int(Mcl * integrate.quad(lambda x: IMF_kroupa(np.array([x])), mM_min, m_max)[0] \
                     / integrate.quad(lambda x: x * IMF_kroupa(np.array([x])), m_min, m_max)[0])
@@ -191,20 +188,33 @@ if __name__ == "__main__":
     # remnant masses:
     m_rem = np.zeros(m_massive.size)
     for i in range(m_massive.size):
-        if RP==0:
-            m_rem[i] = Mrem_SEVN(m_massive[i], Z) + 0.01 * np.random.rand()
-        if RP==1:
+        if   RP==0: # SEVN-delayed
+            m_rem[i] = Mrem_SEVNdelayed(m_massive[i], Z) + 0.01 * np.random.rand()
+        elif RP==1: # Fryer-delayed
             m_rem[i] = Mrem_F12d(m_massive[i], Z) + 0.01 * np.random.rand()
-        if RP==2:
+        elif RP==2: # SEVN-rapid
+            m_rem[i] = Mrem_SEVNrapid(m_massive[i], Z) + 0.01 * np.random.rand()
+        elif RP==3: # Fryer-rapid
             m_rem[i] = Mrem_F12r(m_massive[i], Z) + 0.01 * np.random.rand()
             
-    # separate BHs from other remnants:
+    # Separate BHs from other remnants:
     mBH = m_rem[m_rem > mBH_min]
     
     # compute supernova kicks:
-    if NKP==0: # only fallback
-        vSN_kick = (1 - np.vectorize(f_fb)(m_massive[m_rem > mBH_min])) * np.vectorize(get_SN_kick)(1.4 * np.ones(mBH.size), wSN_kick)
-    elif NKP==1: # momentum-conservation + fallback
+    if NKP==0: # fallback
+        if   RP==0:
+            vSN_kick = (1 - np.vectorize(f_fb_delayed)(m_massive[m_rem > mBH_min]), M_CO_SSE(m_massive, Z)) * \
+                       np.vectorize(get_SN_kick)(1.4 * np.ones(mBH.size), wSN_kick)
+        elif RP==1:
+            vSN_kick = (1 - np.vectorize(f_fb_delayed)(m_massive[m_rem > mBH_min]), M_CO_SSE(m_massive, Z)) * \
+                       np.vectorize(get_SN_kick)(1.4 * np.ones(mBH.size), wSN_kick)
+        elif RP==2:
+            vSN_kick = (1 - np.vectorize(f_fb_rapid)(m_massive[m_rem > mBH_min]), M_CO_SSE(m_massive, Z)) * \
+                       np.vectorize(get_SN_kick)(1.4 * np.ones(mBH.size), wSN_kick)
+        elif RP==3:
+            vSN_kick = (1 - np.vectorize(f_fb_rapid)(m_massive[m_rem > mBH_min]), M_CO_SSE(m_massive, Z)) * \
+                       np.vectorize(get_SN_kick)(1.4 * np.ones(mBH.size), wSN_kick)
+    elif NKP==1: # momentum-conservation
         vSN_kick = np.vectorize(get_SN_kick)(mBH, wSN_kick)
         
     # retain BHs with SN kick < escape velocity:
