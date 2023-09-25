@@ -372,42 +372,59 @@ def Mrem_F12r(M, Z):
     
     return out
 
-# Reading files exported from SEVN code and stored according to metallicity for various ZAMS masses:
-MzamsMrem1  = np.load('./MzamsMrem/MzamsMrem1.npz' ); Mrem_delayed_1  = MzamsMrem1 ['Mrem1' ]
-MzamsMrem2  = np.load('./MzamsMrem/MzamsMrem2.npz' ); Mrem_delayed_2  = MzamsMrem2 ['Mrem2' ]
-MzamsMrem3  = np.load('./MzamsMrem/MzamsMrem3.npz' ); Mrem_delayed_3  = MzamsMrem3 ['Mrem3' ]
-MzamsMrem4  = np.load('./MzamsMrem/MzamsMrem4.npz' ); Mrem_delayed_4  = MzamsMrem4 ['Mrem4' ]
-MzamsMrem5  = np.load('./MzamsMrem/MzamsMrem5.npz' ); Mrem_delayed_5  = MzamsMrem5 ['Mrem5' ]
-MzamsMrem6  = np.load('./MzamsMrem/MzamsMrem6.npz' ); Mrem_delayed_6  = MzamsMrem6 ['Mrem6' ]
-MzamsMrem7  = np.load('./MzamsMrem/MzamsMrem7.npz' ); Mrem_delayed_7  = MzamsMrem7 ['Mrem7' ]
-MzamsMrem8  = np.load('./MzamsMrem/MzamsMrem8.npz' ); Mrem_delayed_8  = MzamsMrem8 ['Mrem8' ]
-MzamsMrem9  = np.load('./MzamsMrem/MzamsMrem9.npz' ); Mrem_delayed_9  = MzamsMrem9 ['Mrem9' ]
-MzamsMrem10 = np.load('./MzamsMrem/MzamsMrem10.npz'); Mrem_delayed_10 = MzamsMrem10['Mrem10']
-MzamsMrem11 = np.load('./MzamsMrem/MzamsMrem11.npz'); Mrem_delayed_11 = MzamsMrem11['Mrem11']
-MzamsMrem12 = np.load('./MzamsMrem/MzamsMrem12.npz'); Mrem_delayed_12 = MzamsMrem12['Mrem12']
-
+# Reading ``delayed'' files exported from SEVN code and stored according to metallicity for various ZAMS masses:
+MzamsMrem1  = np.load('./MzamsMrem/MzamsMrem1_delayed.npz' ); Mrem_delayed_1  = MzamsMrem1 ['Mrem1' ]
+MzamsMrem2  = np.load('./MzamsMrem/MzamsMrem2_delayed.npz' ); Mrem_delayed_2  = MzamsMrem2 ['Mrem2' ]
+MzamsMrem3  = np.load('./MzamsMrem/MzamsMrem3_delayed.npz' ); Mrem_delayed_3  = MzamsMrem3 ['Mrem3' ]
+MzamsMrem4  = np.load('./MzamsMrem/MzamsMrem4_delayed.npz' ); Mrem_delayed_4  = MzamsMrem4 ['Mrem4' ]
+MzamsMrem5  = np.load('./MzamsMrem/MzamsMrem5_delayed.npz' ); Mrem_delayed_5  = MzamsMrem5 ['Mrem5' ]
+MzamsMrem6  = np.load('./MzamsMrem/MzamsMrem6_delayed.npz' ); Mrem_delayed_6  = MzamsMrem6 ['Mrem6' ]
+MzamsMrem7  = np.load('./MzamsMrem/MzamsMrem7_delayed.npz' ); Mrem_delayed_7  = MzamsMrem7 ['Mrem7' ]
+MzamsMrem8  = np.load('./MzamsMrem/MzamsMrem8_delayed.npz' ); Mrem_delayed_8  = MzamsMrem8 ['Mrem8' ]
+MzamsMrem9  = np.load('./MzamsMrem/MzamsMrem9_delayed.npz' ); Mrem_delayed_9  = MzamsMrem9 ['Mrem9' ]
+MzamsMrem10 = np.load('./MzamsMrem/MzamsMrem10_delayed.npz'); Mrem_delayed_10 = MzamsMrem10['Mrem10']
+MzamsMrem11 = np.load('./MzamsMrem/MzamsMrem11_delayed.npz'); Mrem_delayed_11 = MzamsMrem11['Mrem11']
+MzamsMrem12 = np.load('./MzamsMrem/MzamsMrem12_delayed.npz'); Mrem_delayed_12 = MzamsMrem12['Mrem12']
 # collect remnant masses with various metallicity values in a single array:
 Mrem_delayed = np.array([Mrem_delayed_1, Mrem_delayed_2, Mrem_delayed_3, Mrem_delayed_4, Mrem_delayed_5, Mrem_delayed_6, Mrem_delayed_7, \
                          Mrem_delayed_8, Mrem_delayed_9, Mrem_delayed_10, Mrem_delayed_11, Mrem_delayed_12])
 
-# Metallicity should not be out of this range: [1e-4,1.7e-2]:
+# Reading ``rapid'' files exported from SEVN code and stored according to metallicity for various ZAMS masses:
+MzamsMrem1  = np.load('./MzamsMrem/MzamsMrem1_rapid.npz' ); Mrem_rapid_1  = MzamsMrem1 ['Mrem1' ]
+MzamsMrem2  = np.load('./MzamsMrem/MzamsMrem2_rapid.npz' ); Mrem_rapid_2  = MzamsMrem2 ['Mrem2' ]
+MzamsMrem3  = np.load('./MzamsMrem/MzamsMrem3_rapid.npz' ); Mrem_rapid_3  = MzamsMrem3 ['Mrem3' ]
+MzamsMrem4  = np.load('./MzamsMrem/MzamsMrem4_rapid.npz' ); Mrem_rapid_4  = MzamsMrem4 ['Mrem4' ]
+MzamsMrem5  = np.load('./MzamsMrem/MzamsMrem5_rapid.npz' ); Mrem_rapid_5  = MzamsMrem5 ['Mrem5' ]
+MzamsMrem6  = np.load('./MzamsMrem/MzamsMrem6_rapid.npz' ); Mrem_rapid_6  = MzamsMrem6 ['Mrem6' ]
+MzamsMrem7  = np.load('./MzamsMrem/MzamsMrem7_rapid.npz' ); Mrem_rapid_7  = MzamsMrem7 ['Mrem7' ]
+MzamsMrem8  = np.load('./MzamsMrem/MzamsMrem8_rapid.npz' ); Mrem_rapid_8  = MzamsMrem8 ['Mrem8' ]
+MzamsMrem9  = np.load('./MzamsMrem/MzamsMrem9_rapid.npz' ); Mrem_rapid_9  = MzamsMrem9 ['Mrem9' ]
+MzamsMrem10 = np.load('./MzamsMrem/MzamsMrem10_rapid.npz'); Mrem_rapid_10 = MzamsMrem10['Mrem10']
+MzamsMrem11 = np.load('./MzamsMrem/MzamsMrem11_rapid.npz'); Mrem_rapid_11 = MzamsMrem11['Mrem11']
+MzamsMrem12 = np.load('./MzamsMrem/MzamsMrem12_rapid.npz'); Mrem_rapid_12 = MzamsMrem12['Mrem12']
+# collect remnant masses with various metallicity values in a single array:
+Mrem_rapid = np.array([Mrem_rapid_1, Mrem_rapid_2, Mrem_rapid_3, Mrem_rapid_4, Mrem_rapid_5, Mrem_rapid_6, Mrem_rapid_7, \
+                         Mrem_rapid_8, Mrem_rapid_9, Mrem_rapid_10, Mrem_rapid_11, Mrem_rapid_12])
+
+# Metallicity should not be out of this range: [1e-4, 1.7e-2]:
 Zvalues = np.array([1.0e-4, 2.0e-4, 5.0e-4, 1.0e-3, 2.0e-3, 4.0e-3, 6.0e-3, 8.0e-3, 1.0e-2, 1.4e-2, 1.7e-2, 2.0e-2])
 
-# Mass should not be out of this range: [20, 340] solar masses
-
-Npoints = 100
-Mzams = np.linspace(20, 340, Npoints)
+# Mass should not be out of this range: [15, 340] solar masses
+Npoints = 500
+Mzams = np.linspace(15, 340, Npoints)
 
 # interpolate:
-MremInterpol = interpolate.interp2d(Mzams, Zvalues, Mrem_delayed, kind='linear', bounds_error=True)
+MremInterpol_delayed = interpolate.interp2d(Mzams, Zvalues, Mrem_delayed, kind='linear', bounds_error=True)
+MremInterpol_rapid   = interpolate.interp2d(Mzams, Zvalues, Mrem_rapid  , kind='linear', bounds_error=True)
 
-def Mrem_SEVN(M, Z):
+def Mrem_SEVNdelayed(M, Z):
     '''
     Remnant mass as a function of progenitor metallicity and ZAMS mass.
-
-    @in M: ZAMS mass in solar masses ; in range [20, 340]
+    Delayed SN engine assumed.
+    
+    @in M: ZAMS mass in solar masses ; in range [15, 340]
     @in Z: absolute metallicity      ; in range [1e-4, 1.7e-2]
-
+    
     @out : remnant mass in solar masses (scalar or array depending on M)
     '''
     
@@ -417,13 +434,40 @@ def Mrem_SEVN(M, Z):
     # check if mass input is an array or not:
     if isinstance(M, np.ndarray): # M is array
         
-        out = MremInterpol(M, Z) * (np.heaviside(M_lowerEdge * np.ones(M.size) - MremInterpol(M, Z), 0) \
-            + np.heaviside(MremInterpol(M, Z) - M_upperEdge * np.ones(M.size), 0))
+        out = MremInterpol_delayed(M, Z) * (np.heaviside(M_lowerEdge * np.ones(M.size) - MremInterpol_delayed(M, Z), 0) \
+            + np.heaviside(MremInterpol_delayed(M, Z) - M_upperEdge * np.ones(M.size), 0))
 
     else: # M is not array
 
-        out = MremInterpol(M, Z) * (np.heaviside(M_lowerEdge - MremInterpol(M, Z), 0) \
-            + np.heaviside(MremInterpol(M, Z) - M_upperEdge, 0))
+        out = MremInterpol_delayed(M, Z) * (np.heaviside(M_lowerEdge - MremInterpol_delayed(M, Z), 0) \
+            + np.heaviside(MremInterpol_delayed(M, Z) - M_upperEdge, 0))
+
+    return out
+
+def Mrem_SEVNrapid(M, Z):
+    '''
+    Remnant mass as a function of progenitor metallicity and ZAMS mass.
+    Rapid SN engine assumed.
+    
+    @in M: ZAMS mass in solar masses ; in range [15, 340]
+    @in Z: absolute metallicity      ; in range [1e-4, 1.7e-2]
+    
+    @out : remnant mass in solar masses (scalar or array depending on M)
+    '''
+    
+    M_lowerEdge = 55  # absolute lower edge of the upper mass gap (in solar masses)
+    M_upperEdge = 120 # absolute upper edge of the upper mass gap (in solar masses)
+    
+    # check if mass input is an array or not:
+    if isinstance(M, np.ndarray): # M is array
+        
+        out = MremInterpol_rapid(M, Z) * (np.heaviside(M_lowerEdge * np.ones(M.size) - MremInterpol_rapid(M, Z), 0) \
+            + np.heaviside(MremInterpol_rapid(M, Z) - M_upperEdge * np.ones(M.size), 0))
+
+    else: # M is not array
+
+        out = MremInterpol_rapid(M, Z) * (np.heaviside(M_lowerEdge - MremInterpol_rapid(M, Z), 0) \
+            + np.heaviside(MremInterpol_rapid(M, Z) - M_upperEdge, 0))
 
     return out
 
@@ -434,38 +478,70 @@ def sample_hardness():
     
     return eta_min * (1 - np.random.rand())**(-2/7)
 
-def f_fb(Mzams):
+def M_CO_SSE(Mzams, Z):
     """
-    Fraction of ejected supernova mass that falls back onto the newly-born proto-compact object.
+    Carbon-oxygen mass, from Hurley et al. (2000).
     
     @in Mzams: ZAMS star mass [Msun]
+    @in Z: absolute metallicity
     
-    @out: fall-back fraction
+    @out: CO core mass [Msun]
     """
-
+    
     # Chandrasekhar limit in solar masses:
     Mch = 1.4
     
-    b_36 = 4.36e-4
-    b_37 = 5.22
-    b_38 = 6.84e-2
+    zeta = np.log(Z / Z_sun)
+    
+    bp_36 = (1.445216) + (-6.180219) * zeta + (3.093878) * zeta**2 + (1.567090) * zeta**3
+    bp_37 = (1.304129) + (1.395919) * zeta + (4.142455) * zeta**2 + (-9.732503) * zeta**3
+    bp_38 = (5.114149) + (-1.160850) * zeta + (0.0) * zeta**2 + (0.0) * zeta**3
+    
+    b_36 = bp_36**4 #4.36e-4
+    b_37 = 4.0 * bp_37 #5.22
+    b_38 = bp_38**4 #6.84e-2
     
     # core mass at the Base of the Asymptotic Giant Branch:
-    McBAGB = (b_36*Mzams**b_37 + b_38)**(1/4)
+    McBAGB = (b_36 * Mzams**b_37 + b_38)**(1/4)
     
     # Carbon/Oxygen core mass:
-    M_CO = np.max([Mch,0.773*McBAGB-0.35])
+    M_CO = np.max([Mch, 0.773 * McBAGB - 0.35])
+    
+    return M_CO
+'''
+def M_CO_SEVN(Mzams, Z):
+    """
+    Carbon-oxygen mass, from Spera & Mapelli (2017).
+    
+    @in Mzams: ZAMS star mass [Msun]
+    @in Z: absolute metallicity
+    
+    @out: CO core mass [Msun]
+    """
+    
+    return M_CO
+'''
+def f_fb_delayed(Mzams, M_CO):
+    """
+    Fraction of ejected supernova mass that falls back onto the newly-born proto-compact object
+    Delayed SN engine assumed.
+    
+    @in Mzams: ZAMS star mass [Msun]
+    @in M_CO: CO core mass [Msun]
+    
+    @out: fall-back fraction
+    """
     
     # Determine proto-compact object mass:
-    if   M_CO<=3.5:
+    if   M_CO <= 3.5:
         
         M_proto = 1.2
         
-    elif M_CO>=3.5 and M_CO<6.0:
+    elif M_CO >= 3.5 and M_CO < 6.0:
         
         M_proto = 1.3
         
-    elif M_CO>=6.0 and M_CO<11.:
+    elif M_CO >= 6.0 and M_CO < 11.0:
         
         M_proto = 1.4
         
@@ -474,27 +550,69 @@ def f_fb(Mzams):
         M_proto = 1.6
 
     # Determine fall-back fraction:
-    a2 = 0.133 - 0.093/(Mzams - M_proto)
-    b2 = -11*a2 + 1
+    a2 = 0.133 - 0.093 / (Mzams - M_proto)
+    b2 = -11 * a2 + 1
 
     if   M_CO<2.5:
 
         Mfb = 0.2
-        ffb = Mfb/(Mzams-M_proto)
+        ffb = Mfb / (Mzams-M_proto)
 
-    elif M_CO>=2.5 and M_CO<3.5:
+    elif M_CO >= 2.5 and M_CO < 3.5:
 
-        Mfb = 0.5*M_CO - 1.05
-        ffb = Mfb/(Mzams-M_proto)
+        Mfb = 0.5 * M_CO - 1.05
+        ffb = Mfb / (Mzams - M_proto)
 
-    elif M_CO>=3.5 and M_CO<11:
+    elif M_CO >= 3.5 and M_CO < 11:
 
-        ffb = a2*M_CO + b2
+        ffb = a * M_CO + b2
 
     else:
         
-        ffb = 1
+        ffb = 1.0
         
+    return ffb
+
+def f_fb_rapid(Mzams, M_CO):
+    """
+    Fraction of ejected supernova mass that falls back onto the newly-born proto-compact object
+    Rapid SN engine assumed.
+    
+    @in Mzams: ZAMS star mass [Msun]
+    @in M_CO: CO core mass [Msun]
+    
+    @out: fall-back fraction
+    """
+    
+    # Determine proto-compact object mass:
+    M_proto = 1.0
+
+    # Determine fall-back fraction:
+    a1 = 0.25 - 1.275 / (Mzams - M_proto)
+    b1 = -11 * a1 + 1
+
+    if   M_CO < 2.5:
+
+        Mfb = 0.2
+        ffb = Mfb / (M - M_proto)
+     
+    elif M_CO < 6.0 and M_CO >= 2.5:
+
+        Mfb = 0.286 * M_CO - 0.514
+        ffb = Mfb / (M - M_proto)
+     
+    elif M_CO < 7.0 and M_CO >= 6.0:
+     
+        ffb = 1.0
+     
+    elif M_CO < 11.0 and M_CO >= 7.0:
+     
+        ffb = a1 * M_CO + b1
+     
+    else:
+     
+        ffb = 1.0
+ 
     return ffb
 
 def get_SN_kick(mBH, wSN_kick):
