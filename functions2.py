@@ -508,19 +508,47 @@ def M_CO_SSE(M, Z):
     M_CO = np.max([Mch, 0.773 * McBAGB - 0.35])
     
     return M_CO
-'''
-def M_CO_SEVN(Mzams, Z):
+
+path = '/MzamsMrem/'
+MCO1  = np.load(path + 'MCO1.npz' )['MCO']
+MCO2  = np.load(path + 'MCO2.npz' )['MCO']
+MCO3  = np.load(path + 'MCO3.npz' )['MCO']
+MCO4  = np.load(path + 'MCO4.npz' )['MCO']
+MCO5  = np.load(path + 'MCO5.npz' )['MCO']
+MCO6  = np.load(path + 'MCO6.npz' )['MCO']
+MCO7  = np.load(path + 'MCO7.npz' )['MCO']
+MCO8  = np.load(path + 'MCO8.npz' )['MCO']
+MCO9  = np.load(path + 'MCO9.npz' )['MCO']
+MCO10 = np.load(path + 'MCO10.npz')['MCO']
+MCO11 = np.load(path + 'MCO11.npz')['MCO']
+MCO12 = np.load(path + 'MCO12.npz')['MCO']
+# collect CO core masses with various metallicity values in a single array:
+MCO = np.array([MCO1, MCO2, MCO3, MCO4, MCO5, MCO6, MCO7, MCO8, MCO9, MCO10, MCO11, MCO12])
+
+# Metallicity should not be out of this range: [1e-4, 1.7e-2]:
+Zvalues = np.array([1.0e-4, 2.0e-4, 5.0e-4, 1.0e-3, 2.0e-3, 4.0e-3, 6.0e-3, 8.0e-3, 1.0e-2, 1.4e-2, 1.7e-2, 2.0e-2])
+
+# Mass should not be out of this range: [15, 340] solar masses
+Npoints = 500
+Mzams = np.linspace(15, 340, Npoints)
+
+# interpolate:
+McoInterpol = interpolate.interp2d(Mzams, Zvalues, MCO, kind='linear', bounds_error=True)
+
+def M_CO_SEVN(M, Z):
     """
     Carbon-oxygen mass, from Spera & Mapelli (2017).
     
-    @in Mzams: ZAMS star mass [Msun]
+    @in M: ZAMS star mass [Msun]
     @in Z: absolute metallicity
     
     @out: CO core mass [Msun]
     """
     
+    M_CO = McoInterpol(M, Z)+0
+    
     return M_CO
-'''
+
 def f_fb_delayed(M, M_CO):
     """
     Fraction of ejected supernova mass that falls back onto the newly-born proto-compact object
