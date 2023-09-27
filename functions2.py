@@ -509,7 +509,7 @@ def M_CO_SSE(M, Z):
     
     return M_CO
 
-path = '/MzamsMrem/'
+path = './MzamsMrem/'
 MCO1  = np.load(path + 'MCO1.npz' )['MCO']
 MCO2  = np.load(path + 'MCO2.npz' )['MCO']
 MCO3  = np.load(path + 'MCO3.npz' )['MCO']
