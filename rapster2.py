@@ -736,7 +736,7 @@ if __name__ == "__main__":
 
     if Ei==1: # export evolution file
         with open(evolution_file+'.txt', 'w') as f_evolution:
-            for i in range(N_iter):
+            for i in range(N_iter-1):
                 f_evolution.write(str(evolution[i][0 ])+' '+str(evolution[i][1 ])+' '+str(evolution[i][2 ])+' '+str(evolution[i][3 ])+' '+str(evolution[i][4 ])+' '+str(evolution[i][5 ])+' '+\
                                   str(evolution[i][6 ])+' '+str(evolution[i][7 ])+' '+str(evolution[i][8 ])+' '+str(evolution[i][9 ])+' '+str(evolution[i][10])+' '+str(evolution[i][11])+' '+\
                                   str(evolution[i][12])+' '+str(evolution[i][13])+' '+str(evolution[i][14])+' '+str(evolution[i][15])+' '+str(evolution[i][16])+' '+str(evolution[i][17])+' '+\
