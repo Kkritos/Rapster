@@ -127,7 +127,7 @@ def evolve_triples(seed, t, z, zCl_form, triples, binaries, mBH, sBH, gBH, mBH_a
                 N_ZLK+=1
                 
                 # merger time:
-                t_merge = t + T_GW(m0, m1, a_in, e_in)
+                t_merge = t + t_ZLK
                 
                 # order BHs by mass:
                 mA = m0; sA = s0; gA = g0; thetaA = theta0
