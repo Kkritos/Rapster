@@ -176,6 +176,10 @@ a) Column description of mergers .txt file:
 | 22 | $v_{\rm GW}$ | GW kick (km/s) of remnant BH |
 | 23 | $\chi_{\rm eff}$ | Effective dimensionless spin parameter |
 | 24 | $q$ | Mass ratio |
+| 25 | $M_{\rm cl,0}$ | Initial cluster mass ($M_\odot$) |
+| 26 | $r_{\rm h,0}$ | Initial half-mass radius ($\rm pc$) |
+| 27 | $Z$ | Metallicity |
+| 28 | $z_{\rm cl,form}$ | Redshift of cluster formation |
 
 ##### Note:
 BBH assembly channel (first column of mergers file), the ``-`` sign means BBH was ejected and merged outside the cluster:
