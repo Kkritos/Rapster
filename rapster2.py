@@ -731,7 +731,7 @@ if __name__ == "__main__":
                 f_mergers.write(str(mergers[i][0 ])+' '+str(mergers[i][1 ])+' '+str(mergers[i][2 ])+' '+str(mergers[i][3 ])+' '+str(mergers[i][4 ])+' '+str(mergers[i][5 ])+' '+str(mergers[i][6 ])+' '+\
                                 str(mergers[i][7 ])+' '+str(mergers[i][8 ])+' '+str(mergers[i][9 ])+' '+str(mergers[i][10])+' '+str(mergers[i][11])+' '+str(mergers[i][12])+' '+str(mergers[i][13])+' '+\
                                 str(mergers[i][14])+' '+str(mergers[i][15])+' '+str(mergers[i][16])+' '+str(mergers[i][17])+' '+str(mergers[i][18])+' '+str(mergers[i][19])+' '+str(mergers[i][20])+' '+\
-                                str(mergers[i][21])+' '+str(mergers[i][22])+' '+str(mergers[i][23]))
+                                str(mergers[i][21])+' '+str(mergers[i][22])+' '+str(mergers[i][23])+' '+str(Mcl0)+' '+str(rh0)+' '+str(Z)+' '+str(zCl_form))
                 f_mergers.write('\n')
 
     if Ei==1: # export evolution file
