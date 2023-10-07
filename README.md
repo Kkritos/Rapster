@@ -115,7 +115,7 @@ For the user’s convenience we paste the list of optional arguments in the form
 | -BIF, --blackholes_in_file_name | Name of .npz input file with initial BH masses | str | ``input_BHs.npz`` |
 | -BOi, --blackholes_out_file_indicator | Export BH masses file (0 for no, 1 for yes) | int | ``1`` |
 | -BOF, --blackholes_out_file_name | Name of .npz file with the masses of all BHs in solar masses | str | ``output_BHs.npz`` |
-| -RP, --remnant_mass_prescription | Remnant mass prescription (0 for SEVN delayed, 1 for Fryer+2012 delayed, 2 for Fryer+2012 rapid) | int | ``1`` |
+| -RP, --remnant_mass_prescription | Remnant mass prescription (0 for SEVN delayed, 1 for Fryer+2012 delayed, 2 for SEVN rapid, 3 for Fryer+2012 rapid) | int | ``1`` |
 
 <a name="runningasimulation"></a>
 ### 5. Running a simulation
