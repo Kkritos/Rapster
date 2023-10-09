@@ -522,6 +522,8 @@ def evolve_BBHs(seed, t, z, dt, zCl_form, binaries, hardening, mergers, mBH, sBH
                     m2 = m3; s2 = s3; g2 = g3
                     m3 = ms; s3 = ss; g3 = gs
                     
+                    k3 = mBH.size - 1
+                    
                     a = binaries[i][2]
                     e = binaries[i][3]
                     
