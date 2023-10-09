@@ -85,7 +85,10 @@ def evolve_BBHs(seed, t, z, dt, zCl_form, binaries, hardening, mergers, mBH, sBH
             t_conv = 0
             
             # while binary is available, evolve it:
-            while 1<2:
+            while N_BH>0:
+                
+                if i==0:
+                    i=1
                 
                 # unwrap parameters of current binary:
                 ind = binaries[i][0]
@@ -244,7 +247,7 @@ def evolve_BBHs(seed, t, z, dt, zCl_form, binaries, hardening, mergers, mBH, sBH
                     k1 = i
                     
                     # find index location of binary:
-                    k2 = np.squeeze(np.where(smas==a2))+0
+                    k2 = np.squeeze(np.where(np.transpose(binaries)[:][2]==a2))+0
                     
                     if isinstance(k2, np.ndarray):
                         k2 = k2[0]
@@ -291,6 +294,8 @@ def evolve_BBHs(seed, t, z, dt, zCl_form, binaries, hardening, mergers, mBH, sBH
                     inclination2 = np.arccos(np.random.uniform(-1, 1))
                     inclination = inclination1 + inclination2
                     
+                    i_old = i
+                    
                     # check Mardling & Aarseth (2001) criterion:
                     if a_outer/a_inner > 2.8 * (1 + m2 / (m1 + m0))**(2/5) * (1 + e_outer)**(2/5) / (1 - e_outer)**(6/5) * (1 - 0.3 * inclination / np.pi) and 1<2: # hierarchical triple
                         
@@ -304,6 +309,8 @@ def evolve_BBHs(seed, t, z, dt, zCl_form, binaries, hardening, mergers, mBH, sBH
                         
                         N_BBH = N_BBH - 1
                         
+                        i = i - 1
+                        
                     else: # `inner' binary is freed:
                         
                         mBH = np.append(mBH, m2)
@@ -315,7 +322,10 @@ def evolve_BBHs(seed, t, z, dt, zCl_form, binaries, hardening, mergers, mBH, sBH
                         binaries[k_hard][2] = a_inner/(1 + Delta * m_freed * m2 / m1 / m0 * a_inner / a_outer)
                         binaries[k_hard][3] = e_inner
                         
-                    if k_soft <= i:
+                    if k_soft < i_old:
+                        i = i - 1
+                        continue
+                    elif k_soft == i_old:
                         i = i - 1
                         condition=4
                         hardening[i][10]=condition
