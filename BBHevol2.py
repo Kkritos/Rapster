@@ -85,7 +85,7 @@ def evolve_BBHs(seed, t, z, dt, zCl_form, binaries, hardening, mergers, mBH, sBH
             t_conv = 0
             
             # while binary is available, evolve it:
-            while N_BH>0:
+            while N_BBH>0:
                 
                 if i==0:
                     i=1
@@ -297,7 +297,7 @@ def evolve_BBHs(seed, t, z, dt, zCl_form, binaries, hardening, mergers, mBH, sBH
                     i_old = i
                     
                     # check Mardling & Aarseth (2001) criterion:
-                    if a_outer/a_inner > 2.8 * (1 + m2 / (m1 + m0))**(2/5) * (1 + e_outer)**(2/5) / (1 - e_outer)**(6/5) * (1 - 0.3 * inclination / np.pi) and 1<2: # hierarchical triple
+                    if a_outer/a_inner > 2.8 * (1 + m2 / (m1 + m0))**(2/5) * (1 + e_outer)**(2/5) / (1 - e_outer)**(6/5) * (1 - 0.3 * inclination / np.pi): # hierarchical triple
                         
                         # append triple:
                         triples = np.append(triples, [[a_inner, a_outer, e_inner, e_outer, m0, m1, m2, s0, s1, s2, g0, g1, g2, inclination1, inclination2, t, z,
