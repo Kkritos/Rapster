@@ -355,10 +355,10 @@ def evolve_BBHs(seed, t, z, dt, zCl_form, binaries, hardening, mergers, mBH, sBH
                     g3 = gBH[k3]
                     
                     # sample single velocity before interaction:
-                    vS_before = maxwell.rvs(loc=0, scale=np.sqrt(mBH_avg * vBH**2 / 3 / m3))
+                    vS_before = get_maxwell_sample(np.sqrt(mBH_avg * vBH**2 / 3 / m3))
                     
                 # sample binary velocity before interaction:
-                vB_before = maxwell.rvs(loc=0, scale=np.sqrt(mBH_avg * vBH**2 / 3 / (m1 + m2)))
+                vB_before = get_maxwell_sample(np.sqrt(mBH_avg * vBH**2 / 3 / (m1 + m2)))
 
                 # sample cosine angle before interaction:
                 cos_theta_before = np.random.uniform(-1, 1)
