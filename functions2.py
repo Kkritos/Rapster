@@ -599,7 +599,7 @@ def f_fb_delayed(M, M_CO):
 
     elif M_CO >= 3.5 and M_CO < 11:
 
-        ffb = a * M_CO + b2
+        ffb = a2 * M_CO + b2
 
     else:
         
