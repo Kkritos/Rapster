@@ -659,7 +659,7 @@ def get_SN_kick(mBH, wSN_kick):
     @out: SN kick (km/s), scalar
     """
     
-    return maxwell.rvs(loc=0, scale=np.sqrt(3) * wSN_kick * 1.4/mBH)
+    return get_maxwell_sample(np.sqrt(3) * wSN_kick * 1.4/mBH)
 
 def remnant_kick(m1, m2, chi1, chi2, theta1, theta2, dPhi):
     """
