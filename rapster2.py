@@ -52,7 +52,7 @@ parser.add_argument('-tM', '--maximum_time', type=float, metavar=' ', default=14
 
 parser.add_argument('-wK', '--supernova_kick_parameter', type=float, metavar=' ', default=265, help='One-dimensional supernova kick parameter [km/s]')
 
-parser.add_argument('-K', '--natal_kick_prescription', type=int, metavar=' ', default=1, help='Natal kick prescription (0 for fallback, 1 for momentum conservation kicks + fallback)')
+parser.add_argument('-K', '--natal_kick_prescription', type=int, metavar=' ', default=1, help='Natal kick prescription (0 for fallback, 1 for momentum conservation kicks)')
 
 parser.add_argument('-R', '--galactocentric_radius', type=float, metavar=' ', default=8, help='Initial galactocentric radius [kpc]')
 
@@ -201,20 +201,20 @@ if __name__ == "__main__":
     mBH = m_rem[m_rem > mBH_min]
     
     # compute supernova kicks:
-    if NKP==0: # fallback
+    if NKP==0: # fallback kicks
         if   RP==0: # SEVN
-            vSN_kick = (1 - np.vectorize(f_fb_delayed)(m_massive[m_rem > mBH_min]), M_CO_SEVN(m_massive, Z)) * \
+            vSN_kick = (1 - np.vectorize(f_fb_delayed)(m_massive[m_rem > mBH_min], np.vectorize(M_CO_SEVN)(m_massive[m_rem > mBH_min], Z))) * \
                        np.vectorize(get_SN_kick)(1.4 * np.ones(mBH.size), wSN_kick)
         elif RP==1: # SSE
-            vSN_kick = (1 - np.vectorize(f_fb_delayed)(m_massive[m_rem > mBH_min]), M_CO_SSE(m_massive, Z)) * \
+            vSN_kick = (1 - np.vectorize(f_fb_delayed)(m_massive[m_rem > mBH_min], np.vectorize(M_CO_SSE)(m_massive[m_rem > mBH_min], Z))) * \
                        np.vectorize(get_SN_kick)(1.4 * np.ones(mBH.size), wSN_kick)
         elif RP==2: # SEVN
-            vSN_kick = (1 - np.vectorize(f_fb_rapid)(m_massive[m_rem > mBH_min]), M_CO_SEVN(m_massive, Z)) * \
+            vSN_kick = (1 - np.vectorize(f_fb_rapid)(m_massive[m_rem > mBH_min], np.vectorize(M_CO_SEVN)(m_massive[m_rem > mBH_min], Z))) * \
                        np.vectorize(get_SN_kick)(1.4 * np.ones(mBH.size), wSN_kick)
         elif RP==3: # SSE
-            vSN_kick = (1 - np.vectorize(f_fb_rapid)(m_massive[m_rem > mBH_min]), M_CO_SSE(m_massive, Z)) * \
+            vSN_kick = (1 - np.vectorize(f_fb_rapid)(m_massive[m_rem > mBH_min], np.vectorize(M_CO_SSE)(m_massive[m_rem > mBH_min], Z))) * \
                        np.vectorize(get_SN_kick)(1.4 * np.ones(mBH.size), wSN_kick)
-    elif NKP==1: # momentum-conservation
+    elif NKP==1: # momentum-conservation kicks
         vSN_kick = np.vectorize(get_SN_kick)(mBH, wSN_kick)
         
     # retain BHs with SN kick < escape velocity:
