@@ -795,4 +795,26 @@ def remnant_mass(m1, m2, chi1, chi2, theta1, theta2, dPhi):
     
     return m_f
 
+def CDF_maxwell(w):
+    """
+    Returns cumulative density function of Maxwellian distribution.
+
+    @in w: velocity value, normalized to the 1D velocity dispersion
+    """
+
+    return erf(w/np.sqrt(2)) - np.sqrt(2/np.pi)*w*np.exp(-w**2/2)
+
+w_s = np.linspace(0, 10000, 10**6) # normalized velocities (assuming 1D velo. disp. =1)
+CDF_maxwell_s = np.vectorize(CDF_maxwell)(w_s)
+
+def get_maxwell_sample(sigma):
+    """
+    Returns a sample from the Maxwellian with the inverse sampling method.
+
+    @in sigma: 1D velocity dispersion parameter
+    """
+    
+    return sigma * np.interp(np.random.rand(), CDF_maxwell_s, w_s)
+
+
 # end of file
