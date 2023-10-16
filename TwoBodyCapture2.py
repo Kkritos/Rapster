@@ -76,7 +76,7 @@ def two_body_capture(seed, t, dt, z, zCl_form, k_2cap, mBH_avg, binaries, mBH, s
             g_rem = np.max([gBH[k1], gBH[k2]]) + 1
             
             # relative velocity:
-            v_rel = maxwell.rvs(loc=0, scale=np.sqrt(2/3) * vBH)
+            v_rel = get_maxwell_sample(np.sqrt(2/3) * vBH)
             
             # total mass:
             m12 = m1 + m2
