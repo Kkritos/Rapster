@@ -1,7 +1,7 @@
 # Rapster
 Rapid population synthesis code for binary black-hole mergers in dynamical environments.
 
-$\tt Rapster$ stands for $\rm RAPid\ cluSTEP$ evolution. (Thanks to M. Cheung for coming up with the short-hand version!)
+$\tt Rapster$ stands for $\rm RAPid\ cluSTER$ evolution. (Thanks to M. Cheung for coming up with the short-hand version!)
 
 Author: Konstantinos Kritos <kkritos1@jhu.edu>
 
