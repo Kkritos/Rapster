@@ -750,7 +750,7 @@ def remnant_spin(m1, m2, chi1, chi2, theta1, theta2, dPhi):
     el = 2 * np.sqrt(3) + t2 * eta + t3 * eta**2 + s4 * (1 + q)**4 / (1 + q**2) * chi_squared \
     + (s5 * eta + t0 + 2) * (1 + q)**2 / (1 + q**2) * chi_para
     
-    chi_f = np.sqrt(q**2 * el**2 / (1 + q)**4 + chi_squared + q * el * chi_para / (1 + q)**2)
+    chi_f = np.sqrt(q**2 * el**2 / (1 + q)**4 + chi_squared + 2 * q * el * chi_para / (1 + q)**2)
     
     chi_f = chi_f if chi_f < 1 else 1
     
