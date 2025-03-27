@@ -5,7 +5,7 @@ $\tt Rapster$ stands for $\rm RAPid\ cluSTER$ evolution. (Thanks to M. Cheung fo
 
 Author: Konstantinos Kritos <kkritos1@jhu.edu>
 
-Version: July 7, 2023
+Version: March 27, 2025
 
 ![LOGO](./Rapster_LOGO.png)
 (Thanks to H. Cruz for digitizing my hand-drawn logo!)
@@ -29,13 +29,13 @@ Version: July 7, 2023
 
 The repository provides the source codes of the current version, files ``./rapster2.py``, ``./functions2.py``, ``./constants2.py``, ``ThreeBodyBinary2.py``, ``BBHevol2.py``, ``TwoBodyCapture2.py``, ``Exchanges2.py``, ``triples2.py``, ``Planck18_lookup_table.npz``, and all necessary data files in folder ``./MzamsMrem/``, for the rapid evolution of dense star cluster environments and the dynamical assembly of binary black hole mergers.
 
-The modeling accounts for the necessary physical processes regarding the formation of binary black holes employing semi-analytic prescriptions as described in Sec. 2 of [K. Kritos et al. (2022)](https://arxiv.org/abs/2210.10055). This is our code paper we wrote together with V. Strokov, V. Baibhav, and E. Berti.
+The modeling accounts for the necessary physical processes for forming binary black holes employing semi-analytic prescriptions described in Sec. 2 of [K. Kritos et al. (2022)](https://arxiv.org/abs/2210.10055). This is our code paper, which we wrote together with V. Strokov, V. Baibhav, and E. Berti.
 
 ##### Note:
 For computational efficiency, the folder ``./MzamsMrem/`` contains 12 files with pre-calculated look-up tables of stellar remnants masses on a grid of zero-age main sequence values up to $340M_\odot$ and 12 values of absolute metallicity in the range from $10^{-4}$ to $1.7\times10^{-2}$ as calculated with the $\tt SEVN$ code [M. Spera & M. Mapelli (2017)](https://academic.oup.com/mnras/article/470/4/4739/3883764).
 
-In the current version, we have also included look-up tables for the Mandel-Muller, and the Fryer et al. (2012) delayed and rapid remnant-mass prescription models in files ``Mueller_Mandel.txt``, ``MzamsMrem_F12d.txt``, and ``MzamsMrem_F12r.txt``, respectively.
-Finally, ``Planck18_lookup_table.npz`` is a look-up table for the redshidt-lookback time and lookback time-redshift relations assuming the Planck 2018 cosmology.
+In the current version, we have also included look-up tables for the Mandel-Muller and Fryer et al. (2012) delayed and rapid remnant-mass prescription models in files ``Mueller_Mandel.txt``, ``MzamsMrem_F12d.txt``, and ``MzamsMrem_F12r.txt``, respectively.
+Finally, ``Planck18_lookup_table.npz`` is a look-up table for the redshift-lookback time and lookback time-redshift relations assuming the Planck 2018 cosmology.
 
 ##### Abbreviations:
 
@@ -46,20 +46,16 @@ Finally, ``Planck18_lookup_table.npz`` is a look-up table for the redshidt-lookb
 <a name="requirements"></a>
 ### 2. Requirements
 
-The following Python packages are required
+The following Python packages are required.
 
-- $\tt precession$ (1.0.3)
-- $\tt astropy$ (5.0.4)
-- $\tt argparse$ (1.1)
-- $\tt numpy$ (>=1.12.3)
-- $\tt scipy$ (1.8.0)
-- $\tt pandas$
-- $\tt time$
+- $\tt argparse$ (>=1.4.0)
+- $\tt numpy$ (>=2.2.4)
+- $\tt pandas$ (>=2.2.3)
+- $\tt scipy$ (>=1.15.2)
 
-The code is tested with packages in the versions shown in parentheses above, however, it is likely that other versions work too.
+The code is tested with packages in the versions shown in parentheses above; however, likely, other versions work too.
 
-##### Note:
-It is suggested that the $\tt precession$ package is used in the version 1.0.3 [D. Gerosa & M. Kesden (2016)](https://journals.aps.org/prd/abstract/10.1103/PhysRevD.93.124066).
+It is recommended that the user create and work in a local Python environment, installing all the dependencies above.
 
 <a name="units"></a>
 ### 3. Units
@@ -67,7 +63,7 @@ It is suggested that the $\tt precession$ package is used in the version 1.0.3 [
 The current version of the code uses astrophysical units:
  - Mass: solar mass ($M_\odot$)
  - Distance: parsec ($\rm pc$)
- - Time: $\rm Myr$
+ - Time: million years ($\rm Myr$)
  - Velocity: $\rm km\ s^{-1}$
  - Gravitational constant: $G=1/232$
 
@@ -80,9 +76,9 @@ For a description of all input parameters, run the following command in the comm
 
 > python3 rapster2.py --help
 
-or see Table 1 from [K. Kritos et al. (2022)](https://arxiv.org/abs/2210.10055).
+Or see Table 1 from [K. Kritos et al. (2022)](https://arxiv.org/abs/2210.10055).
 
-For the user’s convenience we paste the list of optional arguments in the form of a Table here as well:
+For the user’s convenience, we paste the list of optional arguments in the form of a Table here as well:
 
 | Flag | Description | Type | Default |
 |:--- |:--- |:--- |:--- |
@@ -122,16 +118,6 @@ For the user’s convenience we paste the list of optional arguments in the form
 
 usage: rapster2.py [-h] [-N] [-r] [-mm] [-mM] [-Z] [-z] [-n] [-fb] [-S] [-dtm] [-dtM] [-tM] [-wK] [-K] [-R] [-vg] [-s] [-SD] [-P] [-Mi] [-MF] [-Ei] [-EF] [-Hi] [-HF] [-BIi] [-BIF] [-BOi] [-BOF] [-RP]
 
-As an example, we give the commands that produce data used to generate the results in Fig.4 of [K. Kritos et al. (2022)](https://arxiv.org/abs/2210.10055):
-
-  > python3 rapster2.py -N 200000 -r 1.6 -n 9.5e4 -R 8 -Z 0.001 -MF meA -EF evA -HF haA -BOF bhA
-
-  > python3 rapster2.py -N 800000 -r 1.6 -n 45.6e4 -R 8 -Z 0.001 -MF meB -EF evB -HF haB -BOF bhC
-
-  > python3 rapster2.py -N 1600000 -r 1.6 -n 257e4 -R 20 -Z 0.0005 -MF meC -EF evC -HF haC -BOF bhC
-
-The default values are assumed for other parameters not entered in the commands above.
-
 ##### Note:
 To test the code, execute the program with all default values:
 
@@ -140,13 +126,13 @@ To test the code, execute the program with all default values:
 This should create four files ``mergers.txt``, ``evolution.txt``, ``hardening.txt``, and ``output_BHs.npz`` in your current directory. To check and verify whether you have produced these files correctly, we include the corresponding files ``mergers_TEST.txt``, ``evolution_TEST.txt``, ``hardening_TEST.txt``, and ``output_BHs_TEST.npz`` in folder ``./Testing2/`` in this repository with data that should match your output.
 
 ##### Suggestion:
-Taking different values of seed number corresponds to different realizations of the system under the same initial conditions. 
-Passing the argument $$\tt\$ RANDOM$$ in the -s flag simulates the star cluster with a pseudo-randomly generated number. Notice this syntax works only in the bash environment.
+Taking different seed number values corresponds to different system realizations under the same initial conditions. 
+Passing the argument $$\tt\$ RANDOM$$ in the -s flag simulates the star cluster with a pseudo-randomly generated number. Notice that this syntax works only in the bash environment.
 
 <a name="outputfiles"></a>
 ### 6. Output files:
 
-At the end of each simulation the code generates by default three .txt and one .npz file, one with information about all dynamical mergers that took place during the simulation, a second file that keeps track of time-dependent quantities, a third file that stores information about the hardening evolution of each BBH, and finally a file with the masses of the BHs that are initially retained and at end of the simulation, respectively.
+At the end of each simulation, the code generates by default three .txt and one .npz file: one with information about all dynamical mergers that took place during the simulation; a second file that keeps track of time-dependent quantities; a third file that stores information about the hardening evolution of each BBH; and finally, a file with the masses of the BHs that are initially retained and at the end of the simulation, respectively.
 
 a) Column description of mergers .txt file: 
 
@@ -281,16 +267,16 @@ Condition or binary status (last column of hardening file):
 - 5: Binary ejected
 - 6: Binary-single capture
 
-Unless ${\rm condition}=0$, the local simulation is terminated.
+The local simulation is terminated unless ${\rm condition}=0$.
 
 d) The output_BHs.npz file (if exported) contains two arrays, called ``mBH_ini`` and ``mBH_fin`` which provide in $M_\odot$ the masses of all single BHs that are retained at the start and the end of the simulation.
 
 <a name="applicationsofthecode"></a>
 ### 7. Applications of the code
 
-The code can be useful when executed multiple times, for instance when simulating a set of clusters and generating a population of dynamically formed BBH mergers.
+The code can be useful when executed multiple times, for instance, when simulating a set of clusters and generating a population of dynamically formed BBH mergers.
 
-Although the program itself is not computationally expensive (we have tested in a laptop that we generate a few binary black hole mergers per second), independent parallelization is still encouraged when simulating a very large number of star clusters for efficiency.
+Although the program is not computationally expensive (we have tested it on a laptop that generates a few binary black hole mergers per second), independent parallelization is still encouraged when simulating many star clusters for efficiency.
 
 <a name="citingthiswork"></a>
 ### 8. Citing this work
@@ -307,16 +293,24 @@ $\tt Rapster$ has been used in the following works:
 
 - [K. Ng, K. Kritos, A. Antonelli, R. Cotesta, E. Berti (2023)](https://arxiv.org/abs/2307.03227)
 
+- [S. Yi et al. (incl. K. Kritos) (2024)](https://arxiv.org/abs/2403.09767)
+
+- [G. Fumagalli et al. (incl. K. Kritos) (2024)](https://arxiv.org/abs/2405.14945)
+
+- [F. Ziparo, S. Gallerani, A. Ferrara (2024)](https://arxiv.org/abs/2411.03448)
+
+- [K. Kritos, L. Reali, K. Ng, F. Antonini, E. Berti (2025)](https://arxiv.org/abs/2501.16422)
+
 <a name="reportingbugs"></a>
 ### 9. Reporting bugs
 
-If you find a bug in the code, please contact us in kkritos1@jhu.edu with a description of the bug.
+If you find a bug in the code, don't hesitate to email us at kkritos1@jhu.edu with a description of the bug.
 
 Suggestions and pull requests are welcome :)
 
 <a name="thanks"></a>
 ### 10. Thank you
 
-Vladimir Strokov, Vishal Baibhav, Emanuele Berti, Andrea Antonelli, Fabio Antonini, Dany Atallah, Muhsin Aljaf, Mark Cheung, Roberto Cotesta, Hector Cruz, Giacomo Fragione, Gabriele Franciolini, Thomas Helfer, Veome Kapil, Kyle Kremer, Iason Krommydas, Miguel Martinez, Luca Reali, Carl Rodriguez, Newlin Weatherford, Xiao-Xiao Kou, Giada Caneva Santoro.
+Vladimir Strokov, Vishal Baibhav, Emanuele Berti, Andrea Antonelli, Fabio Antonini, Dany Atallah, Muhsin Aljaf, Mark Cheung, Roberto Cotesta, Hector Cruz, Giacomo Fragione, Gabriele Franciolini, Thomas Helfer, Veome Kapil, Kyle Kremer, Iason Krommydas, Miguel Martinez, Luca Reali, Carl Rodriguez, Newlin Weatherford, Xiao-Xiao Kou, Giada Caneva Santoro, Rosanna Hagen.
 
 
