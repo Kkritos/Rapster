@@ -186,17 +186,15 @@ if __name__ == "__main__":
                  + mM_min**(alphaIMF + 1))**(1 / (alphaIMF + 1))
     
     # remnant masses:
-    m_rem = np.zeros(m_massive.size)
-    for i in range(m_massive.size):
-        if   RP==0: # SEVN-delayed
-            m_rem[i] = Mrem_SEVNdelayed(m_massive[i], Z) + 0.01 * np.random.rand()
-        elif RP==1: # Fryer-delayed
-            m_rem[i] = Mrem_F12d(m_massive[i], Z) + 0.01 * np.random.rand()
-        elif RP==2: # SEVN-rapid
-            m_rem[i] = Mrem_SEVNrapid(m_massive[i], Z) + 0.01 * np.random.rand()
-        elif RP==3: # Fryer-rapid
-            m_rem[i] = Mrem_F12r(m_massive[i], Z) + 0.01 * np.random.rand()
-            
+    if   RP==0: # SEVN-delayed
+        m_rem = Mrem_SEVNdelayed(m_massive, Z) + 0.01 * np.random.rand(m_massive.size)
+    elif RP==1: # Fryer-delayed
+        m_rem = Mrem_F12d(m_massive, Z) + 0.01 * np.random.rand(m_massive.size)
+    elif RP==2: # SEVN-rapid
+        m_rem = Mrem_SEVNrapid(m_massive, Z) + 0.01 * np.random.rand(m_massive.size)
+    elif RP==3: # Fryer-rapid
+        m_rem = Mrem_F12r(m_massive, Z) + 0.01 * np.random.rand(m_massive.size)
+        
     # Separate BHs from other remnants:
     mBH = m_rem[m_rem > mBH_min]
     
