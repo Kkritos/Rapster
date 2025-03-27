@@ -17,7 +17,7 @@
 '''
 
 from constants2 import *
-
+'''
 def lookback_astropy(z):
     """
     Assuming Planck (2018) cosmological parameters. Using astropy.
@@ -39,7 +39,7 @@ def redshift_astropy(t):
     """
     
     return z_at_value(Planck18.lookback_time, t * u.Myr)
-
+'''
 def E_cosmo(z):
     """
     @in z: redshift
@@ -322,11 +322,8 @@ Z_grid = np.logspace(np.log10(1e-4), np.log10(2e-2), N_grid)
 Mremnants_F12d = np.loadtxt('./MzamsMrem/MzamsMrem_F12d.txt', unpack=True)
 Mremnants_F12r = np.loadtxt('./MzamsMrem/MzamsMrem_F12r.txt', unpack=True)
 
-Mremnants_F12d = np.transpose(Mremnants_F12d)
-Mremnants_F12r = np.transpose(Mremnants_F12r)
-
-MremInterpol_F12d = interpolate.interp2d(M_grid, Z_grid, Mremnants_F12d, kind='linear', bounds_error=True)
-MremInterpol_F12r = interpolate.interp2d(M_grid, Z_grid, Mremnants_F12r, kind='linear', bounds_error=True)
+MremInterpol_F12d = interpolate.RegularGridInterpolator((M_grid, Z_grid), Mremnants_F12d, method='linear', bounds_error=True)
+MremInterpol_F12r = interpolate.RegularGridInterpolator((M_grid, Z_grid), Mremnants_F12r, method='linear', bounds_error=True)
 
 def Mrem_F12d(M, Z):
     """
@@ -344,14 +341,16 @@ def Mrem_F12d(M, Z):
     # check if mass input is an array or not:
     if isinstance(M, np.ndarray): # M is array
         
-        out = MremInterpol_F12d(M, Z) * (np.heaviside(M_lowerEdge * np.ones(M.size) - MremInterpol_F12d(M, Z), 0) \
-            + np.heaviside(MremInterpol_F12d(M, Z) - M_upperEdge * np.ones(M.size), 0))
+        out = MremInterpol_F12d((M, Z)) * (np.heaviside(M_lowerEdge * np.ones(M.size) - MremInterpol_F12d((M, Z)), 0) \
+            + np.heaviside(MremInterpol_F12d((M, Z)) - M_upperEdge * np.ones(M.size), 0))
     else: # M is not array
         
-        out = MremInterpol_F12d(M, Z) * (np.heaviside(M_lowerEdge - MremInterpol_F12d(M, Z), 0) \
-            + np.heaviside(MremInterpol_F12d(M, Z) - M_upperEdge, 0))
+        out = MremInterpol_F12d((M, Z)) * (np.heaviside(M_lowerEdge - MremInterpol_F12d((M, Z)), 0) \
+            + np.heaviside(MremInterpol_F12d((M, Z)) - M_upperEdge, 0))
+        out = float(out)
     
     return out
+Mrem_F12d = np.vectorize(Mrem_F12d)
 
 def Mrem_F12r(M, Z):
     """
@@ -369,14 +368,16 @@ def Mrem_F12r(M, Z):
     # check if mass input is an array or not:
     if isinstance(M, np.ndarray): # M is array
         
-        out = MremInterpol_F12r(M, Z) * (np.heaviside(M_lowerEdge * np.ones(M.size) - MremInterpol_F12r(M, Z), 0) \
-            + np.heaviside(MremInterpol_F12r(M, Z) - M_upperEdge * np.ones(M.size), 0))
+        out = MremInterpol_F12r((M, Z)) * (np.heaviside(M_lowerEdge * np.ones(M.size) - MremInterpol_F12r((M, Z)), 0) \
+            + np.heaviside(MremInterpol_F12r((M, Z)) - M_upperEdge * np.ones(M.size), 0))
     else: # M is not array
         
-        out = MremInterpol_F12r(M, Z) * (np.heaviside(M_lowerEdge - MremInterpol_F12r(M, Z), 0) \
-            + np.heaviside(MremInterpol_F12r(M, Z) - M_upperEdge, 0))
+        out = MremInterpol_F12r((M, Z)) * (np.heaviside(M_lowerEdge - MremInterpol_F12r((M, Z)), 0) \
+            + np.heaviside(MremInterpol_F12r((M, Z)) - M_upperEdge, 0))
+        out = float(out)
     
     return out
+Mrem_F12r = np.vectorize(Mrem_F12r)
 
 # Reading ``delayed'' files exported from SEVN code and stored according to metallicity for various ZAMS masses:
 MzamsMrem1  = np.load('./MzamsMrem/MzamsMrem1_delayed.npz' ); Mrem_delayed_1  = MzamsMrem1 ['Mrem1' ]
@@ -393,7 +394,7 @@ MzamsMrem11 = np.load('./MzamsMrem/MzamsMrem11_delayed.npz'); Mrem_delayed_11 = 
 MzamsMrem12 = np.load('./MzamsMrem/MzamsMrem12_delayed.npz'); Mrem_delayed_12 = MzamsMrem12['Mrem12']
 # collect remnant masses with various metallicity values in a single array:
 Mrem_delayed = np.array([Mrem_delayed_1, Mrem_delayed_2, Mrem_delayed_3, Mrem_delayed_4, Mrem_delayed_5, Mrem_delayed_6, Mrem_delayed_7, \
-                         Mrem_delayed_8, Mrem_delayed_9, Mrem_delayed_10, Mrem_delayed_11, Mrem_delayed_12])
+                         Mrem_delayed_8, Mrem_delayed_9, Mrem_delayed_10, Mrem_delayed_11, Mrem_delayed_12]).T
 
 # Reading ``rapid'' files exported from SEVN code and stored according to metallicity for various ZAMS masses:
 MzamsMrem1  = np.load('./MzamsMrem/MzamsMrem1_rapid.npz' ); Mrem_rapid_1  = MzamsMrem1 ['Mrem1' ]
@@ -410,7 +411,7 @@ MzamsMrem11 = np.load('./MzamsMrem/MzamsMrem11_rapid.npz'); Mrem_rapid_11 = Mzam
 MzamsMrem12 = np.load('./MzamsMrem/MzamsMrem12_rapid.npz'); Mrem_rapid_12 = MzamsMrem12['Mrem12']
 # collect remnant masses with various metallicity values in a single array:
 Mrem_rapid = np.array([Mrem_rapid_1, Mrem_rapid_2, Mrem_rapid_3, Mrem_rapid_4, Mrem_rapid_5, Mrem_rapid_6, Mrem_rapid_7, \
-                         Mrem_rapid_8, Mrem_rapid_9, Mrem_rapid_10, Mrem_rapid_11, Mrem_rapid_12])
+                         Mrem_rapid_8, Mrem_rapid_9, Mrem_rapid_10, Mrem_rapid_11, Mrem_rapid_12]).T
 
 # Metallicity should not be out of this range: [1e-4, 1.7e-2]:
 Zvalues = np.array([1.0e-4, 2.0e-4, 5.0e-4, 1.0e-3, 2.0e-3, 4.0e-3, 6.0e-3, 8.0e-3, 1.0e-2, 1.4e-2, 1.7e-2, 2.0e-2])
@@ -420,8 +421,8 @@ Npoints = 500
 Mzams = np.linspace(15, 340, Npoints)
 
 # interpolate:
-MremInterpol_delayed = interpolate.interp2d(Mzams, Zvalues, Mrem_delayed, kind='linear', bounds_error=True)
-MremInterpol_rapid   = interpolate.interp2d(Mzams, Zvalues, Mrem_rapid  , kind='linear', bounds_error=True)
+MremInterpol_delayed = interpolate.RegularGridInterpolator((Mzams, Zvalues), Mrem_delayed, method='linear', bounds_error=True)
+MremInterpol_rapid   = interpolate.RegularGridInterpolator((Mzams, Zvalues), Mrem_rapid  , method='linear', bounds_error=True)
 
 def Mrem_SEVNdelayed(M, Z):
     '''
@@ -440,15 +441,17 @@ def Mrem_SEVNdelayed(M, Z):
     # check if mass input is an array or not:
     if isinstance(M, np.ndarray): # M is array
         
-        out = MremInterpol_delayed(M, Z) * (np.heaviside(M_lowerEdge * np.ones(M.size) - MremInterpol_delayed(M, Z), 0) \
-            + np.heaviside(MremInterpol_delayed(M, Z) - M_upperEdge * np.ones(M.size), 0))
+        out = MremInterpol_delayed((M, Z)) * (np.heaviside(M_lowerEdge * np.ones(M.size) - MremInterpol_delayed((M, Z)), 0) \
+            + np.heaviside(MremInterpol_delayed((M, Z)) - M_upperEdge * np.ones(M.size), 0))
 
     else: # M is not array
 
-        out = MremInterpol_delayed(M, Z) * (np.heaviside(M_lowerEdge - MremInterpol_delayed(M, Z), 0) \
-            + np.heaviside(MremInterpol_delayed(M, Z) - M_upperEdge, 0))
+        out = MremInterpol_delayed((M, Z)) * (np.heaviside(M_lowerEdge - MremInterpol_delayed((M, Z)), 0) \
+            + np.heaviside(MremInterpol_delayed((M, Z)) - M_upperEdge, 0))
+        out = float(out)
 
     return out
+Mrem_SEVNdelayed = np.vectorize(Mrem_SEVNdelayed)
 
 def Mrem_SEVNrapid(M, Z):
     '''
@@ -467,15 +470,17 @@ def Mrem_SEVNrapid(M, Z):
     # check if mass input is an array or not:
     if isinstance(M, np.ndarray): # M is array
         
-        out = MremInterpol_rapid(M, Z) * (np.heaviside(M_lowerEdge * np.ones(M.size) - MremInterpol_rapid(M, Z), 0) \
-            + np.heaviside(MremInterpol_rapid(M, Z) - M_upperEdge * np.ones(M.size), 0))
+        out = MremInterpol_rapid((M, Z)) * (np.heaviside(M_lowerEdge * np.ones(M.size) - MremInterpol_rapid((M, Z)), 0) \
+            + np.heaviside(MremInterpol_rapid((M, Z)) - M_upperEdge * np.ones(M.size), 0))
 
     else: # M is not array
 
-        out = MremInterpol_rapid(M, Z) * (np.heaviside(M_lowerEdge - MremInterpol_rapid(M, Z), 0) \
-            + np.heaviside(MremInterpol_rapid(M, Z) - M_upperEdge, 0))
+        out = MremInterpol_rapid((M, Z)) * (np.heaviside(M_lowerEdge - MremInterpol_rapid((M, Z)), 0) Let me know if there is anything else I can help you with.
+            + np.heaviside(MremInterpol_rapid((M, Z)) - M_upperEdge, 0))
+        out = float(out)
 
     return out
+Mrem_SEVNrapid = np.vectorize(Mrem_SEVNrapid)
 
 def sample_hardness():
     """
@@ -529,7 +534,7 @@ MCO10 = np.load(path + 'MCO10.npz')['MCO']
 MCO11 = np.load(path + 'MCO11.npz')['MCO']
 MCO12 = np.load(path + 'MCO12.npz')['MCO']
 # collect CO core masses with various metallicity values in a single array:
-MCO = np.array([MCO1, MCO2, MCO3, MCO4, MCO5, MCO6, MCO7, MCO8, MCO9, MCO10, MCO11, MCO12])
+MCO = np.array([MCO1, MCO2, MCO3, MCO4, MCO5, MCO6, MCO7, MCO8, MCO9, MCO10, MCO11, MCO12]).T
 
 # Metallicity should not be out of this range: [1e-4, 1.7e-2]:
 Zvalues = np.array([1.0e-4, 2.0e-4, 5.0e-4, 1.0e-3, 2.0e-3, 4.0e-3, 6.0e-3, 8.0e-3, 1.0e-2, 1.4e-2, 1.7e-2, 2.0e-2])
@@ -539,7 +544,7 @@ Npoints = 500
 Mzams = np.linspace(15, 340, Npoints)
 
 # interpolate:
-McoInterpol = interpolate.interp2d(Mzams, Zvalues, MCO, kind='linear', bounds_error=True)
+McoInterpol = interpolate.RegularGridInterpolator((Mzams, Zvalues), MCO, method='linear', bounds_error=True)
 
 def M_CO_SEVN(M, Z):
     """
@@ -551,7 +556,7 @@ def M_CO_SEVN(M, Z):
     @out: CO core mass [Msun]
     """
     
-    M_CO = McoInterpol(M, Z)+0
+    M_CO = float(McoInterpol((M, Z)))
     
     return M_CO
 
