@@ -475,7 +475,7 @@ def Mrem_SEVNrapid(M, Z):
 
     else: # M is not array
 
-        out = MremInterpol_rapid((M, Z)) * (np.heaviside(M_lowerEdge - MremInterpol_rapid((M, Z)), 0) Let me know if there is anything else I can help you with.
+        out = MremInterpol_rapid((M, Z)) * (np.heaviside(M_lowerEdge - MremInterpol_rapid((M, Z)), 0) \
             + np.heaviside(MremInterpol_rapid((M, Z)) - M_upperEdge, 0))
         out = float(out)
 
