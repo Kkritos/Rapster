@@ -48,7 +48,6 @@ Finally, ``Planck18_lookup_table.npz`` is a look-up table for the redshift-lookb
 
 The following Python packages are required.
 
-- $\tt argparse$ (>=1.4.0)
 - $\tt numpy$ (>=2.2.4)
 - $\tt pandas$ (>=2.2.3)
 - $\tt scipy$ (>=1.15.2)
