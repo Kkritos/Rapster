@@ -126,7 +126,7 @@ This should create four files ``mergers.txt``, ``evolution.txt``, ``hardening.tx
 
 ##### Suggestion:
 Taking different seed number values corresponds to different system realizations under the same initial conditions. 
-Passing the argument ``$RANDOM`` in the -s flag simulates the star cluster with a pseudo-randomly generated number. Notice that this syntax works only in the bash environment.
+Passing the argument ``$RANDOM`` in the -S flag (capitalized S for the seed flag, lowercase s for the spin flag) simulates the star cluster with a pseudo-randomly generated number. Notice that this syntax works only in the bash environment.
 
 <a name="outputfiles"></a>
 ### 6. Output files:
