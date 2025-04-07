@@ -165,6 +165,7 @@ a) Column description of mergers .txt file:
 | 26 | $r_{\rm h,0}$ | Initial half-mass radius ($\rm pc$) |
 | 27 | $Z$ | Metallicity |
 | 28 | $z_{\rm cl,form}$ | Redshift of cluster formation |
+| 29 | $R_{\rm gal}$ | Initial cluster galactocentric radius ($\rm pc$)|
 
 ##### Note:
 BBH assembly channel (first column of mergers file), the ``-`` sign means BBH was ejected and merged outside the cluster:
