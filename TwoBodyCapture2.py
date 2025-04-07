@@ -85,7 +85,7 @@ def two_body_capture(seed, t, dt, z, zCl_form, k_2cap, mBH_avg, binaries, mBH, s
             mu = m1*m2/m12
             
             # maximum impact parameter for capture:
-            b_max = (340 * np.pi / 3)**(1/7) * m12 * mu**(1/7) / v_rel**(9/7) * G_Newton * c_light**(-5/7)
+            b_max = (340 * np.pi / 3)**(1/7) * m12**(6/7) * mu**(1/7) / v_rel**(9/7) * G_Newton * c_light**(-5/7)
 
             # impact parameter sampled from uniform in b^2 distribution:
             b = np.sqrt(np.random.rand() * b_max**2)
@@ -94,13 +94,13 @@ def two_body_capture(seed, t, dt, z, zCl_form, k_2cap, mBH_avg, binaries, mBH, s
             rp = b**2 * v_rel**2 / 2 / G_Newton / m12
             
             # GW energy released:
-            E_gw = 85 * np.pi / 12 / np.sqrt(2) * mu**2 * m12**(9/2) / rp**(7/2) * G_Newton**(7/2) / c_light**5
+            E_gw = 85 * np.pi / 12 / np.sqrt(2) * mu**2 * m12**(5/2) / rp**(7/2) * G_Newton**(7/2) / c_light**5
             
             # final energy:
             E_fin = mu * v_rel**2 / 2 - E_gw
             
             # make sure eccentricity is strictly smaller than unity:
-            while 1 + 2 * E_fin * b**2 * v_rel**2 / m12**3 / mu / G_Newton**2 < 0:
+            while 1 + 2 * E_fin * b**2 * v_rel**2 / m12**2 / mu / G_Newton**2 < 0:
                 
                 # impact parameter sampled from uniform in b^2 distribution:
                 b = np.sqrt(np.random.rand() * b_max**2)
@@ -109,7 +109,7 @@ def two_body_capture(seed, t, dt, z, zCl_form, k_2cap, mBH_avg, binaries, mBH, s
                 rp = b**2 * v_rel**2 / 2 / G_Newton / m12
                 
                 # GW energy released:
-                E_gw = 85 * np.pi / 12 / np.sqrt(2) * mu**2 * m12**(9/2) / rp**(7/2) * G_Newton**(7/2) / c_light**5
+                E_gw = 85 * np.pi / 12 / np.sqrt(2) * mu**2 * m12**(5/2) / rp**(7/2) * G_Newton**(7/2) / c_light**5
                 
                 # final energy:
                 E_fin = mu * v_rel**2 / 2 - E_gw
@@ -118,7 +118,7 @@ def two_body_capture(seed, t, dt, z, zCl_form, k_2cap, mBH_avg, binaries, mBH, s
             sma = - G_Newton * m12 * mu / 2 / E_fin
             
             # eccentricity at formation:
-            eccen = np.sqrt(1 + 2 * E_fin * b**2 * v_rel**2 / m12**3 / mu / G_Newton**2)
+            eccen = np.sqrt(1 + 2 * E_fin * b**2 * v_rel**2 / m12**2 / mu / G_Newton**2)
             
             # delete captured BHs:
             mBH = np.delete(mBH, [k1, k2])
