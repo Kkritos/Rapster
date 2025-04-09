@@ -28,6 +28,7 @@ from scipy import interpolate
 import time
 import pandas as pd
 from math import erf
+from scipy.optimize import root
 
 # Use astrophysical units throughout:
 
