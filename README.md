@@ -172,7 +172,7 @@ BBH assembly channel (first column of mergers file), the ``-`` sign means BBH wa
 - (-)1: exchange processes
 -    2: two-body capture
 - (-)3: three-BH binary induced
-- (-)4: von Zeipel-Lidov-Kozai (ZLK) merger
+-    4: von Zeipel-Lidov-Kozai (ZLK) merger
 - (-)5: ZLK remnant BBH
 -    6: binary-single capture
 
