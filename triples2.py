@@ -75,46 +75,22 @@ def evolve_triples(seed, t, z, zCl_form, triples, binaries, mBH, sBH, gBH, mBH_a
             channel_in = triples[i][18]
             t_form_in = triples[i][19]
             z_form_in = triples[i][20]
+
+            # inner argument of periapsis:
+            w_in = np.random.uniform(0, 2*np.pi)
             
-            # inner pair mass:
-            m01 = m0 + m1
-            
-            # total triple mass:
-            m012 = m01 + m2
-            
-            # epsilon parameter of inner pair:
-            epsilon = 1 - e_in**2
-            
-            # reduced mass of inner pair:
-            mu_in = m0 * m1 / m01
-            
-            # reduced mass of outer pair:
-            mu_out = m01 * m2 / m012
-            
-            # auxiliary parameters:
-            beta = mu_out * np.sqrt(m012) / mu_in / np.sqrt(m01) * np.sqrt(a_out / a_in * (1 - e_out**2))
-            alpha = np.sqrt(epsilon) * np.cos(inclination1) + beta * np.cos(inclination2)
-            
-            # total inclination:
-            inclination = inclination1 + inclination2
-            
-            # cosine of total inclination:
-            cos_inclination = (alpha**2 - beta**2 - epsilon) / 2 / beta / np.sqrt(epsilon)
-            
-            # proxy for maximum eccentricity of inner pair:
-            epsilon_min = 5/3 * np.cos(inclination)**2
+            # maximum eccentricity of inner pair during the ZLK cycle:
+            eMAX = find_eMAX(m0, m1, m2, a_in, a_out, e_in, e_out, np.cos(inclination1), np.cos(inclination2), w_in)
+            epsilon_min = 1 - eMAX**2
             
             # ZLK merger timescale:
-            t_ZLK = 9e32 / m01**2 / mu_in * a_in**4 * epsilon_min**3
+            t_ZLK = 9e32 / (m0+m1) / m0 / m1 * a_in**4 * epsilon_min**3
             
             # triple - single interaction timescale:
             t_3 = 1 / Rate_int(m012 + mBH_avg, nc_BH, vBH, kp_max * a_out)
             
-            # condition for GR precession:
-            ZLK_not_Destroyed_By_GR_precession = a_out / a_in < 34 * (a_in / 1e-2)**(1/3) * (m01 / 2e6)**(-1/3) * (2 * m2 / m01)**(1/3) * ((1 - e_in**2) / (1 - e_out**2))**(1/2)
-            
-            # check whether inner pair merges before next interaction with another object and GR precession does not destroy ZLK:
-            if t_ZLK < t_3 and ZLK_not_Destroyed_By_GR_precession: # ZLK merger occurs
+            # check whether inner pair merges before next interaction with another object:
+            if t_ZLK < t_3: # ZLK merger occurs
                 
                 # sample spin orientations:
                 theta0, theta1, dPhi = sample_angles()
