@@ -87,7 +87,7 @@ def evolve_triples(seed, t, z, zCl_form, triples, binaries, mBH, sBH, gBH, mBH_a
             t_ZLK = 9e32 / (m0+m1) / m0 / m1 * a_in**4 * epsilon_min**3
             
             # triple - single interaction timescale:
-            t_3 = 1 / Rate_int(m012 + mBH_avg, nc_BH, vBH, kp_max * a_out)
+            t_3 = 1 / Rate_int(m0+m1+m2 + mBH_avg, nc_BH, vBH, kp_max * a_out)
             
             # check whether inner pair merges before next interaction with another object:
             if t_ZLK < t_3: # ZLK merger occurs
