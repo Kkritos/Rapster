@@ -821,5 +821,61 @@ def get_maxwell_sample(sigma):
     
     return sigma * np.interp(np.random.rand(), CDF_maxwell_s, w_s)
 
+def DW(x, m0, m1, m2, a1, a2, e1, e2, cosi1, cosi2, w):
+    """
+    Change in the double averaged Hamiltonian of a hierarchical triple as inner eccentricity is varied.
+    Notation from M.C.Miller & D.P.Hamilton ApJ 576, 894 (2002).
+    
+    @in x: 1-e1^2 (see definition of e1 below)
+    @in m0: primary mass of inner binary
+    @in m1: secondary mass of inner binary
+    @in m2: tertiary mass
+    @in a1: inner binary semimajor axis
+    @in a2: outer binary semimajor axis
+    @in e1: inner binary eccentricity
+    @in e2: outer binary eccentricity
+    @in cosi1: cosine of inner binary's inclination relative to invariant plane
+    @in cosi2:    "   of outer    "          "          "     "     "       "
+    @in w: argument of periapsis for inner binary
+    """
+ 
+    E = 1 - e1**2
+
+    # inclinations:
+    i1, i2 = np.arccos(cosi1), np.arccos(cosi2)
+ 
+    sinw = np.sin(w)
+    
+    M1 = m0 + m1 # total inner binary mass
+    M2 = M1 + m2 # total outer binary mass
+    
+    mu1 = m0*m1/M1 # reduced mass of inner binary
+    mu2 = M1*m2/M2 # reduced mass of outer binary
+
+    # integrals of motion:
+    B = mu2/mu1*np.sqrt(M1*a1/M2/a2*(1-e2**2))
+    A = np.sqrt(E)*np.cos(i1) + B*np.cos(i2)
+
+    # general relativistic correction term at zero inner eccentricity:
+    tPN = 8*M1/m2*(a2/a1*np.sqrt(1-e2**2))**3*M1/232/a1/(3e5)**2
+    
+    cosi = (A**2-B**2-E)/2/B/np.sqrt(E)
+    W = - 2*E + E*cosi**2 + 5*(1-E)*sinw**2*(cosi**2-1) + tPN/np.sqrt(E)
+    
+    cosI = (A**2-B**2-x)/2/B/np.sqrt(x)
+    
+    return -2*E + E*cosI**2 + 5*(1-E)*(cosI**2-1) + tPN/np.sqrt(x) - W
+
+def find_eMAX(m0, m1, m2, a1, a2, e1, e2, cosi1, cosi2, w, x0=1e-10, tol=1e-10):
+    """
+    Maximum eccentricity during a von Zeipel-Lidov-Kozai cycle.
+    Same inputs as function DW in this file.
+    """
+ 
+    x_min = root(fun=DW, x0=x0, args=(m0, m1, m2, a1, a2, e1, e2, cosi1, cosi2, w), tol=tol)['x'][0]
+    
+    eMAX = np.sqrt(1 - x_min)
+    
+    return eMAX
 
 # end of file
