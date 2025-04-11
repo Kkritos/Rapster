@@ -258,7 +258,7 @@ c) Column description of hardening .txt file:
 | 12 | $N_{\rm ex}$ | Number of BBH-BH exchanges |
 
 ##### Note:
-Condition or binary status (last column of hardening file):
+Condition or binary status (second to last column of hardening file):
 - 0: BBH available to evolve (see the flowchart of our algorithm in Fig.3 of [K. Kritos et al. (2022)](https://arxiv.org/abs/2210.10055))
 - 1: Local time exceeds global time
 - 2: 2-body merger (the BBH hardens and merges in the cluster after entering the GW regime)
