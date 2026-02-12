@@ -285,7 +285,7 @@ If you utilize this code in your research, please cite the following reference:
 
 [K. Kritos, V. Strokov, V. Baibhav & E. Berti (2022)](https://arxiv.org/abs/2210.10055).
 
-$\tt Rapster$ has been used in the following works:
+$\tt Rapster$ has been used at least in the following works:
 
 - [K. Kritos, E. Berti & J. Silk (2022)](https://arxiv.org/abs/2212.06845)
 
