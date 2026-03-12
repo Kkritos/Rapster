@@ -321,6 +321,6 @@ Suggestions and pull requests are welcome :)
 <a name="thanks"></a>
 ### 10. Thank you
 
-Vladimir Strokov, Vishal Baibhav, Emanuele Berti, Andrea Antonelli, Fabio Antonini, Dany Atallah, Muhsin Aljaf, Mario Cadelano, Mark Cheung, Roberto Cotesta, Hector Cruz, Giacomo Fragione, Gabriele Franciolini, Rosanna Hagen, Thomas Helfer, Veome Kapil, Xiao-Xiao Kou, Kyle Kremer, Iason Krommydas, Miguel Martinez, Akshita Mittal, Luca Reali, Carl Rodriguez, Giada Caneva Santoro, Newlin Weatherford, Ilaria Usai.
+Andrea Antonelli, Fabio Antonini, Dany Atallah, Muhsin Aljaf, Vishal Baibhav, Emanuele Berti, Mario Cadelano, Mark Cheung, Roberto Cotesta, Hector Cruz, Giacomo Fragione, Gabriele Franciolini, Rosanna Hagen, Thomas Helfer, Tousif Islam, Veome Kapil, Xiao-Xiao Kou, Kyle Kremer, Iason Krommydas, Miguel Martinez, Akshita Mittal, Luca Reali, Carl Rodriguez, Giada Caneva Santoro, Vladimir Strokov, Newlin Weatherford, Ilaria Usai.
 
 
