@@ -305,9 +305,11 @@ $\tt Rapster$ has been used at least in the following works:
 
 - [F. Angeloni et al. (incl. K. Kritos) (2025)](https://arxiv.org/abs/2512.11059)
 
-- [T. Islam, D. Wadekar, K. Kritos (2026, to appear)]
+- [T. Islam, D. Wadekar, K. Kritos (2026)](https://arxiv.org/abs/2603.10170)
  
 - [K. Kritos, D. Wadekar, E. Berti et al. (2026, to appear)]
+
+- [F. Angeloni et al. (incl. K. Kritos) (2026, to appear)]
 
 <a name="reportingbugs"></a>
 ### 9. Reporting bugs
@@ -319,6 +321,6 @@ Suggestions and pull requests are welcome :)
 <a name="thanks"></a>
 ### 10. Thank you
 
-Vladimir Strokov, Vishal Baibhav, Emanuele Berti, Andrea Antonelli, Fabio Antonini, Dany Atallah, Muhsin Aljaf, Mark Cheung, Roberto Cotesta, Hector Cruz, Giacomo Fragione, Gabriele Franciolini, Thomas Helfer, Veome Kapil, Kyle Kremer, Iason Krommydas, Miguel Martinez, Luca Reali, Carl Rodriguez, Newlin Weatherford, Xiao-Xiao Kou, Giada Caneva Santoro, Rosanna Hagen.
+Vladimir Strokov, Vishal Baibhav, Emanuele Berti, Andrea Antonelli, Fabio Antonini, Dany Atallah, Muhsin Aljaf, Mario Cadelano, Mark Cheung, Roberto Cotesta, Hector Cruz, Giacomo Fragione, Gabriele Franciolini, Rosanna Hagen, Thomas Helfer, Veome Kapil, Xiao-Xiao Kou, Kyle Kremer, Iason Krommydas, Miguel Martinez, Akshita Mittal, Luca Reali, Carl Rodriguez, Giada Caneva Santoro, Newlin Weatherford, Ilaria Usai.
 
 
