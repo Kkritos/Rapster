@@ -28,6 +28,10 @@ from math import erf
 from scipy.optimize import root
 
 # Use astrophysical units throughout:
+# mass -> solar masses (M_sun)
+# time -> million years (Myr)
+# distance -> parsec (pc)
+# velocity -> km/s=pc/Myr
 
 # Gravitational constant:
 G_Newton = 1 / 232
@@ -116,5 +120,14 @@ mBH_min = 3.0
 
 # minimum ZAMS mass of a massive star that probably results in BH:
 mM_min = 15.0
+
+# Chandrasekhar mass:
+M_Chandrasekhar = 1.40
+
+# neutron star mass:
+neutron_star_mass = M_Chandrasekhar
+
+# white dwarf mass:
+white_dwarf_mass = 0.60
 
 # end of file

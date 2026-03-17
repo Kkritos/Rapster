@@ -856,4 +856,66 @@ def find_eMAX(m0, m1, m2, a1, a2, e1, e2, cosi1, cosi2, w, x0=1e-10, tol=1e-10):
     
     return eMAX
 
+def R_WhiteDwarf(M_wd=white_dwarf_mass, M_Ch=M_Chandrasekhar):
+    """
+    White-dwarf mass-radius relation; from Nauenberg 1972. 
+    Returns the radius in parsec.
+
+    M_wd: mass of the white dwarf (solar masses)
+    M_Ch: Chandrasekhar mass (solar masses)
+    """
+    
+    return 7.80e6*(M_wd/M_Ch)**(-1/3)*np.sqrt(1 - (M_wd/M_Ch)**(4/3))/3.086e16
+
+def X_isco(x, s):
+    """
+    Returns the isco in units of gravitational radius (G*m/c^2).
+    Inputs:
+    x: dimensionless spin parameter in [0, 1]
+    s: 1 for prograde and -1 for retrograde orbits.
+    """
+    
+    Z1 = 1 + (1 - x**2)**(1/3)*((1+x)**(1/3) + (1-x)**(1/3))
+    Z2 = np.sqrt(3*x**2 + Z1**2)
+    XX = 3 + Z2 - s*np.sqrt((3-Z1)*(3+Z1+2*Z2))
+    return XX
+
+def dxdM(M, x, s):
+    """
+    Bardeen formula; Bardeen 1970 ("Kerr Metric Black Holes")
+    M: mass
+    x: dimensionless spin parameter in [0, 1]
+    """
+    
+    return 2/3/np.sqrt(3)*s/M*(1 + 2*np.sqrt(3*X_isco(x, s) - 2))/np.sqrt(1 - 2/3/X_isco(x, s)) - 2*x/M
+
+def evolve_spin_RungeKutta(Mi, Mf, xi, s, dM):
+    """
+    Returns the final spin of an accretion episode. Uses Runge-Kutta's 4th-order method.
+    Mi: initial compact object mass
+    Mf: final compact object mass so that (Mf-Mi)=accreted mass
+    xi: initial compact object dimensionless spin parameter in [0, 1]
+    s: +1 for prograde and -1 for retrograde accretion
+    dM: numerical integration mass-step
+    """
+    
+    M = Mi
+    x = xi
+    while M<Mf:
+        k1 = dM*dxdM(M, x, s)
+        k2 = dM*dxdM(M+dM/2, x+k1/2, s)
+        k3 = dM*dxdM(M+dM/2, x+k2/2, s)
+        k4 = dM*dxdM(M+dM, x+k3, s)
+        dx = (k1 + 2*k2 + 2*k3 + k4)/6
+        if x + dx > 1:
+            x = 1
+            break
+        elif x + dx < 0:
+            s = -s
+        else:
+            x = x + dx
+            M = M + dM
+    xf = x
+    return xf
+
 # end of file
