@@ -87,6 +87,18 @@ parser.add_argument('-BOF', '--blackholes_out_file_name', type=str, metavar=' ',
 
 parser.add_argument('-RP', '--remnant_mass_prescription', type=int, metavar=' ', default=1, help='Remnant mass prescription (0 for SEVN delayed, 1 for Fryer+2012 delayed, 2 for SEVN rapid, 3 for Fryer+2012 rapid)')
 
+parser.add_argument('-NS', '--with_neutron_stars', type=int, metavar=' ', default=1, help='include neutron stars (if =1) else no (if =0)')
+
+parser.add_argument('-WT', '--with_tdes', type=int, metavar=' ', default=1, help='include tdes (if =1) else no (if =0)')
+
+parser.add_argument('-Ti', '--tdes_file_indicator', type=int, metavar=' ', default=1, help='Export tdes file (0 for no, 1 for yes)')
+
+parser.add_argument('-TF', '--tdes_file_name', type=str, metavar=' ', default='tdes', help='Name of .txt file containing tde parameters')
+
+parser.add_argument('-MBH', '--massive_black_hole_mass', type=float, metavar=' ', default=0, help='mass of the seed massive BH (if >0)')
+
+parser.add_argument('-sBH', '--massive_black_hole_spin', type=float, metavar=' ', default=0, help='spin of the seed massive BH (from 0 to 1)')
+
 args = parser.parse_args()
 
 N = args.number
@@ -119,6 +131,12 @@ Hi = args.hardening_file_indicator
 BOi = args.blackholes_out_file_indicator
 BOF = args.blackholes_out_file_name
 RP = args.remnant_mass_prescription
+with_NSs = args.with_neutron_stars
+with_tdes = args.with_tdes
+Ti = args.tdes_file_indicator
+tdes_file = args.tdes_file_name
+M_BH0 = args.massive_black_hole_mass
+s_BH0 = args.massive_black_hole_spin
 
 # initial conditions:
 
@@ -143,6 +161,9 @@ if __name__ == "__main__":
     # initial cluster mass:
     Mcl = N * m_avg
     Mcl0 = Mcl
+
+    # initial galactocentric radius:
+    R_gal0 = R_gal
     
     # initial multimass relaxation factor:
     psi0 = integrate.quad(lambda x: x**(5/2) * IMF_kroupa(np.array([x])), m_min, m_max)[0] \
@@ -233,7 +254,25 @@ if __name__ == "__main__":
     elif SD==1:
         # draw spins from monochromatic distribution:
         sBH = s1g_max * np.ones(mBH.size)
-        
+
+    if with_NSs==1:
+        # initial integer number of NSs formed in the cluster:
+        f_NS_form = Kroupa_norm*integrate.quad(lambda m: IMF_kroupa(np.array([m])), 8, 18)[0]
+        N_NS_form = int(f_NS_form*N)
+
+        # Determine how many NSs will be retained in the cluster following their natal kick:
+        v_NS_natal = maxwell.rvs(loc=0, scale=np.sqrt(3)*wSN_kick, size=N_NS_form) # get Maxwellian samples from 3D Hobbs distribution
+        N_NS_ret = v_NS_natal[v_NS_natal < v_esc(Mcl, rh)].size # compute number of retained NSs
+
+        if N_NS_ret > 0:
+            # Append NSs to the BH mass and spin array:
+            mBH = np.concatenate((mBH, neutron_star_mass * np.ones(N_NS_ret)))
+            sBH = np.concatenate((sBH, np.zeros(N_NS_ret)))
+
+    if M_BH0>0: # add massive black hole seed in the initial conditions
+        mBH = np.concatenate((mBH, [M_BH0]))
+        sBH = np.concatenate((sBH, [s_BH0]))
+
     # BH generations:
     gBH = np.ones(mBH.size)
     
@@ -269,16 +308,19 @@ if __name__ == "__main__":
     # triples [a_inner, a_outer, e_inner, e_outer, m0, m1, m2, s0, s1, s2, g0, g1, g2, i1, i2, t_form, z_form, ind_inner, channel_inner, t_form_inner, z_form_inner]:
     triples = np.zeros(shape=(1, 21))
     
-    # mergers [seed, ind, channel, a, e, m1, m2, s1, s2, g1, g2, theta1, theta2, dPhi, t_form, z_form, t_merge, z_merge, m_rem, s_rem, g_rem, vGW_kick, s_eff, q]:
-    mergers = np.zeros(shape=(1, 24))
-    
-    # evolution [seed, t, z, dt, m_avg, Mcl, rh, R_gal, v_gal, t_rlx, tBH_rlx, n_star, N_BH, mBH_avg, mBH_max, rh_BH, rc_BH, S, xi, psi, psi_BH, t_3bb, t_2cap, k_3bb, k_2cap, N_me, N_BBH, N_meRe, N_meEj, v_star, vBH, nh_BH, nc_BH, na_BH, N_3bb, N_2cap, N_3cap, N_BHej, N_BBHej, N_dis, N_ex, t_bb, N_bb, N_meFi, N_me2b, t_ex1, t_ex2, k_ex1, k_ex2, N_ex1, N_ex2, N_BHstar, t_pp, k_pp, N_pp, v_esc, vBH_esc, N_Triples, N_ZLK]:
-    evolution = np.zeros(shape=(1, 59))
+    # mergers [seed, ind, channel, a, e, m1, m2, s1, s2, g1, g2, theta1, theta2, dPhi, t_form, z_form, t_merge, z_merge, m_rem, s_rem, g_rem, vGW_kick, s_eff, q, v_esc]:
+    mergers = np.zeros(shape=(1, 25))
+
+    # evolution [seed, t, z, dt, m_avg, Mcl, rh, R_gal, v_gal, t_rlx, tBH_rlx, n_star, N_BH, mBH_avg, mBH_max, rh_BH, rc_BH, S, xi, psi, psi_BH, t_3bb, t_2cap, k_3bb, k_2cap, N_me, N_BBH, N_meRe, N_meEj, v_star, vBH, nh_BH, nc_BH, na_BH, N_3bb, N_2cap, N_3cap, N_BHej, N_BBHej, N_dis, N_ex, t_bb, N_bb, N_meFi, N_me2b, t_ex1, t_ex2, k_ex1, k_ex2, N_ex1, N_ex2, N_BHstar, t_pp, k_pp, N_pp, v_esc, vBH_esc, N_Triples, N_ZLK, N_WD, v_WD, k_tdeBHWD, N_tdeBHDE, dN_WDformdt, dN_WDevdt, dN_tdeBHWDdt, dN_WDdt, dN_tdeBHstardt, N_tdeBHstar]:
+    evolution = np.zeros(shape=(1, 69))
     
     # hardening [t, dt, t_local, dt_local, ind, a, e, m1, m2, q, condition, Nex]:
     hardening = np.zeros(shape=(1, 12))
     N_hardening = 0
-    
+
+    # tdes [seed, t, z, type, m_star, R_star, m_BH, s_BH, g_BH, r_t, r_p, beta, iota, r_mb, dm, ds, t$
+    tdes = np.zeros(shape=(1, 20))
+
     # initialize time:
     t = 0
     
@@ -294,13 +336,28 @@ if __name__ == "__main__":
     global_time_initial = time.time()
     
     mBH_ini = mBH
-    
+
+    # Initialize WD-related quantities:
+    N_WD = 0 # number of WDs
+    N_tdeBHWD = 0 # cumulative number of BH-WD TDEs
+    N_tdeBHstar = 0 # cumulative number of BH-star TDEs
+
+    # lists to save BH properties at every timestep:
+    black_hole_masses = []
+    black_hole_spins = []
+    black_hole_generations = []
+
     # Simulation:
-    while t<t_max and R_gal>0 and Mcl>0 and mBH.sum()<fBH_max*Mcl:
-        
+    while t<t_max and R_gal>0 and Mcl>0 and mBH.sum()<fBH_max*Mcl:        
+
         # start local clock:
         local_time_initial = time.time()
-        
+
+        # save current BH properties (all BHs; single, in binaries, and in pairs) at current timestep:
+        black_hole_masses.append(np.concatenate((mBH, np.transpose(binaries)[:][4], np.transpose(binaries)[:][5], np.transpose(pairs)[:][1])))
+        black_hole_spins.append(np.concatenate((sBH, np.transpose(binaries)[:][6], np.transpose(binaries)[:][7], np.transpose(pairs)[:][2])))
+        black_hole_generations.append(np.concatenate((gBH, np.transpose(binaries)[:][8], np.transpose(binaries)[:][9], np.transpose(pairs)[:][3])))
+
         if t>tBH_form and i_aux1==0:
             N_BH = mBH.size
             i_aux1 = 1
@@ -616,13 +673,65 @@ if __name__ == "__main__":
         
         # dynamical friction timescale:
         t_df = 0.45e3 * (R_gal / 1e3)**2 * v_gal / (Mcl / 1e5) / 2
+
+        # White dwarf formation, ejection, and tidal disruption events:
         
+       	solar_life = 1.0e4 # lifetime of the Sun
+        m_WN = 8.0 # maximum ZAMS mass for the star to form a WD (Msun)
+        t_WN = solar_life/m_WN**(2.5) # time for the first WD to form (Myr)
+        N_strs = Mcl/m_avg # current number of stars
+
+        # WD formation rate (/Myr):
+        dN_WDformdt = N_strs/t/2.5 * Kroupa_norm*IMF_kroupa(np.array([(solar_life/t)**(1/2.5)]))[0] * (solar_life/t)**(1/2.5) if t>t_WN else 0.0
+        
+        # WD evaporation rate (/Myr):
+        dN_WDevdt = xi_e*N_WD/t_rlx if N_WD>0 else 0.0
+        
+        m_WD = white_dwarf_mass # WD mass (Msun)
+        R_WD = R_WhiteDwarf() # WD radius (pc)
+        v_WD = np.sqrt(m_avg/m_WD)*v_star # WD 3-dim. velo. disp.
+        rh_WD = rh # WD half-mass radius (pc)
+        nc_WD = 3*N_WD/4/np.pi/(rh_WD/1.3)**3 # WD central density (pc^-3)
+        v_BHWD = np.sqrt(vBH**2 + v_WD**2) # typical relative velocity between a BH and a WD
+        # WD-BH TDE rate (1/Myr):
+        dN_tdeBHWDdt = 2*np.sqrt(2*(3*np.pi-8))*G_Newton*(mBH_avg + m_WD)*N_BH*nc_WD*R_WD*(mBH_avg/m_WD)**(1/3)/v_BHWD if N_WD>0 else 0.0
+        
+        # effective WD evolution equation:
+        dN_WDdt = dN_WDformdt - dN_WDevdt - dN_tdeBHWDdt
+
+        # evolve number of WDs:
+        N_WD = N_WD + dN_WDdt * dt
+        
+        # Poisson number of BH-WD TDEs at this timestep:
+        k_tdeBHWD = np.min([poisson.rvs(mu=dt*dN_tdeBHWDdt), int(N_BH-3*N_Triples), int(N_WD)]) if N_WD>0 else 0
+
+        # BH-WD TDE(s):
+        if k_tdeBHWD > 0 and with_tdes:
+            type = 11
+            seed, t, z, k_tdeBHWD, N_tdeBHWD, type, m_WD, R_WD, mBH, sBH, gBH, v_star, vBH, tdes, binaries, pairs = BH_TidalDisruptions(seed, t, z, k_tdeBHWD, N_tdeBHWD, type, m_WD, R_WD, mBH, sBH, gBH, v_WD, vBH, tdes, binaries, pairs)
+            
+        # micro-TDEs:
+        
+        v_BHstar = np.sqrt(v_star**2 + vBH**2) # typical relative velocity between a star and a BH
+        
+        # BH-star TDE rate:
+        dN_tdeBHstardt = 2*np.sqrt(2*(3*np.pi-8))*G_Newton*(mBH_avg + m_avg)*n_star*N_BH*R_sun*(mBH_avg/m_avg)**(1/3)/v_BHstar if (N_BH>0)*(n_star>0) else 0.0
+        
+        # Poisson number of BH-star TDEs at this timestep:
+        k_tdeBHstar = np.min([poisson.rvs(mu=dt*dN_tdeBHstardt), int(N_BH-3*N_Triples), int(N_strs)]) if (N_BH>0)*(n_star>0) else 0
+        
+        # BH-star TDE(s):
+        if k_tdeBHstar > 0 and with_tdes:
+            type = 1
+            seed, t, z, k_tdeBHstar, N_tdeBHstar, type, m_avg, R_sun, mBH, sBH, gBH, v_star, vBH, tdes, binaries, pairs = BH_TidalDisruptions(seed, t, z, k_tdeBHstar, N_tdeBHstar, type, m_avg, R_sun, mBH, sBH, gBH, v_star, vBH, tdes, binaries, pairs)
+
         # append evolution:
         evolution = np.append(evolution, [[seed, t, z, dt, m_avg, Mcl, rh, R_gal, v_gal, t_rlx, tBH_rlx, n_star, N_BH, mBH_avg, mBH_max, rh_BH, rc_BH, S, 
                                            xi, psi, psi_BH, t_3bb, t_2cap, k_3bb, k_2cap, N_me, N_BBH, N_meRe, N_meEj, v_star, vBH, 
                                            nh_BH, nc_BH, na_BH, N_3bb, N_2cap, N_3cap, N_BHej, N_BBHej, N_dis, N_ex, t_bb, N_bb, 
                                            N_meFi, N_me2b, t_ex1, t_ex2, k_ex1, k_ex2, N_ex1, N_ex2, N_BHstar, t_pp, k_pp, N_pp, 2*v_star, 
-                                           2*vBH, N_Triples, N_ZLK]], axis=0)
+                                           2*vBH, N_Triples, N_ZLK, N_WD, v_WD, k_tdeBHWD, N_tdeBHWD, dN_WDformdt, dN_WDevdt, dN_tdeBHWDdt, dN_WDdt, 
+                                           dN_tdeBHstardt, N_tdeBHstar]], axis=0)
         
         # Cluster evolution:
         
@@ -700,7 +809,7 @@ if __name__ == "__main__":
             frmt_3 = '%.3f'
             frmt_4 = "%.1f"
             data_1 = {"t[Myr]": [frmt_1%t], "dt[Myr]": [frmt_1%dt], "z": [frmt_1%z], "Mcl[MMsun]": [frmt_1%(Mcl/1e6)], "rh[pc]": [frmt_1%rh], "R_gal[kpc]": [frmt_1%(R_gal/1e3)]}
-            data_2 = {"N_BH": [frmt_2%N_BH], "N_BBH": [frmt_2%N_BBH], "N_Triples": [frmt_2%N_Triples], "N_me": [frmt_2%N_me]}
+            data_2 = {"N_BH": [frmt_2%N_BH], "N_BBH": [frmt_2%N_BBH], "N_Triples": [frmt_2%N_Triples], "N_me": [frmt_2%N_me], "N_tdeBHWD": [frmt_2%N_tdeBHWD], "N_tdeBHstar": [frmt_2%N_tdeBHstar]}
             data_3 = {"steptime[ms]": [frmt_4%(np.abs(local_time_final - local_time_initial)*1e3)], "runtime[s]": [frmt_3%np.abs(time.time() - global_time_initial)]}
             headers = [" "]
             df_1 = pd.DataFrame(data_1, headers)
@@ -710,27 +819,35 @@ if __name__ == "__main__":
             print(df_2)
             print(df_3)
             print("\n")
-            
-    # ----------------------------------------------------------------------------------------------------------------------
-    
+
+# ----------------------------------------------------------------------------------------------------------------------
+
     mergers = np.delete(mergers, 0, axis=0)
     evolution = np.delete(evolution, 0, axis=0)
     hardening = np.delete(hardening, 0, axis=0)
     
     # exporting output files:
     
-    mBH_fin = mBH
-    
     if BOi==1:
-        np.savez(BOF, mBH_ini=mBH_ini, mBH_fin=mBH_fin)
+        np.savez(BOF, t=evolution[:][1], mBH=black_hole_masses, sBH=black_hole_spins, gBH=black_hole_generations)
     
+    if Ti==1: # export tdes file
+        with open(tdes_file+'.txt', 'w') as f_tdes:
+            for i in range(N_tdeBHWD+N_tdeBHstar):
+                f_tdes.write(str(tdes[i][ 0])+' '+str(tdes[i][ 1])+' '+str(tdes[i][ 2])+' '+str(tdes[i][ 3])+' '+\
+                             str(tdes[i][ 4])+' '+str(tdes[i][ 5])+' '+str(tdes[i][ 6])+' '+str(tdes[i][ 7])+' '+\
+                             str(tdes[i][ 8])+' '+str(tdes[i][ 9])+' '+str(tdes[i][10])+' '+str(tdes[i][11])+' '+\
+                             str(tdes[i][12])+' '+str(tdes[i][13])+' '+str(tdes[i][14])+' '+str(tdes[i][15])+' '+\
+                             str(tdes[i][16])+' '+str(tdes[i][17])+' '+str(tdes[i][18])+' '+str(tdes[i][19]))
+                f_tdes.write('\n')
+
     if Mi==1: # export mergers file
         with open(mergers_file+'.txt', 'w') as f_mergers:
             for i in range(N_me):
                 f_mergers.write(str(mergers[i][0 ])+' '+str(mergers[i][1 ])+' '+str(mergers[i][2 ])+' '+str(mergers[i][3 ])+' '+str(mergers[i][4 ])+' '+str(mergers[i][5 ])+' '+str(mergers[i][6 ])+' '+\
                                 str(mergers[i][7 ])+' '+str(mergers[i][8 ])+' '+str(mergers[i][9 ])+' '+str(mergers[i][10])+' '+str(mergers[i][11])+' '+str(mergers[i][12])+' '+str(mergers[i][13])+' '+\
                                 str(mergers[i][14])+' '+str(mergers[i][15])+' '+str(mergers[i][16])+' '+str(mergers[i][17])+' '+str(mergers[i][18])+' '+str(mergers[i][19])+' '+str(mergers[i][20])+' '+\
-                                str(mergers[i][21])+' '+str(mergers[i][22])+' '+str(mergers[i][23])+' '+str(Mcl0)+' '+str(rh0)+' '+str(Z)+' '+str(zCl_form)+' '+str(R_gal))
+                                str(mergers[i][21])+' '+str(mergers[i][22])+' '+str(mergers[i][23])+' '+str(mergers[i][24])+' '+str(Mcl0)+' '+str(rh0)+' '+str(Z)+' '+str(zCl_form)+' '+str(R_gal0)+' '+str(Mcl)+' '+str(rh)+' '+str(R_gal))
                 f_mergers.write('\n')
 
     if Ei==1: # export evolution file
@@ -745,9 +862,11 @@ if __name__ == "__main__":
                                   str(evolution[i][36])+' '+str(evolution[i][37])+' '+str(evolution[i][38])+' '+str(evolution[i][39])+' '+str(evolution[i][40])+' '+str(evolution[i][41])+' '+\
                                   str(evolution[i][42])+' '+str(evolution[i][43])+' '+str(evolution[i][44])+' '+str(evolution[i][45])+' '+str(evolution[i][46])+' '+str(evolution[i][47])+' '+\
                                   str(evolution[i][48])+' '+str(evolution[i][49])+' '+str(evolution[i][50])+' '+str(evolution[i][51])+' '+str(evolution[i][52])+' '+str(evolution[i][53])+' '+\
-                                  str(evolution[i][54])+' '+str(evolution[i][55])+' '+str(evolution[i][56])+' '+str(evolution[i][57])+' '+str(evolution[i][58]))
+                                  str(evolution[i][54])+' '+str(evolution[i][55])+' '+str(evolution[i][56])+' '+str(evolution[i][57])+' '+str(evolution[i][58])+' '+str(evolution[i][59])+' '+\
+                                  str(evolution[i][60])+' '+str(evolution[i][61])+' '+str(evolution[i][62])+' '+str(evolution[i][63])+' '+str(evolution[i][64])+' '+str(evolution[i][65])+' '+\
+                                  str(evolution[i][66])+' '+str(evolution[i][67])+' '+str(evolution[i][68]))
                 f_evolution.write('\n')
-            
+
     if Hi==1: # export hardening file
         with open(hardening_file+'.txt', 'w') as f_hardening:
             for i in range(N_hardening):
