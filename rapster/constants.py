@@ -1,5 +1,5 @@
 '''
- Copyright (C) 2023  Konstantinos Kritos <kkritos1@jhu.edu>
+ Copyright (C) 2026  Konstantinos Kritos <kkritos1@jhu.edu>
 
  This program is free software: you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
@@ -18,13 +18,10 @@
 
 import numpy as np
 import argparse
-#import precession as pre
 from scipy.stats import poisson
 from scipy.stats import maxwell
 import scipy.integrate as integrate
 from scipy import interpolate
-#import astropy.units as u
-#from astropy.cosmology import Planck18, z_at_value
 import time
 import pandas as pd
 from math import erf
@@ -57,14 +54,14 @@ Omega_K = 0.0
 Omega_V = 0.70
 
 # load Planck18 lookup table:
-Planck18_lookup_table = np.load('./Planck18_lookup_table.npz')
+Planck18_lookup_table = np.load('../Data/Planck18_lookup_table.npz')
 
 # interpolate redshift-lookback and lookback-redshift relations:
 lookback_interp = interpolate.interp1d(Planck18_lookup_table['z'], Planck18_lookup_table['lookback'])
 redshift_interp = interpolate.interp1d(Planck18_lookup_table['t'], Planck18_lookup_table['redshift'])
 
 # Hardening constant:
-Hardening_constant = 4/7
+Hardening_constant = 4.0 / 7.0
 
 # Average number of intermediate BBH states during binary-single interaction:
 N_IMS = 20

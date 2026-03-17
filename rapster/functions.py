@@ -17,29 +17,7 @@
 '''
 
 from constants import *
-'''
-def lookback_astropy(z):
-    """
-    Assuming Planck (2018) cosmological parameters. Using astropy.
-    
-    @in z: redshift
-    
-    @out: lookback time [Myr]
-    """
-    
-    return Planck18.lookback_time(z).value * 1e3
 
-def redshift_astropy(t):
-    """
-    Assuming Planck (2018) cosmological parameters. Using astropy.
-    
-    @in t: lookback time [Myr]
-    
-    @out: redshift
-    """
-    
-    return z_at_value(Planck18.lookback_time, t * u.Myr)
-'''
 def E_cosmo(z):
     """
     @in z: redshift
