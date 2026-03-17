@@ -42,7 +42,7 @@ def evolve_triples(seed, t, z, zCl_form, triples, binaries, mBH, sBH, gBH, mBH_a
     @in v_star: 3D star velocity dispersion
     @in vBH: 3D BH velocity dispersion
     @in nc_BH: central BH density
-    @in mergers: array of mergers
+    @in mergers: array of mergers: [seed, ind, channel, a, e, m1, m2, s1, s2, g1, g2, theta1, theta2, dPhi, t_form, z_form, t_merge, z_merge, m_rem, s_rem, g_rem, vGW_kick, s_eff, q, v_esc]
     
     @out: all inputs
     """
@@ -123,7 +123,7 @@ def evolve_triples(seed, t, z, zCl_form, triples, binaries, mBH, sBH, gBH, mBH_a
                 
                 # append merger:
                 mergers = np.append(mergers, [[seed, ind_in, 4, a_in, eMAX, m0, m1, s0, s1, g0, g1, theta0, theta1, dPhi, t_form_in, z_form_in, t_merge,
-                                               redshift(lookback(zCl_form) - t_merge), m_rem, s_rem, g_rem, vGW_kick, s_eff, q]], axis=0)
+                                               redshift(lookback(zCl_form) - t_merge), m_rem, s_rem, g_rem, vGW_kick, s_eff, q, 2*v_star]], axis=0)
                 
                 triples = np.delete(triples, i, axis=0)
 
