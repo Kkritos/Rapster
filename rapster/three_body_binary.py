@@ -19,7 +19,6 @@
 from constants import *
 from functions import *
 
-#@njit
 def three_body_binary(t, z, k_3bb, mBH_avg, binaries, mBH, sBH, gBH, vBH, N_3bb, N_BBH):
     """
     @in t: simulation time
