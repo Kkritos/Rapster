@@ -1,5 +1,5 @@
 '''
- Copyright (C) 2023  Konstantinos Kritos <kkritos1@jhu.edu>
+ Copyright (C) 2026  Konstantinos Kritos <kkritos1@jhu.edu>
 
  This program is free software: you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
@@ -16,15 +16,15 @@
 
 '''
 
-from constants2 import *
-from functions2 import *
-from ThreeBodyBinary2 import three_body_binary
-from BBHevol2 import evolve_BBHs
-from triples2 import evolve_triples
-from TwoBodyCapture2 import two_body_capture
-from Exchanges2 import StarStar_to_BHstar, BHstar_to_BBH
+from constants import *
+from functions import *
+from three_body_binary import three_body_binary
+from binary_evolution import evolve_BBHs
+from triples import evolve_triples
+from two_body_capture import two_body_capture
+from exchanges import StarStar_to_BHstar, BHstar_to_BBH
 
-parser = argparse.ArgumentParser(description="Rapster2 input parameters")
+parser = argparse.ArgumentParser(description="Rapster input parameters")
 
 parser.add_argument('-N', '--number', type=float, metavar=' ', default=1e6, help='Initial number of stars')
 

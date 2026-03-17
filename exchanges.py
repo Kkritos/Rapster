@@ -1,5 +1,5 @@
 '''
- Copyright (C) 2023  Konstantinos Kritos <kkritos1@jhu.edu>
+ Copyright (C) 2026  Konstantinos Kritos <kkritos1@jhu.edu>
 
  This program is free software: you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
@@ -16,8 +16,8 @@
 
 '''
 
-from constants2 import *
-from functions2 import *
+from constants import *
+from functions import *
 
 def StarStar_to_BHstar(k_ex1, N_ex1, m_avg, mBH, sBH, gBH, ab, pairs, N_BHstar):
     """

@@ -1,5 +1,5 @@
 '''
- Copyright (C) 2023  Konstantinos Kritos <kkritos1@jhu.edu>
+ Copyright (C) 2026  Konstantinos Kritos <kkritos1@jhu.edu>
 
  This program is free software: you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
@@ -16,8 +16,8 @@
 
 '''
 
-from constants2 import *
-from functions2 import *
+from constants import *
+from functions import *
 
 #@njit
 def evolve_BBHs(seed, t, z, dt, zCl_form, binaries, hardening, mergers, mBH, sBH, gBH, n_star, v_star, vBH, t_rlx, m_avg, mBH_avg, na_BH, nc_BH, N_BH, N_BBH, N_me, N_me2b, N_3cap, N_meFi, N_meRe, N_meEj, N_dis, N_ex, N_BHej, N_BBHej, N_hardening, Vc_BH, N_bb, triples, N_Triples):

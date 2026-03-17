@@ -1,5 +1,5 @@
 '''
- Copyright (C) 2023  Konstantinos Kritos <kkritos1@jhu.edu>
+ Copyright (C) 2026  Konstantinos Kritos <kkritos1@jhu.edu>
 
  This program is free software: you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
@@ -16,8 +16,8 @@
 
 '''
 
-from constants2 import *
-from functions2 import *
+from constants import *
+from functions import *
 
 #@njit
 def two_body_capture(seed, t, dt, z, zCl_form, k_2cap, mBH_avg, binaries, mBH, sBH, gBH, vBH, v_star, N_2cap, N_BH, N_BBH, N_me, N_meRe, N_meEj, mergers):
