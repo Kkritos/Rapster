@@ -298,7 +298,10 @@ if __name__ == "__main__":
     N_pp = 0 # number of BHstar - BHstar interactions
     N_Triples = 0 # number of BHBHBH hierarchical triples
     N_ZLK = 0 # number of ZLK mergers
-    
+    N_WD = 0 # number of WDs
+    N_tdeBHWD = 0 # cumulative number of BH-WD TDEs
+    N_tdeBHstar = 0 # cumulative number of BH-star TDEs
+
     # binaries [ind, channel, a, e, m1, m2, s1, s2, g1, g2, t_form, z_form, Nex]:
     binaries = np.zeros(shape=(1, 13))
     
@@ -331,22 +334,15 @@ if __name__ == "__main__":
     dt = dt_min
     
     i_aux1 = 0
-    
-    # start global clock:
-    global_time_initial = time.time()
-    
-    mBH_ini = mBH
-
-    # Initialize WD-related quantities:
-    N_WD = 0 # number of WDs
-    N_tdeBHWD = 0 # cumulative number of BH-WD TDEs
-    N_tdeBHstar = 0 # cumulative number of BH-star TDEs
 
     # lists to save BH properties at every timestep:
     black_hole_masses = []
     black_hole_spins = []
     black_hole_generations = []
 
+    # start global clock:
+    global_time_initial = time.time()
+    
     # Simulation:
     while t<t_max and R_gal>0 and Mcl>0 and mBH.sum()<fBH_max*Mcl:        
 
