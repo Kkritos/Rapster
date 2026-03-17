@@ -232,6 +232,63 @@ def Mrem_SEVNrapid(M, Z):
     return out
 Mrem_SEVNrapid = np.vectorize(Mrem_SEVNrapid)
 
+def M_CO_SSE(M, Z):
+    """
+    Carbon-oxygen mass, from Hurley et al. (2000).
+    
+    @in M: ZAMS star mass [Msun]
+    @in Z: absolute metallicity
+    
+    @out: CO core mass [Msun]
+    """
+    
+    # Chandrasekhar limit in solar masses:
+    Mch = M_Chandrasekhar
+    
+    zeta = np.log(Z / Z_sun)
+    
+    bp_36 = (1.445216e-1) + (-6.180219e-2) * zeta + (3.093878e-2) * zeta**2 + (+1.567090e-2) * zeta**3
+    bp_37 = (1.304129e+0) + (+1.395919e-1) * zeta + (4.142455e-3) * zeta**2 + (-9.732503e-3) * zeta**3
+    bp_38 = (5.114149e-1) + (-1.160850e-2) * zeta + (0.000000e+0) * zeta**2 + (+0.000000e+0) * zeta**3
+    
+    b_36 = bp_36**4
+    b_37 = 4.0 * bp_37
+    b_38 = bp_38**4
+    
+    # core mass at the Base of the Asymptotic Giant Branch:
+    McBAGB = (b_36 * M**b_37 + b_38)**(1/4)
+    
+    # Carbon/Oxygen core mass:
+    M_CO = np.max([Mch, 0.773 * McBAGB - 0.35])
+    
+    return M_CO
+
+path = '../Data/MzamsMrem/'
+MCO1  = np.load(path + 'MCO1.npz' )['MCO']
+MCO2  = np.load(path + 'MCO2.npz' )['MCO']
+MCO3  = np.load(path + 'MCO3.npz' )['MCO']
+MCO4  = np.load(path + 'MCO4.npz' )['MCO']
+MCO5  = np.load(path + 'MCO5.npz' )['MCO']
+MCO6  = np.load(path + 'MCO6.npz' )['MCO']
+MCO7  = np.load(path + 'MCO7.npz' )['MCO']
+MCO8  = np.load(path + 'MCO8.npz' )['MCO']
+MCO9  = np.load(path + 'MCO9.npz' )['MCO']
+MCO10 = np.load(path + 'MCO10.npz')['MCO']
+MCO11 = np.load(path + 'MCO11.npz')['MCO']
+MCO12 = np.load(path + 'MCO12.npz')['MCO']
+# collect CO core masses with various metallicity values in a single array:
+MCO = np.array([MCO1, MCO2, MCO3, MCO4, MCO5, MCO6, MCO7, MCO8, MCO9, MCO10, MCO11, MCO12]).T
+
+# Metallicity should not be out of this range: [1e-4, 1.7e-2]:
+Zvalues = np.array([1.0e-4, 2.0e-4, 5.0e-4, 1.0e-3, 2.0e-3, 4.0e-3, 6.0e-3, 8.0e-3, 1.0e-2, 1.4e-2, 1.7e-2, 2.0e-2])
+
+# Mass should not be out of this range: [15, 340] solar masses
+Npoints = 500
+Mzams = np.linspace(15, 340, Npoints)
+
+# interpolate:
+McoInterpol = interpolate.RegularGridInterpolator((Mzams, Zvalues), MCO, method='linear', bounds_error=True)
+
 def M_CO_SEVN(M, Z):
     """
     Carbon-oxygen mass, from Spera & Mapelli (2017).
@@ -351,5 +408,16 @@ def get_SN_kick(mBH, wSN_kick):
     """
     
     return get_maxwell_sample(np.sqrt(3) * wSN_kick * neutron_star_mass/mBH)
+
+def R_WhiteDwarf(M_wd=white_dwarf_mass, M_Ch=M_Chandrasekhar):
+    """
+    White-dwarf mass-radius relation; from Nauenberg 1972.
+    Returns the radius in parsec.
+
+    M_wd: mass of the white dwarf (solar masses)
+    M_Ch: Chandrasekhar mass (solar masses)
+    """
+
+    return 7.80e6*(M_wd/M_Ch)**(-1/3)*np.sqrt(1 - (M_wd/M_Ch)**(4/3))/3.086e16
 
 end of file.

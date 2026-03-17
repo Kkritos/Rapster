@@ -18,6 +18,7 @@
 
 from constants import *
 from functions import *
+from stellar_evolution import *
 from three_body_binary import three_body_binary
 from binary_evolution import evolve_BBHs
 from triples import evolve_triples
