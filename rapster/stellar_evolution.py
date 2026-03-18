@@ -69,8 +69,15 @@ N_grid = 700
 M_grid = np.linspace(10, 340, N_grid)
 Z_grid = np.logspace(np.log10(1e-4), np.log10(2e-2), N_grid)
 
-Mremnants_F12d = np.loadtxt('./MzamsMrem/MzamsMrem_F12d.txt', unpack=True)
-Mremnants_F12r = np.loadtxt('./MzamsMrem/MzamsMrem_F12r.txt', unpack=True)
+# Get the directory where constants.py lives (the 'rapster' folder):
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+
+# Go up one level to the root, then into the Data folder:
+DATA_PATH_F12d = os.path.join(BASE_DIR, '..', 'Data', 'MzamsMrem', 'MzamsMrem_F12d.txt')
+DATA_PATH_F12r = os.path.join(BASE_DIR, '..', 'Data', 'MzamsMrem', 'MzamsMrem_F12r.txt')
+
+Mremnants_F12d = np.loadtxt(DATA_PATH_F12d, unpack=True)
+Mremnants_F12r = np.loadtxt(DATA_PATH_F12r, unpack=True)
 
 MremInterpol_F12d = interpolate.RegularGridInterpolator((M_grid, Z_grid), Mremnants_F12d, method='linear', bounds_error=True)
 MremInterpol_F12r = interpolate.RegularGridInterpolator((M_grid, Z_grid), Mremnants_F12r, method='linear', bounds_error=True)
@@ -130,35 +137,35 @@ def Mrem_F12r(M, Z):
 Mrem_F12r = np.vectorize(Mrem_F12r)
 
 # Reading ``delayed'' files exported from SEVN code and stored according to metallicity for various ZAMS masses:
-MzamsMrem1  = np.load('../Data/MzamsMrem/MzamsMrem1_delayed.npz' ); Mrem_delayed_1  = MzamsMrem1 ['Mrem1' ]
-MzamsMrem2  = np.load('../Data/MzamsMrem/MzamsMrem2_delayed.npz' ); Mrem_delayed_2  = MzamsMrem2 ['Mrem2' ]
-MzamsMrem3  = np.load('../Data/MzamsMrem/MzamsMrem3_delayed.npz' ); Mrem_delayed_3  = MzamsMrem3 ['Mrem3' ]
-MzamsMrem4  = np.load('../Data/MzamsMrem/MzamsMrem4_delayed.npz' ); Mrem_delayed_4  = MzamsMrem4 ['Mrem4' ]
-MzamsMrem5  = np.load('../Data/MzamsMrem/MzamsMrem5_delayed.npz' ); Mrem_delayed_5  = MzamsMrem5 ['Mrem5' ]
-MzamsMrem6  = np.load('../Data/MzamsMrem/MzamsMrem6_delayed.npz' ); Mrem_delayed_6  = MzamsMrem6 ['Mrem6' ]
-MzamsMrem7  = np.load('../Data/MzamsMrem/MzamsMrem7_delayed.npz' ); Mrem_delayed_7  = MzamsMrem7 ['Mrem7' ]
-MzamsMrem8  = np.load('../Data/MzamsMrem/MzamsMrem8_delayed.npz' ); Mrem_delayed_8  = MzamsMrem8 ['Mrem8' ]
-MzamsMrem9  = np.load('../Data/MzamsMrem/MzamsMrem9_delayed.npz' ); Mrem_delayed_9  = MzamsMrem9 ['Mrem9' ]
-MzamsMrem10 = np.load('../Data/MzamsMrem/MzamsMrem10_delayed.npz'); Mrem_delayed_10 = MzamsMrem10['Mrem10']
-MzamsMrem11 = np.load('../Data/MzamsMrem/MzamsMrem11_delayed.npz'); Mrem_delayed_11 = MzamsMrem11['Mrem11']
-MzamsMrem12 = np.load('../Data/MzamsMrem/MzamsMrem12_delayed.npz'); Mrem_delayed_12 = MzamsMrem12['Mrem12']
+MzamsMrem1  = np.load(os.path.join(BASE_DIR, '..', 'Data', 'MzamsMrem', 'MzamsMrem1_delayed.npz' )); Mrem_delayed_1  = MzamsMrem1 ['Mrem1' ]
+MzamsMrem2  = np.load(os.path.join(BASE_DIR, '..', 'Data', 'MzamsMrem', 'MzamsMrem2_delayed.npz' )); Mrem_delayed_2  = MzamsMrem2 ['Mrem2' ]
+MzamsMrem3  = np.load(os.path.join(BASE_DIR, '..', 'Data', 'MzamsMrem', 'MzamsMrem3_delayed.npz' )); Mrem_delayed_3  = MzamsMrem3 ['Mrem3' ]
+MzamsMrem4  = np.load(os.path.join(BASE_DIR, '..', 'Data', 'MzamsMrem', 'MzamsMrem4_delayed.npz' )); Mrem_delayed_4  = MzamsMrem4 ['Mrem4' ]
+MzamsMrem5  = np.load(os.path.join(BASE_DIR, '..', 'Data', 'MzamsMrem', 'MzamsMrem5_delayed.npz' )); Mrem_delayed_5  = MzamsMrem5 ['Mrem5' ]
+MzamsMrem6  = np.load(os.path.join(BASE_DIR, '..', 'Data', 'MzamsMrem', 'MzamsMrem6_delayed.npz' )); Mrem_delayed_6  = MzamsMrem6 ['Mrem6' ]
+MzamsMrem7  = np.load(os.path.join(BASE_DIR, '..', 'Data', 'MzamsMrem', 'MzamsMrem7_delayed.npz' )); Mrem_delayed_7  = MzamsMrem7 ['Mrem7' ]
+MzamsMrem8  = np.load(os.path.join(BASE_DIR, '..', 'Data', 'MzamsMrem', 'MzamsMrem8_delayed.npz' )); Mrem_delayed_8  = MzamsMrem8 ['Mrem8' ]
+MzamsMrem9  = np.load(os.path.join(BASE_DIR, '..', 'Data', 'MzamsMrem', 'MzamsMrem9_delayed.npz' )); Mrem_delayed_9  = MzamsMrem9 ['Mrem9' ]
+MzamsMrem10 = np.load(os.path.join(BASE_DIR, '..', 'Data', 'MzamsMrem', 'MzamsMrem10_delayed.npz')); Mrem_delayed_10 = MzamsMrem10['Mrem10']
+MzamsMrem11 = np.load(os.path.join(BASE_DIR, '..', 'Data', 'MzamsMrem', 'MzamsMrem11_delayed.npz')); Mrem_delayed_11 = MzamsMrem11['Mrem11']
+MzamsMrem12 = np.load(os.path.join(BASE_DIR, '..', 'Data', 'MzamsMrem', 'MzamsMrem12_delayed.npz')); Mrem_delayed_12 = MzamsMrem12['Mrem12']
 # collect remnant masses with various metallicity values in a single array:
 Mrem_delayed = np.array([Mrem_delayed_1, Mrem_delayed_2, Mrem_delayed_3, Mrem_delayed_4, Mrem_delayed_5, Mrem_delayed_6, Mrem_delayed_7, \
                          Mrem_delayed_8, Mrem_delayed_9, Mrem_delayed_10, Mrem_delayed_11, Mrem_delayed_12]).T
 
 # Reading ``rapid'' files exported from SEVN code and stored according to metallicity for various ZAMS masses:
-MzamsMrem1  = np.load('../Data/MzamsMrem/MzamsMrem1_rapid.npz' ); Mrem_rapid_1  = MzamsMrem1 ['Mrem1' ]
-MzamsMrem2  = np.load('../Data/MzamsMrem/MzamsMrem2_rapid.npz' ); Mrem_rapid_2  = MzamsMrem2 ['Mrem2' ]
-MzamsMrem3  = np.load('../Data/MzamsMrem/MzamsMrem3_rapid.npz' ); Mrem_rapid_3  = MzamsMrem3 ['Mrem3' ]
-MzamsMrem4  = np.load('../Data/MzamsMrem/MzamsMrem4_rapid.npz' ); Mrem_rapid_4  = MzamsMrem4 ['Mrem4' ]
-MzamsMrem5  = np.load('../Data/MzamsMrem/MzamsMrem5_rapid.npz' ); Mrem_rapid_5  = MzamsMrem5 ['Mrem5' ]
-MzamsMrem6  = np.load('../Data/MzamsMrem/MzamsMrem6_rapid.npz' ); Mrem_rapid_6  = MzamsMrem6 ['Mrem6' ]
-MzamsMrem7  = np.load('../Data/MzamsMrem/MzamsMrem7_rapid.npz' ); Mrem_rapid_7  = MzamsMrem7 ['Mrem7' ]
-MzamsMrem8  = np.load('../Data/MzamsMrem/MzamsMrem8_rapid.npz' ); Mrem_rapid_8  = MzamsMrem8 ['Mrem8' ]
-MzamsMrem9  = np.load('../Data/MzamsMrem/MzamsMrem9_rapid.npz' ); Mrem_rapid_9  = MzamsMrem9 ['Mrem9' ]
-MzamsMrem10 = np.load('../Data/MzamsMrem/MzamsMrem10_rapid.npz'); Mrem_rapid_10 = MzamsMrem10['Mrem10']
-MzamsMrem11 = np.load('../Data/MzamsMrem/MzamsMrem11_rapid.npz'); Mrem_rapid_11 = MzamsMrem11['Mrem11']
-MzamsMrem12 = np.load('../Data/MzamsMrem/MzamsMrem12_rapid.npz'); Mrem_rapid_12 = MzamsMrem12['Mrem12']
+MzamsMrem1  = np.load(os.path.join(BASE_DIR, '..', 'Data', 'MzamsMrem', 'MzamsMrem1_rapid.npz' )); Mrem_rapid_1  = MzamsMrem1 ['Mrem1' ]
+MzamsMrem2  = np.load(os.path.join(BASE_DIR, '..', 'Data', 'MzamsMrem', 'MzamsMrem2_rapid.npz' )); Mrem_rapid_2  = MzamsMrem2 ['Mrem2' ]
+MzamsMrem3  = np.load(os.path.join(BASE_DIR, '..', 'Data', 'MzamsMrem', 'MzamsMrem3_rapid.npz' )); Mrem_rapid_3  = MzamsMrem3 ['Mrem3' ]
+MzamsMrem4  = np.load(os.path.join(BASE_DIR, '..', 'Data', 'MzamsMrem', 'MzamsMrem4_rapid.npz' )); Mrem_rapid_4  = MzamsMrem4 ['Mrem4' ]
+MzamsMrem5  = np.load(os.path.join(BASE_DIR, '..', 'Data', 'MzamsMrem', 'MzamsMrem5_rapid.npz' )); Mrem_rapid_5  = MzamsMrem5 ['Mrem5' ]
+MzamsMrem6  = np.load(os.path.join(BASE_DIR, '..', 'Data', 'MzamsMrem', 'MzamsMrem6_rapid.npz' )); Mrem_rapid_6  = MzamsMrem6 ['Mrem6' ]
+MzamsMrem7  = np.load(os.path.join(BASE_DIR, '..', 'Data', 'MzamsMrem', 'MzamsMrem7_rapid.npz' )); Mrem_rapid_7  = MzamsMrem7 ['Mrem7' ]
+MzamsMrem8  = np.load(os.path.join(BASE_DIR, '..', 'Data', 'MzamsMrem', 'MzamsMrem8_rapid.npz' )); Mrem_rapid_8  = MzamsMrem8 ['Mrem8' ]
+MzamsMrem9  = np.load(os.path.join(BASE_DIR, '..', 'Data', 'MzamsMrem', 'MzamsMrem9_rapid.npz' )); Mrem_rapid_9  = MzamsMrem9 ['Mrem9' ]
+MzamsMrem10 = np.load(os.path.join(BASE_DIR, '..', 'Data', 'MzamsMrem', 'MzamsMrem10_rapid.npz')); Mrem_rapid_10 = MzamsMrem10['Mrem10']
+MzamsMrem11 = np.load(os.path.join(BASE_DIR, '..', 'Data', 'MzamsMrem', 'MzamsMrem11_rapid.npz')); Mrem_rapid_11 = MzamsMrem11['Mrem11']
+MzamsMrem12 = np.load(os.path.join(BASE_DIR, '..', 'Data', 'MzamsMrem', 'MzamsMrem12_rapid.npz')); Mrem_rapid_12 = MzamsMrem12['Mrem12']
 # collect remnant masses with various metallicity values in a single array:
 Mrem_rapid = np.array([Mrem_rapid_1, Mrem_rapid_2, Mrem_rapid_3, Mrem_rapid_4, Mrem_rapid_5, Mrem_rapid_6, Mrem_rapid_7, \
                          Mrem_rapid_8, Mrem_rapid_9, Mrem_rapid_10, Mrem_rapid_11, Mrem_rapid_12]).T
@@ -263,19 +270,18 @@ def M_CO_SSE(M, Z):
     
     return M_CO
 
-path = '../Data/MzamsMrem/'
-MCO1  = np.load(path + 'MCO1.npz' )['MCO']
-MCO2  = np.load(path + 'MCO2.npz' )['MCO']
-MCO3  = np.load(path + 'MCO3.npz' )['MCO']
-MCO4  = np.load(path + 'MCO4.npz' )['MCO']
-MCO5  = np.load(path + 'MCO5.npz' )['MCO']
-MCO6  = np.load(path + 'MCO6.npz' )['MCO']
-MCO7  = np.load(path + 'MCO7.npz' )['MCO']
-MCO8  = np.load(path + 'MCO8.npz' )['MCO']
-MCO9  = np.load(path + 'MCO9.npz' )['MCO']
-MCO10 = np.load(path + 'MCO10.npz')['MCO']
-MCO11 = np.load(path + 'MCO11.npz')['MCO']
-MCO12 = np.load(path + 'MCO12.npz')['MCO']
+MCO1  = np.load(os.path.join(BASE_DIR, '..', 'Data', 'MzamsMrem', 'MCO1.npz' ))['MCO']
+MCO2  = np.load(os.path.join(BASE_DIR, '..', 'Data', 'MzamsMrem', 'MCO2.npz' ))['MCO']
+MCO3  = np.load(os.path.join(BASE_DIR, '..', 'Data', 'MzamsMrem', 'MCO3.npz' ))['MCO']
+MCO4  = np.load(os.path.join(BASE_DIR, '..', 'Data', 'MzamsMrem', 'MCO4.npz' ))['MCO']
+MCO5  = np.load(os.path.join(BASE_DIR, '..', 'Data', 'MzamsMrem', 'MCO5.npz' ))['MCO']
+MCO6  = np.load(os.path.join(BASE_DIR, '..', 'Data', 'MzamsMrem', 'MCO6.npz' ))['MCO']
+MCO7  = np.load(os.path.join(BASE_DIR, '..', 'Data', 'MzamsMrem', 'MCO7.npz' ))['MCO']
+MCO8  = np.load(os.path.join(BASE_DIR, '..', 'Data', 'MzamsMrem', 'MCO8.npz' ))['MCO']
+MCO9  = np.load(os.path.join(BASE_DIR, '..', 'Data', 'MzamsMrem', 'MCO9.npz' ))['MCO']
+MCO10 = np.load(os.path.join(BASE_DIR, '..', 'Data', 'MzamsMrem', 'MCO10.npz'))['MCO']
+MCO11 = np.load(os.path.join(BASE_DIR, '..', 'Data', 'MzamsMrem', 'MCO11.npz'))['MCO']
+MCO12 = np.load(os.path.join(BASE_DIR, '..', 'Data', 'MzamsMrem', 'MCO12.npz'))['MCO']
 # collect CO core masses with various metallicity values in a single array:
 MCO = np.array([MCO1, MCO2, MCO3, MCO4, MCO5, MCO6, MCO7, MCO8, MCO9, MCO10, MCO11, MCO12]).T
 
