@@ -327,7 +327,7 @@ e) The outputBHs.pkl file (if exported) contains two arrays, called ``mBH_ini`` 
 <a name="applicationsofthecode"></a>
 ### 7. Applications of the code
 
-The code can be useful when executed multiple times, for instance, when simulating a set of clusters and generating a population of dynamically formed BBH mergers.
+The code can be useful when executed multiple times, for instance, when simulating a set of clusters and generating a population of dynamically formed BBH mergers. If the same initial conditions are used, then run multiple realizations by changing the seed number each time.
 
 Although the program is not computationally expensive (we have tested it on a laptop that can generate a few binary black hole mergers per second), independent parallelization is still encouraged when simulating many star clusters to improve efficiency.
 
