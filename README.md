@@ -143,12 +143,13 @@ For the user’s convenience, we paste the list of optional arguments in the for
 | -Ti, --tdes_file_indicator | Export tdes file (0 for no, 1 for yes) | 1 | ``1`` |
 | -TF, --tdes_file_name | Name of .txt file containing tde parameters | str | ``tdes`` |
 | -MBH, --massive_black_hole_mass | Mass of the seed massive BH (if >0) | float | ``0`` |
-| -sBH, --massive_black_hole_spin | spin of the seed massive BH (from 0 to 1) | float | ``0`` |
+| -sBH, --massive_black_hole_spin | Spin of the seed massive BH (from 0 to 1) | float | ``0`` |
+| -RF, --results_folder_name | Name of the folder where output files will be exported | str | ``Results`` |
 
 <a name="runningasimulation"></a>
 ### 5. Running a simulation
 
-usage: -m [-h] [-N] [-r] [-mm] [-mM] [-Z] [-z] [-n] [-fb] [-S] [-dtm] [-dtM] [-tM] [-wK] [-K] [-R] [-vg] [-s] [-SD] [-P] [-Mi] [-MF] [-Ei] [-EF] [-Hi] [-HF] [-BIi] [-BIF] [-BOi] [-BOF] [-RP] [-NS] [-WT] [-Ti] [-TF] [-MBH] [-sBH]
+usage: -m [-h] [-N] [-r] [-mm] [-mM] [-Z] [-z] [-n] [-fb] [-S] [-dtm] [-dtM] [-tM] [-wK] [-K] [-R] [-vg] [-s] [-SD] [-P] [-Mi] [-MF] [-Ei] [-EF] [-Hi] [-HF] [-BIi] [-BIF] [-BOi] [-BOF] [-RP] [-NS] [-WT] [-Ti] [-TF] [-MBH] [-sBH] [-RF]
 
 ##### Note:
 To test the code, execute the program with all default values:
