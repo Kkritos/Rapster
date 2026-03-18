@@ -137,4 +137,4 @@ neutron_star_mass = M_Chandrasekhar
 # white dwarf mass:
 white_dwarf_mass = 0.60
 
-# end of file
+# End of file.

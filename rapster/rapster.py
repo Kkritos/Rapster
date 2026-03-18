@@ -874,4 +874,4 @@ if __name__ == "__main__":
     print('END OF SIMULATION. RUNTIME:', np.abs(time.time() - global_time_initial), 's')
     print('\n')
     
-# end of file
+# End of file.

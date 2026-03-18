@@ -326,4 +326,4 @@ def evolve_spin_RungeKutta(Mi, Mf, xi, s, dM):
     xf = x
     return xf
 
-# end of file
+# End of file.

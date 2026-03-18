@@ -182,4 +182,4 @@ def merger_remnant(m1, m2, chi1, chi2, theta1, theta2, dPhi):
     
     return m_rem, chi_rem, vGW_kick
 
-# end of file.
+# End of file.

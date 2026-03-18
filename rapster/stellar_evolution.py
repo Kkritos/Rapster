@@ -420,4 +420,4 @@ def R_WhiteDwarf(M_wd=white_dwarf_mass, M_Ch=M_Chandrasekhar):
 
     return 7.80e6*(M_wd/M_Ch)**(-1/3)*np.sqrt(1 - (M_wd/M_Ch)**(4/3))/3.086e16
 
-# end of file.
+# End of file.

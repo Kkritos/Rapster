@@ -76,4 +76,4 @@ def three_body_binary(t, z, k_3bb, mBH_avg, binaries, mBH, sBH, gBH, vBH, N_3bb,
             
     return t, z, k_3bb, mBH_avg, binaries, mBH, sBH, gBH, vBH, N_3bb, N_BBH
 
-# end of file
+# End of file.
