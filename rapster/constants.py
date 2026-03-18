@@ -26,7 +26,7 @@ import time
 import pickle
 import pandas as pd
 from math import erf
-from scipy.optimize import root, fsolve
+from scipy.optimize import root
 from scipy.interpolate import CloughTocher2DInterpolator
 import os
 
