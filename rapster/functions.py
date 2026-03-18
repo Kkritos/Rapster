@@ -23,9 +23,7 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
 # Go up one level to the root, then into the Data folder:
 DATA_PATH_Planck18 = os.path.join(BASE_DIR, '..', 'Data', 'Planck18_lookup_table.npz')
-
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-DATA_PATH_xMB = os.path.join(BASE_DIR, '..', 'Data', 'x_mb_data.pkl')
+DATA_PATH_xMB = os.path.join(BASE_DIR, '..', 'Data', 'x_mb_vec.pkl')
 
 # load Planck18 lookup tables:
 Planck18_lookup_table = np.load(DATA_PATH_Planck18)
