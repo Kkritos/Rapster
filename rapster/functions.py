@@ -318,12 +318,12 @@ def evolve_spin_RungeKutta(Mi, Mf, xi, s, dM):
         if x + dx > 1:
             x = 1
             break
-        elif x + dx < 0:
-            s = -s
+        elif x + dx < 0 and s==-1:
+            s = +1
         else:
             x = x + dx
             M = M + dM
-    xf = x
+    xf = x;
     return xf
 
 # End of file.
