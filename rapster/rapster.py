@@ -28,17 +28,17 @@ from .tidal_disruptions import BH_TidalDisruptions
 
 parser = argparse.ArgumentParser(description="Rapster input parameters")
 
-parser.add_argument('-N', '--number', type=float, metavar=' ', default=1e6, help='Initial number of stars')
+parser.add_argument('-N', '--number', type=float, metavar=' ', default=1000000, help='Initial number of stars')
 
-parser.add_argument('-r', '--half_mass_radius', type=float, metavar=' ', default=1, help='Initial half-mass radius [pc]')
+parser.add_argument('-r', '--half_mass_radius', type=float, metavar=' ', default=1.0, help='Initial half-mass radius [pc]')
 
 parser.add_argument('-mm', '--minimum_star_mass', type=float, metavar=' ', default=0.08, help='Smallest ZAMS mass [Msun]')
 
-parser.add_argument('-mM', '--maximum_star_mass', type=float, metavar=' ', default=150, help='Largest ZAMS mass [Msun]')
+parser.add_argument('-mM', '--maximum_star_mass', type=float, metavar=' ', default=150.0, help='Largest ZAMS mass [Msun]')
 
 parser.add_argument('-Z', '--metallicity', type=float, metavar=' ', default=0.001, help='Absolute metallicity')
 
-parser.add_argument('-z', '--cluster_formation_redshift', type=float, metavar=' ', default=3, help='Redshift of cluster formation')
+parser.add_argument('-z', '--cluster_formation_redshift', type=float, metavar=' ', default=3.0, help='Redshift of cluster formation')
 
 parser.add_argument('-n', '--central_stellar_density', type=float, metavar=' ', default=5.3e5, help='Initial central stellar number density [pc^-3]')
 
@@ -50,13 +50,13 @@ parser.add_argument('-dtm', '--minimum_time_step', type=float, metavar=' ', defa
 
 parser.add_argument('-dtM', '--maximum_time_step', type=float, metavar=' ', default=50.0, help='Maximum simulation time-step [Myr]')
 
-parser.add_argument('-tM', '--maximum_time', type=float, metavar=' ', default=14000, help='Maximum simulation time [Myr]')
+parser.add_argument('-tM', '--maximum_time', type=float, metavar=' ', default=14000.0, help='Maximum simulation time [Myr]')
 
-parser.add_argument('-wK', '--supernova_kick_parameter', type=float, metavar=' ', default=265, help='One-dimensional supernova kick parameter [km/s]')
+parser.add_argument('-wK', '--supernova_kick_parameter', type=float, metavar=' ', default=265.0, help='One-dimensional supernova kick parameter [km/s]')
 
 parser.add_argument('-K', '--natal_kick_prescription', type=int, metavar=' ', default=1, help='Natal kick prescription (0 for fallback, 1 for momentum conservation kicks)')
 
-parser.add_argument('-R', '--galactocentric_radius', type=float, metavar=' ', default=8, help='Initial galactocentric radius [kpc]')
+parser.add_argument('-R', '--galactocentric_radius', type=float, metavar=' ', default=8000.0, help='Initial galactocentric radius [pc]')
 
 parser.add_argument('-vg', '--galactocentric_velocity', type=float, metavar=' ', default=220.0, help='Galactocentric circular velocity [km/s]')
 
@@ -114,7 +114,7 @@ dt_min = args.minimum_time_step
 dt_max = args.maximum_time_step
 t_max = args.maximum_time
 wSN_kick = args.supernova_kick_parameter
-R_gal = args.galactocentric_radius * 1e3
+R_gal = args.galactocentric_radius
 v_gal = args.galactocentric_velocity
 zCl_form = args.cluster_formation_redshift
 n_star = args.central_stellar_density
