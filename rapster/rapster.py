@@ -100,6 +100,8 @@ parser.add_argument('-MBH', '--massive_black_hole_mass', type=float, metavar=' '
 
 parser.add_argument('-sBH', '--massive_black_hole_spin', type=float, metavar=' ', default=0, help='spin of the seed massive BH (from 0 to 1)')
 
+parser.add_argument('-RF', '--results_folder_name', type=str, metavar=' ', default='Results', help='Name of the folder where output files will be exported')
+
 args = parser.parse_args()
 
 N = args.number
@@ -138,6 +140,7 @@ Ti = args.tdes_file_indicator
 tdes_file = args.tdes_file_name
 M_BH0 = args.massive_black_hole_mass
 s_BH0 = args.massive_black_hole_spin
+results_folder_name = args.results_folder_name
 
 # initial conditions:
 
@@ -824,7 +827,14 @@ if __name__ == "__main__":
     hardening = np.delete(hardening, 0, axis=0)
     
     # exporting output files:
-    
+
+    # Ensure RESULTS_DIR is defined (usually in your script's setup)
+    BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+    RESULTS_DIR = os.path.join(BASE_DIR, '..', results_folder_name)
+
+    # check if <Results> folder exists, and if not, create it with the requested name:
+    os.makedirs(RESULTS_DIR, exist_ok=True)
+
     if BOi==1:
         data_to_save = {
             "t": evolution[:][1],
@@ -832,11 +842,13 @@ if __name__ == "__main__":
             "sBH": black_hole_spins,
             "gBH": black_hole_generations
         }
-        with open(BOF + ".pkl", "wb") as f:
+        BOF_path = os.path.join(RESULTS_DIR, BOF + '.pkl')
+        with open(BOF_path, "wb") as f:
             pickle.dump(data_to_save, f)
     
     if Ti==1: # export tdes file
-        with open(tdes_file+'.txt', 'w') as f_tdes:
+        tdes_path = os.path.join(RESULTS_DIR, tdes_file + '.txt')
+        with open(tdes_path, 'w') as f_tdes:
             for i in range(N_tdeBHWD+N_tdeBHstar):
                 f_tdes.write(str(tdes[i][ 0])+' '+str(tdes[i][ 1])+' '+str(tdes[i][ 2])+' '+str(tdes[i][ 3])+' '+\
                              str(tdes[i][ 4])+' '+str(tdes[i][ 5])+' '+str(tdes[i][ 6])+' '+str(tdes[i][ 7])+' '+\
@@ -846,7 +858,8 @@ if __name__ == "__main__":
                 f_tdes.write('\n')
 
     if Mi==1: # export mergers file
-        with open(mergers_file+'.txt', 'w') as f_mergers:
+        mergers_path = os.path.join(RESULTS_DIR, mergers_file + '.txt')
+        with open(mergers_path, 'w') as f_mergers:
             for i in range(N_me):
                 f_mergers.write(str(mergers[i][0 ])+' '+str(mergers[i][1 ])+' '+str(mergers[i][2 ])+' '+str(mergers[i][3 ])+' '+str(mergers[i][4 ])+' '+str(mergers[i][5 ])+' '+str(mergers[i][6 ])+' '+\
                                 str(mergers[i][7 ])+' '+str(mergers[i][8 ])+' '+str(mergers[i][9 ])+' '+str(mergers[i][10])+' '+str(mergers[i][11])+' '+str(mergers[i][12])+' '+str(mergers[i][13])+' '+\
@@ -855,7 +868,8 @@ if __name__ == "__main__":
                 f_mergers.write('\n')
 
     if Ei==1: # export evolution file
-        with open(evolution_file+'.txt', 'w') as f_evolution:
+        evolution_path = os.path.join(RESULTS_DIR, evolution_file + '.txt')
+        with open(evolution_path, 'w') as f_evolution:
             for i in range(N_iter-1):
                 f_evolution.write(str(evolution[i][0 ])+' '+str(evolution[i][1 ])+' '+str(evolution[i][2 ])+' '+str(evolution[i][3 ])+' '+str(evolution[i][4 ])+' '+str(evolution[i][5 ])+' '+\
                                   str(evolution[i][6 ])+' '+str(evolution[i][7 ])+' '+str(evolution[i][8 ])+' '+str(evolution[i][9 ])+' '+str(evolution[i][10])+' '+str(evolution[i][11])+' '+\
@@ -872,7 +886,8 @@ if __name__ == "__main__":
                 f_evolution.write('\n')
 
     if Hi==1: # export hardening file
-        with open(hardening_file+'.txt', 'w') as f_hardening:
+        hardening_path = os.path.join(RESULTS_DIR, hardening_file + '.txt')
+        with open(hardening_path, 'w') as f_hardening:
             for i in range(N_hardening):
                 f_hardening.write(str(hardening[i][0 ])+' '+str(hardening[i][1 ])+' '+str(hardening[i][2 ])+' '+str(hardening[i][3 ])+' '+str(hardening[i][4 ])+' '+\
                                   str(hardening[i][5 ])+' '+str(hardening[i][6 ])+' '+str(hardening[i][7 ])+' '+str(hardening[i][8 ])+' '+str(hardening[i][9 ])+' '+\
