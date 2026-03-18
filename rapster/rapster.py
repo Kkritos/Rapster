@@ -344,9 +344,12 @@ if __name__ == "__main__":
     black_hole_spins = []
     black_hole_generations = []
 
+    print('START OF SIMULATION.')
+    print('\n')
+
     # start global clock:
-    global_time_initial = time.time()
-    
+    global_time_initial = time.time()    
+
     # Simulation:
     while t<t_max and R_gal>0 and Mcl>0 and mBH.sum()<fBH_max*Mcl:        
 
