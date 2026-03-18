@@ -34,8 +34,10 @@ def remnant_kick(m1, m2, chi1, chi2, theta1, theta2, dPhi):
     @in dPhi: angle between spin projections in orbital plane
     """
     
+    # mass ratio in (0, 1]:
     q = m2 / m1 if m2 < m1 else m1 / m2
     
+    # symmetric mass ratio:
     eta = q / (1 + q)**2
     
     A, B, H, V11, VA, VB, VC, C2, C3, zeeta = \
@@ -81,8 +83,10 @@ def remnant_spin(m1, m2, chi1, chi2, theta1, theta2, dPhi):
     @in dPhi: angle between spin projections in orbital plane
     """
     
+    # mass ratio in (0, 1]:
     q = m2 / m1 if m2 < m1 else m1 / m2
     
+    # symmetric mass ratio:
     eta = q / (1 + q)**2
     
     cost1, cost2 = np.cos(theta1), np.cos(theta2)
@@ -128,8 +132,10 @@ def remnant_mass(m1, m2, chi1, chi2, theta1, theta2, dPhi):
     @in dPhi: angle between spin projections in orbital plane
     """
     
+    # mass ratio in (0, 1]:
     q = m2 / m1 if m2 < m1 else m1 / m2
     
+    # symmetric mass ratio:
     eta = q / (1 + q)**2
     
     cost1, cost2 = np.cos(theta1), np.cos(theta2)
@@ -170,9 +176,9 @@ def merger_remnant(m1, m2, chi1, chi2, theta1, theta2, dPhi):
     @out vGWkick : merger remnant GW kick velocity [km/s]
     """
     
-    m_rem = remnant_mass(m1, m2, chi1, chi2, theta1, theta2, dPhi)
-    chi_rem = remnant_spin(m1, m2, chi1, chi2, theta1, theta2, dPhi)
-    vGW_kick = remnant_kick(m1, m2, chi1, chi2, theta1, theta2, dPhi)
+    m_rem = remnant_mass(m1, m2, chi1, chi2, theta1, theta2, dPhi) # remnant mass
+    chi_rem = remnant_spin(m1, m2, chi1, chi2, theta1, theta2, dPhi) # remnant dimensionless spin
+    vGW_kick = remnant_kick(m1, m2, chi1, chi2, theta1, theta2, dPhi) # remnant relativistic recoil
     
     return m_rem, chi_rem, vGW_kick
 
