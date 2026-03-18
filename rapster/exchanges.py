@@ -16,8 +16,8 @@
 
 '''
 
-from constants import *
-from functions import *
+from .constants import *
+from .functions import *
 
 def StarStar_to_BHstar(k_ex1, N_ex1, m_avg, mBH, sBH, gBH, ab, pairs, N_BHstar):
     """

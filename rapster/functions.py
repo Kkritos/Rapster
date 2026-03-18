@@ -16,7 +16,7 @@
 
 '''
 
-from constants import *
+from .constants import *
 
 def E_cosmo(z):
     """

@@ -16,7 +16,7 @@
 
 '''
 
-from constants import *
+from .constants import *
 
 def remnant_kick(m1, m2, chi1, chi2, theta1, theta2, dPhi):
     """
