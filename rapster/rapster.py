@@ -144,8 +144,12 @@ results_folder_name = args.results_folder_name
 
 # initial conditions:
 
-if __name__ == "__main__":    
-    
+if __name__ == "__main__":
+
+    # start initialization clock:
+    initialization_time_initial = time.time()
+    print('INITIALIZING...')
+
     # initialize pseudo-random number generator:
     np.random.seed(seed)
     
@@ -344,11 +348,14 @@ if __name__ == "__main__":
     black_hole_spins = []
     black_hole_generations = []
 
-    print('START OF SIMULATION.')
+    print('END OF INITIALIZATION. RUNTIME:', "{:.3g}".format(np.abs(time.time() - initialization_time_initial)), 's')
     print('\n')
 
-    # start global clock:
-    global_time_initial = time.time()    
+    print('SIMULATING...')
+    print('\n')
+
+    # start simulation clock:
+    simulation_time_initial = time.time()
 
     # Simulation:
     while t<t_max and R_gal>0 and Mcl>0 and mBH.sum()<fBH_max*Mcl:        
@@ -897,7 +904,7 @@ if __name__ == "__main__":
                                   str(hardening[i][10])+' '+str(hardening[i][11]))
                 f_hardening.write('\n')
     
-    print('END OF SIMULATION. RUNTIME:', np.abs(time.time() - global_time_initial), 's')
+    print('END OF SIMULATION. RUNTIME:', "{:.3g}".format(np.abs(time.time() - simulation_time_initial)), 's')
     print('\n')
     
 # End of file.
