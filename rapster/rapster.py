@@ -838,9 +838,8 @@ if __name__ == "__main__":
     
     # exporting output files:
 
-    # Ensure RESULTS_DIR is defined (usually in your script's setup)
-    BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-    RESULTS_DIR = os.path.join(BASE_DIR, '..', results_folder_name)
+    CURRENT_WORKING_DIR = os.getcwd() # get current working directory
+    RESULTS_DIR = os.path.join(CURRENT_WORKING_DIR, results_folder_name) # define absolute export directory
 
     # check if <Results> folder exists, and if not, create it with the requested name:
     os.makedirs(RESULTS_DIR, exist_ok=True)
