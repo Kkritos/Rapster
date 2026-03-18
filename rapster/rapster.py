@@ -24,6 +24,7 @@ from .binary_evolution import evolve_BBHs
 from .triples import evolve_triples
 from .two_body_capture import two_body_capture
 from .exchanges import StarStar_to_BHstar, BHstar_to_BBH
+from .tidal_disruptions import BH_TidalDisruptions
 
 parser = argparse.ArgumentParser(description="Rapster input parameters")
 
