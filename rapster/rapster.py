@@ -80,11 +80,11 @@ parser.add_argument('-HF', '--hardening_file_name', type=str, metavar=' ', defau
 
 parser.add_argument('-BIi', '--blackholes_in_file_indicator', type=int, metavar=' ', default=0, help='Use external BH file (0 for no, 1 for yes)')
 
-parser.add_argument('-BIF', '--blackholes_in_file_name', type=str, metavar=' ', default='input_BHs.npz', help='Name of .npz input file with initial BH masses')
+parser.add_argument('-BIF', '--blackholes_in_file_name', type=str, metavar=' ', default='inputBHs.npz', help='Name of .npz input file with initial BH masses')
 
 parser.add_argument('-BOi', '--blackholes_out_file_indicator', type=int, metavar=' ', default=1, help='Export BH masses file (0 for no, 1 for yes)')
 
-parser.add_argument('-BOF', '--blackholes_out_file_name', type=str, metavar=' ', default='output_BHs.npz', help='Name of .npz file with the masses of all BHs in solar masses')
+parser.add_argument('-BOF', '--blackholes_out_file_name', type=str, metavar=' ', default='outputBHs', help='Name of .pkl file with the masses of all BHs in solar masses')
 
 parser.add_argument('-RP', '--remnant_mass_prescription', type=int, metavar=' ', default=1, help='Remnant mass prescription (0 for SEVN delayed, 1 for Fryer+2012 delayed, 2 for SEVN rapid, 3 for Fryer+2012 rapid)')
 
@@ -826,7 +826,14 @@ if __name__ == "__main__":
     # exporting output files:
     
     if BOi==1:
-        np.savez(BOF, t=evolution[:][1], mBH=black_hole_masses, sBH=black_hole_spins, gBH=black_hole_generations)
+        data_to_save = {
+            "t": evolution[:][1],
+            "mBH": black_hole_masses,
+            "sBH": black_hole_spins,
+            "gBH": black_hole_generations
+        }
+        with open(BOF + ".pkl", "wb") as f:
+            pickle.dump(data_to_save, f)
     
     if Ti==1: # export tdes file
         with open(tdes_file+'.txt', 'w') as f_tdes:
