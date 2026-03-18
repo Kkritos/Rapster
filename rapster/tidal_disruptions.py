@@ -19,61 +19,6 @@
 from .constants import *
 from .functions import *
 
-# Marginally bound orbit:
-# =======================
-
-def x_mb(a_BH, iota):
-    """
-    Marginally bound orbit normalized to gravitational radius.
-    """
-    def fun(x):
-        return x**4 - 4*x**3 - a_BH**2 * (1 - 3*np.cos(iota)**2)*x**2 + a_BH**4 * np.cos(iota)**2 + 4 * a_BH * np.sin(iota) * np.sqrt(x**5 - a_BH**2 * x**3 * np.cos(iota)**2)
-        
-    x = fsolve(fun, 100000)
-    return x
-x_mb = np.vectorize(x_mb)
-
-# bulk of domain:
-N_points_bulk = 10**3
-
-a_BH_vec = np.random.uniform(-1, 1, N_points_bulk)
-iota_vec = np.random.uniform(0, np.pi/2, N_points_bulk)
-
-# boundary of parameter space:
-N_points_boundary = 10**3
-
-a_BH_vec = np.concatenate([a_BH_vec, np.ones(N_points_boundary)])
-iota_vec = np.concatenate([iota_vec, np.random.uniform(0, np.pi/2, N_points_boundary)])
-
-a_BH_vec = np.concatenate([a_BH_vec, -np.ones(N_points_boundary)])
-iota_vec = np.concatenate([iota_vec, np.random.uniform(0, np.pi/2, N_points_boundary)])
-
-a_BH_vec = np.concatenate([a_BH_vec, np.random.uniform(-1, 1, N_points_boundary)])
-iota_vec = np.concatenate([iota_vec, np.pi/2*np.ones(N_points_boundary)])
-
-a_BH_vec = np.concatenate([a_BH_vec, np.random.uniform(-1, 1, N_points_boundary)])
-iota_vec = np.concatenate([iota_vec, np.zeros(N_points_boundary)])
-
-# corners of domain:
-a_BH_vec = np.concatenate([a_BH_vec, np.array([-1, -1, 1, 1])])
-iota_vec = np.concatenate([iota_vec, np.array([0, np.pi/2, 0, np.pi/2])])
-
-# compute values in the scatter grid:
-x_mb_vec = x_mb(a_BH_vec, iota_vec)
-
-# interpolate auxiliary function:
-x_mb_interp = CloughTocher2DInterpolator(np.c_[a_BH_vec, iota_vec], x_mb_vec)
-
-def R_mb(M_BH, a_BH, iota):
-    """
-    Marginally bound orbit, from interpolated function above.
-    """
-    
-    rg = G_Newton*M_BH/c_light**2 # gravitational radius
-    rmb = x_mb_interp(a_BH, iota) * rg
-    return rmb
-R_mb = np.vectorize(R_mb)
-
 def BH_TidalDisruptions(seed, t, z, k_tde, N_tde, type, m_star, R_star, mBH, sBH, gBH, vSTAR, vBH, tdes, binaries, pairs):
     """
     @in seed: seed number of the main simulation

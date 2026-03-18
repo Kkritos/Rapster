@@ -18,6 +18,41 @@
 
 from .constants import *
 
+# Get the directory where constants.py lives (the 'rapster' folder):
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+
+# Go up one level to the root, then into the Data folder:
+DATA_PATH_Planck18 = os.path.join(BASE_DIR, '..', 'Data', 'Planck18_lookup_table.npz')
+DATA_PATH_xMB = os.path.join(BASE_DIR, '..', 'Data', 'x_mb_data.pkl')
+
+# load Planck18 lookup tables:
+Planck18_lookup_table = np.load(DATA_PATH_Planck18)
+
+# load xMB lookup tables:
+with open(DATA_PATH_xMB, 'rb') as f:
+    loaded_data_xMB = pickle.load(f)
+# Access variables from the dictionary:
+x_mb_vec = loaded_data_xMB['x_mb_vec']
+a_BH_vec = loaded_data_xMB['a_BH_vec']
+iota_vec = loaded_data_xMB['iota_vec']
+
+# interpolate redshift-lookback and lookback-redshift relations:
+lookback_interp = interpolate.interp1d(Planck18_lookup_table['z'], Planck18_lookup_table['lookback'])
+redshift_interp = interpolate.interp1d(Planck18_lookup_table['t'], Planck18_lookup_table['redshift'])
+
+# interpolate auxiliary function:
+x_mb_interp = CloughTocher2DInterpolator(np.c_[a_BH_vec, iota_vec], x_mb_vec)
+
+def R_mb(M_BH, a_BH, iota):
+    """
+    Marginally bound orbit, from interpolated function above.
+    """
+    
+    rg = G_Newton*M_BH/c_light**2 # gravitational radius
+    rmb = x_mb_interp(a_BH, iota) * rg
+    return rmb
+R_mb = np.vectorize(R_mb)
+
 def E_cosmo(z):
     """
     @in z: redshift

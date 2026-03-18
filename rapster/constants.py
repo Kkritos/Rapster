@@ -60,19 +60,6 @@ Omega_K = 0.0
 # Vacuum density parameter:
 Omega_V = 0.70
 
-# Get the directory where constants.py lives (the 'rapster' folder):
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-
-# Go up one level to the root, then into the Data folder:
-DATA_PATH = os.path.join(BASE_DIR, '..', 'Data', 'Planck18_lookup_table.npz')
-
-# load Planck18 lookup table:
-Planck18_lookup_table = np.load(DATA_PATH)
-
-# interpolate redshift-lookback and lookback-redshift relations:
-lookback_interp = interpolate.interp1d(Planck18_lookup_table['z'], Planck18_lookup_table['lookback'])
-redshift_interp = interpolate.interp1d(Planck18_lookup_table['t'], Planck18_lookup_table['redshift'])
-
 # Hardening constant:
 Hardening_constant = 4.0 /7
 
