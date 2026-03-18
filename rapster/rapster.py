@@ -40,7 +40,7 @@ parser.add_argument('-Z', '--metallicity', type=float, metavar=' ', default=0.00
 
 parser.add_argument('-z', '--cluster_formation_redshift', type=float, metavar=' ', default=3, help='Redshift of cluster formation')
 
-parser.add_argument('-n', '--central_stellar_density', type=float, metavar=' ', default=1e6, help='Central stellar number density [pc^-3]')
+parser.add_argument('-n', '--central_stellar_density', type=float, metavar=' ', default=5.3e5, help='Initial central stellar number density [pc^-3]')
 
 parser.add_argument('-fb', '--binary_fraction', type=float, metavar=' ', default=0.1, help='Initial binary star fraction')
 
