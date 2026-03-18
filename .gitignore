@@ -1,3 +1,4 @@
 .rapsterenv/
 __pycache__/
 Results/
+*.egg-info/
