@@ -75,9 +75,9 @@ To activate this environment:
 
 > source .rapsterenv/bin/activate
 
-Then import all required packages from the ``requirements.txt`` file:
+To install ``rapster`` and all requirements, run:
 
-> pip install -r requirements.txt
+> pip install -e .
 
 Finally, verify the installation (along with dependencies) and package version:
 
