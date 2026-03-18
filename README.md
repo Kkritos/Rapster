@@ -114,7 +114,7 @@ For the user’s convenience, we paste the list of optional arguments in the for
 | -mM, --maximum_star_mass | Largest ZAMS mass [Msun] | float | ``150`` |
 | -Z, --metallicity | Absolute metallicity | float | ``0.001`` |
 | -z, --cluster_formation_redshift | Redshift of cluster formation | float | ``3.0`` |
-| -n, --central_stellar_density | Central stellar number density [pc^-3] | float | ``1e6`` |
+| -n, --central_stellar_density | Initial central stellar number density [pc^-3] | float | ``5.3e5`` |
 | -fb, --binary_fraction | Initial binary star fraction | float | ``0.1`` |
 | -S, --seed | Seed number | int | ``1234567890`` |
 | -dtm, --minimum_time_step | Minimum simulation time-step [Myr] | float | ``0.1`` |
@@ -145,6 +145,10 @@ For the user’s convenience, we paste the list of optional arguments in the for
 | -MBH, --massive_black_hole_mass | Mass of the seed massive BH (if >0) | float | ``0`` |
 | -sBH, --massive_black_hole_spin | Spin of the seed massive BH (from 0 to 1) | float | ``0`` |
 | -RF, --results_folder_name | Name of the folder where output files will be exported | str | ``Results`` |
+
+##### Note:
+
+The initial value of the central stellar density is set by default to 5.3e5 (pc^-3), which assumes a Plummer density profile: $n=3(1.3)^3N/(4\pi)\simeq0.53N$, where $N$ is the number of stars and $r=1\,\rm pc$. The cluster then evolves homologically, by assumption. Under the Plummer profile, if the input values for the initial number of stars or initial half-mass radius $r$ are updated, then the central density should be set accordingly, $n=0.53 N/r^3$. If the user prefers an alternative density stellar profile, then a different relation may hold between $N$ and $r$.
 
 <a name="runningasimulation"></a>
 ### 5. Running a simulation
