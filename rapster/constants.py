@@ -26,6 +26,7 @@ import time
 import pandas as pd
 from math import erf
 from scipy.optimize import root, fsolve
+from scipy.interpolate import CloughTocher2DInterpolator
 import os
 
 # Use astrophysical units throughout:
