@@ -152,8 +152,8 @@ if __name__ == "__main__":
     n_star0 = n_star
     
     # average stellar mass:
-    m_avg = integrate.quad(lambda x: x * IMF_kroupa(np.array([x])), m_min, m_max)[0] \
-    / integrate.quad(lambda x: IMF_kroupa(np.array([x])), m_min, m_max)[0]
+    Kroupa_norm = 1 / integrate.quad(lambda x: IMF_kroupa(np.array([x])), m_min, m_max)[0] # normalization factor
+    m_avg = Kroupa_norm * integrate.quad(lambda x: x * IMF_kroupa(np.array([x])), m_min, m_max)[0]
     
     # initial average stellar mass:
     m_avg0 = m_avg
