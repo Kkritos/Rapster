@@ -54,6 +54,7 @@ def two_body_capture(seed, t, dt, z, zCl_form, k_2cap, mBH_avg, binaries, mBH, s
 
         for i in range(k_2cap):
             
+            # sample the masses that form the captured binary:
             m1, m2 = np.random.choice(mBH, size=2, replace=False, p=mBH**(2)/np.sum(mBH**(2)))
             
             # find index locations of the sampled BHs:

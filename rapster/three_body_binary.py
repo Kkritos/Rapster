@@ -42,6 +42,7 @@ def three_body_binary(t, z, k_3bb, mBH_avg, binaries, mBH, sBH, gBH, vBH, N_3bb,
 
             N_3bb+=1
 
+            # sample masses that form the 3bb:
             m1, m2 = np.random.choice(mBH, size=2, replace=False, p=mBH**(5) / np.sum(mBH**(5)))
             
             # find index locations of the sampled BHs:

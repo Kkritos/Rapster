@@ -40,6 +40,7 @@ def StarStar_to_BHstar(k_ex1, N_ex1, m_avg, mBH, sBH, gBH, ab, pairs, N_BHstar):
             
             N_ex1+=1
             
+            # sample mass of the BH that substitutes one of the stars:
             m = np.random.choice(mBH, p=mBH/np.sum(mBH))
             
             k = np.squeeze(np.where(mBH==m))+0
@@ -86,16 +87,17 @@ def BHstar_to_BBH(t, z, k_ex2, N_ex2, m_avg, mBH, sBH, gBH, pairs, binaries, N_B
             
             N_ex2+=1
             
-            # draw a single BH:
+            # draw a single BH that will substitute the star in the BH-star pair:
             m2 = np.random.choice(mBH, p=(np.mean(np.transpose(pairs)[:][1]) + mBH)/np.sum(np.mean(np.transpose(pairs)[:][1]) + mBH))
             
+            # location of the sampled BH:
             k2 = np.squeeze(np.where(mBH==m2))+0
             
             if isinstance(k2, np.ndarray):
                 k2=k2[0]
                 
-            s2 = sBH[k2]
-            g2 = gBH[k2]
+            s2 = sBH[k2] # spin of the second BH
+            g2 = gBH[k2] # generation of the second BH
             
             # draw a BH-star pair:
             ap = np.random.choice(np.transpose(pairs)[:][0], p=np.transpose(pairs)[:][0] / np.sum(np.transpose(pairs)[:][0]))
