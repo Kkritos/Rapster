@@ -684,56 +684,57 @@ if __name__ == "__main__":
         # dynamical friction timescale:
         t_df = 0.45e3 * (R_gal / 1e3)**2 * v_gal / (Mcl / 1e5) / 2
 
-        # White dwarf formation, ejection, and tidal disruption events:
+        if with_tdes:
+            # White dwarf formation, ejection, and tidal disruption events:
         
-       	solar_life = 1.0e4 # lifetime of the Sun
-        m_WN = 8.0 # maximum ZAMS mass for the star to form a WD (Msun)
-        t_WN = solar_life/m_WN**(2.5) # time for the first WD to form (Myr)
-        N_strs = Mcl/m_avg # current number of stars
+       	    solar_life = 1.0e4 # lifetime of the Sun
+            m_WN = 8.0 # maximum ZAMS mass for the star to form a WD (Msun)
+            t_WN = solar_life/m_WN**(2.5) # time for the first WD to form (Myr)
+            N_strs = Mcl/m_avg # current number of stars
 
-        # WD formation rate (/Myr):
-        dN_WDformdt = N_strs/t/2.5 * Kroupa_norm*IMF_kroupa(np.array([(solar_life/t)**(1/2.5)]))[0] * (solar_life/t)**(1/2.5) if t>t_WN else 0.0
+            # WD formation rate (/Myr):
+            dN_WDformdt = N_strs/t/2.5 * Kroupa_norm*IMF_kroupa(np.array([(solar_life/t)**(1/2.5)]))[0] * (solar_life/t)**(1/2.5) if t>t_WN else 0.0
         
-        # WD evaporation rate (/Myr):
-        dN_WDevdt = xi_e*N_WD/t_rlx if N_WD>0 else 0.0
+            # WD evaporation rate (/Myr):
+            dN_WDevdt = xi_e*N_WD/t_rlx if N_WD>0 else 0.0
         
-        m_WD = white_dwarf_mass # WD mass (Msun)
-        R_WD = R_WhiteDwarf() # WD radius (pc)
-        v_WD = np.sqrt(m_avg/m_WD)*v_star # WD 3-dim. velo. disp.
-        rh_WD = rh # WD half-mass radius (pc)
-        nc_WD = 3*N_WD/4/np.pi/(rh_WD/1.3)**3 # WD central density (pc^-3)
-        v_BHWD = np.sqrt(vBH**2 + v_WD**2) # typical relative velocity between a BH and a WD
-        # WD-BH TDE rate (1/Myr):
-        dN_tdeBHWDdt = 2*np.sqrt(2*(3*np.pi-8))*G_Newton*(mBH_avg + m_WD)*N_BH*nc_WD*R_WD*(mBH_avg/m_WD)**(1/3)/v_BHWD if N_WD>0 else 0.0
+            m_WD = white_dwarf_mass # WD mass (Msun)
+            R_WD = R_WhiteDwarf() # WD radius (pc)
+            v_WD = np.sqrt(m_avg/m_WD)*v_star # WD 3-dim. velo. disp.
+            rh_WD = rh # WD half-mass radius (pc)
+            nc_WD = 3*N_WD/4/np.pi/(rh_WD/1.3)**3 # WD central density (pc^-3)
+            v_BHWD = np.sqrt(vBH**2 + v_WD**2) # typical relative velocity between a BH and a WD
+            # WD-BH TDE rate (1/Myr):
+            dN_tdeBHWDdt = 2*np.sqrt(2*(3*np.pi-8))*G_Newton*(mBH_avg + m_WD)*N_BH*nc_WD*R_WD*(mBH_avg/m_WD)**(1/3)/v_BHWD if N_WD>0 else 0.0
         
-        # effective WD evolution equation:
-        dN_WDdt = dN_WDformdt - dN_WDevdt - dN_tdeBHWDdt
+            # effective WD evolution equation:
+            dN_WDdt = dN_WDformdt - dN_WDevdt - dN_tdeBHWDdt
 
-        # evolve number of WDs:
-        N_WD = N_WD + dN_WDdt * dt
+            # evolve number of WDs:
+            N_WD = N_WD + dN_WDdt * dt
         
-        # Poisson number of BH-WD TDEs at this timestep:
-        k_tdeBHWD = np.min([poisson.rvs(mu=dt*dN_tdeBHWDdt), int(N_BH-3*N_Triples), int(N_WD)]) if N_WD>0 else 0
+            # Poisson number of BH-WD TDEs at this timestep:
+            k_tdeBHWD = np.min([poisson.rvs(mu=dt*dN_tdeBHWDdt), int(N_BH-3*N_Triples), int(N_WD)]) if N_WD>0 else 0
 
-        # BH-WD TDE(s):
-        if k_tdeBHWD > 0 and with_tdes:
-            type = 11
-            seed, t, z, k_tdeBHWD, N_tdeBHWD, type, m_WD, R_WD, mBH, sBH, gBH, v_star, vBH, tdes, binaries, pairs = BH_TidalDisruptions(seed, t, z, k_tdeBHWD, N_tdeBHWD, type, m_WD, R_WD, mBH, sBH, gBH, v_WD, vBH, tdes, binaries, pairs)
+            # BH-WD TDE(s):
+            if k_tdeBHWD > 0 and with_tdes:
+                type = 11
+                seed, t, z, k_tdeBHWD, N_tdeBHWD, type, m_WD, R_WD, mBH, sBH, gBH, v_star, vBH, tdes, binaries, pairs = BH_TidalDisruptions(seed, t, z, k_tdeBHWD, N_tdeBHWD, type, m_WD, R_WD, mBH, sBH, gBH, v_WD, vBH, tdes, binaries, pairs)
             
-        # micro-TDEs:
+            # micro-TDEs:
         
-        v_BHstar = np.sqrt(v_star**2 + vBH**2) # typical relative velocity between a star and a BH
+            v_BHstar = np.sqrt(v_star**2 + vBH**2) # typical relative velocity between a star and a BH
         
-        # BH-star TDE rate:
-        dN_tdeBHstardt = 2*np.sqrt(2*(3*np.pi-8))*G_Newton*(mBH_avg + m_avg)*n_star*N_BH*R_sun*(mBH_avg/m_avg)**(1/3)/v_BHstar if (N_BH>0)*(n_star>0) else 0.0
+            # BH-star TDE rate:
+            dN_tdeBHstardt = 2*np.sqrt(2*(3*np.pi-8))*G_Newton*(mBH_avg + m_avg)*n_star*N_BH*R_sun*(mBH_avg/m_avg)**(1/3)/v_BHstar if (N_BH>0)*(n_star>0) else 0.0
         
-        # Poisson number of BH-star TDEs at this timestep:
-        k_tdeBHstar = np.min([poisson.rvs(mu=dt*dN_tdeBHstardt), int(N_BH-3*N_Triples), int(N_strs)]) if (N_BH>0)*(n_star>0) else 0
+            # Poisson number of BH-star TDEs at this timestep:
+            k_tdeBHstar = np.min([poisson.rvs(mu=dt*dN_tdeBHstardt), int(N_BH-3*N_Triples), int(N_strs)]) if (N_BH>0)*(n_star>0) else 0
         
-        # BH-star TDE(s):
-        if k_tdeBHstar > 0 and with_tdes:
-            type = 1
-            seed, t, z, k_tdeBHstar, N_tdeBHstar, type, m_avg, R_sun, mBH, sBH, gBH, v_star, vBH, tdes, binaries, pairs = BH_TidalDisruptions(seed, t, z, k_tdeBHstar, N_tdeBHstar, type, m_avg, R_sun, mBH, sBH, gBH, v_star, vBH, tdes, binaries, pairs)
+            # BH-star TDE(s):
+            if k_tdeBHstar > 0 and with_tdes:
+                type = 1
+                seed, t, z, k_tdeBHstar, N_tdeBHstar, type, m_avg, R_sun, mBH, sBH, gBH, v_star, vBH, tdes, binaries, pairs = BH_TidalDisruptions(seed, t, z, k_tdeBHstar, N_tdeBHstar, type, m_avg, R_sun, mBH, sBH, gBH, v_star, vBH, tdes, binaries, pairs)
             
         # append evolution:
         evolution = np.append(evolution, [[seed, t, z, dt, m_avg, Mcl, rh, R_gal, v_gal, t_rlx, tBH_rlx, n_star, N_BH, mBH_avg, mBH_max, rh_BH, rc_BH, S, 
@@ -747,7 +748,7 @@ if __name__ == "__main__":
         
         # average mass evolution:
         if t>t_sev:
-            m_avg = m_avg0 * (t / t_sev)**0.07
+            m_avg = m_avg0 * (t / t_sev)**nu_sev
         else:
             m_avg = m_avg0
             
