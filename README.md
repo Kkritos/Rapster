@@ -288,6 +288,16 @@ b) Column description of evolution .txt file:
 | 57 | $v_{\rm esc,BH}$ | Escape velocity from BH subsystem ($\rm km\ s^{-1}$) |
 | 58 | $N_{\rm triples}$ | Cumulative number of BH triples |
 | 59 | $N_{\rm ZLK}$ | Cumulative number of ZLK mergers |
+| 60 | $N_{\rm WD}$ | Number of WDs in the cluster |
+| 61 | $v_{\rm WD}$ | Velocity dispersion of WDs ($\rm km\,s^{-1}$) |
+| 62 | $k_{\rm tde,BHWD}$ | Number of BH-WD TDEs in the current timestep |
+| 63 | $N_{\rm tde,BHWD}$ | Cumulative number of BH-WD TDEs |
+| 64 | $\Gamma_{\rm WD,form}$ | WD formation rate ($\rm Myr^{-1}$) |
+| 65 | $\Gamma_{\rm WD, ev}$ | WD evaporation rate ($\rm Myr^{-1}$) |
+| 66 | $\Gamma_{\rm tde,BHWD}$ | BH-WD TDE rate ($\rm Myr^{-1}$) |
+| 67 | $k_{\rm tde,BHstar}$ | Number of BH-star TDEs in the current timestep |
+| 68 | $\Gamma_{\rm tde,BHstar}$ | BH-star TDE rate ($\rm Myr^{-1}$) |
+| 69 | $N_{\rm tde,BHstar}$ | Cumulative number of BH-star TDEs |
 
 c) Column description of hardening .txt file:
 
@@ -320,7 +330,28 @@ The local simulation is terminated unless ${\rm condition}=0$.
 
 d) Column description of tdes .txt file:
 
-...
+| Columnn | Variable | Description |
+|:--- |:--- |:--- |
+| 1 | $\rm seed$ | Simulation seed number |
+| 2 | $t$ | Simulation time of TDE event ($\rm Myr$) |
+| 3 | $z$ | Redshift of TDE event |
+| 4 | $\rm type$ | Type of TDE: =1 for MS-BH TDE or =11 for WD-BH TDE |
+| 5 | $m_{\rm star}$ | Mass of the star disrupted ($M_\odot$) |
+| 6 | $R_{\rm star}$ | Radius of the star disrupted ($\rm pc$) |
+| 7 | $m_{\rm BH}$ | Mass of the compact object ($M_\odot$) |
+| 8 | $\chi_{\rm BH}$ | Dimensionless spin parameter of the compact object |
+| 9 | $g_{\rm BH}$ | Generation of the compact object |
+| 10 | $r_t$ | Tidal radius ($\rm pc$) |
+| 11 | $r_p$ | Pericenter radius ($\rm pc$) |
+| 12 | $\beta$ | Penetration parameter ($r_t/r_p$) |
+| 13 | $\iota$ | Inclination angle of the incoming stellar orbit ($\rm rad$) |
+| 14 | $r_{\rm mb}$ | Marginally bound radius ($\rm pc$) |
+| 15 | $dm$ | Amount of stellar mass accreted ($M_\odot$) |
+| 16 | $d\chi$ | Change in the dimensionless |
+| 17 | $t_{\rm fb}$ | Characteristic fall-back time ($\rm Myr$) |
+| 18 | $\eta_R$ | Radiative efficiency (from Krolik et al. 2025) |
+| 19 | $L_{\rm pk}$ | Peak luminosity (in astrophysical units) |
+| 20 | $v_{\rm rel}$ | Relative velocity between compact object and star at infinity $(\rm km\,s^{-1})$ |
 
 e) The outputBHs.pkl file (if exported) contains two arrays, called ``mBH_ini`` and ``mBH_fin``, which provide in $M_\odot$ the masses of all single BHs that are retained at the start and the end of the simulation.
 
