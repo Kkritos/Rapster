@@ -103,7 +103,7 @@ The code accepts parameters with flag options.
 
 For a description of all input parameters, run the following command in the command line interface:
 
-> python -m rapster.rapster --help
+> python -m rapster.run_cluster --help
 
 For the user’s convenience, we paste the list of optional arguments in the form of a Table here as well:
 
@@ -160,7 +160,7 @@ usage: -m [-h] [-N] [-r] [-mm] [-mM] [-Z] [-z] [-n] [-fb] [-S] [-dtm] [-dtM] [-t
 
 To test the code, execute the program with all defaults:
 
-> python -m rapster.rapster
+> python -m rapster.run_cluster
 
 from any directory, with the virtual environment (.rapsterenv) enabled.
 
