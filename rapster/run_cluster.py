@@ -329,7 +329,7 @@ if __name__ == "__main__":
     hardening = np.zeros(shape=(1, 12))
     N_hardening = 0
 
-    # tdes [seed, t, z, type, m_star, R_star, m_BH, s_BH, g_BH, r_t, r_p, beta, iota, r_mb, dm, ds, t$
+    # tdes [seed, t, z, type, m_star, R_star, m_BH, s_BH, g_BH, r_t, r_p, beta, iota, r_mb, dm, ds, t_fb, eta_R, L_pk, v_rel]
     tdes = np.zeros(shape=(1, 20))
 
     # initialize time:
