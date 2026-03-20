@@ -11,7 +11,11 @@ requires-python = ">=3.10"
 dependencies = [
     "numpy==1.26.4",
     "scipy==1.11.4",
-    "pandas==2.1.3"
+    "pandas==2.1.3",
+    "matplotlib",
+    "jupyterlab",
+    "ipykernel",
+    "astropy"
 ]
 
 [tool.setuptools]
