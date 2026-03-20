@@ -66,7 +66,7 @@ The code is tested with packages in the versions shown in parentheses above; how
 
 It is recommended that the user create and work in a local Python environment, installing all the dependencies above.
 
-The following packages are recommended for rnning the tutorial notebook in ``Examples/``, but are not necessary to run cluster simulations:
+The following packages are recommended for running the tutorial notebook in ``Examples/``, but are not necessary to run cluster simulations:
 
 - $\tt matplotlib$
 - $\tt jupyterlab$
@@ -90,7 +90,7 @@ Verify the installation (along with dependencies) and package version:
 
 > pip list
 
-Finally, include the virtual environment to the kernel:
+Finally, include the virtual environment in the kernel:
 
 > python -m ipykernel install --user --name=rapsterenv --display-name "Python (.rapsterenv)"
 
@@ -177,6 +177,10 @@ from any directory, with the virtual environment (.rapsterenv) enabled.
 This should create five files: ``Results/mergers.txt``, ``Results/evolution.txt``, ``Results/hardening.txt``, ``Results/tdes.txt``, and ``Results/outputBHs.pkl`` inside the newly created folder Results/ within your current directory. To check and verify whether you have produced these files correctly, we include the corresponding files ``/Rapster/Example/Results_Test/mergers.txt``, ``/Rapster/Example/Results_Test/evolution.txt``, ``/Rapster/Example/Results_Test/hardening.txt``, ``/Rapster/Example/Results_Test/tdes.txt``, and ``/Rapster/Example/Results_Test/outputBHs.npz``, where /Rapster/ is the root directory of the repository, with data that should match your output.
 
 We also include a Python notebook ``/Rapster/Example/example.ipynb`` that loads the data results from ``/Rapster/Example/Results_Test/`` and does some plots. As a check, the user is encouraged to load their simulated results and redo the plots in the provided example notebook.
+
+To run the notebook, open jupyterlab:
+
+> jupyter-lab &
 
 ##### Suggestion:
 Using different seed values yields different system realizations under the same initial conditions. Passing the argument ``$RANDOM`` in the -S flag (capitalized ``S`` for the seed flag, lowercase ``s`` for the spin flag) simulates the star cluster with a pseudo-randomly generated number. Notice that this syntax works only in the bash environment.
