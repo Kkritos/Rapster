@@ -74,7 +74,7 @@ The following packages are recommended for running the tutorial notebook in ``Ex
 
 First, create an environment called ``.rapsterenv`` in the root directory of the repository Rapster/, and hidden from view:
 
-> python -m venv .rapsterenv
+> python3 -m venv .rapsterenv
 
 If you use a different name, please add the environment name as a new row in .gitignore, since the environment folder should never be pushed to the repository.
 
