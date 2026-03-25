@@ -848,7 +848,8 @@ if __name__ == "__main__":
     mergers = np.delete(mergers, 0, axis=0)
     evolution = np.delete(evolution, 0, axis=0)
     hardening = np.delete(hardening, 0, axis=0)
-    
+    tdes = np.delete(tdes, 0, axis=0)    
+
     # exporting output files:
 
     CURRENT_WORKING_DIR = os.getcwd() # get current working directory
