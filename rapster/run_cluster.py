@@ -344,6 +344,7 @@ if __name__ == "__main__":
     i_aux1 = 0
 
     # lists to save BH properties at every timestep:
+    simulation_times = []
     black_hole_masses = []
     black_hole_spins = []
     black_hole_generations = []
@@ -364,6 +365,7 @@ if __name__ == "__main__":
         local_time_initial = time.time()
 
         # save current BH properties (all BHs; single, in binaries, and in pairs) at current timestep:
+        simulation_times.append(t)
         black_hole_masses.append(np.concatenate((mBH, np.transpose(binaries)[:][4], np.transpose(binaries)[:][5], np.transpose(pairs)[:][1])))
         black_hole_spins.append(np.concatenate((sBH, np.transpose(binaries)[:][6], np.transpose(binaries)[:][7], np.transpose(pairs)[:][2])))
         black_hole_generations.append(np.concatenate((gBH, np.transpose(binaries)[:][8], np.transpose(binaries)[:][9], np.transpose(pairs)[:][3])))
@@ -860,7 +862,7 @@ if __name__ == "__main__":
 
     if BOi==1:
         data_to_save = {
-            "t": evolution[:][1],
+            "t": simulation_times,
             "mBH": black_hole_masses,
             "sBH": black_hole_spins,
             "gBH": black_hole_generations
