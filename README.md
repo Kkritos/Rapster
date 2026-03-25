@@ -9,7 +9,7 @@ Author: Konstantinos Kritos <kkritos1@jhu.edu>
 Version: March 18, 2026.
 (Thanks to Tousif Islam for helping modularize this repository!)
 
-![LOGO](./Rapster_LOGO.png)
+![LOGO](.assets/LOGO.png)
 (Thanks to Hector Cruz for digitizing my hand-drawn logo!)
 
 ### Contents:
