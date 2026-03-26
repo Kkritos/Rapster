@@ -20,7 +20,7 @@ from .constants import *
 from .functions import *
 from .remnant import *
 
-def two_body_capture(seed, t, dt, z, zCl_form, k_2cap, mBH_avg, binaries, mBH, sBH, gBH, vBH, v_star, N_2cap, N_BH, N_BBH, N_me, N_meRe, N_meEj, mergers):
+def two_body_capture(seed, t, dt, z, zCl_form, k_2cap, mBH_avg, binaries, mBH, sBH, gBH, vBH, v_star, N_2cap, N_BH, N_BBH, N_me, N_meRe, N_meEj, mergers, random_pairing=False):
     """
     @in seed: simulation seed number
     @in t: simulation time
@@ -42,7 +42,8 @@ def two_body_capture(seed, t, dt, z, zCl_form, k_2cap, mBH_avg, binaries, mBH, s
     @in N_meRe: number of retained mergers
     @in N_meEj: number of ejected mergers
     @in mergers: array of mergers: [seed, ind, channel, a, e, m1, m2, s1, s2, g1, g2, theta1, theta2, dPhi, t_form, z_form, t_merge, z_merge, m_rem, s_rem, g_rem, vGW_kick, s_eff, q, v_esc]
-    
+    @in random_pairing: if True, use uniform random pairing instead of mass-weighted (m^2)
+
     @out: all inputs
     """
     
@@ -55,7 +56,10 @@ def two_body_capture(seed, t, dt, z, zCl_form, k_2cap, mBH_avg, binaries, mBH, s
         for i in range(k_2cap):
             
             # sample the masses that form the captured binary:
-            m1, m2 = np.random.choice(mBH, size=2, replace=False, p=mBH**(2)/np.sum(mBH**(2)))
+            if random_pairing:
+                m1, m2 = np.random.choice(mBH, size=2, replace=False)
+            else:
+                m1, m2 = np.random.choice(mBH, size=2, replace=False, p=mBH**(2)/np.sum(mBH**(2)))
             
             # find index locations of the sampled BHs:
             k1 = np.squeeze(np.where(mBH==m1))+0

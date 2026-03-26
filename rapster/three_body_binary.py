@@ -19,7 +19,7 @@
 from .constants import *
 from .functions import *
 
-def three_body_binary(t, z, k_3bb, mBH_avg, binaries, mBH, sBH, gBH, vBH, N_3bb, N_BBH):
+def three_body_binary(t, z, k_3bb, mBH_avg, binaries, mBH, sBH, gBH, vBH, N_3bb, N_BBH, random_pairing=False):
     """
     @in t: simulation time
     @in z: simulation redshift
@@ -32,7 +32,8 @@ def three_body_binary(t, z, k_3bb, mBH_avg, binaries, mBH, sBH, gBH, vBH, N_3bb,
     @in vBH: 3D BH velocity dispersion
     @in N_3bb: number of 3bbs
     @in N_BBH: number of BBHs
-    
+    @in random_pairing: if True, use uniform random pairing instead of mass-weighted (m^5)
+
     @out: all inputs
     """
     
@@ -43,7 +44,10 @@ def three_body_binary(t, z, k_3bb, mBH_avg, binaries, mBH, sBH, gBH, vBH, N_3bb,
             N_3bb+=1
 
             # sample masses that form the 3bb:
-            m1, m2 = np.random.choice(mBH, size=2, replace=False, p=mBH**(5) / np.sum(mBH**(5)))
+            if random_pairing:
+                m1, m2 = np.random.choice(mBH, size=2, replace=False)
+            else:
+                m1, m2 = np.random.choice(mBH, size=2, replace=False, p=mBH**(5) / np.sum(mBH**(5)))
             
             # find index locations of the sampled BHs:
             k1 = np.squeeze(np.where(mBH==m1))+0
