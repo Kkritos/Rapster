@@ -122,6 +122,25 @@ def plot_radii_evolution(data, save_dir):
     plt.close(fig)
 
 
+def plot_cluster_mass(data, save_dir):
+    """Plot cluster mass evolution with time."""
+    evolution = data['evolution']
+    if evolution is None:
+        return
+
+    fig, ax = plt.subplots(figsize=(8, 5))
+    ax.plot(evolution['t'], evolution['M_cl'], lw=3)
+    ax.set_xscale('log')
+    ax.set_yscale('log')
+    ax.set_xlim(1, 1e4)
+    ax.set_xlabel('Time (Myr)')
+    ax.set_ylabel(r'Cluster mass ($M_\odot$)')
+    ax.set_title('Cluster mass evolution')
+    fig.tight_layout()
+    fig.savefig(os.path.join(save_dir, 'cluster_mass.png'), dpi=150)
+    plt.close(fig)
+
+
 def plot_bh_mass_function(data, save_dir):
     """Plot BH mass function at several snapshots."""
     outBHs = data['outBHs']
@@ -333,6 +352,7 @@ def generate_all_plots(results_dir):
 
     plot_cluster_evolution(data, plots_dir)
     plot_radii_evolution(data, plots_dir)
+    plot_cluster_mass(data, plots_dir)
     plot_bh_mass_function(data, plots_dir)
     plot_merger_masses(data, plots_dir)
     plot_merger_channels(data, plots_dir)
