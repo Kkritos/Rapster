@@ -243,6 +243,81 @@ def plot_hardening(data, save_dir):
     plt.close(fig)
 
 
+def plot_merger_spins(data, save_dir):
+    """Plot histograms of merger spin parameters (chi1, chi2, chiEff, chiRem)."""
+    mergers = data['mergers']
+    if mergers is None or len(mergers) == 0:
+        return
+
+    fig, axes = plt.subplots(2, 2, figsize=(10, 8))
+
+    axes[0, 0].hist(mergers['chi1'], bins=30, histtype='step', lw=2)
+    axes[0, 0].set_xlabel(r'$\chi_1$')
+    axes[0, 0].set_ylabel('Number')
+    axes[0, 0].set_title('Primary spin')
+
+    axes[0, 1].hist(mergers['chi2'], bins=30, histtype='step', lw=2)
+    axes[0, 1].set_xlabel(r'$\chi_2$')
+    axes[0, 1].set_ylabel('Number')
+    axes[0, 1].set_title('Secondary spin')
+
+    axes[1, 0].hist(mergers['chiEff'], bins=30, histtype='step', lw=2)
+    axes[1, 0].set_xlabel(r'$\chi_{\rm eff}$')
+    axes[1, 0].set_ylabel('Number')
+    axes[1, 0].set_title('Effective spin')
+
+    axes[1, 1].hist(mergers['chiRem'], bins=30, histtype='step', lw=2)
+    axes[1, 1].set_xlabel(r'$\chi_{\rm rem}$')
+    axes[1, 1].set_ylabel('Number')
+    axes[1, 1].set_title('Remnant spin')
+
+    fig.suptitle('Merger spin distributions')
+    fig.tight_layout()
+    fig.savefig(os.path.join(save_dir, 'merger_spins.png'), dpi=150)
+    plt.close(fig)
+
+
+def plot_eccentricity_by_channel(data, save_dir):
+    """Plot eccentricity histograms for different merger formation channels."""
+    mergers = data['mergers']
+    if mergers is None or len(mergers) == 0:
+        return
+
+    channel_labels = {
+        1: 'Exchange (ch 1)',
+        2: '2-body capture (ch 2)',
+        3: '3-body binary (ch 3)',
+        4: 'Lidov-Kozai (ch 4)',
+        5: 'Triple-induced (ch 5)',
+        6: '3-body capture (ch 6)',
+    }
+
+    # Also handle ejected mergers (negative channels):
+    channels_present = sorted(mergers['channel'].unique())
+
+    fig, ax = plt.subplots(figsize=(8, 5))
+    bins = np.linspace(0, 1, 30)
+
+    for ch in channels_present:
+        mask = mergers['channel'] == ch
+        if mask.sum() == 0:
+            continue
+        ch_int = int(ch)
+        if ch_int < 0:
+            label = f'Ejected (ch {ch_int})'
+        else:
+            label = channel_labels.get(ch_int, f'Channel {ch_int}')
+        ax.hist(mergers['e'][mask], bins=bins, histtype='step', lw=2, label=label)
+
+    ax.legend()
+    ax.set_xlabel('Eccentricity')
+    ax.set_ylabel('Number')
+    ax.set_title('Eccentricity distribution by merger channel')
+    fig.tight_layout()
+    fig.savefig(os.path.join(save_dir, 'eccentricity_by_channel.png'), dpi=150)
+    plt.close(fig)
+
+
 def generate_all_plots(results_dir):
     """Load results and generate all diagnostic plots.
 
@@ -263,6 +338,8 @@ def generate_all_plots(results_dir):
     plot_merger_channels(data, plots_dir)
     plot_tdes(data, plots_dir)
     plot_hardening(data, plots_dir)
+    plot_merger_spins(data, plots_dir)
+    plot_eccentricity_by_channel(data, plots_dir)
 
     print(f'Plots saved to {plots_dir}/')
 
