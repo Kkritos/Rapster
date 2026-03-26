@@ -30,6 +30,7 @@ from .cluster_evolution import (
     print_status,
     write_output,
 )
+from .plot_cluster import generate_all_plots
 
 
 def parse_args():
@@ -80,6 +81,7 @@ def parse_args():
     parser.add_argument('-sBH', '--massive_black_hole_spin', type=float, metavar=' ', default=0, help='spin of the seed massive BH (from 0 to 1)')
     parser.add_argument('-RF', '--results_folder_name', type=str, metavar=' ', default='Results', help='Name of the folder where output files will be exported')
     parser.add_argument('-RMP', '--random_mass_pairing_2body_3body', type=int, metavar=' ', default=0, help='Use uniform random pairing for 3bb and 2-body capture instead of mass-weighted (0 for no, 1 for yes)')
+    parser.add_argument('-plot', '--generate_plots', type=int, metavar=' ', default=0, help='Generate diagnostic plots after simulation (0 for no, 1 for yes)')
 
     args = parser.parse_args()
 
@@ -122,6 +124,7 @@ def parse_args():
         's_BH0': args.massive_black_hole_spin,
         'results_folder_name': args.results_folder_name,
         'random_pairing': bool(args.random_mass_pairing_2body_3body),
+        'generate_plots': bool(args.generate_plots),
     }
 
     return config
@@ -188,6 +191,11 @@ def main():
 
     print('END OF SIMULATION. RUNTIME:', "{:.3g}".format(np.abs(time.time() - simulation_time_initial)), 's')
     print('\n')
+
+    # generate diagnostic plots if requested:
+    if config['generate_plots']:
+        results_dir = os.path.join(os.getcwd(), config['results_folder_name'])
+        generate_all_plots(results_dir)
 
 
 if __name__ == "__main__":
