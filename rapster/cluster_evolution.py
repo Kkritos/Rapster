@@ -200,8 +200,12 @@ def initialize_cluster(config):
             mBH = (u * (max_1g_bh_mass**(alpha_salpeter + 1) - min_1g_bh_mass**(alpha_salpeter + 1)) \
                    + min_1g_bh_mass**(alpha_salpeter + 1))**(1 / (alpha_salpeter + 1))
 
+        elif BMD==3:
+            # log-uniform BH mass distribution in [min_1g_bh_mass, max_1g_bh_mass]:
+            mBH = 10**(np.random.uniform(np.log10(min_1g_bh_mass), np.log10(max_1g_bh_mass), N_BH_init))
+
         # Apply momentum-conservation SN kicks and retain BHs below escape velocity.
-        # Fallback kicks (NKP==0) are not available for BMD=1,2 because there is no
+        # Fallback kicks (NKP==0) are not available for BMD>0 because there is no
         # stellar progenitor or CO core mass to compute the fallback fraction from.
         # Momentum-conservation kicks only depend on the BH mass, so they apply regardless.
         vSN_kick = np.vectorize(get_SN_kick)(mBH, wSN_kick)

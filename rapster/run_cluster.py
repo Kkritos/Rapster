@@ -112,7 +112,7 @@ def parse_args():
     parser.add_argument('-MBH', '--massive_black_hole_mass', type=float, metavar=' ', default=0, help='mass of the seed massive BH (if >0)')
     parser.add_argument('-sBH', '--massive_black_hole_spin', type=float, metavar=' ', default=0, help='spin of the seed massive BH (from 0 to 1)')
     parser.add_argument('-RF', '--results_folder_name', type=str, metavar=' ', default='Results', help='Name of the folder where output files will be exported')
-    parser.add_argument('-BMD', '--bh_mass_distribution', type=int, metavar=' ', default=0, help='Initial BH mass distribution (0 for Kroupa+collapse, 1 for uniform, 2 for Salpeter power law)')
+    parser.add_argument('-BMD', '--bh_mass_distribution', type=int, metavar=' ', default=0, help='Initial BH mass distribution (0 for Kroupa+collapse, 1 for uniform, 2 for Salpeter power law, 3 for log-uniform)')
     parser.add_argument('-mBH1gMin', '--min_1g_bh_mass', type=float, metavar=' ', default=3.0, help='Minimum 1g BH mass for uniform/Salpeter sampling [Msun]')
     parser.add_argument('-mBH1gMax', '--max_1g_bh_mass', type=float, metavar=' ', default=60.0, help='Maximum 1g BH mass for uniform/Salpeter sampling [Msun]')
     parser.add_argument('-RMP', '--random_mass_pairing_2body_3body', type=int, metavar=' ', default=0, help='Use uniform random pairing for 3bb and 2-body capture instead of mass-weighted (0 for no, 1 for yes)')

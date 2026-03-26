@@ -24,7 +24,7 @@ All notable changes to Rapster will be documented in this file.
 - Updated README input parameters table with new flags (`-SD 2`, `-RMP`, `-plot`, `-analyze`) and output files section (`log.txt`, `plots/`).
 - Added usage examples to README section 5 (Running a simulation).
 
-- Initial BH mass distribution options (`-BMD`): `0` for Kroupa+collapse (default), `1` for uniform, `2` for Salpeter power law (m^-2.35). BH count is always determined from the Kroupa IMF; for BMD=1,2 only the masses are resampled in [`-mBH1gMin`, `-mBH1gMax`] (default [3, 60] Msun). Momentum-conservation SN kicks are applied for BMD=1,2 (fallback kicks are unavailable since there is no stellar progenitor).
+- Initial BH mass distribution options (`-BMD`): `0` for Kroupa+collapse (default), `1` for uniform, `2` for Salpeter power law (m^-2.35), `3` for log-uniform. BH count is always determined from the Kroupa IMF; for BMD>0 only the masses are resampled in [`-mBH1gMin`, `-mBH1gMax`] (default [3, 60] Msun). Momentum-conservation SN kicks are applied for BMD>0 (fallback kicks are unavailable since there is no stellar progenitor).
 
 ### Fixed
 - Renamed `type` variable to `tde_type` in `tidal_disruptions.py` and `cluster_evolution.py` to avoid shadowing Python's builtin `type()`.
