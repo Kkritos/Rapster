@@ -23,3 +23,6 @@ All notable changes to Rapster will be documented in this file.
 - Added `#`-prefixed column headers to all output `.txt` files (mergers, evolution, hardening, tdes). Compatible with `np.loadtxt` which skips `#` comment lines.
 - Updated README input parameters table with new flags (`-SD 2`, `-RMP`, `-plot`, `-analyze`) and output files section (`log.txt`, `plots/`).
 - Added usage examples to README section 5 (Running a simulation).
+
+### Fixed
+- Renamed `type` variable to `tde_type` in `tidal_disruptions.py` and `cluster_evolution.py` to avoid shadowing Python's builtin `type()`.

@@ -843,8 +843,8 @@ def evolve_tdes(state, config):
 
     # execute BH-WD tidal disruption events:
     if k_tdeBHWD > 0:
-        type = 11
-        seed, t, z, k_tdeBHWD, N_tdeBHWD, type, m_WD, R_WD, mBH, sBH, gBH, v_star, vBH, tdes, binaries, pairs = BH_TidalDisruptions(seed, t, z, k_tdeBHWD, N_tdeBHWD, type, m_WD, R_WD, mBH, sBH, gBH, v_WD, vBH, tdes, binaries, pairs)
+        tde_type = 11
+        seed, t, z, k_tdeBHWD, N_tdeBHWD, tde_type, m_WD, R_WD, mBH, sBH, gBH, v_star, vBH, tdes, binaries, pairs = BH_TidalDisruptions(seed, t, z, k_tdeBHWD, N_tdeBHWD, tde_type, m_WD, R_WD, mBH, sBH, gBH, v_WD, vBH, tdes, binaries, pairs)
 
     # micro-TDEs:
     v_BHstar = np.sqrt(v_star**2 + vBH**2)
@@ -856,8 +856,8 @@ def evolve_tdes(state, config):
 
     # execute BH-star tidal disruption events (micro-TDEs):
     if k_tdeBHstar > 0:
-        type = 1
-        seed, t, z, k_tdeBHstar, N_tdeBHstar, type, m_avg, _R_sun, mBH, sBH, gBH, v_star, vBH, tdes, binaries, pairs = BH_TidalDisruptions(seed, t, z, k_tdeBHstar, N_tdeBHstar, type, m_avg, R_sun, mBH, sBH, gBH, v_star, vBH, tdes, binaries, pairs)
+        tde_type = 1
+        seed, t, z, k_tdeBHstar, N_tdeBHstar, tde_type, m_avg, _R_sun, mBH, sBH, gBH, v_star, vBH, tdes, binaries, pairs = BH_TidalDisruptions(seed, t, z, k_tdeBHstar, N_tdeBHstar, tde_type, m_avg, R_sun, mBH, sBH, gBH, v_star, vBH, tdes, binaries, pairs)
 
     # write back:
     state['seed'] = seed; state['t'] = t; state['z'] = z
