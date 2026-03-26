@@ -66,6 +66,9 @@ def initialize_cluster(config):
     M_BH0 = config['M_BH0']
     s_BH0 = config['s_BH0']
     dt_min = config['dt_min']
+    BMD = config['BMD']
+    min_1g_bh_mass = config['min_1g_bh_mass']
+    max_1g_bh_mass = config['max_1g_bh_mass']
 
     # initialize pseudo-random number generator:
     np.random.seed(seed)
@@ -130,43 +133,79 @@ def initialize_cluster(config):
     N_massive = int(Mcl * integrate.quad(lambda x: IMF_kroupa(np.array([x])), mM_min, m_max)[0] \
                     / integrate.quad(lambda x: x * IMF_kroupa(np.array([x])), m_min, m_max)[0])
 
-    # massive star masses drawn from Kroupa (2002) IMF:
-    u_massive = np.random.rand(N_massive)
-    m_massive = (u_massive * (m_max**(alphaIMF + 1) - mM_min**(alphaIMF + 1)) \
-                 + mM_min**(alphaIMF + 1))**(1 / (alphaIMF + 1))
+    if BMD==0:
+        # default: Kroupa IMF + stellar collapse + SN kicks
 
-    # remnant masses:
-    if   RP==0:
-        m_rem = Mrem_SEVNdelayed(m_massive, Z) + 0.01 * np.random.rand(m_massive.size)
-    elif RP==1:
-        m_rem = Mrem_F12d(m_massive, Z) + 0.01 * np.random.rand(m_massive.size)
-    elif RP==2:
-        m_rem = Mrem_SEVNrapid(m_massive, Z) + 0.01 * np.random.rand(m_massive.size)
-    elif RP==3:
-        m_rem = Mrem_F12r(m_massive, Z) + 0.01 * np.random.rand(m_massive.size)
+        # massive star masses drawn from Kroupa (2002) IMF:
+        u_massive = np.random.rand(N_massive)
+        m_massive = (u_massive * (m_max**(alphaIMF + 1) - mM_min**(alphaIMF + 1)) \
+                     + mM_min**(alphaIMF + 1))**(1 / (alphaIMF + 1))
 
-    # Separate BHs from other remnants:
-    mBH = m_rem[m_rem > mBH_min]
-
-    # compute supernova kicks:
-    if NKP==0:
+        # remnant masses:
         if   RP==0:
-            vSN_kick = (1 - np.vectorize(f_fb_delayed)(m_massive[m_rem > mBH_min], np.vectorize(M_CO_SEVN)(m_massive[m_rem > mBH_min], Z))) * \
-                       np.vectorize(get_SN_kick)(1.4 * np.ones(mBH.size), wSN_kick)
+            m_rem = Mrem_SEVNdelayed(m_massive, Z) + 0.01 * np.random.rand(m_massive.size)
         elif RP==1:
-            vSN_kick = (1 - np.vectorize(f_fb_delayed)(m_massive[m_rem > mBH_min], np.vectorize(M_CO_SSE)(m_massive[m_rem > mBH_min], Z))) * \
-                       np.vectorize(get_SN_kick)(1.4 * np.ones(mBH.size), wSN_kick)
+            m_rem = Mrem_F12d(m_massive, Z) + 0.01 * np.random.rand(m_massive.size)
         elif RP==2:
-            vSN_kick = (1 - np.vectorize(f_fb_rapid)(m_massive[m_rem > mBH_min], np.vectorize(M_CO_SEVN)(m_massive[m_rem > mBH_min], Z))) * \
-                       np.vectorize(get_SN_kick)(1.4 * np.ones(mBH.size), wSN_kick)
+            m_rem = Mrem_SEVNrapid(m_massive, Z) + 0.01 * np.random.rand(m_massive.size)
         elif RP==3:
-            vSN_kick = (1 - np.vectorize(f_fb_rapid)(m_massive[m_rem > mBH_min], np.vectorize(M_CO_SSE)(m_massive[m_rem > mBH_min], Z))) * \
-                       np.vectorize(get_SN_kick)(1.4 * np.ones(mBH.size), wSN_kick)
-    elif NKP==1:
-        vSN_kick = np.vectorize(get_SN_kick)(mBH, wSN_kick)
+            m_rem = Mrem_F12r(m_massive, Z) + 0.01 * np.random.rand(m_massive.size)
 
-    # retain BHs with SN kick < escape velocity:
-    mBH = mBH[vSN_kick < v_esc(Mcl, rh)]
+        # Separate BHs from other remnants:
+        mBH = m_rem[m_rem > mBH_min]
+
+        # compute supernova kicks:
+        if NKP==0:
+            if   RP==0:
+                vSN_kick = (1 - np.vectorize(f_fb_delayed)(m_massive[m_rem > mBH_min], np.vectorize(M_CO_SEVN)(m_massive[m_rem > mBH_min], Z))) * \
+                           np.vectorize(get_SN_kick)(1.4 * np.ones(mBH.size), wSN_kick)
+            elif RP==1:
+                vSN_kick = (1 - np.vectorize(f_fb_delayed)(m_massive[m_rem > mBH_min], np.vectorize(M_CO_SSE)(m_massive[m_rem > mBH_min], Z))) * \
+                           np.vectorize(get_SN_kick)(1.4 * np.ones(mBH.size), wSN_kick)
+            elif RP==2:
+                vSN_kick = (1 - np.vectorize(f_fb_rapid)(m_massive[m_rem > mBH_min], np.vectorize(M_CO_SEVN)(m_massive[m_rem > mBH_min], Z))) * \
+                           np.vectorize(get_SN_kick)(1.4 * np.ones(mBH.size), wSN_kick)
+            elif RP==3:
+                vSN_kick = (1 - np.vectorize(f_fb_rapid)(m_massive[m_rem > mBH_min], np.vectorize(M_CO_SSE)(m_massive[m_rem > mBH_min], Z))) * \
+                           np.vectorize(get_SN_kick)(1.4 * np.ones(mBH.size), wSN_kick)
+        elif NKP==1:
+            vSN_kick = np.vectorize(get_SN_kick)(mBH, wSN_kick)
+
+        # retain BHs with SN kick < escape velocity:
+        mBH = mBH[vSN_kick < v_esc(Mcl, rh)]
+
+    else:
+        # For BMD=1,2: run Kroupa path to determine N_BH, then replace masses.
+        u_massive = np.random.rand(N_massive)
+        m_massive = (u_massive * (m_max**(alphaIMF + 1) - mM_min**(alphaIMF + 1)) \
+                     + mM_min**(alphaIMF + 1))**(1 / (alphaIMF + 1))
+        if   RP==0:
+            m_rem = Mrem_SEVNdelayed(m_massive, Z) + 0.01 * np.random.rand(m_massive.size)
+        elif RP==1:
+            m_rem = Mrem_F12d(m_massive, Z) + 0.01 * np.random.rand(m_massive.size)
+        elif RP==2:
+            m_rem = Mrem_SEVNrapid(m_massive, Z) + 0.01 * np.random.rand(m_massive.size)
+        elif RP==3:
+            m_rem = Mrem_F12r(m_massive, Z) + 0.01 * np.random.rand(m_massive.size)
+        N_BH_init = (m_rem > mBH_min).sum()
+
+        if BMD==1:
+            # uniform BH mass distribution in [min_1g_bh_mass, max_1g_bh_mass]:
+            mBH = np.random.uniform(min_1g_bh_mass, max_1g_bh_mass, N_BH_init)
+
+        elif BMD==2:
+            # Salpeter power law (m^-2.35) in [min_1g_bh_mass, max_1g_bh_mass]:
+            alpha_salpeter = -2.35
+            u = np.random.rand(N_BH_init)
+            mBH = (u * (max_1g_bh_mass**(alpha_salpeter + 1) - min_1g_bh_mass**(alpha_salpeter + 1)) \
+                   + min_1g_bh_mass**(alpha_salpeter + 1))**(1 / (alpha_salpeter + 1))
+
+        # Apply momentum-conservation SN kicks and retain BHs below escape velocity.
+        # Fallback kicks (NKP==0) are not available for BMD=1,2 because there is no
+        # stellar progenitor or CO core mass to compute the fallback fraction from.
+        # Momentum-conservation kicks only depend on the BH mass, so they apply regardless.
+        vSN_kick = np.vectorize(get_SN_kick)(mBH, wSN_kick)
+        mBH = mBH[vSN_kick < v_esc(Mcl, rh)]
 
     # optionally override BH masses from external file:
     if Bi==1:
