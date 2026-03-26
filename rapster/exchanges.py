@@ -88,7 +88,7 @@ def BHstar_to_BBH(t, z, k_ex2, N_ex2, m_avg, mBH, sBH, gBH, pairs, binaries, N_B
             N_ex2+=1
             
             # draw a single BH that will substitute the star in the BH-star pair:
-            m2 = np.random.choice(mBH, p=(np.mean(np.transpose(pairs)[:][1]) + mBH)/np.sum(np.mean(np.transpose(pairs)[:][1]) + mBH))
+            m2 = np.random.choice(mBH, p=(np.mean(pairs[:, 1]) + mBH)/np.sum(np.mean(pairs[:, 1]) + mBH))
             
             # location of the sampled BH:
             k2 = np.squeeze(np.where(mBH==m2))+0
@@ -100,9 +100,9 @@ def BHstar_to_BBH(t, z, k_ex2, N_ex2, m_avg, mBH, sBH, gBH, pairs, binaries, N_B
             g2 = gBH[k2] # generation of the second BH
             
             # draw a BH-star pair:
-            ap = np.random.choice(np.transpose(pairs)[:][0], p=np.transpose(pairs)[:][0] / np.sum(np.transpose(pairs)[:][0]))
+            ap = np.random.choice(pairs[:, 0], p=pairs[:, 0] / np.sum(pairs[:, 0]))
             
-            kp = np.squeeze(np.where(np.transpose(pairs)[:][0]==ap))+0
+            kp = np.squeeze(np.where(pairs[:, 0]==ap))+0
             
             if isinstance(kp, np.ndarray):
                 kp=kp[0]

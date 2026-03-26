@@ -281,9 +281,9 @@ def compute_cluster_properties(state, config):
 
     # save current BH properties:
     state['simulation_times'].append(t)
-    state['black_hole_masses'].append(np.concatenate((mBH, np.transpose(binaries)[:][4], np.transpose(binaries)[:][5], np.transpose(pairs)[:][1])))
-    state['black_hole_spins'].append(np.concatenate((state['sBH'], np.transpose(binaries)[:][6], np.transpose(binaries)[:][7], np.transpose(pairs)[:][2])))
-    state['black_hole_generations'].append(np.concatenate((state['gBH'], np.transpose(binaries)[:][8], np.transpose(binaries)[:][9], np.transpose(pairs)[:][3])))
+    state['black_hole_masses'].append(np.concatenate((mBH, binaries[:, 4], binaries[:, 5], pairs[:, 1])))
+    state['black_hole_spins'].append(np.concatenate((state['sBH'], binaries[:, 6], binaries[:, 7], pairs[:, 2])))
+    state['black_hole_generations'].append(np.concatenate((state['gBH'], binaries[:, 8], binaries[:, 9], pairs[:, 3])))
 
     # activate BH subsystem once BH formation time is reached:
     if t>tBH_form and i_aux1==0:
@@ -299,7 +299,7 @@ def compute_cluster_properties(state, config):
 
     # average BH mass:
     if i_aux1==1:
-        mBH_avg = (np.sum(mBH) + np.sum(np.transpose(binaries)[:][4]) + np.sum(np.transpose(binaries)[:][5]) + np.sum(np.transpose(pairs)[:][1]) ) / N_BH
+        mBH_avg = (np.sum(mBH) + np.sum(binaries[:, 4]) + np.sum(binaries[:, 5]) + np.sum(pairs[:, 1]) ) / N_BH
     else:
         mBH_avg = 0.0
 
@@ -310,15 +310,15 @@ def compute_cluster_properties(state, config):
         except Exception:
             mBHs_max = 0.0
         try:
-            mBH1_max = np.max(np.transpose(binaries)[:][4])
+            mBH1_max = np.max(binaries[:, 4])
         except Exception:
             mBH1_max = 0.0
         try:
-            mBH2_max = np.max(np.transpose(binaries)[:][5])
+            mBH2_max = np.max(binaries[:, 5])
         except Exception:
             mBH2_max = 0.0
         try:
-            mBHp_max = np.max(np.transpose(pairs)[:][1])
+            mBHp_max = np.max(pairs[:, 1])
         except Exception:
             mBHp_max = 0.0
         mBH_max = np.max([mBHs_max, mBH1_max, mBH2_max, mBHp_max])
@@ -358,8 +358,8 @@ def compute_cluster_properties(state, config):
 
     # BH relaxation factor:
     if i_aux1==1 and N_BH>0:
-        psi_BH = (np.sum(mBH**(5/2)) + np.sum(np.transpose(binaries)[:][4]**(5/2)) + \
-                  np.sum(np.transpose(binaries)[:][5]**(5/2)) + np.sum(np.transpose(pairs)[:][1]**(5/2)) ) \
+        psi_BH = (np.sum(mBH**(5/2)) + np.sum(binaries[:, 4]**(5/2)) + \
+                  np.sum(binaries[:, 5]**(5/2)) + np.sum(pairs[:, 1]**(5/2)) ) \
                   / N_BH / mBH_avg**(5/2)
     else:
         psi_BH = 0.0
@@ -536,7 +536,7 @@ def compute_timescales(state, config):
     # BH-star -> BH-BH timescale:
     if t>t_cc and N_BHstar>0 and N_BHsin>0:
         if N_BHstar>0:
-            t_ex2 = 1 / Rate_exc(m_avg, np.mean(np.transpose(pairs)[:][1]), mBH_avg, nc_BH, vBH, np.mean(np.transpose(pairs)[:][0])) / N_BHstar
+            t_ex2 = 1 / Rate_exc(m_avg, np.mean(pairs[:, 1]), mBH_avg, nc_BH, vBH, np.mean(pairs[:, 0])) / N_BHstar
         else:
             t_ex2 = 1e100
     else:
@@ -703,7 +703,7 @@ def evolve_interactions(state, config):
     # Binary-binary interaction timescale:
     if t>t_cc and N_BBH>1:
         try:
-            t_bb = 1 / Rate_int(np.mean(np.transpose(binaries)[:][4]+np.transpose(binaries)[:][5]), n_BBH, vBH, 2 * np.mean(np.transpose(binaries)[:][2])) / N_BBH
+            t_bb = 1 / Rate_int(np.mean(binaries[:, 4]+binaries[:, 5]), n_BBH, vBH, 2 * np.mean(binaries[:, 2])) / N_BBH
         except Exception:
             t_bb = 1e100
     else:
@@ -712,7 +712,7 @@ def evolve_interactions(state, config):
     # Pair-pair interaction timescale:
     if t>t_cc and N_BHstar>1:
         try:
-            t_pp = 1 / Rate_int(np.mean(np.transpose(pairs)[:][1]) + m_avg, n_BHstar, vBH, 2 * np.mean(np.transpose(pairs)[:][0])) / N_BHstar
+            t_pp = 1 / Rate_int(np.mean(pairs[:, 1]) + m_avg, n_BHstar, vBH, 2 * np.mean(pairs[:, 0])) / N_BHstar
         except Exception:
             t_pp = 1e100
     else:
@@ -727,8 +727,8 @@ def evolve_interactions(state, config):
         for i in range(k_pp):
             N_pp+=1
 
-            smas = np.transpose(pairs)[:][0]
-            masses = np.transpose(pairs)[:][1]
+            smas = pairs[:, 0]
+            masses = pairs[:, 1]
 
             a1, a2 = np.random.choice(smas, size=2, replace=False, p=smas*masses / np.sum(smas*masses))
 
