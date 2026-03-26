@@ -307,19 +307,19 @@ def compute_cluster_properties(state, config):
     if i_aux1==1:
         try:
             mBHs_max = np.max(mBH)
-        except:
+        except Exception:
             mBHs_max = 0.0
         try:
             mBH1_max = np.max(np.transpose(binaries)[:][4])
-        except:
+        except Exception:
             mBH1_max = 0.0
         try:
             mBH2_max = np.max(np.transpose(binaries)[:][5])
-        except:
+        except Exception:
             mBH2_max = 0.0
         try:
             mBHp_max = np.max(np.transpose(pairs)[:][1])
-        except:
+        except Exception:
             mBHp_max = 0.0
         mBH_max = np.max([mBHs_max, mBH1_max, mBH2_max, mBHp_max])
     else:
@@ -510,7 +510,7 @@ def compute_timescales(state, config):
     if t>t_cc and N_BHsin>2:
         try:
             t_3bb = 1 / Rate_3bb(mBH_avg, nc_BH, vBH) / Vc_BH
-        except:
+        except Exception:
             t_3bb = 1e100
     else:
         t_3bb = 1e100
@@ -519,7 +519,7 @@ def compute_timescales(state, config):
     if t>t_cc and N_BHsin>1:
         try:
             t_2cap = 1 / Rate_cap(mBH_avg, nc_BH, vBH) / Vc_BH
-        except:
+        except Exception:
             t_2cap = 1e100
     else:
         t_2cap = 1e100
@@ -528,7 +528,7 @@ def compute_timescales(state, config):
     if t>t_cc and N_BHsin>0 and nb>0:
         try:
             t_ex1 = 1 / Rate_exc(m_avg, m_avg, mBH_avg, nb, np.sqrt(v_star**2 + vBH**2), np.mean(ab)) / Nc_BH / 2
-        except:
+        except Exception:
             t_ex1 = 1e100
     else:
         t_ex1 = 1e100
@@ -704,7 +704,7 @@ def evolve_interactions(state, config):
     if t>t_cc and N_BBH>1:
         try:
             t_bb = 1 / Rate_int(np.mean(np.transpose(binaries)[:][4]+np.transpose(binaries)[:][5]), n_BBH, vBH, 2 * np.mean(np.transpose(binaries)[:][2])) / N_BBH
-        except:
+        except Exception:
             t_bb = 1e100
     else:
         t_bb = 1e100
@@ -713,7 +713,7 @@ def evolve_interactions(state, config):
     if t>t_cc and N_BHstar>1:
         try:
             t_pp = 1 / Rate_int(np.mean(np.transpose(pairs)[:][1]) + m_avg, n_BHstar, vBH, 2 * np.mean(np.transpose(pairs)[:][0])) / N_BHstar
-        except:
+        except Exception:
             t_pp = 1e100
     else:
         t_pp = 1e100
@@ -1043,7 +1043,7 @@ def update_cluster(state, config):
     # redshift update:
     try:
         z = redshift_interp(lookback_interp(zCl_form) - t)
-    except:
+    except Exception:
         print('REDSHIFT 0 REACHED')
         state['t'] = t
         return False
