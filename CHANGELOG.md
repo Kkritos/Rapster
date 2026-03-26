@@ -15,3 +15,4 @@ All notable changes to Rapster will be documented in this file.
 - Resolved TODO comments in `run_cluster.py`: added visual delimiter before `__main__` block and inline docstring.
 - Replaced all 27 `ADDME` placeholder comments in `run_cluster.py` with descriptive comments explaining each code block.
 - Added `.ipynb_checkpoints/` to `.gitignore`.
+- Split `run_cluster.py` into `cluster_evolution.py` (all 12 functions) and `run_cluster.py` (slim `main()` entry point). Command `python -m rapster.run_cluster` still works as before.
