@@ -16,6 +16,8 @@
 
 '''
 
+import sys
+
 from .constants import *
 from .cluster_evolution import (
     initialize_cluster,
@@ -31,6 +33,36 @@ from .cluster_evolution import (
     write_output,
 )
 from .plot_cluster import generate_all_plots
+from .analyze_cluster import analyze_cluster
+
+
+class TeeStream:
+    """Write to both a file and optionally to stdout.
+
+    When print_to_screen is True, output goes to both the log file and the
+    terminal. When False, output goes only to the log file.
+    """
+
+    def __init__(self, log_path, print_to_screen=True):
+        self.log_file = open(log_path, 'w')
+        self.stdout = sys.stdout
+        self.print_to_screen = print_to_screen
+
+    def write(self, text):
+        self.log_file.write(text)
+        self.log_file.flush()
+        if self.print_to_screen:
+            self.stdout.write(text)
+            self.stdout.flush()
+
+    def flush(self):
+        self.log_file.flush()
+        if self.print_to_screen:
+            self.stdout.flush()
+
+    def close(self):
+        self.log_file.close()
+        sys.stdout = self.stdout
 
 
 def parse_args():
@@ -135,6 +167,13 @@ def main():
 
     config = parse_args()
 
+    # set up output directory and logging:
+    results_dir = os.path.join(os.getcwd(), config['results_folder_name'])
+    os.makedirs(results_dir, exist_ok=True)
+    log_path = os.path.join(results_dir, 'log.txt')
+    tee = TeeStream(log_path, print_to_screen=bool(config['print_info']))
+    sys.stdout = tee
+
     # start initialization clock:
     initialization_time_initial = time.time()
     print('INITIALIZING...')
@@ -192,10 +231,15 @@ def main():
     print('END OF SIMULATION. RUNTIME:', "{:.3g}".format(np.abs(time.time() - simulation_time_initial)), 's')
     print('\n')
 
+    # print analysis summary:
+    analyze_cluster(results_dir)
+
     # generate diagnostic plots if requested:
     if config['generate_plots']:
-        results_dir = os.path.join(os.getcwd(), config['results_folder_name'])
         generate_all_plots(results_dir)
+
+    # close log file and restore stdout:
+    tee.close()
 
 
 if __name__ == "__main__":
