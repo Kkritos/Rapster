@@ -18,3 +18,4 @@ All notable changes to Rapster will be documented in this file.
 - Added `.ipynb_checkpoints/` to `.gitignore`.
 - Split `run_cluster.py` into `cluster_evolution.py` (11 evolution functions) and `run_cluster.py` (`parse_args()` + `main()` entry point). Command `python -m rapster.run_cluster` still works as before.
 - Replaced 36 repetitive `np.load` lines in `stellar_evolution.py` with a `_load_grid()` helper function. Data loading for SEVN delayed/rapid remnant masses and CO core masses is now 3 one-liners.
+- Added `#`-prefixed column headers to all output `.txt` files (mergers, evolution, hardening, tdes). Compatible with `np.loadtxt` which skips `#` comment lines.

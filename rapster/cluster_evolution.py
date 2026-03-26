@@ -1148,6 +1148,7 @@ def write_output(state, config):
     if config['Ti']==1:
         tdes_path = os.path.join(RESULTS_DIR, config['tdes_file'] + '.txt')
         with open(tdes_path, 'w') as f_tdes:
+            f_tdes.write('# ' + ' '.join(tdes_keys) + '\n')
             for i in range(N_tdeBHWD+N_tdeBHstar):
                 f_tdes.write(str(tdes[i][ 0])+' '+str(tdes[i][ 1])+' '+str(tdes[i][ 2])+' '+str(tdes[i][ 3])+' '+\
                              str(tdes[i][ 4])+' '+str(tdes[i][ 5])+' '+str(tdes[i][ 6])+' '+str(tdes[i][ 7])+' '+\
@@ -1159,6 +1160,7 @@ def write_output(state, config):
     if config['Mi']==1:
         mergers_path = os.path.join(RESULTS_DIR, config['mergers_file'] + '.txt')
         with open(mergers_path, 'w') as f_mergers:
+            f_mergers.write('# ' + ' '.join(merger_keys) + '\n')
             for i in range(N_me):
                 f_mergers.write(str(mergers[i][0 ])+' '+str(mergers[i][1 ])+' '+str(mergers[i][2 ])+' '+str(mergers[i][3 ])+' '+str(mergers[i][4 ])+' '+str(mergers[i][5 ])+' '+str(mergers[i][6 ])+' '+\
                                 str(mergers[i][7 ])+' '+str(mergers[i][8 ])+' '+str(mergers[i][9 ])+' '+str(mergers[i][10])+' '+str(mergers[i][11])+' '+str(mergers[i][12])+' '+str(mergers[i][13])+' '+\
@@ -1169,6 +1171,7 @@ def write_output(state, config):
     if config['Ei']==1:
         evolution_path = os.path.join(RESULTS_DIR, config['evolution_file'] + '.txt')
         with open(evolution_path, 'w') as f_evolution:
+            f_evolution.write('# ' + ' '.join(evolution_keys) + '\n')
             for i in range(N_iter-1):
                 f_evolution.write(str(evolution[i][0 ])+' '+str(evolution[i][1 ])+' '+str(evolution[i][2 ])+' '+str(evolution[i][3 ])+' '+str(evolution[i][4 ])+' '+str(evolution[i][5 ])+' '+\
                                   str(evolution[i][6 ])+' '+str(evolution[i][7 ])+' '+str(evolution[i][8 ])+' '+str(evolution[i][9 ])+' '+str(evolution[i][10])+' '+str(evolution[i][11])+' '+\
@@ -1187,6 +1190,7 @@ def write_output(state, config):
     if config['Hi']==1:
         hardening_path = os.path.join(RESULTS_DIR, config['hardening_file'] + '.txt')
         with open(hardening_path, 'w') as f_hardening:
+            f_hardening.write('# ' + ' '.join(hardening_keys) + '\n')
             for i in range(N_hardening):
                 f_hardening.write(str(hardening[i][0 ])+' '+str(hardening[i][1 ])+' '+str(hardening[i][2 ])+' '+str(hardening[i][3 ])+' '+str(hardening[i][4 ])+' '+\
                                   str(hardening[i][5 ])+' '+str(hardening[i][6 ])+' '+str(hardening[i][7 ])+' '+str(hardening[i][8 ])+' '+str(hardening[i][9 ])+' '+\
