@@ -26,4 +26,4 @@ All notable changes to Rapster will be documented in this file.
 
 ### Fixed
 - Renamed `type` variable to `tde_type` in `tidal_disruptions.py` and `cluster_evolution.py` to avoid shadowing Python's builtin `type()`.
-- Replaced all 10 bare `except:` clauses in `cluster_evolution.py` with `except Exception:` to avoid swallowing `KeyboardInterrupt`.
+- Replaced all 10 bare `except:` clauses in `cluster_evolution.py` with `except Exception:`. Bare `except:` catches everything including `KeyboardInterrupt` and `SystemExit`, which means Ctrl-C could not stop the simulation and errors were silently ignored. `except Exception:` still handles expected errors (e.g., `ValueError`, `ZeroDivisionError` from empty arrays or zero rates) but allows Ctrl-C and system exits to propagate normally.
