@@ -169,6 +169,28 @@ The initial value of the central stellar density is set by default to 5.3e5 (pc^
 
 usage: -m [-h] [-N] [-r] [-mm] [-mM] [-Z] [-z] [-n] [-fb] [-S] [-dtm] [-dtM] [-tM] [-wK] [-K] [-R] [-vg] [-s] [-SD] [-P] [-Mi] [-MF] [-Ei] [-EF] [-Hi] [-HF] [-BIi] [-BIF] [-BOi] [-BOF] [-RP] [-NS] [-WT] [-Ti] [-TF] [-MBH] [-sBH] [-RF] [-RMP] [-plot] [-analyze]
 
+##### Examples:
+
+Run with default parameters:
+
+> python -m rapster.run_cluster
+
+Run with analysis summary printed at the end:
+
+> python -m rapster.run_cluster -analyze 1
+
+Run with both analysis summary and diagnostic plots:
+
+> python -m rapster.run_cluster -analyze 1 -plot 1
+
+Run silently (no screen output, all output saved to ``Results/log.txt``):
+
+> python -m rapster.run_cluster -P 0
+
+Run with beta spin distribution and random mass pairing:
+
+> python -m rapster.run_cluster -SD 2 -s 1.0 -RMP 1
+
 ##### Testing:
 
 To test the code, execute the program with all defaults:
