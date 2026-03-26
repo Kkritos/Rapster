@@ -26,5 +26,6 @@ All notable changes to Rapster will be documented in this file.
 
 ### Fixed
 - Renamed `type` variable to `tde_type` in `tidal_disruptions.py` and `cluster_evolution.py` to avoid shadowing Python's builtin `type()`.
+- Populated `__init__.py` with public API exports. Users can now do `from rapster import initialize_cluster, analyze_cluster, generate_all_plots` etc. CLI-specific functions (`parse_args`, `main`) remain in `run_cluster.py`.
 - Replaced `np.transpose(array)[:][i]` with `array[:, i]` across `cluster_evolution.py` (15 instances), `binary_evolution.py` (4 instances), and `exchanges.py` (3 instances). Standard NumPy column indexing idiom — more readable and avoids unnecessary transpose.
 - Replaced all 10 bare `except:` clauses in `cluster_evolution.py` with `except Exception:`. Bare `except:` catches everything including `KeyboardInterrupt` and `SystemExit`, which means Ctrl-C could not stop the simulation and errors were silently ignored. `except Exception:` still handles expected errors (e.g., `ValueError`, `ZeroDivisionError` from empty arrays or zero rates) but allows Ctrl-C and system exits to propagate normally.
