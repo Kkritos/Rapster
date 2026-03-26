@@ -156,6 +156,9 @@ For the user’s convenience, we paste the list of optional arguments in the for
 | -MBH, --massive_black_hole_mass | Mass of the seed massive BH (if >0) | float | ``0`` |
 | -sBH, --massive_black_hole_spin | Spin of the seed massive BH (from 0 to 1) | float | ``0`` |
 | -RF, --results_folder_name | Name of the folder where output files will be exported | str | ``Results`` |
+| -BMD, --bh_mass_distribution | Initial BH mass distribution (0 for Kroupa+collapse, 1 for uniform, 2 for Salpeter, 3 for log-uniform) | int | ``0`` |
+| -mBH1gMin, --min_1g_bh_mass | Minimum 1g BH mass for uniform/Salpeter/log-uniform sampling [Msun] | float | ``3.0`` |
+| -mBH1gMax, --max_1g_bh_mass | Maximum 1g BH mass for uniform/Salpeter/log-uniform sampling [Msun] | float | ``60.0`` |
 | -RMP, --random_mass_pairing_2body_3body | Use uniform random pairing for 3bb and 2-body capture (0 for no, 1 for yes) | int | ``0`` |
 | -plot, --generate_plots | Generate diagnostic plots after simulation (0 for no, 1 for yes) | int | ``0`` |
 | -analyze, --analyze_results | Print analysis summary after simulation (0 for no, 1 for yes) | int | ``0`` |
@@ -167,7 +170,7 @@ The initial value of the central stellar density is set by default to 5.3e5 (pc^
 <a name="runningasimulation"></a>
 ### 5. Running a simulation
 
-usage: -m [-h] [-N] [-r] [-mm] [-mM] [-Z] [-z] [-n] [-fb] [-S] [-dtm] [-dtM] [-tM] [-wK] [-K] [-R] [-vg] [-s] [-SD] [-P] [-Mi] [-MF] [-Ei] [-EF] [-Hi] [-HF] [-BIi] [-BIF] [-BOi] [-BOF] [-RP] [-NS] [-WT] [-Ti] [-TF] [-MBH] [-sBH] [-RF] [-RMP] [-plot] [-analyze]
+usage: -m [-h] [-N] [-r] [-mm] [-mM] [-Z] [-z] [-n] [-fb] [-S] [-dtm] [-dtM] [-tM] [-wK] [-K] [-R] [-vg] [-s] [-SD] [-P] [-Mi] [-MF] [-Ei] [-EF] [-Hi] [-HF] [-BIi] [-BIF] [-BOi] [-BOF] [-RP] [-NS] [-WT] [-Ti] [-TF] [-MBH] [-sBH] [-RF] [-BMD] [-mBH1gMin] [-mBH1gMax] [-RMP] [-plot] [-analyze]
 
 ##### Examples:
 
