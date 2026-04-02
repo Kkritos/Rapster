@@ -136,7 +136,7 @@ For the user’s convenience, we paste the list of optional arguments in the for
 | -R, --galactocentric_radius | Initial galactocentric radius [pc] | float | ``8000.0`` |
 | -vg, --galactocentric_velocity | Galactocentric circular velocity [km/s] | float | ``220.0`` |
 | -s, --spin_parameter | Natal spin parameter of first generation (1g) BHs | float | ``0.0`` |
-| -SD, --spin_distribution | Natal spin distribution model (0 for uniform, 1 for monochromatic) | int | ``0`` |
+| -SD, --spin_distribution | Natal spin distribution model (0 for uniform, 1 for monochromatic, 2 for beta) | int | ``0`` |
 | -P, --print_information | Print runtime information (0 for no, 1 for yes) | int | ``1`` |
 | -Mi, --mergers_file_indicator | Export mergers file (0 for no, 1 for yes) | int | ``1`` |
 | -MF, --mergers_file_name | Name of .txt output file with BBH merger source parameters | str | ``mergers`` |
@@ -156,6 +156,12 @@ For the user’s convenience, we paste the list of optional arguments in the for
 | -MBH, --massive_black_hole_mass | Mass of the seed massive BH (if >0) | float | ``0`` |
 | -sBH, --massive_black_hole_spin | Spin of the seed massive BH (from 0 to 1) | float | ``0`` |
 | -RF, --results_folder_name | Name of the folder where output files will be exported | str | ``Results`` |
+| -BMD, --bh_mass_distribution | Initial BH mass distribution (0 for Kroupa+collapse, 1 for uniform, 2 for Salpeter, 3 for log-uniform) | int | ``0`` |
+| -mBH1gMin, --min_1g_bh_mass | Minimum 1g BH mass for uniform/Salpeter/log-uniform sampling [Msun] | float | ``3.0`` |
+| -mBH1gMax, --max_1g_bh_mass | Maximum 1g BH mass for uniform/Salpeter/log-uniform sampling [Msun] | float | ``60.0`` |
+| -RMP, --random_mass_pairing_2body_3body | Use uniform random pairing for 3bb and 2-body capture (0 for no, 1 for yes) | int | ``0`` |
+| -plot, --generate_plots | Generate diagnostic plots after simulation (0 for no, 1 for yes) | int | ``0`` |
+| -analyze, --analyze_results | Print analysis summary after simulation (0 for no, 1 for yes) | int | ``0`` |
 
 ##### Note:
 
@@ -164,7 +170,29 @@ The initial value of the central stellar density is set by default to 5.3e5 (pc^
 <a name="runningasimulation"></a>
 ### 5. Running a simulation
 
-usage: -m [-h] [-N] [-r] [-mm] [-mM] [-Z] [-z] [-n] [-fb] [-S] [-dtm] [-dtM] [-tM] [-wK] [-K] [-R] [-vg] [-s] [-SD] [-P] [-Mi] [-MF] [-Ei] [-EF] [-Hi] [-HF] [-BIi] [-BIF] [-BOi] [-BOF] [-RP] [-NS] [-WT] [-Ti] [-TF] [-MBH] [-sBH] [-RF]
+usage: -m [-h] [-N] [-r] [-mm] [-mM] [-Z] [-z] [-n] [-fb] [-S] [-dtm] [-dtM] [-tM] [-wK] [-K] [-R] [-vg] [-s] [-SD] [-P] [-Mi] [-MF] [-Ei] [-EF] [-Hi] [-HF] [-BIi] [-BIF] [-BOi] [-BOF] [-RP] [-NS] [-WT] [-Ti] [-TF] [-MBH] [-sBH] [-RF] [-BMD] [-mBH1gMin] [-mBH1gMax] [-RMP] [-plot] [-analyze]
+
+##### Examples:
+
+Run with default parameters:
+
+> python -m rapster.run_cluster
+
+Run with analysis summary printed at the end:
+
+> python -m rapster.run_cluster -analyze 1
+
+Run with both analysis summary and diagnostic plots:
+
+> python -m rapster.run_cluster -analyze 1 -plot 1
+
+Run silently (no screen output, all output saved to ``Results/log.txt``):
+
+> python -m rapster.run_cluster -P 0
+
+Run with beta spin distribution and random mass pairing:
+
+> python -m rapster.run_cluster -SD 2 -s 1.0 -RMP 1
 
 ##### Testing:
 
@@ -174,7 +202,7 @@ To test the code, execute the program with all defaults:
 
 from any directory, with the virtual environment (.rapsterenv) enabled.
 
-This should create five files: ``Results/mergers.txt``, ``Results/evolution.txt``, ``Results/hardening.txt``, ``Results/tdes.txt``, and ``Results/outputBHs.pkl`` inside the newly created folder Results/ within your current directory. To check and verify whether you have produced these files correctly, we include the corresponding files ``/Rapster/Example/Results_Test/mergers.txt``, ``/Rapster/Example/Results_Test/evolution.txt``, ``/Rapster/Example/Results_Test/hardening.txt``, ``/Rapster/Example/Results_Test/tdes.txt``, and ``/Rapster/Example/Results_Test/outputBHs.npz``, where /Rapster/ is the root directory of the repository, with data that should match your output.
+This should create five files: ``Results/mergers.txt``, ``Results/evolution.txt``, ``Results/hardening.txt``, ``Results/tdes.txt``, ``Results/outputBHs.pkl``, and ``Results/log.txt`` inside the newly created folder Results/ within your current directory. All output files include column headers prefixed with ``#``. If ``-plot 1`` is passed, diagnostic plots are saved to ``Results/plots/``. To check and verify whether you have produced these files correctly, we include the corresponding files ``/Rapster/Example/Results_Test/mergers.txt``, ``/Rapster/Example/Results_Test/evolution.txt``, ``/Rapster/Example/Results_Test/hardening.txt``, ``/Rapster/Example/Results_Test/tdes.txt``, and ``/Rapster/Example/Results_Test/outputBHs.npz``, where /Rapster/ is the root directory of the repository, with data that should match your output.
 
 We also include a Python notebook ``/Rapster/Example/example.ipynb`` that loads the data results from ``/Rapster/Example/Results_Test/`` and does some plots. As a check, the user is encouraged to load their simulated results and redo the plots in the provided example notebook.
 

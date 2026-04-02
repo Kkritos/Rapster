@@ -19,14 +19,14 @@
 from .constants import *
 from .functions import *
 
-def BH_TidalDisruptions(seed, t, z, k_tde, N_tde, type, m_star, R_star, mBH, sBH, gBH, vSTAR, vBH, tdes, binaries, pairs):
+def BH_TidalDisruptions(seed, t, z, k_tde, N_tde, tde_type, m_star, R_star, mBH, sBH, gBH, vSTAR, vBH, tdes, binaries, pairs):
     """
     @in seed: seed number of the main simulation
     @in t: current time (Myr)
     @in z: current redshift
     @in k_tde: number of BH TDE occurances in the current step
     @in N_tde: cumulative number of BH TDEs
-    @in type: stellar type (integer)
+    @in tde_type: stellar type (integer)
     @in m_star: stellar mass (Msun)
     @in R_star: stellar radius (pc)
     @in mBH: single BH masses (Msun)
@@ -92,7 +92,7 @@ def BH_TidalDisruptions(seed, t, z, k_tde, N_tde, type, m_star, R_star, mBH, sBH
             v_rel = np.sqrt(vSTAR**2 + np.mean(mBH)/m*vBH**2)
             
             # append tde:
-            tdes = np.append(tdes, [[seed, t, z, type, m_star, R_star, m, s, g, r_t, r_p, beta, iota, r_mb, dm, ds, t_fb, eta_R, L_pk, v_rel]], axis=0)
+            tdes = np.append(tdes, [[seed, t, z, tde_type, m_star, R_star, m, s, g, r_t, r_p, beta, iota, r_mb, dm, ds, t_fb, eta_R, L_pk, v_rel]], axis=0)
             
             # update BH mass:
             mBH[k] = m + dm
@@ -100,6 +100,6 @@ def BH_TidalDisruptions(seed, t, z, k_tde, N_tde, type, m_star, R_star, mBH, sBH
             # update BH spin:
             sBH[k] = s + ds
 
-    return seed, t, z, k_tde, N_tde, type, m_star, R_star, mBH, sBH, gBH, vSTAR, vBH, tdes, binaries, pairs
+    return seed, t, z, k_tde, N_tde, tde_type, m_star, R_star, mBH, sBH, gBH, vSTAR, vBH, tdes, binaries, pairs
 
 # End of file.

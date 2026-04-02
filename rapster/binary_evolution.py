@@ -120,7 +120,7 @@ def evolve_BBHs(seed, t, z, dt, zCl_form, binaries, hardening, mergers, mBH, sBH
                     # BBH number density:
                     n_BBH = (N_BBH - 1) / Vc_BH
                     
-                    t_BBH_BBH = 1 / Rate_int(m1 + m2 + np.mean(np.transpose(binaries)[:][4]+np.transpose(binaries)[:][5]), n_BBH, vBH, kp_max * a) + t_conv
+                    t_BBH_BBH = 1 / Rate_int(m1 + m2 + np.mean(binaries[:, 4]+binaries[:, 5]), n_BBH, vBH, kp_max * a) + t_conv
                 else:
                     t_BBH_BBH = 1e100
                     
@@ -232,10 +232,11 @@ def evolve_BBHs(seed, t, z, dt, zCl_form, binaries, hardening, mergers, mBH, sBH
                     N_bb+=1
                     
                     # BBH semimajor axes (excluding the current one):
-                    smas = np.transpose(np.delete(binaries, i, axis=0))[:][2]
-                    
+                    other_binaries = np.delete(binaries, i, axis=0)
+                    smas = other_binaries[:, 2]
+
                     # BBH masses (excluding the current one):
-                    masses = np.transpose(np.delete(binaries, i, axis=0))[:][4] + np.transpose(np.delete(binaries, i, axis=0))[:][5]
+                    masses = other_binaries[:, 4] + other_binaries[:, 5]
                     
                     # semimajor axis of current BBH:
                     a1 = a
@@ -247,7 +248,7 @@ def evolve_BBHs(seed, t, z, dt, zCl_form, binaries, hardening, mergers, mBH, sBH
                     k1 = i
                     
                     # find index location of binary:
-                    k2 = np.squeeze(np.where(np.transpose(binaries)[:][2]==a2))+0
+                    k2 = np.squeeze(np.where(binaries[:, 2]==a2))+0
                     
                     if isinstance(k2, np.ndarray):
                         k2 = k2[0]
