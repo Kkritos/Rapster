@@ -251,7 +251,7 @@ def initialize_cluster(config):
     mergers = np.zeros(shape=(1, 25))
     evolution = np.zeros(shape=(1, 69))
     hardening = np.zeros(shape=(1, 12))
-    tdes = np.zeros(shape=(1, 20))
+    tdes = np.zeros(shape=(1, 17))
 
     # bundle all mutable simulation variables into the state dictionary:
     state = {
