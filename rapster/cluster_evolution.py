@@ -1197,7 +1197,7 @@ def write_output(state, config):
                              str(tdes[i][ 4])+' '+str(tdes[i][ 5])+' '+str(tdes[i][ 6])+' '+str(tdes[i][ 7])+' '+\
                              str(tdes[i][ 8])+' '+str(tdes[i][ 9])+' '+str(tdes[i][10])+' '+str(tdes[i][11])+' '+\
                              str(tdes[i][12])+' '+str(tdes[i][13])+' '+str(tdes[i][14])+' '+str(tdes[i][15])+' '+\
-                             str(tdes[i][16])+' '+str(tdes[i][17])+' '+str(tdes[i][18])+' '+str(tdes[i][19]))
+                             str(tdes[i][16]))
                 f_tdes.write('\n')
 
     if config['Mi']==1:
