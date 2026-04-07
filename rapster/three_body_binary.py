@@ -59,10 +59,10 @@ def three_body_binary(t, z, k_3bb, mBH_avg, binaries, mBH, sBH, gBH, vBH, N_3bb,
             else:
                 p1 = np.array([p_3bodyBinary(m_1, mBH[mBH!=m_1], np.mean(mBH)).sum() for m_1 in mBH]) # marginalized probability
                 p1 /= p1.sum() # normalize margninalized probability
-                m1 = np.random.choice(mBH, size=1, replace=False, p=p1) # sample first mass
+                m1 = np.random.choice(mBH, size=1, replace=False, p=p1)[0] # sample first mass
                 p2 = p_3bodyBinary(m1, mBH[mBH!=m1], np.mean(mBH)) # conditional probability
                 p2 /= p2.sum() # normalize conditional probability
-                m2 = np.random.choice(mBH[mBH!=m1], size=1, replace=False, p=p2) # sample second mass
+                m2 = np.random.choice(mBH[mBH!=m1], size=1, replace=False, p=p2)[0] # sample second mass
             
             # find index locations of the sampled BHs:
             k1 = np.squeeze(np.where(mBH==m1))+0
