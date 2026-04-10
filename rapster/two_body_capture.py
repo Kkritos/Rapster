@@ -20,6 +20,15 @@ from .constants import *
 from .functions import *
 from .remnant import *
 
+def p_2capture(m1, m2):
+    """
+    Joint probability density function for masses m1 and m2 to be captured.
+    The result is not normalized.
+    """
+    
+    return (m1 + m2)**(10/7) * m1**(2/7) * m2**(2/7)
+p_2capture = np.vectorize(p_2capture)
+
 def two_body_capture(seed, t, dt, z, zCl_form, k_2cap, mBH_avg, binaries, mBH, sBH, gBH, vBH, v_star, N_2cap, N_BH, N_BBH, N_me, N_meRe, N_meEj, mergers, random_pairing=False):
     """
     @in seed: simulation seed number
@@ -59,7 +68,12 @@ def two_body_capture(seed, t, dt, z, zCl_form, k_2cap, mBH_avg, binaries, mBH, s
             if random_pairing:
                 m1, m2 = np.random.choice(mBH, size=2, replace=False)
             else:
-                m1, m2 = np.random.choice(mBH, size=2, replace=False, p=mBH**(2)/np.sum(mBH**(2)))
+                p1 = np.array([p_2capture(m_1, mBH[mBH!=m_1]).sum() for m_1 in mBH]) # marginalized probability
+                p1 /= p1.sum() # normalize margninalized probability
+                m1 = np.random.choice(mBH, size=1, replace=False, p=p1)[0] # sample first mass
+                p2 = p_2capture(m1, mBH[mBH!=m1]) # conditional probability
+                p2 /= p2.sum() # normalize conditional probability
+                m2 = np.random.choice(mBH[mBH!=m1], size=1, replace=False, p=p2)[0] # sample second mass
             
             # find index locations of the sampled BHs:
             k1 = np.squeeze(np.where(mBH==m1))+0

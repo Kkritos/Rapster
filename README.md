@@ -389,11 +389,8 @@ d) Column description of tdes .txt file:
 | 13 | $\iota$ | Inclination angle of the incoming stellar orbit ($\rm rad$) |
 | 14 | $r_{\rm mb}$ | Marginally bound radius ($\rm pc$) |
 | 15 | $dm$ | Amount of stellar mass accreted ($M_\odot$) |
-| 16 | $d\chi$ | Change in the dimensionless |
-| 17 | $t_{\rm fb}$ | Characteristic fall-back time ($\rm Myr$) |
-| 18 | $\eta_R$ | Radiative efficiency (from Krolik et al. 2025) |
-| 19 | $L_{\rm pk}$ | Peak luminosity (in astrophysical units) |
-| 20 | $v_{\rm rel}$ | Relative velocity between compact object and star at infinity $(\rm km\,s^{-1})$ |
+| 16 | $\chi_{\rm new}$ | Post-accretion value of the dimensionless spin parameter |
+| 17 | $v_{\rm rel}$ | Relative velocity between compact object and star at infinity $(\rm km\,s^{-1})$ |
 
 e) The outputBHs.pkl file (if exported) contains two arrays, called ``mBH_ini`` and ``mBH_fin``, which provide in $M_\odot$ the masses of all single BHs that are retained at the start and the end of the simulation.
 

@@ -251,7 +251,7 @@ def initialize_cluster(config):
     mergers = np.zeros(shape=(1, 25))
     evolution = np.zeros(shape=(1, 69))
     hardening = np.zeros(shape=(1, 12))
-    tdes = np.zeros(shape=(1, 20))
+    tdes = np.zeros(shape=(1, 17))
 
     # bundle all mutable simulation variables into the state dictionary:
     state = {
@@ -1197,7 +1197,7 @@ def write_output(state, config):
                              str(tdes[i][ 4])+' '+str(tdes[i][ 5])+' '+str(tdes[i][ 6])+' '+str(tdes[i][ 7])+' '+\
                              str(tdes[i][ 8])+' '+str(tdes[i][ 9])+' '+str(tdes[i][10])+' '+str(tdes[i][11])+' '+\
                              str(tdes[i][12])+' '+str(tdes[i][13])+' '+str(tdes[i][14])+' '+str(tdes[i][15])+' '+\
-                             str(tdes[i][16])+' '+str(tdes[i][17])+' '+str(tdes[i][18])+' '+str(tdes[i][19]))
+                             str(tdes[i][16]))
                 f_tdes.write('\n')
 
     if config['Mi']==1:
