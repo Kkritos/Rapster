@@ -404,7 +404,7 @@ The code can be useful when executed multiple times, for instance, when simulati
 
 Although the program is not computationally expensive (we have tested it on a laptop that can generate a few binary black hole mergers per second), independent parallelization is still encouraged when simulating many star clusters to improve efficiency.
 
-The code relies on the theory by Breen & Heggie to evolve the cluster. This theory can generally be trusted for clusters with more than 40 BHs. To extrapolate to lower-number systems, we fix the Coulomb logarithm of the BH subcluster. Moreover, clusters are evolved in the Newtonian regime, which is valid as long as the compactness is much smaller than $GM_{\rm cl}/(r_{\rm h}c^2)$. If a massive BH seed is assumed, it is recommended that a mass of more than $2500 M_\odot (m_{\rm BH} / 10  M_\odot )(N_{\rm BH}/10^4)^{2/3}$, as the heating mechanism can be different from what the theory by Breen & Heggie assumes.
+The code relies on the theory by Breen & Heggie to evolve the cluster. This theory can generally be trusted for clusters with more than 40 BHs. To extrapolate to lower-number systems, we fix the Coulomb logarithm of the BH subcluster. Moreover, clusters are evolved in the Newtonian regime, which is valid as long as the compactness is much smaller than $GM_{\rm cl}/(r_{\rm h}c^2)$. If a massive BH seed is assumed, it is recommended that a mass of more than $2500 M_\odot (m_{\rm BH} / 10  M_\odot )(N_{\rm BH}/10^4)^{2/3}$, as the heating mechanism can be different from what the theory by Breen & Heggie assumes. A word of caution: even if this condition is satisfied at $t=0$, the massive BH may grow beyond that point during the simulation.
 
 <a name="citingthiswork"></a>
 ### 8. Citing this work
