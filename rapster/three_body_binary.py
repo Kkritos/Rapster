@@ -29,7 +29,7 @@ def p_3bodyBinary(m1, m2, m3):
     return (m1*m2)**(4)*m3**(5/2)/(m1+m2)**(1/2)/(m1+m2+m3)**(1/2)
 p_3bodyBinary = np.vectorize(p_3bodyBinary)
 
-def three_body_binary(t, z, k_3bb, mBH_avg, binaries, mBH, sBH, gBH, vBH, N_3bb, N_BBH, random_pairing=False):
+def three_body_binary(t, z, k_3bb, mBH_avg, binaries, mBH, sBH, gBH, hBH, vBH, N_3bb, N_BBH, random_pairing=False):
     """
     @in t: simulation time
     @in z: simulation redshift
@@ -39,6 +39,7 @@ def three_body_binary(t, z, k_3bb, mBH_avg, binaries, mBH, sBH, gBH, vBH, N_3bb,
     @in mBH: array of single BH masses
     @in sBH: array of single BH spins
     @in gBH: array of single BH generations
+    @in hBH: array of BH tdes count
     @in vBH: 3D BH velocity dispersion
     @in N_3bb: number of 3bbs
     @in N_BBH: number of BBHs
@@ -83,7 +84,7 @@ def three_body_binary(t, z, k_3bb, mBH_avg, binaries, mBH, sBH, gBH, vBH, N_3bb,
             eccen = np.sqrt(np.random.rand())
             
             # append binary:
-            binaries = np.append(binaries, [[np.random.randint(0, 999999999), 3, sma, eccen, m1, m2, sBH[k1], sBH[k2], gBH[k1], gBH[k2], t, z, 0]], axis=0)
+            binaries = np.append(binaries, [[np.random.randint(0, 999999999), 3, sma, eccen, m1, m2, sBH[k1], sBH[k2], gBH[k1], gBH[k2], t, z, 0, hBH[k1], hBH[k2]]], axis=0)
             
             # update number of in-cluster BBHs:
             N_BBH+=1
@@ -92,7 +93,8 @@ def three_body_binary(t, z, k_3bb, mBH_avg, binaries, mBH, sBH, gBH, vBH, N_3bb,
             mBH = np.delete(mBH, [k1, k2])
             sBH = np.delete(sBH, [k1, k2])
             gBH = np.delete(gBH, [k1, k2])
+            hBH = np.delete(hBH, [k1, k2])
             
-    return t, z, k_3bb, mBH_avg, binaries, mBH, sBH, gBH, vBH, N_3bb, N_BBH
+    return t, z, k_3bb, mBH_avg, binaries, mBH, sBH, gBH, hBH, vBH, N_3bb, N_BBH
 
 # End of file.

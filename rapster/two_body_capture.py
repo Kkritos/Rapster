@@ -29,7 +29,7 @@ def p_2capture(m1, m2):
     return (m1 + m2)**(10/7) * m1**(2/7) * m2**(2/7)
 p_2capture = np.vectorize(p_2capture)
 
-def two_body_capture(seed, t, dt, z, zCl_form, k_2cap, mBH_avg, binaries, mBH, sBH, gBH, vBH, v_star, N_2cap, N_BH, N_BBH, N_me, N_meRe, N_meEj, mergers, random_pairing=False):
+def two_body_capture(seed, t, dt, z, zCl_form, k_2cap, mBH_avg, binaries, mBH, sBH, gBH, hBH, vBH, v_star, N_2cap, N_BH, N_BBH, N_me, N_meRe, N_meEj, mergers, random_pairing=False):
     """
     @in seed: simulation seed number
     @in t: simulation time
@@ -42,6 +42,7 @@ def two_body_capture(seed, t, dt, z, zCl_form, k_2cap, mBH_avg, binaries, mBH, s
     @in mBH: array of single BH masses
     @in sBH: array of single BH spins
     @in gBH: array of single BH generations
+    @in hBH: array of BH tdes count
     @in vBH: 3D BH velocity dispersion
     @in v_star: 3D star velocity dispersion
     @in N_2cap: number of 2-captures
@@ -50,7 +51,7 @@ def two_body_capture(seed, t, dt, z, zCl_form, k_2cap, mBH_avg, binaries, mBH, s
     @in N_me: number of mergers
     @in N_meRe: number of retained mergers
     @in N_meEj: number of ejected mergers
-    @in mergers: array of mergers: [seed, ind, channel, a, e, m1, m2, s1, s2, g1, g2, theta1, theta2, dPhi, t_form, z_form, t_merge, z_merge, m_rem, s_rem, g_rem, vGW_kick, s_eff, q, v_esc]
+    @in mergers: array of mergers: [seed, ind, channel, a, e, m1, m2, s1, s2, g1, g2, theta1, theta2, dPhi, t_form, z_form, t_merge, z_merge, m_rem, s_rem, g_rem, vGW_kick, s_eff, q, v_esc, h1, h2]
     @in random_pairing: if True, use uniform random pairing instead of mass-weighted (m^2)
 
     @out: all inputs
@@ -84,8 +85,8 @@ def two_body_capture(seed, t, dt, z, zCl_form, k_2cap, mBH_avg, binaries, mBH, s
             if isinstance(k2, np.ndarray):
                 k2=k2[0]
                 
-            s1 = sBH[k1]; g1 = gBH[k1]
-            s2 = sBH[k2]; g2 = gBH[k2]
+            s1 = sBH[k1]; g1 = gBH[k1]; h1 = hBH[k1]
+            s2 = sBH[k2]; g2 = gBH[k2]; h2 = hBH[k2]
             
             ind = np.random.randint(0, 999999999)
             
@@ -93,7 +94,8 @@ def two_body_capture(seed, t, dt, z, zCl_form, k_2cap, mBH_avg, binaries, mBH, s
             
             m_rem, s_rem, vGW_kick = merger_remnant(m1, m2, sBH[k1], sBH[k2], theta1, theta2, dPhi)
             g_rem = np.max([gBH[k1], gBH[k2]]) + 1
-            
+            h_rem = h1 + h2
+
             # relative velocity:
             v_rel = get_maxwell_sample(np.sqrt(2/3) * vBH)
             
@@ -143,6 +145,7 @@ def two_body_capture(seed, t, dt, z, zCl_form, k_2cap, mBH_avg, binaries, mBH, s
             mBH = np.delete(mBH, [k1, k2])
             sBH = np.delete(sBH, [k1, k2])
             gBH = np.delete(gBH, [k1, k2])
+            hBH = np.delete(hBH, [k1, k2])
             
             N_2cap+=1
             
@@ -154,6 +157,7 @@ def two_body_capture(seed, t, dt, z, zCl_form, k_2cap, mBH_avg, binaries, mBH, s
                     mBH_temp.append(m_rem)
                     sBH_temp.append(s_rem)
                     gBH_temp.append(g_rem)
+                    hBH_temp.append(h_rem)
                     
                     N_BH = N_BH - 1
                     
@@ -168,14 +172,14 @@ def two_body_capture(seed, t, dt, z, zCl_form, k_2cap, mBH_avg, binaries, mBH, s
                 N_me+=1
                     
                 # order BHs by mass:
-                mA = m1; sA = s1; gA = g1; thetaA = theta1
-                mB = m2; sB = s2; gB = g2; thetaB = theta2
+                mA = m1; sA = s1; gA = g1; hA = h1; thetaA = theta1
+                mB = m2; sB = s2; gB = g2; hB = h2; thetaB = theta2
                 if mA>mB:
-                    m1 = mA; s1 = sA; g1 = gA; theta1 = thetaA
-                    m2 = mB; s2 = sB; g2 = gB; theta2 = thetaB
+                    m1 = mA; s1 = sA; g1 = gA; h1 = hA; theta1 = thetaA
+                    m2 = mB; s2 = sB; g2 = gB; h2 = hB; theta2 = thetaB
                 else:
-                    m1 = mB; s1 = sB; g1 = gB; theta1 = thetaB
-                    m2 = mA; s2 = sA; g2 = gA; theta2 = thetaA
+                    m1 = mB; s1 = sB; g1 = gB; h1 = hB; theta1 = thetaB
+                    m2 = mA; s2 = sA; g2 = gA; h2 = hA; theta2 = thetaA
                     
                 # mass ratio:
                 q = m2 / m1
@@ -185,23 +189,25 @@ def two_body_capture(seed, t, dt, z, zCl_form, k_2cap, mBH_avg, binaries, mBH, s
                 
                 # append merger:
                 mergers = np.append(mergers, [[seed, ind, 2, sma, eccen, m1, m2, s1, s2, g1, g2, theta1, theta2, dPhi, t, z, t + T_GW(m1, m2, sma, eccen),
-                                               redshift(lookback(zCl_form) - t + T_GW(m1, m2, sma, eccen)), m_rem, s_rem, g_rem, vGW_kick, s_eff, q, 2*v_star]], axis=0)
+                                               redshift(lookback(zCl_form) - t + T_GW(m1, m2, sma, eccen)), m_rem, s_rem, g_rem, vGW_kick, s_eff, q, 2*v_star, h1, h2]], axis=0)
 
             else:
                 
                 # append binary:
-                binaries = np.append(binaries, [[ind, 2, sma, eccen, m1, m2, s1, s2, g1, g2, t, z, 0]], axis=0)
+                binaries = np.append(binaries, [[ind, 2, sma, eccen, m1, m2, s1, s2, g1, g2, t, z, 0, h1, h2]], axis=0)
                 
                 N_BBH+=1
                 
         mBH_temp = np.array(mBH_temp)
         sBH_temp = np.array(sBH_temp)
         gBH_temp = np.array(gBH_temp)
-        
+        hBH_temp = np.array(hBH_temp)
+
         mBH = np.append(mBH, mBH_temp)
         sBH = np.append(sBH, sBH_temp)
         gBH = np.append(gBH, gBH_temp)
+        hBH = np.append(hBH, hBH_temp)
         
-    return seed, t, dt, z, zCl_form, k_2cap, mBH_avg, binaries, mBH, sBH, gBH, vBH, v_star, N_2cap, N_BH, N_BBH, N_me, N_meRe, N_meEj, mergers
+    return seed, t, dt, z, zCl_form, k_2cap, mBH_avg, binaries, mBH, sBH, gBH, hBH, vBH, v_star, N_2cap, N_BH, N_BBH, N_me, N_meRe, N_meEj, mergers
 
 # End of file.

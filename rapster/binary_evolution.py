@@ -20,7 +20,7 @@ from .constants import *
 from .functions import *
 from .remnant import *
 
-def evolve_BBHs(seed, t, z, dt, zCl_form, binaries, hardening, mergers, mBH, sBH, gBH, n_star, v_star, vBH, t_rlx, m_avg, mBH_avg, na_BH, nc_BH, N_BH, N_BBH, N_me, N_me2b, N_3cap, N_meFi, N_meRe, N_meEj, N_dis, N_ex, N_BHej, N_BBHej, N_hardening, Vc_BH, N_bb, triples, N_Triples):
+def evolve_BBHs(seed, t, z, dt, zCl_form, binaries, hardening, mergers, mBH, sBH, gBH, hBH, n_star, v_star, vBH, t_rlx, m_avg, mBH_avg, na_BH, nc_BH, N_BH, N_BBH, N_me, N_me2b, N_3cap, N_meFi, N_meRe, N_meEj, N_dis, N_ex, N_BHej, N_BBHej, N_hardening, Vc_BH, N_bb, triples, N_Triples):
     """
     @in seed: simulation seed number
     @in t: simulation time
@@ -33,6 +33,7 @@ def evolve_BBHs(seed, t, z, dt, zCl_form, binaries, hardening, mergers, mBH, sBH
     @in mBH: array of single BH masses
     @in sBH: array of single BH spins
     @in gBH: array of single BH generations
+    @in hBH: array of BH tdes count
     @in m_avg: average mass
     @in n_star: central stellar density
     @in v_star: 3D star velocity dispersion
@@ -105,6 +106,8 @@ def evolve_BBHs(seed, t, z, dt, zCl_form, binaries, hardening, mergers, mBH, sBH
                 t_form = binaries[i][10]
                 z_form = binaries[i][11]
                 Nex = binaries[i][12]
+                h1 = binaries[i][13]
+                h2 = binaries[i][14]
                 
                 # BBH-star interaction timescale:
                 t_BBH_star = 1e100 #1 / Rate_int(m1+m2+m_avg, n_star, v_star, kp_max * a)
@@ -154,12 +157,14 @@ def evolve_BBHs(seed, t, z, dt, zCl_form, binaries, hardening, mergers, mBH, sBH
                     
                     m_rem, s_rem, vGW_kick = merger_remnant(m1, m2, s1, s2, theta1, theta2, dPhi)
                     g_rem = np.max([g1, g2]) + 1
-                    
+                    h_rem = h1 + h2
+
                     if vGW_kick < 2 * np.sqrt(v_star**2 + vBH**2): # merger remnant retained in cluster
                         
                         mBH = np.append(mBH, m_rem)
                         sBH = np.append(sBH, s_rem)
                         gBH = np.append(gBH, g_rem)
+                        hBH = np.append(hBH, h_rem)
                         
                         N_BH = N_BH - 1
                         
@@ -175,14 +180,14 @@ def evolve_BBHs(seed, t, z, dt, zCl_form, binaries, hardening, mergers, mBH, sBH
                     N_me2b+=1
                     
                     # order BHs by mass:
-                    mA = m1; sA = s1; gA = g1; thetaA = theta1
-                    mB = m2; sB = s2; gB = g2; thetaB = theta2
+                    mA = m1; sA = s1; gA = g1; hA = h1; thetaA = theta1
+                    mB = m2; sB = s2; gB = g2; hB = h2; thetaB = theta2
                     if mA>mB:
-                        m1 = mA; s1 = sA; g1 = gA; theta1 = thetaA
-                        m2 = mB; s2 = sB; g2 = gB; theta2 = thetaB
+                        m1 = mA; s1 = sA; g1 = gA; h1 = hA; theta1 = thetaA
+                        m2 = mB; s2 = sB; g2 = gB; h2 = hB; theta2 = thetaB
                     else:
-                        m1 = mB; s1 = sB; g1 = gB; theta1 = thetaB
-                        m2 = mA; s2 = sA; g2 = gA; theta2 = thetaA
+                        m1 = mB; s1 = sB; g1 = gB; h1 = hB; theta1 = thetaB
+                        m2 = mA; s2 = sA; g2 = gA; h2 = hA; theta2 = thetaA
                         
                     # mass ratio:
                     q = m2 / m1
@@ -192,7 +197,7 @@ def evolve_BBHs(seed, t, z, dt, zCl_form, binaries, hardening, mergers, mBH, sBH
                     
                     # append merger:
                     mergers = np.append(mergers, [[seed, ind, channel, a, e, m1, m2, s1, s2, g1, g2, theta1, theta2, dPhi, t_form, z_form,
-                                                   t + t_local + T_GW(m1, m2, a, e), redshift_interp(lookback_interp(zCl_form) - t - t_local - T_GW(m1, m2, a, e)), m_rem, s_rem, g_rem, vGW_kick, s_eff, q, 2*v_star]], axis=0)
+                                                   t + t_local + T_GW(m1, m2, a, e), redshift_interp(lookback_interp(zCl_form) - t - t_local - T_GW(m1, m2, a, e)), m_rem, s_rem, g_rem, vGW_kick, s_eff, q, 2*v_star, h1, h2]], axis=0)
                     
                     binaries = np.delete(binaries, i, axis=0)
                     
@@ -262,20 +267,21 @@ def evolve_BBHs(seed, t, z, dt, zCl_form, binaries, hardening, mergers, mBH, sBH
                         k_hard = k2; a_hard = a2
                         
                     # BHs of tighter BBH:
-                    m0 = binaries[k_hard][4]; s0 = binaries[k_hard][6]; g0 = binaries[k_hard][8]
-                    m1 = binaries[k_hard][5]; s1 = binaries[k_hard][7]; g1 = binaries[k_hard][9]
+                    m0 = binaries[k_hard][4]; s0 = binaries[k_hard][6]; g0 = binaries[k_hard][8]; h0 = binaries[k_hard][13]
+                    m1 = binaries[k_hard][5]; s1 = binaries[k_hard][7]; g1 = binaries[k_hard][9]; h1 = binaries[k_hard][14]
                 
                     # BHs of softer BBH:
                     if binaries[k_soft][4] < binaries[k_soft][5]:
-                        m_freed = binaries[k_soft][4]; s_freed = binaries[k_soft][6]; g_freed = binaries[k_soft][8]
-                        m2 = binaries[k_soft][5]; s2 = binaries[k_soft][7]; g2 = binaries[k_soft][9]
+                        m_freed = binaries[k_soft][4]; s_freed = binaries[k_soft][6]; g_freed = binaries[k_soft][8]; h_freed = binaries[k_soft][13]
+                        m2 = binaries[k_soft][5]; s2 = binaries[k_soft][7]; g2 = binaries[k_soft][9]; h2 = binaries[k_soft][14]
                     else:
-                        m_freed = binaries[k_soft][5]; s_freed = binaries[k_soft][7]; g_freed = binaries[k_soft][9]
-                        m2 = binaries[k_soft][4]; s2 = binaries[k_soft][6]; g2 = binaries[k_soft][8]
+                        m_freed = binaries[k_soft][5]; s_freed = binaries[k_soft][7]; g_freed = binaries[k_soft][9]; h_freed = binaries[k_soft][14]
+                        m2 = binaries[k_soft][4]; s2 = binaries[k_soft][6]; g2 = binaries[k_soft][8]; h2 = binaries[k_soft][13]
                     
                     mBH = np.append(mBH, m_freed)
                     sBH = np.append(sBH, s_freed)
                     gBH = np.append(gBH, g_freed)
+                    hBH = np.append(hBH, h_freed)
                     
                     # delete softer BBH:
                     binaries = np.delete(binaries, k_soft, axis=0)
@@ -317,6 +323,7 @@ def evolve_BBHs(seed, t, z, dt, zCl_form, binaries, hardening, mergers, mBH, sBH
                         mBH = np.append(mBH, m2)
                         sBH = np.append(sBH, s2)
                         gBH = np.append(gBH, g2)
+                        hBH = np.append(hBH, h2)
                         
                         # append binary:
                         Delta = 0.38 # Zevin et al., ApJ 871 (2019), 91.
@@ -354,6 +361,7 @@ def evolve_BBHs(seed, t, z, dt, zCl_form, binaries, hardening, mergers, mBH, sBH
                     
                     s3 = sBH[k3]
                     g3 = gBH[k3]
+                    h3 = hBH[k3]
                     
                     # sample single velocity before interaction:
                     vS_before = get_maxwell_sample(np.sqrt(mBH_avg * vBH**2 / 3 / m3))
@@ -381,9 +389,10 @@ def evolve_BBHs(seed, t, z, dt, zCl_form, binaries, hardening, mergers, mBH, sBH
                     mBH = np.append(mBH, m1); mBH = np.append(mBH, m2)
                     sBH = np.append(sBH, s1); sBH = np.append(sBH, s2)
                     gBH = np.append(gBH, g1); gBH = np.append(gBH, g2)
-                        
+                    hBH = np.append(hBH, h1); hBH = np.append(hBH, h2)
+                    
                     N_BBH = N_BBH - 1
-                        
+                    
                     condition=3
                     hardening[i][10]=condition
                     break
@@ -418,24 +427,26 @@ def evolve_BBHs(seed, t, z, dt, zCl_form, binaries, hardening, mergers, mBH, sBH
                     ratios_3bm = p_3bm / u_3bm
                     j_3bm = np.argmax(ratios_3bm)
                     
-                    m_3bm_1 = np.array([m1, m2, m3]); s_3bm_1 = np.array([s1, s2, s3]); g_3bm_1 = np.array([g1, g2, g3])
-                    m_3bm_2 = np.array([m2, m3, m1]); s_3bm_2 = np.array([s2, s3, s1]); g_3bm_2 = np.array([g2, g3, g1])
-                    m_3bm_3 = np.array([m3, m1, m2]); s_3bm_3 = np.array([s3, s1, s2]); g_3bm_3 = np.array([g3, g1, g2])
+                    m_3bm_1 = np.array([m1, m2, m3]); s_3bm_1 = np.array([s1, s2, s3]); g_3bm_1 = np.array([g1, g2, g3]); h_3bm_1 = np.array([h1, h2, h3])
+                    m_3bm_2 = np.array([m2, m3, m1]); s_3bm_2 = np.array([s2, s3, s1]); g_3bm_2 = np.array([g2, g3, g1]); h_3bm_2 = np.array([h2, h3, h1])
+                    m_3bm_3 = np.array([m3, m1, m2]); s_3bm_3 = np.array([s3, s1, s2]); g_3bm_3 = np.array([g3, g1, g2]); h_3bm_3 = np.array([h3, h1, h2])
                     
                     if ratios_3bm[j_3bm] > 1: # binary-single GW capture merger occurs
                         
                         mBH = np.delete(mBH, k3)
                         sBH = np.delete(sBH, k3)
                         gBH = np.delete(gBH, k3)
+                        hBH = np.delete(hBH, k3)
                         
-                        mA = m_3bm_1[j_3bm]; sA = s_3bm_1[j_3bm]; gA = g_3bm_1[j_3bm]
-                        mB = m_3bm_2[j_3bm]; sB = s_3bm_2[j_3bm]; gB = g_3bm_2[j_3bm]
-                        mC = m_3bm_3[j_3bm]; sC = s_3bm_3[j_3bm]; gC = g_3bm_3[j_3bm]
+                        mA = m_3bm_1[j_3bm]; sA = s_3bm_1[j_3bm]; gA = g_3bm_1[j_3bm]; hA = h_3bm_1[j_3bm]
+                        mB = m_3bm_2[j_3bm]; sB = s_3bm_2[j_3bm]; gB = g_3bm_2[j_3bm]; hB = h_3bm_2[j_3bm]
+                        mC = m_3bm_3[j_3bm]; sC = s_3bm_3[j_3bm]; gC = g_3bm_3[j_3bm]; hC = h_3bm_3[j_3bm]
                             
                         thetaA, thetaB, dPhi = sample_angles()
                             
                         m_rem, s_rem, vGW_kick = merger_remnant(mA, mB, sA, sB, thetaA, thetaB, dPhi)
                         g_rem = np.max([gA, gB]) + 1
+                        h_rem = h1 + h2
                         
                         sma = a_3bm[j_3bm]
                         eccen = e_3bm[j_3bm]
@@ -445,6 +456,7 @@ def evolve_BBHs(seed, t, z, dt, zCl_form, binaries, hardening, mergers, mBH, sBH
                             mBH = np.append(mBH, m_rem)
                             sBH = np.append(sBH, s_rem)
                             gBH = np.append(gBH, g_rem)
+                            hBH = np.append(hBH, h_rem)
                             
                             N_BH = N_BH - 1
                             N_meRe+=1
@@ -459,11 +471,11 @@ def evolve_BBHs(seed, t, z, dt, zCl_form, binaries, hardening, mergers, mBH, sBH
                         
                         # order BHs my mass:
                         if mA>mB:
-                            m1 = mA; s1 = sA; g1 = gA; theta1 = thetaA
-                            m2 = mB; s2 = sB; g2 = gB; theta2 = thetaB
+                            m1 = mA; s1 = sA; g1 = gA; h1 = hA; theta1 = thetaA
+                            m2 = mB; s2 = sB; g2 = gB; h2 = hB; theta2 = thetaB
                         else:
-                            m1 = mB; s1 = sB; g1 = gB; theta1 = thetaB
-                            m2 = mA; s2 = sA; g2 = gA; theta2 = thetaA
+                            m1 = mB; s1 = sB; g1 = gB; h1 = hB; theta1 = thetaB
+                            m2 = mA; s2 = sA; g2 = gA; h2 = hA; theta2 = thetaA
                             
                         # mass ratio:
                         q = m2 / m1
@@ -474,7 +486,7 @@ def evolve_BBHs(seed, t, z, dt, zCl_form, binaries, hardening, mergers, mBH, sBH
                         # append merger:
                         mergers = np.append(mergers,
                                             [[seed, ind, 6, sma, eccen, m1, m2, s1, s2, g1, g2, theta1, theta2, dPhi, t_form, z_form, 
-                                              t + t_local + T_GW(mA, mB, sma, eccen), redshift_interp(lookback_interp(zCl_form) - t - t_local - T_GW(mA, mB, sma, eccen)), m_rem, s_rem, g_rem, vGW_kick, s_eff, q, 2*v_star]], axis=0)
+                                              t + t_local + T_GW(mA, mB, sma, eccen), redshift_interp(lookback_interp(zCl_form) - t - t_local - T_GW(mA, mB, sma, eccen)), m_rem, s_rem, g_rem, vGW_kick, s_eff, q, 2*v_star, h1, h2]], axis=0)
                         
                         # delete BBH:
                         binaries = np.delete(binaries, i, axis=0)
@@ -486,6 +498,7 @@ def evolve_BBHs(seed, t, z, dt, zCl_form, binaries, hardening, mergers, mBH, sBH
                         mBH = np.append(mBH, mC)
                         sBH = np.append(sBH, sC)
                         gBH = np.append(gBH, gC)
+                        hBH = np.append(hBH, hC)
                         
                         condition=6
                         hardening[i][10]=condition
@@ -498,13 +511,13 @@ def evolve_BBHs(seed, t, z, dt, zCl_form, binaries, hardening, mergers, mBH, sBH
                     
                     if m1<m2:
 
-                        ms = m1; ss = s1; gs = g1
-                        mr = m2; sr = s2; gr = g2
+                        ms = m1; ss = s1; gs = g1; hs = h1
+                        mr = m2; sr = s2; gr = g2; hr = h2
                         
                     else:
                         
-                        ms = m2; ss = s2; gs = g2
-                        mr = m1; sr = s1; gr = g1
+                        ms = m2; ss = s2; gs = g2; hs = h2
+                        mr = m1; sr = s1; gr = g1; hr = h1
                         
                     # impose binding energy conservation after substitution:
                     binaries[i][2] = m3/ms * binaries[i][2]
@@ -512,11 +525,13 @@ def evolve_BBHs(seed, t, z, dt, zCl_form, binaries, hardening, mergers, mBH, sBH
                     mBH = np.delete(mBH, k3)
                     sBH = np.delete(sBH, k3)
                     gBH = np.delete(gBH, k3)
-                    
+                    hBH = np.delete(hBH, k3)
+
                     mBH = np.append(mBH, ms)
                     sBH = np.append(sBH, ss)
                     gBH = np.append(gBH, gs)
-                    
+                    hBH = np.append(hBH, hs)
+
                     # update binary masses:
                     binaries[i][4] = mr
                     binaries[i][5] = m3
@@ -529,9 +544,13 @@ def evolve_BBHs(seed, t, z, dt, zCl_form, binaries, hardening, mergers, mBH, sBH
                     binaries[i][8] = gr
                     binaries[i][9] = g3
                     
-                    m1 = mr; s1 = sr; g1 = gr
-                    m2 = m3; s2 = s3; g2 = g3
-                    m3 = ms; s3 = ss; g3 = gs
+                    # update binary tde counters:
+                    binaries[i][13] = hr
+                    binaries[i][14] = h3
+                    
+                    m1 = mr; s1 = sr; g1 = gr; h1 = hr
+                    m2 = m3; s2 = s3; g2 = g3; h2 = h3
+                    m3 = ms; s3 = ss; g3 = gs; h3 = hs
                     
                     k3 = mBH.size - 1
                     
@@ -566,7 +585,8 @@ def evolve_BBHs(seed, t, z, dt, zCl_form, binaries, hardening, mergers, mBH, sBH
                     mBH = np.delete(mBH, k3)
                     sBH = np.delete(sBH, k3)
                     gBH = np.delete(gBH, k3)
-                    
+                    hBH = np.delete(hBH, k3)
+
                     N_BH = N_BH - 1
                     
                     N_BHej+=1
@@ -586,7 +606,8 @@ def evolve_BBHs(seed, t, z, dt, zCl_form, binaries, hardening, mergers, mBH, sBH
                         
                         m_rem, s_rem, vGW_kick = merger_remnant(m1, m2, s1, s2, theta1, theta2, dPhi)
                         g_rem = np.max([g1, g2]) + 1
-                        
+                        h_rem = h1 + h2
+
                         N_me+=1
                         N_meFi+=1
                         
@@ -594,14 +615,14 @@ def evolve_BBHs(seed, t, z, dt, zCl_form, binaries, hardening, mergers, mBH, sBH
                         t_merge = t + t_local + T_GW(m1, m2, a, e)
                         
                         # order BHs by mass:
-                        mA = m1; sA = s1; gA = g1; thetaA = theta1
-                        mB = m2; sB = s2; gB = g2; thetaB = theta2
+                        mA = m1; sA = s1; gA = g1; hA = h1; thetaA = theta1
+                        mB = m2; sB = s2; gB = g2; hB = h2; thetaB = theta2
                         if mA>mB:
-                            m1 = mA; s1 = sA; g1 = gA; theta1 = thetaA
-                            m2 = mB; s2 = sB; g2 = gB; theta2 = thetaB
+                            m1 = mA; s1 = sA; g1 = gA; h1 = hA; theta1 = thetaA
+                            m2 = mB; s2 = sB; g2 = gB; h2 = hB; theta2 = thetaB
                         else:
-                            m1 = mB; s1 = sB; g1 = gB; theta1 = thetaB
-                            m2 = mA; s2 = sA; g2 = gA; theta2 = thetaA
+                            m1 = mB; s1 = sB; g1 = gB; h1 = hB; theta1 = thetaB
+                            m2 = mA; s2 = sA; g2 = gA; h2 = hA; theta2 = thetaA
                             
                         # mass ratio:
                         q = m2 / m1
@@ -611,7 +632,7 @@ def evolve_BBHs(seed, t, z, dt, zCl_form, binaries, hardening, mergers, mBH, sBH
                         
                         # append merger:
                         mergers = np.append(mergers, [[seed, ind, -channel, a, e, m1, m2, s1, s2, g1, g2, theta1, theta2, dPhi, t_form, z_form, t_merge,
-                                                       redshift_interp(lookback_interp(zCl_form) - t_merge), m_rem, s_rem, g_rem, vGW_kick, s_eff, q, 2*v_star]], axis=0)
+                                                       redshift_interp(lookback_interp(zCl_form) - t_merge), m_rem, s_rem, g_rem, vGW_kick, s_eff, q, 2*v_star, h1, h2]], axis=0)
                         
                     binaries = np.delete(binaries, i, axis=0)
                     
@@ -631,6 +652,6 @@ def evolve_BBHs(seed, t, z, dt, zCl_form, binaries, hardening, mergers, mBH, sBH
             N_hardening+=1
             i+=1
             
-    return seed, t, z, dt, zCl_form, binaries, hardening, mergers, mBH, sBH, gBH, n_star, v_star, vBH, t_rlx, m_avg, mBH_avg, na_BH, nc_BH, N_BH, N_BBH, N_me, N_me2b, N_3cap, N_meFi, N_meRe, N_meEj, N_dis, N_ex, N_BHej, N_BBHej, N_hardening, Vc_BH, N_bb, triples, N_Triples
+    return seed, t, z, dt, zCl_form, binaries, hardening, mergers, mBH, sBH, gBH, hBH, n_star, v_star, vBH, t_rlx, m_avg, mBH_avg, na_BH, nc_BH, N_BH, N_BBH, N_me, N_me2b, N_3cap, N_meFi, N_meRe, N_meEj, N_dis, N_ex, N_BHej, N_BBHej, N_hardening, Vc_BH, N_bb, triples, N_Triples
 
 # End of file.
