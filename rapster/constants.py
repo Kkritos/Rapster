@@ -136,9 +136,9 @@ hardening_keys = [
 ]
 merger_keys = [
     'seed', 'ind', 'channel', 'a', 'e', 'm1', 'm2', 'chi1', 'chi2', 'g1', 'g2', 'theta1', 'theta2', 
-    'dPhi', 'tForm', 'zForm', 't', 'z', 'mRem', 'chiRem', 'gRem', 'vGW', 'chiEff', 'q',  'v_esc', 
+    'dPhi', 'tForm', 'zForm', 't', 'z', 'mRem', 'chiRem', 'gRem', 'vGW', 'chiEff', 'q',  'v_esc',  'h1', 'h2', 
     'Mcl0', 'rh0', 'Z', 'zClForm', 'Rgal0', 'Mcl', 'rh', 'Rgal'
 ]
-tdes_keys = ['seed', 't', 'z', 'type', 'm_star', 'R_star', 'm_BH', 's_BH', 'g_BH', 'r_t', 'r_p', 'beta', 'iota', 'r_mb', 'dm', 's_new', 'v_rel']
+tdes_keys = ['seed', 't', 'z', 'type', 'm_star', 'R_star', 'm_BH', 's_BH', 'g_BH', 'r_t', 'r_p', 'beta', 'iota', 'r_mb', 'dm', 's_new', 'v_rel', 'h_BH']
 
 # End of file.
