@@ -6,7 +6,7 @@ $\tt Rapster$ stands for $\rm RAPid\ cluSTER$ evolution.
 
 Author: Konstantinos Kritos <kkritos1@jhu.edu>
 
-Version: March 18, 2026.
+Version: April 13, 2026.
 (Thanks to Tousif Islam for helping modularize this repository!)
 
 ![LOGO](.assets/LOGO.png)
@@ -249,14 +249,16 @@ a) Column description of mergers .txt file:
 | 23 | $\chi_{\rm eff}$ | Effective dimensionless spin parameter |
 | 24 | $q$ | Mass ratio |
 | 25 | $v_{\rm esc}$ | Current escape velocity (km/s) |
-| 26 | $M_{\rm cl,0}$ | Initial cluster mass ($M_\odot$) |
-| 27 | $r_{\rm h,0}$ | Initial half-mass radius ($\rm pc$) |
-| 28 | $Z$ | Metallicity |
-| 29 | $z_{\rm cl,form}$ | Redshift of cluster formation |
-| 30 | $R_{\rm gal,0}$ | Initial cluster galactocentric radius ($\rm pc$)|
-| 26 | $M_{\rm cl}$ | Final cluster mass ($M_\odot$) |
-| 27 | $r_{\rm h}$ | Final half-mass radius ($\rm pc$) |
-| 30 | $R_{\rm gal}$ | Final cluster galactocentric radius ($\rm pc$)|
+| 26 | $h_1$ | Number of previous TDEs the primary has undergone |
+| 27 | $h_2$ | Number of previous TDEs the secondary has undergone |
+| 28 | $M_{\rm cl,0}$ | Initial cluster mass ($M_\odot$) |
+| 29 | $r_{\rm h,0}$ | Initial half-mass radius ($\rm pc$) |
+| 30 | $Z$ | Metallicity |
+| 31 | $z_{\rm cl,form}$ | Redshift of cluster formation |
+| 32 | $R_{\rm gal,0}$ | Initial cluster galactocentric radius ($\rm pc$)|
+| 33 | $M_{\rm cl}$ | Final cluster mass ($M_\odot$) |
+| 34 | $r_{\rm h}$ | Final half-mass radius ($\rm pc$) |
+| 35 | $R_{\rm gal}$ | Final cluster galactocentric radius ($\rm pc$)|
 
 ##### Note:
 CBC assembly channel (first column of mergers file), the ``-`` sign means BBH was ejected and merged outside the cluster:
@@ -391,8 +393,9 @@ d) Column description of tdes .txt file:
 | 15 | $dm$ | Amount of stellar mass accreted ($M_\odot$) |
 | 16 | $\chi_{\rm new}$ | Post-accretion value of the dimensionless spin parameter |
 | 17 | $v_{\rm rel}$ | Relative velocity between compact object and star at infinity $(\rm km\,s^{-1})$ |
+| 18 | $h_{\rm BH}$ | Number of previous TDEs the compact object has undergone |
 
-e) The outputBHs.pkl file (if exported) contains two arrays, called ``mBH_ini`` and ``mBH_fin``, which provide in $M_\odot$ the masses of all single BHs that are retained at the start and the end of the simulation.
+e) The outputBHs.pkl file (if exported) contains the properties of all BHs in the system at each time step.
 
 <a name="applicationsofthecode"></a>
 ### 7. Applications of the code
@@ -444,6 +447,6 @@ Feel free to contribute. Suggestions and pull requests are welcome :)
 <a name="thanks"></a>
 ### 10. Thank you
 
-Andrea Antonelli, Fabio Antonini, Dany Atallah, Muhsin Aljaf, Vishal Baibhav, Emanuele Berti, Mario Cadelano, Mark Cheung, Roberto Cotesta, Hector Cruz, Giacomo Fragione, Gabriele Franciolini, Rosanna Hagen, Thomas Helfer, Tousif Islam, Veome Kapil, Xiao-Xiao Kou, Kyle Kremer, Iason Krommydas, Miguel Martinez, Akshita Mittal, Luca Reali, Carl Rodriguez, Giada Caneva Santoro, Vladimir Strokov, Newlin Weatherford, Ilaria Usai.
+Andrea Antonelli, Fabio Antonini, Dany Atallah, Muhsin Aljaf, Vishal Baibhav, Emanuele Berti, Mario Cadelano, Mark Cheung, Roberto Cotesta, Hector Cruz, Giacomo Fragione, Gabriele Franciolini, Rosanna Hagen, Thomas Helfer, Tousif Islam, Veome Kapil, Xiao-Xiao Kou, Kyle Kremer, Iason Krommydas, Miguel Martinez, Akshita Mittal, Rosalba Perna, Luca Reali, Carl Rodriguez, Giada Caneva Santoro, Vladimir Strokov, Newlin Weatherford, Ilaria Usai.
 
 
