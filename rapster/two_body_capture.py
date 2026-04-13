@@ -62,6 +62,7 @@ def two_body_capture(seed, t, dt, z, zCl_form, k_2cap, mBH_avg, binaries, mBH, s
         mBH_temp = []
         sBH_temp = []
         gBH_temp = []
+        hBH_temp = []
 
         for i in range(k_2cap):
             

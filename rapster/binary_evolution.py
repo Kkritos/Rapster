@@ -308,7 +308,7 @@ def evolve_BBHs(seed, t, z, dt, zCl_form, binaries, hardening, mergers, mBH, sBH
                         
                         # append triple:
                         triples = np.append(triples, [[a_inner, a_outer, e_inner, e_outer, m0, m1, m2, s0, s1, s2, g0, g1, g2, inclination1, inclination2, t, z,
-                                                       binaries[k_hard][0], binaries[k_hard][1], binaries[k_hard][10], binaries[k_hard][11]]], axis=0)
+                                                       binaries[k_hard][0], binaries[k_hard][1], binaries[k_hard][10], binaries[k_hard][11], h0, h1, h2]], axis=0)
                         
                         N_Triples+=1
                         
