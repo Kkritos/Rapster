@@ -19,15 +19,46 @@
 from .constants import *
 from .functions import *
 
-def p_3bodyBinary(m1, m2, m3):
+def fast_sample_3bodyBinary(mBH, n_samples=1):
     """
-    Joint probability density function for masses m1, m2, and m3 to participate in a three-body interaction.
-    Masses m1 and m2 form the binary, while m3 carries away the required binding energy in the form of heat.
-    The result is not normalized.
+    Fast sampling for using rejection sampling with complexity O(N).
+
+    @in mBH: array of BH masses
+    @in n_samples: number of samples (m1, m2, m3)
     """
     
-    return (m1*m2)**(4)*m3**(5/2)/(m1+m2)**(1/2)/(m1+m2+m3)**(1/2)
-p_3bodyBinary = np.vectorize(p_3bodyBinary)
+    # Pre-calculate proposal weights
+    # m1 and m2 are dominated by m^4
+    weights_binary = mBH**4
+    p_binary = weights_binary / weights_binary.sum()
+    
+    # m3 is dominated by m^2.5
+    weights_third = mBH**2.5
+    p_third = weights_third / weights_third.sum()
+    
+    # Define the 'Interaction' term for the rejection criteria
+    # Since (m1+m2)^-0.5 and (m1+m2+m3)^-0.5 are DECREASING functions,
+    # the maximum value occurs at the smallest possible masses.
+    min_m = np.min(mBH)
+    max_interaction_val = (min_m + min_m)**(-0.5) * (min_m + min_m + min_m)**(-0.5)
+    
+    results = []
+    while len(results) < n_samples:
+        # Sample candidates
+        # We need 3 unique indices
+        indices = np.random.choice(len(mBH), size=3, replace=False)
+        m1, m2 = mBH[indices[0]], mBH[indices[1]]
+        m3 = mBH[indices[2]]
+        
+        # Calculate the interaction/correction factor
+        # P_actual / P_proposal_separable
+        interaction_val = (m1 + m2)**(-0.5) * (m1 + m2 + m3)**(-0.5)
+        
+        # Accept/Reject
+        if np.random.rand() < (interaction_val / max_interaction_val):
+            results.append((m1, m2, m3))
+            
+    return results[0] if n_samples == 1 else results
 
 def three_body_binary(t, z, k_3bb, mBH_avg, binaries, mBH, sBH, gBH, hBH, vBH, N_3bb, N_BBH, random_pairing=False):
     """
@@ -57,13 +88,9 @@ def three_body_binary(t, z, k_3bb, mBH_avg, binaries, mBH, sBH, gBH, hBH, vBH, N
             # sample masses that form the 3bb:
             if random_pairing:
                 m1, m2 = np.random.choice(mBH, size=2, replace=False)
+                m3 = mBH_avg
             else:
-                p1 = np.array([p_3bodyBinary(m_1, mBH[mBH!=m_1], np.mean(mBH)).sum() for m_1 in mBH]) # marginalized probability
-                p1 /= p1.sum() # normalize margninalized probability
-                m1 = np.random.choice(mBH, size=1, replace=False, p=p1)[0] # sample first mass
-                p2 = p_3bodyBinary(m1, mBH[mBH!=m1], np.mean(mBH)) # conditional probability
-                p2 /= p2.sum() # normalize conditional probability
-                m2 = np.random.choice(mBH[mBH!=m1], size=1, replace=False, p=p2)[0] # sample second mass
+                m1, m2, m3 = fast_sample_3bodyBinary(mBH, n_samples=1)
             
             # find index locations of the sampled BHs:
             k1 = np.squeeze(np.where(mBH==m1))+0
@@ -78,7 +105,7 @@ def three_body_binary(t, z, k_3bb, mBH_avg, binaries, mBH, sBH, gBH, hBH, vBH, N
             eta = sample_hardness()
             
             # semimajor axis:
-            sma = G_Newton * m1 * m2 / eta / mBH_avg / vBH**2
+            sma = G_Newton * m1 * m2 / eta / m3 / vBH**2
             
             # eccentricity (thermal):
             eccen = np.sqrt(np.random.rand())
