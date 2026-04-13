@@ -1,5 +1,5 @@
 INITIALIZING...
-END OF INITIALIZATION. RUNTIME: 0.202 s
+END OF INITIALIZATION. RUNTIME: 0.198 s
 
 
 SIMULATING...
@@ -12,7 +12,7 @@ Iteration # 1
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
      0     0         0    0         0           0
   steptime[ms] runtime[s]
-           0.3      0.000
+           0.2      0.000
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -22,7 +22,7 @@ Iteration # 2
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
      0     0         0    0         0           0
   steptime[ms] runtime[s]
-           0.2      0.005
+           0.2      0.006
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -32,7 +32,7 @@ Iteration # 3
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
      0     0         0    0         0           0
   steptime[ms] runtime[s]
-           0.2      0.009
+           0.2      0.010
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -42,7 +42,7 @@ Iteration # 4
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
      0     0         0    0         0           0
   steptime[ms] runtime[s]
-           0.2      0.013
+           0.2      0.014
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -52,7 +52,7 @@ Iteration # 5
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
      0     0         0    0         0           0
   steptime[ms] runtime[s]
-           0.2      0.017
+           0.2      0.018
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -92,7 +92,7 @@ Iteration # 9
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
      0     0         0    0         0           0
   steptime[ms] runtime[s]
-           0.2      0.032
+           0.2      0.033
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -102,7 +102,7 @@ Iteration # 10
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
      0     0         0    0         0           0
   steptime[ms] runtime[s]
-           0.2      0.036
+           0.2      0.037
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -112,7 +112,7 @@ Iteration # 11
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
      0     0         0    0         0           0
   steptime[ms] runtime[s]
-           0.2      0.040
+           0.2      0.041
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -122,7 +122,7 @@ Iteration # 12
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
      0     0         0    0         0           0
   steptime[ms] runtime[s]
-           0.2      0.044
+           0.2      0.045
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -262,7 +262,7 @@ Iteration # 26
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
      0     0         0    0         0           0
   steptime[ms] runtime[s]
-           0.2      0.098
+           0.2      0.099
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -312,7 +312,7 @@ Iteration # 31
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
      0     0         0    0         0           0
   steptime[ms] runtime[s]
-           0.2      0.117
+           0.2      0.118
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -362,7 +362,7 @@ Iteration # 36
    N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
    1044     0         0    0         0           0
   steptime[ms] runtime[s]
-           0.3      0.137
+           0.2      0.136
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -372,7 +372,7 @@ Iteration # 37
    N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
    1044     0         0    0         0           1
   steptime[ms] runtime[s]
-           9.5      0.151
+           9.2      0.149
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -382,7 +382,7 @@ Iteration # 38
    N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
    1044     0         0    0         0           1
   steptime[ms] runtime[s]
-           0.3      0.155
+           0.2      0.154
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -392,7 +392,7 @@ Iteration # 39
    N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
    1044     0         0    0         0           2
   steptime[ms] runtime[s]
-           2.4      0.162
+           2.4      0.160
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -402,7 +402,7 @@ Iteration # 40
    N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
    1044     0         0    0         0           2
   steptime[ms] runtime[s]
-           0.2      0.166
+           0.2      0.164
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -412,7 +412,7 @@ Iteration # 41
    N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
    1044     0         0    0         0           2
   steptime[ms] runtime[s]
-           0.2      0.169
+           0.2      0.168
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -422,7 +422,7 @@ Iteration # 42
    N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
    1044     0         0    0         0           2
   steptime[ms] runtime[s]
-           0.2      0.173
+           0.2      0.171
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -432,7 +432,7 @@ Iteration # 43
    N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
    1044     0         0    0         0           2
   steptime[ms] runtime[s]
-           0.2      0.177
+           0.2      0.175
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -442,7 +442,7 @@ Iteration # 44
    N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
    1044     0         0    0         0           2
   steptime[ms] runtime[s]
-           0.2      0.181
+           0.2      0.179
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -452,7 +452,7 @@ Iteration # 45
    N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
    1044     0         0    0         0           2
   steptime[ms] runtime[s]
-           0.2      0.185
+           0.2      0.183
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -462,7 +462,7 @@ Iteration # 46
    N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
    1044     0         0    0         0           2
   steptime[ms] runtime[s]
-           0.2      0.189
+           0.3      0.187
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -472,7 +472,7 @@ Iteration # 47
    N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
    1044     0         0    0         0           2
   steptime[ms] runtime[s]
-           0.2      0.193
+           0.2      0.191
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -482,7 +482,7 @@ Iteration # 48
    N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
    1044     0         0    0         0           2
   steptime[ms] runtime[s]
-           0.2      0.197
+           0.2      0.195
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -492,7 +492,7 @@ Iteration # 49
    N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
    1044     0         0    0         0           2
   steptime[ms] runtime[s]
-           0.2      0.201
+           0.2      0.199
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -502,7 +502,7 @@ Iteration # 50
    N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
    1044     0         0    0         0           2
   steptime[ms] runtime[s]
-           0.2      0.205
+           0.2      0.203
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -512,7 +512,7 @@ Iteration # 51
    N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
    1044     0         0    0         0           2
   steptime[ms] runtime[s]
-           0.2      0.209
+           0.2      0.207
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -522,7 +522,7 @@ Iteration # 52
    N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
    1044     0         0    0         0           2
   steptime[ms] runtime[s]
-           0.2      0.213
+           0.2      0.211
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -532,7 +532,7 @@ Iteration # 53
    N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
    1044     0         0    0         0           2
   steptime[ms] runtime[s]
-           0.2      0.217
+           0.2      0.215
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -542,7 +542,7 @@ Iteration # 54
    N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
    1044     0         0    0         0           2
   steptime[ms] runtime[s]
-           0.2      0.220
+           0.2      0.218
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -552,7 +552,7 @@ Iteration # 55
    N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
    1044     0         0    0         0           2
   steptime[ms] runtime[s]
-           0.3      0.225
+           0.3      0.223
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -560,9 +560,9 @@ Iteration # 56
   t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
     9.79    4.29  2.99       0.51   1.14       8.00
    N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   1044     3         0    0         0           4
+   1044     1         0    0         0           5
   steptime[ms] runtime[s]
-         827.6      1.056
+           8.0      0.234
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -570,9 +570,9 @@ Iteration # 57
   t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
    14.73    4.93  2.98       0.50   1.20       8.00
    N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   1041     2         0    0         0           7
+   1044     1         0    0         0           6
   steptime[ms] runtime[s]
-           8.3      1.068
+           4.8      0.243
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -580,9 +580,9 @@ Iteration # 58
   t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
    20.15    5.42  2.97       0.48   1.24       8.00
    N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   1039     2         0    0         0           7
+   1039     1         0    0         0           8
   steptime[ms] runtime[s]
-           1.8      1.074
+           6.8      0.253
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -590,3602 +590,3472 @@ Iteration # 59
   t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
    20.25    0.10  2.97       0.48   1.24       8.00
    N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   1038     1         0    0         0           7
+   1039     1         0    0         0           8
   steptime[ms] runtime[s]
-           0.7      1.078
+           0.6      0.258
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 60
   t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   25.78    5.53  2.97       0.47   1.28       8.00
+   25.77    5.52  2.97       0.47   1.28       8.00
    N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   1032     0         0    0         0          12
+   1039     2         0    0         0           9
   steptime[ms] runtime[s]
-          10.8      1.093
+           5.7      0.268
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 61
   t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   31.62    5.84  2.96       0.46   1.32       8.00
+   25.87    0.10  2.97       0.47   1.28       8.00
    N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   1032     0         0    0         0          12
+   1039     2         0    0         0           9
   steptime[ms] runtime[s]
-           0.6      1.097
+           0.6      0.272
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 62
   t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   31.72    0.10  2.96       0.46   1.32       8.00
+   31.62    5.75  2.96       0.46   1.32       8.00
    N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   1032     0         0    0         0          12
+   1033     2         0    1         0           9
   steptime[ms] runtime[s]
-           0.5      1.101
+           4.1      0.280
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 63
   t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   37.68    5.96  2.95       0.46   1.35       8.00
+   37.65    6.03  2.95       0.46   1.35       8.00
    N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   1027     1         0    0         0          12
+   1030     2         0    2         0          10
   steptime[ms] runtime[s]
-         401.4      1.506
+           3.5      0.287
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 64
   t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   37.78    0.10  2.95       0.46   1.35       8.00
+   37.75    0.10  2.95       0.46   1.35       8.00
    N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   1026     1         0    0         0          12
+   1030     2         0    2         0          10
   steptime[ms] runtime[s]
-           0.6      1.511
+           0.6      0.292
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 65
   t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   43.93    6.15  2.95       0.45   1.39       8.00
+   43.90    6.15  2.95       0.45   1.39       8.00
    N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   1025     1         0    0         0          14
+   1027     1         0    2         0          10
   steptime[ms] runtime[s]
-           4.8      1.519
+           1.6      0.297
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 66
   t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   44.03    0.10  2.95       0.45   1.39       8.00
+   50.30    6.40  2.94       0.45   1.42       8.00
    N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   1025     1         0    0         0          14
+   1022     1         0    2         0          11
   steptime[ms] runtime[s]
-           0.5      1.523
+           3.4      0.304
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 67
   t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   50.37    6.34  2.94       0.44   1.42       8.00
+   50.40    0.10  2.94       0.44   1.42       8.00
    N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   1025     1         0    0         0          16
+   1022     1         0    2         0          11
   steptime[ms] runtime[s]
-         397.8      1.925
+           0.5      0.308
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 68
   t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   50.47    0.10  2.94       0.44   1.42       8.00
+   56.92    6.52  2.93       0.44   1.45       8.00
    N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   1024     1         0    0         0          16
+   1019     1         0    3         0          13
   steptime[ms] runtime[s]
-           0.6      1.929
+           5.6      0.318
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 69
   t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   57.01    6.54  2.93       0.44   1.45       8.00
+   63.68    6.76  2.92       0.44   1.48       8.00
    N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   1019     0         0    1         0          18
+   1019     0         0    3         0          13
   steptime[ms] runtime[s]
-           4.7      1.938
+           0.4      0.322
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 70
   t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   63.78    6.77  2.92       0.44   1.48       8.00
+   70.63    6.95  2.91       0.43   1.51       8.00
    N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   1016     1         0    1         0          19
+   1019     1         0    3         0          13
   steptime[ms] runtime[s]
-         781.1      2.722
+           2.5      0.328
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 71
   t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   63.88    0.10  2.92       0.44   1.48       8.00
+   70.73    0.10  2.91       0.43   1.51       8.00
    N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   1015     1         0    1         0          19
+   1019     1         0    3         0          13
   steptime[ms] runtime[s]
-           0.6      2.727
+           0.6      0.333
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 72
   t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   70.77    6.90  2.91       0.43   1.51       8.00
-  N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   999     2         0    2         0          19
+   77.82    7.09  2.91       0.43   1.54       8.00
+   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
+   1017     2         0    4         0          15
   steptime[ms] runtime[s]
-        1150.2      3.881
+           8.0      0.344
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 73
   t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   77.88    7.10  2.90       0.43   1.54       8.00
-  N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   993     3         0    2         0          19
+   85.14    7.32  2.90       0.42   1.57       8.00
+   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
+   1008     1         0    4         0          17
   steptime[ms] runtime[s]
-           2.6      3.887
+           8.0      0.356
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 74
   t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   85.16    7.28  2.90       0.42   1.57       8.00
-  N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   980     0         0    4         0          19
+   85.24    0.10  2.90       0.42   1.57       8.00
+   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
+   1008     1         0    4         0          17
   steptime[ms] runtime[s]
-           1.9      3.893
+           0.5      0.361
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 75
   t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   85.26    0.10  2.90       0.42   1.57       8.00
+   92.69    7.44  2.89       0.42   1.60       8.00
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   980     0         0    4         0          19
+   996     2         0    4         0          18
   steptime[ms] runtime[s]
-           0.5      3.897
+           6.6      0.371
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 76
-  t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   92.64    7.38  2.89       0.42   1.60       8.00
+   t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
+   100.33    7.65  2.88       0.42   1.63       8.00
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   978     1         0    4         0          20
+   993     1         0    5         0          18
   steptime[ms] runtime[s]
-         365.9      4.266
+           1.1      0.376
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 77
    t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   100.24    7.60  2.88       0.42   1.62       8.00
+   100.43    0.10  2.88       0.42   1.63       8.00
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   978     1         0    4         0          21
+   993     1         0    5         0          18
   steptime[ms] runtime[s]
-         360.6      4.631
+           0.5      0.380
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 78
    t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   108.02    7.78  2.87       0.41   1.65       8.00
+   108.22    7.79  2.87       0.41   1.66       8.00
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   974     1         0    4         0          21
+   986     0         0    6         0          19
   steptime[ms] runtime[s]
-           0.8      4.636
+           3.0      0.387
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 79
    t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   115.99    7.96  2.86       0.41   1.68       8.00
+   116.22    8.00  2.86       0.41   1.69       8.00
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   973     2         0    4         0          23
+   974     2         0    6         0          19
   steptime[ms] runtime[s]
-        1060.6      5.700
+           4.6      0.395
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 80
    t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   124.13    8.15  2.85       0.41   1.71       8.00
+   124.37    8.16  2.85       0.41   1.71       8.00
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   967     1         0    5         0          24
+   969     2         0    6         0          19
   steptime[ms] runtime[s]
-        1053.7      6.757
+           1.9      0.401
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 81
    t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   124.23    0.10  2.85       0.41   1.71       8.00
+   124.47    0.10  2.85       0.41   1.71       8.00
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   967     1         0    5         0          24
+   969     1         0    6         0          19
   steptime[ms] runtime[s]
-           0.5      6.762
+           0.6      0.405
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 82
    t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   132.52    8.29  2.84       0.41   1.74       8.00
+   132.77    8.30  2.84       0.41   1.74       8.00
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   957     0         0    5         0          25
+   965     1         0    6         0          19
   steptime[ms] runtime[s]
-           3.6      6.769
+           0.8      0.410
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 83
    t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   141.02    8.50  2.83       0.40   1.76       8.00
+   141.31    8.53  2.83       0.40   1.77       8.00
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   957     0         0    5         0          26
+   965     2         0    6         0          19
   steptime[ms] runtime[s]
-           2.6      6.775
+           2.4      0.416
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 84
    t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   141.12    0.10  2.83       0.40   1.76       8.00
+   150.04    8.73  2.82       0.40   1.80       8.00
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   957     0         0    5         0          26
+   961     2         0    6         0          19
   steptime[ms] runtime[s]
-           0.3      6.779
+           3.1      0.423
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 85
    t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   141.22    0.10  2.83       0.40   1.77       8.00
+   150.14    0.10  2.82       0.40   1.80       8.00
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   957     0         0    5         0          26
+   961     2         0    6         0          19
   steptime[ms] runtime[s]
-           0.5      6.783
+           0.7      0.427
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 86
    t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   149.87    8.66  2.82       0.40   1.79       8.00
+   159.02    8.88  2.81       0.40   1.83       8.00
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   955     1         0    5         0          26
+   952     2         0    6         0          20
   steptime[ms] runtime[s]
-         687.1      7.474
+           7.0      0.438
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 87
    t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   158.75    8.88  2.81       0.40   1.82       8.00
+   159.12    0.10  2.81       0.40   1.83       8.00
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   939     1         0    6         0          26
+   952     2         0    6         0          20
   steptime[ms] runtime[s]
-         343.8      7.822
+           1.2      0.443
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 88
    t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   158.85    0.10  2.81       0.40   1.82       8.00
+   168.20    9.08  2.80       0.40   1.86       8.00
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   938     1         0    6         0          26
+   950     2         0    6         0          20
   steptime[ms] runtime[s]
-           0.6      7.826
+           1.5      0.448
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 89
    t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   167.84    8.99  2.80       0.40   1.85       8.00
+   177.51    9.31  2.79       0.39   1.89       8.00
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   937     1         0    6         0          26
+   942     1         0    6         0          20
   steptime[ms] runtime[s]
-         332.9      8.163
+           1.0      0.453
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 90
    t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   177.06    9.22  2.79       0.39   1.88       8.00
+   187.01    9.50  2.78       0.39   1.92       8.00
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   933     0         0    7         0          27
+   934     1         0    7         0          20
   steptime[ms] runtime[s]
-           3.1      8.170
+           3.6      0.460
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 91
    t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   177.16    0.10  2.79       0.39   1.88       8.00
+   187.11    0.10  2.78       0.39   1.92       8.00
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   933     0         0    7         0          27
+   934     1         0    7         0          20
   steptime[ms] runtime[s]
-           0.5      8.174
+           0.5      0.464
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 92
    t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   186.53    9.37  2.78       0.39   1.91       8.00
+   196.75    9.64  2.77       0.39   1.94       8.00
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   933     1         0    7         0          28
+   930     1         0    7         0          20
   steptime[ms] runtime[s]
-         656.1      8.834
+           1.2      0.469
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 93
    t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   196.13    9.60  2.77       0.39   1.93       8.00
+   196.86    0.11  2.77       0.39   1.94       8.00
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   933     1         0    7         0          30
+   930     1         0    7         0          20
   steptime[ms] runtime[s]
-           5.5      8.843
+           0.7      0.473
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 94
    t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   196.23    0.10  2.77       0.39   1.93       8.00
+   206.70    9.84  2.76       0.39   1.97       8.00
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   933     1         0    7         0          30
+   929     2         0    7         0          23
   steptime[ms] runtime[s]
-           0.5      8.847
+           7.9      0.484
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 95
    t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   206.01    9.78  2.76       0.39   1.96       8.00
+   206.80    0.10  2.76       0.39   1.97       8.00
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   928     2         0    7         0          30
+   929     1         0    7         0          23
   steptime[ms] runtime[s]
-         327.9      9.179
+           0.6      0.489
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 96
    t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   216.01   10.00  2.75       0.39   1.99       8.00
+   216.85   10.05  2.75       0.39   2.00       8.00
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   928     2         0    7         0          30
+   928     1         0    7         0          24
   steptime[ms] runtime[s]
-           1.8      9.184
+           2.5      0.495
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 97
    t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   226.21   10.21  2.74       0.38   2.02       8.00
+   227.14   10.29  2.74       0.38   2.03       8.00
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   923     2         0    7         0          31
+   928     3         0    7         0          24
   steptime[ms] runtime[s]
-         645.8      9.834
+           3.8      0.502
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 98
    t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   236.62   10.41  2.73       0.38   2.05       8.00
+   237.66   10.52  2.73       0.38   2.06       8.00
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   923     3         0    7         0          31
+   927     2         0    7         0          24
   steptime[ms] runtime[s]
-         633.9     10.472
+           1.0      0.507
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 99
    t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   247.25   10.63  2.72       0.38   2.08       8.00
+   248.39   10.74  2.71       0.38   2.09       8.00
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   917     3         0    7         0          32
+   922     1         0    7         0          25
   steptime[ms] runtime[s]
-         944.6     11.420
+           3.8      0.514
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 100
    t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   258.08   10.83  2.70       0.38   2.11       8.00
+   259.35   10.96  2.70       0.38   2.12       8.00
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   893     1         0    8         0          32
+   915     2         0    7         0          26
   steptime[ms] runtime[s]
-         316.2     11.740
+           6.0      0.524
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 101
    t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   258.18    0.10  2.70       0.38   2.11       8.00
+   270.53   11.18  2.69       0.38   2.15       8.00
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   892     0         0    9         0          32
+   912     1         0    7         0          26
   steptime[ms] runtime[s]
-           0.6     11.745
+           3.2      0.531
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 102
    t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   269.06   10.87  2.69       0.38   2.14       8.00
+   281.93   11.40  2.68       0.38   2.19       8.00
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   892     1         0    9         0          33
+   912     1         0    7         0          26
   steptime[ms] runtime[s]
-         301.8     12.050
+           1.5      0.536
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 103
    t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   280.18   11.12  2.68       0.38   2.17       8.00
+   293.57   11.64  2.67       0.37   2.22       8.00
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   891     1         0    9         0          33
+   902     1         0    7         0          26
   steptime[ms] runtime[s]
-         299.2     12.354
+           1.8      0.541
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 104
    t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   291.52   11.34  2.67       0.37   2.20       8.00
+   293.67    0.10  2.67       0.37   2.22       8.00
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   883     1         0    9         0          33
+   902     1         0    7         0          26
   steptime[ms] runtime[s]
-           1.6     12.359
+           0.5      0.545
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 105
    t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   291.62    0.10  2.67       0.37   2.20       8.00
+   305.50   11.83  2.66       0.37   2.25       8.00
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   883     1         0    9         0          33
+   898     0         0    8         0          27
   steptime[ms] runtime[s]
-           0.5     12.363
+           2.6      0.552
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 106
    t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   303.12   11.50  2.66       0.37   2.23       8.00
+   317.58   12.09  2.64       0.37   2.28       8.00
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   878     1         0   10         0          33
+   898     1         0    8         0          28
   steptime[ms] runtime[s]
-         583.6     12.950
+           2.7      0.558
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 107
    t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   303.22    0.10  2.66       0.37   2.23       8.00
+   329.92   12.33  2.63       0.37   2.31       8.00
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   878     1         0   10         0          33
+   895     2         0    8         0          28
   steptime[ms] runtime[s]
-           0.6     12.970
+           4.4      0.581
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 108
    t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   314.93   11.71  2.65       0.37   2.26       8.00
+   330.18    0.26  2.63       0.37   2.31       8.00
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   878     1         0   10         0          33
+   895     2         0    8         0          28
   steptime[ms] runtime[s]
-         290.3     13.264
+           0.6      0.586
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 109
    t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   315.03    0.10  2.65       0.37   2.26       8.00
+   342.72   12.54  2.62       0.37   2.34       8.00
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   878     1         0   10         0          33
+   895     1         0    8         0          28
   steptime[ms] runtime[s]
-           0.6     13.268
+           0.8      0.590
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 110
    t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   326.97   11.94  2.63       0.37   2.29       8.00
+   342.82    0.10  2.62       0.37   2.34       8.00
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   866     2         0   10         0          33
+   895     1         0    8         0          28
   steptime[ms] runtime[s]
-         292.1     13.564
+           0.5      0.594
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 111
    t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   327.07    0.10  2.63       0.37   2.29       8.00
+   355.61   12.80  2.61       0.37   2.38       8.00
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   863     1         0   11         0          33
+   892     0         0    8         0          29
   steptime[ms] runtime[s]
-           0.7     13.569
+           2.5      0.600
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 112
    t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   339.17   12.10  2.62       0.37   2.32       8.00
+   368.73   13.11  2.59       0.36   2.41       8.00
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   850     3         0   11         0          33
+   888     1         0    8         0          29
   steptime[ms] runtime[s]
-        1109.2     14.681
+           3.0      0.607
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 113
    t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   351.49   12.32  2.61       0.37   2.35       8.00
+   382.10   13.37  2.58       0.36   2.44       8.00
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   842     0         0   11         0          33
+   883     1         0    9         0          29
   steptime[ms] runtime[s]
-           1.7     14.687
+        4485.5      5.096
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 114
    t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   364.00   12.51  2.60       0.36   2.38       8.00
+   395.68   13.59  2.57       0.36   2.48       8.00
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   842     0         0   11         0          33
+   877     1         0    9         0          29
   steptime[ms] runtime[s]
-           0.6     14.691
+           2.7      5.103
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 115
    t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   364.10    0.10  2.60       0.36   2.38       8.00
+   409.50   13.82  2.55       0.36   2.51       8.00
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   842     0         0   11         0          33
+   871     2         0    9         0          29
   steptime[ms] runtime[s]
-           0.5     14.695
+           3.6      5.110
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 116
    t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   376.81   12.71  2.59       0.36   2.40       8.00
+   409.65    0.15  2.55       0.36   2.51       8.00
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   842     0         0   11         0          34
+   871     2         0    9         0          29
   steptime[ms] runtime[s]
-           2.3     14.701
+           1.1      5.115
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 117
    t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   389.78   12.97  2.57       0.36   2.43       8.00
+   423.68   14.03  2.54       0.36   2.54       8.00
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   842     0         0   11         0          34
+   867     1         0    9         0          30
   steptime[ms] runtime[s]
-           0.3     14.705
+           2.8      5.121
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 118
    t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   402.99   13.21  2.56       0.36   2.46       8.00
+   438.04   14.37  2.53       0.36   2.58       8.00
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   842     1         0   11         0          35
+   867     1         0    9         0          31
   steptime[ms] runtime[s]
-         538.1     15.247
+           3.5      5.128
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 119
    t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   416.43   13.45  2.55       0.36   2.49       8.00
+   452.69   14.65  2.51       0.35   2.61       8.00
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   842     1         0   11         0          36
+   860     2         0    9         0          32
   steptime[ms] runtime[s]
-         269.0     15.520
+           5.7      5.138
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 120
    t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   430.13   13.69  2.54       0.36   2.53       8.00
+   452.79    0.10  2.51       0.35   2.61       8.00
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   831     1         0   11         0          36
+   860     2         0    9         0          32
   steptime[ms] runtime[s]
-           2.0     15.526
+           0.6      5.142
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 121
    t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   431.18    1.05  2.53       0.36   2.53       8.00
+   467.68   14.89  2.50       0.35   2.64       8.00
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   831     2         0   11         0          36
+   851     0         0    9         0          32
   steptime[ms] runtime[s]
-           1.2     15.530
+           1.0      5.147
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 122
    t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   445.06   13.88  2.52       0.36   2.56       8.00
+   482.86   15.17  2.49       0.35   2.68       8.00
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   825     1         0   11         0          36
+   851     0         0    9         0          32
   steptime[ms] runtime[s]
-           1.8     15.536
+           0.3      5.150
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 123
    t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   459.24   14.17  2.51       0.35   2.59       8.00
+   498.32   15.46  2.47       0.35   2.71       8.00
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   818     1         0   12         0          36
+   851     1         0    9         0          32
   steptime[ms] runtime[s]
-           1.8     15.542
+           2.2      5.156
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 124
    t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   473.81   14.57  2.50       0.35   2.62       8.00
+   514.08   15.76  2.46       0.35   2.75       7.99
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   818     1         0   12         0          36
+   850     2         0    9         0          33
   steptime[ms] runtime[s]
-         252.0     15.797
+           3.6      5.163
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 125
    t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   473.91    0.10  2.50       0.35   2.62       8.00
+   530.16   16.07  2.45       0.35   2.78       7.99
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   818     1         0   12         0          36
+   849     3         0    9         0          33
   steptime[ms] runtime[s]
-           0.6     15.802
+           2.9      5.170
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 126
    t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   488.71   14.80  2.48       0.35   2.65       8.00
+   546.53   16.38  2.43       0.35   2.82       7.99
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   818     1         0   12         0          36
+   841     1         0   10         0          33
   steptime[ms] runtime[s]
-         252.2     16.057
+        3950.8      9.124
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 127
    t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   503.81   15.10  2.47       0.35   2.68       7.99
+   563.14   16.61  2.42       0.34   2.86       7.99
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   812     1         0   12         0          36
+   841     1         0   10         0          33
   steptime[ms] runtime[s]
-           1.0     16.062
+           2.0      9.130
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 128
    t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   519.14   15.33  2.45       0.35   2.72       7.99
+   563.24    0.10  2.42       0.34   2.86       7.99
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   796     2         0   12         0          37
+   841     1         0   10         0          33
   steptime[ms] runtime[s]
-         253.4     16.319
+           0.5      9.135
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 129
    t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   534.68   15.54  2.44       0.35   2.75       7.99
+   580.14   16.89  2.40       0.34   2.89       7.99
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   791     0         0   12         0          37
+   841     1         0   10         0          33
   steptime[ms] runtime[s]
-           0.7     16.324
+           0.9      9.139
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 130
    t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   550.46   15.78  2.43       0.35   2.78       7.99
+   597.39   17.25  2.39       0.34   2.93       7.99
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   791     1         0   12         0          38
+   831     1         0   10         0          33
   steptime[ms] runtime[s]
-         239.4     16.567
+           1.3      9.144
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 131
    t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   566.51   16.05  2.41       0.35   2.81       7.99
+   614.91   17.53  2.37       0.34   2.97       7.99
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   791     2         0   12         0          38
+   827     0         0   11         0          33
   steptime[ms] runtime[s]
-           1.6     16.572
+           2.0      9.150
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 132
    t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   582.83   16.32  2.40       0.34   2.84       7.99
+   632.75   17.84  2.36       0.34   3.00       7.99
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   785     2         0   12         0          38
+   827     2         0   11         0          34
   steptime[ms] runtime[s]
-         469.5     17.046
+           6.7      9.160
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 133
    t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   599.42   16.59  2.39       0.34   2.87       7.99
+   650.92   18.17  2.34       0.34   3.04       7.99
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   777     1         0   12         0          38
+   819     2         0   11         0          36
   steptime[ms] runtime[s]
-           3.6     17.054
+           6.8      9.171
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 134
    t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   616.28   16.86  2.37       0.34   2.91       7.99
+   651.12    0.19  2.34       0.34   3.04       7.99
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   766     1         0   12         0          38
+   819     2         0   11         0          36
   steptime[ms] runtime[s]
-         229.3     17.287
+           0.4      9.175
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 135
    t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   633.37   17.10  2.36       0.34   2.94       7.99
+   651.31    0.19  2.34       0.34   3.04       7.99
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   754     1         0   12         0          38
+   819     2         0   11         0          36
   steptime[ms] runtime[s]
-         223.7     17.514
+           0.7      9.179
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 136
    t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   633.47    0.10  2.36       0.34   2.94       7.99
+   669.74   18.44  2.33       0.34   3.08       7.99
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   754     1         0   12         0          38
+   812     1         0   11         0          36
   steptime[ms] runtime[s]
-           0.3     17.518
+           2.4      9.185
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 137
    t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   633.57    0.10  2.36       0.34   2.94       7.99
+   688.51   18.77  2.31       0.34   3.12       7.99
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   754     1         0   12         0          38
+   804     0         0   11         0          36
   steptime[ms] runtime[s]
-           0.5     17.522
+           0.9      9.190
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 138
    t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   650.88   17.31  2.34       0.34   2.97       7.99
+   707.57   19.06  2.30       0.33   3.15       7.99
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   745     2         0   12         0          38
+   796     2         0   11         0          37
   steptime[ms] runtime[s]
-         216.5     17.742
+           7.9      9.201
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 139
    t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   650.98    0.10  2.34       0.34   2.97       7.99
+   726.97   19.40  2.28       0.33   3.19       7.99
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   745     2         0   12         0          38
+   793     2         0   11         0          37
   steptime[ms] runtime[s]
-           0.6     17.747
+           1.9      9.207
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 140
    t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   668.53   17.55  2.33       0.34   3.00       7.99
+   746.68   19.71  2.27       0.33   3.23       7.99
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   744     1         0   13         0          38
+   784     1         0   11         0          37
   steptime[ms] runtime[s]
-         208.8     17.959
+           1.5      9.212
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 141
    t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   668.63    0.10  2.33       0.34   3.00       7.99
+   746.82    0.14  2.27       0.33   3.23       7.99
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   744     1         0   13         0          38
+   783     1         0   11         0          37
   steptime[ms] runtime[s]
-           0.3     17.963
+           0.4      9.216
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 142
    t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   668.73    0.10  2.33       0.34   3.00       7.99
+   746.96    0.14  2.27       0.33   3.23       7.99
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   744     1         0   13         0          38
+   783     1         0   11         0          37
   steptime[ms] runtime[s]
-           0.3     17.967
+           1.1      9.221
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 143
    t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   668.83    0.10  2.33       0.34   3.00       7.99
+   766.92   19.96  2.25       0.33   3.27       7.99
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   744     1         0   13         0          38
+   777     0         0   11         0          37
   steptime[ms] runtime[s]
-           0.5     17.971
+           0.7      9.225
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 144
    t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   686.41   17.58  2.32       0.34   3.03       7.99
+   787.20   20.28  2.24       0.33   3.31       7.99
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   743     1         0   13         0          38
+   777     0         0   11         0          37
   steptime[ms] runtime[s]
-         211.7     18.187
+           0.3      9.229
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 145
    t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   704.30   17.88  2.30       0.34   3.07       7.99
+   807.83   20.63  2.22       0.33   3.34       7.99
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   741     1         0   13         0          38
+   777     1         0   11         0          37
   steptime[ms] runtime[s]
-         211.2     18.402
+           1.8      9.234
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 146
    t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   722.43   18.14  2.29       0.33   3.10       7.99
+   828.81   20.98  2.21       0.33   3.38       7.99
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   735     3         0   13         0          39
+   768     1         0   11         0          37
   steptime[ms] runtime[s]
-         624.7     19.030
+           2.8      9.241
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 147
    t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   740.83   18.40  2.27       0.33   3.13       7.99
+   850.08   21.27  2.19       0.33   3.42       7.99
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   731     2         0   13         0          39
+   764     0         0   12         0          38
   steptime[ms] runtime[s]
-         602.4     19.637
+           3.0      9.247
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 148
    t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   740.97    0.14  2.27       0.33   3.13       7.99
+   850.31    0.23  2.19       0.33   3.42       7.99
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   730     2         0   13         0          39
+   764     0         0   12         0          38
   steptime[ms] runtime[s]
-           0.8     19.641
+           0.6      9.252
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 149
    t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   759.59   18.62  2.26       0.33   3.16       7.99
+   871.87   21.57  2.17       0.32   3.46       7.99
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   726     2         0   13         0          39
+   764     0         0   12         0          38
   steptime[ms] runtime[s]
-         399.5     20.045
+           0.2      9.255
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 150
    t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   778.52   18.93  2.24       0.33   3.19       7.99
+   893.84   21.96  2.16       0.32   3.50       7.99
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   722     2         0   13         0          39
+   764     0         0   12         0          38
   steptime[ms] runtime[s]
-           0.8     20.049
+           0.3      9.259
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 151
    t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   797.71   19.19  2.23       0.33   3.22       7.99
+   916.17   22.33  2.14       0.32   3.53       7.99
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   715     1         0   13         0          39
+   764     1         0   12         0          38
   steptime[ms] runtime[s]
-         197.3     20.250
+           2.6      9.265
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 152
    t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   817.12   19.41  2.21       0.33   3.26       7.99
+   938.87   22.71  2.13       0.32   3.57       7.99
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   709     1         0   13         0          39
+   763     1         0   12         0          38
   steptime[ms] runtime[s]
-         193.5     20.448
+           1.3      9.270
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 153
    t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   837.10   19.99  2.20       0.33   3.29       7.99
+   961.94   23.07  2.11       0.32   3.61       7.99
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   709     1         0   13         0          39
+   756     1         0   12         0          39
   steptime[ms] runtime[s]
-         378.7     20.830
+           4.4      9.278
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 154
    t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   857.38   20.28  2.19       0.33   3.32       7.99
+   985.33   23.39  2.10       0.32   3.65       7.99
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   709     1         0   13         0          40
+   751     2         0   12         0          39
   steptime[ms] runtime[s]
-           2.4     20.836
+           3.6      9.286
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 155
-   t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   877.96   20.58  2.17       0.33   3.35       7.99
+    t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
+   1009.09   23.76  2.08       0.32   3.69       7.99
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   698     1         0   13         0          40
+   744     2         0   12         0          40
   steptime[ms] runtime[s]
-           1.4     20.842
+           3.5      9.293
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 156
-   t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   898.73   20.77  2.16       0.32   3.39       7.99
+    t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
+   1033.16   24.06  2.06       0.32   3.73       7.99
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   687     1         0   13         0          40
+   741     1         0   12         0          40
   steptime[ms] runtime[s]
-         552.8     21.398
+           0.8      9.297
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 157
-   t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   919.70   20.97  2.14       0.32   3.42       7.99
+    t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
+   1057.58   24.43  2.05       0.32   3.77       7.99
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   681     2         0   13         0          40
+   739     0         0   12         0          41
   steptime[ms] runtime[s]
-         357.1     21.759
+           2.4      9.303
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 158
-   t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   919.80    0.10  2.14       0.32   3.42       7.99
+    t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
+   1082.43   24.85  2.03       0.31   3.81       7.99
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   681     2         0   13         0          40
+   739     0         0   12         0          41
   steptime[ms] runtime[s]
-           0.7     21.764
+           0.3      9.307
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 159
-   t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   941.03   21.23  2.13       0.32   3.45       7.99
+    t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
+   1107.68   25.25  2.02       0.31   3.85       7.99
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   681     1         0   13         0          41
+   739     0         0   12         0          41
   steptime[ms] runtime[s]
-           3.6     21.771
+           0.3      9.311
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 160
-   t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   962.59   21.56  2.11       0.32   3.48       7.99
+    t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
+   1133.33   25.65  2.00       0.31   3.89       7.99
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   681     1         0   13         0          41
+   738     3         0   12         0          41
   steptime[ms] runtime[s]
-         177.4     21.952
+           4.6      9.319
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 161
-   t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   984.44   21.86  2.10       0.32   3.51       7.99
+    t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
+   1159.38   26.05  1.98       0.31   3.93       7.99
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   681     1         0   13         0          41
+   730     2         0   12         0          41
   steptime[ms] runtime[s]
-         176.5     22.133
+           2.5      9.325
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 162
     t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   1006.61   22.16  2.08       0.32   3.55       7.99
+   1159.49    0.10  1.98       0.31   3.93       7.99
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   676     1         0   13         0          41
+   730     2         0   12         0          41
   steptime[ms] runtime[s]
-         177.6     22.314
+           0.4      9.329
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 163
     t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   1029.10   22.49  2.07       0.32   3.58       7.99
+   1159.59    0.10  1.98       0.31   3.93       7.99
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   675     1         0   13         0          41
+   730     2         0   12         0          41
   steptime[ms] runtime[s]
-           0.4     22.318
+           1.2      9.334
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 164
     t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   1051.89   22.80  2.05       0.32   3.61       7.99
+   1185.94   26.35  1.97       0.31   3.98       7.99
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   672     0         0   13         0          41
+   724     1         0   13         0          41
   steptime[ms] runtime[s]
-           0.4     22.322
+           1.3      9.339
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 165
     t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   1075.00   23.11  2.04       0.32   3.65       7.99
+   1186.14    0.20  1.97       0.31   3.98       7.99
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   672     0         0   13         0          41
+   724     1         0   13         0          41
   steptime[ms] runtime[s]
-           0.3     22.326
+           0.3      9.343
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 166
     t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   1098.43   23.43  2.02       0.32   3.68       7.99
+   1186.35    0.20  1.97       0.31   3.98       7.99
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   666     1         0   13         0          41
+   724     1         0   13         0          41
   steptime[ms] runtime[s]
-         175.0     22.505
+           0.6      9.347
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 167
     t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   1098.57    0.14  2.02       0.32   3.68       7.99
+   1213.07   26.72  1.95       0.31   4.02       7.99
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   666     1         0   13         0          41
+   720     1         0   14         0          41
   steptime[ms] runtime[s]
-           0.5     22.509
+           3.5      9.354
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 168
     t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   1122.27   23.70  2.01       0.32   3.71       7.99
+   1239.79   26.72  1.93       0.31   4.06       7.99
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   659     2         0   13         0          41
+   712     1         0   14         0          41
   steptime[ms] runtime[s]
-         170.0     22.683
+           1.3      9.359
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 169
     t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   1146.29   24.02  1.99       0.31   3.75       7.99
+   1266.88   27.10  1.92       0.31   4.10       7.99
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   649     0         0   14         0          41
+   706     1         0   14         0          41
   steptime[ms] runtime[s]
-         489.9     23.176
+           0.9      9.364
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 170
     t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   1170.65   24.36  1.98       0.31   3.78       7.99
+   1294.37   27.49  1.90       0.31   4.14       7.99
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   649     0         0   14         0          41
+   704     2         0   15         0          41
   steptime[ms] runtime[s]
-           0.3     23.180
+        2437.2     11.805
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 171
     t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   1195.33   24.68  1.96       0.31   3.81       7.99
+   1321.84   27.46  1.89       0.30   4.18       7.99
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   645     1         0   14         0          41
+   704     2         0   15         0          41
   steptime[ms] runtime[s]
-         163.4     23.347
+           1.8     11.810
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 172
     t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   1220.28   24.95  1.95       0.31   3.85       7.99
+   1349.71   27.87  1.87       0.30   4.22       7.99
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   637     2         0   14         0          41
+   693     2         0   15         0          41
   steptime[ms] runtime[s]
-         161.6     23.513
+           2.8     11.817
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 173
     t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   1245.46   25.18  1.93       0.31   3.88       7.99
+   1378.03   28.32  1.86       0.30   4.26       7.99
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   626     1         0   15         0          41
+   689     1         0   16         0          41
   steptime[ms] runtime[s]
-         308.8     23.826
+        1155.6     12.976
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 174
     t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   1270.93   25.47  1.92       0.31   3.91       7.99
+   1406.69   28.66  1.84       0.30   4.30       7.99
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   626     1         0   15         0          42
+   686     2         0   16         0          41
   steptime[ms] runtime[s]
-         301.2     24.130
+           1.7     12.982
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 175
     t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   1296.73   25.80  1.90       0.31   3.95       7.99
+   1435.75   29.06  1.82       0.30   4.35       7.99
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   624     0         0   16         0          42
+   684     4         0   16         0          42
   steptime[ms] runtime[s]
-           0.5     24.135
+           5.2     12.990
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 176
     t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   1322.48   25.75  1.89       0.31   3.98       7.99
+   1465.21   29.46  1.81       0.30   4.39       7.99
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   622     1         0   16         0          42
+   678     3         0   16         0          43
   steptime[ms] runtime[s]
-         151.3     24.290
+           4.5     12.999
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 177
     t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   1348.53   26.05  1.87       0.31   4.01       7.99
+   1494.99   29.78  1.79       0.30   4.43       7.99
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   616     2         0   16         0          42
+   671     2         0   16         0          43
   steptime[ms] runtime[s]
-         149.7     24.443
+           1.0     13.003
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 178
     t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   1348.90    0.37  1.87       0.31   4.01       7.99
+   1525.11   30.12  1.78       0.30   4.47       7.99
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   616     2         0   16         0          42
+   668     2         0   16         0          43
   steptime[ms] runtime[s]
-           0.6     24.448
+           1.0     13.008
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 179
     t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   1349.27    0.37  1.87       0.31   4.01       7.99
+   1555.60   30.49  1.76       0.30   4.51       7.99
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   616     2         0   16         0          42
+   663     2         0   16         0          43
   steptime[ms] runtime[s]
-           0.6     24.452
+           3.6     13.015
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 180
     t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   1375.55   26.28  1.86       0.31   4.05       7.99
+   1586.45   30.84  1.74       0.30   4.55       7.99
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   607     0         0   16         0          42
+   659     1         0   16         0          43
   steptime[ms] runtime[s]
-           1.1     24.456
+           2.3     13.021
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 181
     t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   1402.07   26.52  1.84       0.31   4.08       7.99
+   1617.68   31.23  1.73       0.29   4.59       7.99
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   603     1         0   16         0          42
+   656     2         0   16         0          43
   steptime[ms] runtime[s]
-         284.7     24.745
+           1.6     13.026
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 182
     t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   1428.88   26.81  1.83       0.30   4.11       7.99
+   1649.33   31.65  1.71       0.29   4.63       7.99
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   599     1         0   16         0          42
+   653     2         0   16         0          44
   steptime[ms] runtime[s]
-         141.5     24.890
+           4.2     13.034
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 183
     t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   1455.95   27.07  1.81       0.30   4.14       7.99
+   1681.42   32.08  1.70       0.29   4.68       7.99
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   598     1         0   16         0          42
+   652     2         0   16         0          44
   steptime[ms] runtime[s]
-         140.1     25.034
+           1.2     13.039
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 184
     t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   1483.34   27.39  1.80       0.30   4.18       7.99
+   1713.92   32.51  1.68       0.29   4.72       7.99
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   598     1         0   16         0          42
+   651     2         0   16         0          44
   steptime[ms] runtime[s]
-         137.3     25.176
+           1.2     13.044
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 185
     t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   1511.06   27.72  1.78       0.30   4.21       7.99
+   1746.85   32.92  1.67       0.29   4.76       7.99
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   596     1         0   16         0          42
+   649     2         0   16         0          44
   steptime[ms] runtime[s]
-         136.8     25.316
+           1.1     13.048
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 186
     t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   1539.08   28.02  1.77       0.30   4.24       7.99
+   1747.01    0.16  1.67       0.29   4.76       7.99
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   593     1         0   16         0          42
+   649     2         0   16         0          44
   steptime[ms] runtime[s]
-         269.0     25.589
+           0.4     13.052
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 187
     t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   1567.36   28.28  1.75       0.30   4.28       7.99
+   1747.17    0.16  1.67       0.29   4.76       7.99
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   590     2         0   16         0          42
+   649     2         0   16         0          44
   steptime[ms] runtime[s]
-         267.9     25.861
+           0.6     13.056
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 188
     t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   1595.94   28.58  1.74       0.30   4.31       7.99
+   1780.45   33.28  1.65       0.29   4.80       7.98
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   584     2         0   17         0          42
+   645     1         0   16         0          44
   steptime[ms] runtime[s]
-        1075.0     26.940
+           0.5     13.060
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 189
     t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   1624.81   28.87  1.73       0.30   4.34       7.99
+   1814.80   34.35  1.63       0.29   4.84       7.98
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   578     1         0   17         0          42
+   636     1         0   16         0          45
   steptime[ms] runtime[s]
-           1.0     26.945
+           5.2     13.069
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 190
     t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   1653.90   29.10  1.71       0.30   4.38       7.99
+   1815.19    0.39  1.63       0.29   4.85       7.98
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   577     2         0   17         0          42
+   636     2         0   16         0          45
   steptime[ms] runtime[s]
-         127.7     27.076
+           0.8     13.074
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 191
     t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   1683.31   29.41  1.70       0.30   4.41       7.99
+   1849.82   34.63  1.62       0.29   4.89       7.98
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   570     1         0   17         0          42
+   631     1         0   16         0          45
   steptime[ms] runtime[s]
-         127.6     27.208
+           1.9     13.079
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 192
     t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   1713.04   29.73  1.68       0.30   4.44       7.99
+   1885.60   35.78  1.60       0.29   4.93       7.98
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   568     1         0   17         0          42
+   631     2         0   16         0          45
   steptime[ms] runtime[s]
-           0.6     27.212
+           1.4     13.084
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 193
     t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   1743.05   30.01  1.67       0.30   4.47       7.99
+   1921.86   36.26  1.59       0.29   4.97       7.98
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   567     2         0   17         0          42
+   628     1         0   16         0          45
   steptime[ms] runtime[s]
-         244.7     27.460
+           0.8     13.089
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 194
     t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   1773.37   30.32  1.65       0.29   4.51       7.98
+   1958.58   36.72  1.57       0.29   5.02       7.98
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   563     2         0   18         0          42
+   623     1         0   16         0          45
   steptime[ms] runtime[s]
-        1142.8     28.607
+           1.3     13.094
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 195
     t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   1803.98   30.61  1.64       0.29   4.54       7.98
+   1995.77   37.19  1.55       0.28   5.06       7.98
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   558     2         0   18         0          42
+   620     2         0   16         0          45
   steptime[ms] runtime[s]
-         122.8     28.734
+           2.1     13.100
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 196
     t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   1834.84   30.85  1.63       0.29   4.57       7.98
+   2033.42   37.65  1.54       0.28   5.10       7.98
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   551     1         0   19         0          42
+   618     3         0   16         0          45
   steptime[ms] runtime[s]
-           0.9     28.739
+           1.4     13.105
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 197
     t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   1865.92   31.09  1.61       0.29   4.61       7.98
+   2071.53   38.11  1.52       0.28   5.15       7.98
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   551     2         0   19         0          42
+   613     3         0   16         0          45
   steptime[ms] runtime[s]
-         120.1     28.862
+           2.1     13.110
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 198
     t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   1897.35   31.42  1.60       0.29   4.64       7.98
+   2110.03   38.50  1.51       0.28   5.19       7.98
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   548     2         0   19         0          42
+   611     2         0   16         0          45
   steptime[ms] runtime[s]
-         232.5     29.099
+           1.6     13.116
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 199
     t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   1929.07   31.72  1.58       0.29   4.67       7.98
+   2149.02   38.98  1.49       0.28   5.23       7.98
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   532     1         0   19         0          42
+   605     2         0   16         0          45
   steptime[ms] runtime[s]
-         119.5     29.222
+           2.6     13.122
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 200
     t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   1960.84   31.77  1.57       0.29   4.70       7.98
+   2188.43   39.41  1.47       0.28   5.28       7.98
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   530     1         0   19         0          42
+   602     3         0   16         0          45
   steptime[ms] runtime[s]
-           0.9     29.227
+           2.2     13.128
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 201
     t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   1961.58    0.74  1.57       0.29   4.71       7.98
+   2228.25   39.82  1.46       0.28   5.32       7.98
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   530     1         0   19         0          42
+   599     2         0   16         0          45
   steptime[ms] runtime[s]
-           0.5     29.231
+           0.6     13.132
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 202
     t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   1993.59   32.01  1.55       0.29   4.74       7.98
+   2268.52   40.27  1.44       0.28   5.36       7.98
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   529     1         0   19         0          42
+   594     2         0   16         0          46
   steptime[ms] runtime[s]
-         109.9     29.344
+           4.0     13.140
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 203
     t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   2025.93   32.34  1.54       0.29   4.77       7.98
+   2309.18   40.65  1.43       0.28   5.41       7.98
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   523     1         0   19         0          42
+   589     3         0   17         0          46
   steptime[ms] runtime[s]
-           0.9     29.349
+        1372.6     14.516
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 204
     t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   2058.55   32.62  1.53       0.29   4.80       7.98
+   2349.38   40.20  1.41       0.28   5.45       7.98
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   522     2         0   19         0          42
+   581     3         0   17         0          46
   steptime[ms] runtime[s]
-         313.9     29.666
+           3.7     14.523
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 205
     t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   2091.48   32.92  1.51       0.29   4.83       7.98
+   2349.87    0.50  1.41       0.28   5.45       7.98
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   517     1         0   19         0          42
+   581     3         0   17         0          46
   steptime[ms] runtime[s]
-           2.7     29.673
+           0.7     14.528
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 206
     t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   2124.73   33.25  1.50       0.29   4.86       7.98
+   2390.43   40.55  1.40       0.28   5.49       7.98
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   514     0         0   20         0          42
+   572     2         0   17         0          46
   steptime[ms] runtime[s]
-         851.7     30.528
+           3.3     14.535
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 207
     t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   2159.04   34.31  1.49       0.29   4.90       7.98
+   2431.34   40.91  1.38       0.27   5.53       7.98
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   509     2         0   20         0          42
+   572     1         0   17         0          47
   steptime[ms] runtime[s]
-         104.4     30.637
+           3.6     14.542
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 208
     t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   2193.60   34.57  1.47       0.28   4.93       7.98
+   2472.72   41.39  1.37       0.27   5.57       7.98
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   503     4         0   20         0          43
+   564     1         0   17         0          47
   steptime[ms] runtime[s]
-         584.3     31.225
+           2.2     14.548
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 209
     t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   2228.35   34.74  1.46       0.28   4.96       7.98
+   2514.40   41.68  1.35       0.27   5.62       7.98
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   500     3         0   20         0          43
+   557     1         0   17         0          47
   steptime[ms] runtime[s]
-           2.6     31.232
+           3.9     14.555
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 210
     t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   2228.71    0.36  1.46       0.28   4.96       7.98
+   2514.78    0.37  1.35       0.27   5.62       7.98
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   500     3         0   20         0          43
+   557     1         0   17         0          47
   steptime[ms] runtime[s]
-           0.6     31.236
+           0.3     14.559
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 211
     t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   2263.71   35.00  1.44       0.28   4.99       7.98
+   2515.15    0.37  1.35       0.27   5.62       7.98
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   491     1         0   20         0          43
+   557     1         0   17         0          47
   steptime[ms] runtime[s]
-           1.5     31.241
+           0.5     14.563
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 212
     t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   2298.96   35.26  1.43       0.28   5.02       7.98
+   2558.23   43.08  1.34       0.27   5.66       7.98
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   488     0         0   20         0          43
+   556     1         0   17         0          47
   steptime[ms] runtime[s]
-           0.4     31.245
+           0.4     14.567
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 213
     t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   2334.45   35.49  1.42       0.28   5.05       7.98
+   2601.82   43.59  1.32       0.27   5.70       7.98
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   488     1         0   20         0          43
+   556     1         0   17         0          47
   steptime[ms] runtime[s]
-          93.1     31.342
+           0.7     14.571
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 214
     t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   2370.28   35.82  1.40       0.28   5.09       7.98
+   2602.50    0.69  1.32       0.27   5.70       7.98
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   483     1         0   20         0          43
+   555     1         0   17         0          47
   steptime[ms] runtime[s]
-           1.0     31.347
+           0.4     14.575
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 215
     t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   2406.37   36.10  1.39       0.28   5.12       7.98
+   2603.19    0.69  1.32       0.27   5.70       7.98
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   480     1         0   20         0          43
+   555     1         0   17         0          47
   steptime[ms] runtime[s]
-          91.5     31.442
+           0.3     14.579
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 216
     t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   2442.76   36.39  1.38       0.28   5.15       7.98
+   2603.88    0.69  1.32       0.27   5.70       7.98
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   477     1         0   20         0          43
+   554     1         0   17         0          47
   steptime[ms] runtime[s]
-           0.6     31.447
+           1.4     14.584
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 217
     t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   2479.45   36.68  1.36       0.28   5.18       7.98
+   2647.92   44.04  1.31       0.27   5.74       7.98
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   474     1         0   20         0          43
+   549     0         0   18         0          47
   steptime[ms] runtime[s]
-           0.6     31.451
+           0.9     14.589
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 218
     t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   2516.44   36.99  1.35       0.28   5.21       7.98
+   2692.35   44.44  1.29       0.27   5.78       7.98
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   470     0         0   20         0          43
+   549     2         0   18         0          47
   steptime[ms] runtime[s]
-           0.5     31.455
+           3.2     14.596
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 219
     t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   2553.74   37.30  1.34       0.28   5.24       7.98
+   2737.28   44.93  1.28       0.27   5.83       7.98
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   461     1         0   20         0          43
+   549     1         0   18         0          47
   steptime[ms] runtime[s]
-          87.9     31.546
+           1.2     14.600
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 220
     t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   2591.18   37.44  1.33       0.28   5.27       7.98
+   2782.72   45.43  1.26       0.27   5.87       7.98
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   454     2         0   20         0          43
+   549     1         0   18         0          47
   steptime[ms] runtime[s]
-          83.9     31.634
+           0.4     14.604
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 221
     t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   2628.84   37.66  1.31       0.28   5.30       7.98
+   2828.65   45.94  1.25       0.27   5.91       7.98
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   451     2         0   20         0          43
+   545     1         0   18         0          47
   steptime[ms] runtime[s]
-          81.2     31.719
+           0.7     14.609
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 222
     t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   2666.77   37.93  1.30       0.28   5.33       7.98
+   2875.13   46.47  1.23       0.27   5.95       7.98
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   447     3         0   20         0          43
+   541     1         0   18         0          47
   steptime[ms] runtime[s]
-         155.1     31.878
+           1.6     14.614
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 223
     t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   2667.17    0.41  1.30       0.28   5.33       7.98
+   2921.98   46.86  1.22       0.27   5.99       7.98
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   447     3         0   20         0          43
+   541     1         0   18         0          47
   steptime[ms] runtime[s]
-           0.6     31.883
+           2.3     14.620
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 224
     t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   2705.27   38.10  1.29       0.28   5.36       7.98
+   2969.35   47.37  1.20       0.26   6.04       7.98
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   442     3         0   21         0          43
+   538     2         0   18         0          47
   steptime[ms] runtime[s]
-         150.7     32.037
+           2.6     14.626
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 225
     t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   2743.76   38.49  1.27       0.27   5.39       7.98
+   2970.09    0.74  1.20       0.26   6.04       7.98
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   440     2         0   21         0          43
+   538     2         0   18         0          47
   steptime[ms] runtime[s]
-           1.3     32.042
+           0.6     14.630
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 226
     t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   2782.53   38.77  1.26       0.27   5.42       7.98
+   3017.93   47.85  1.19       0.26   6.08       7.98
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   436     2         0   21         0          43
+   533     2         0   18         0          47
   steptime[ms] runtime[s]
-          75.7     32.122
+           3.0     14.637
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 227
     t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   2821.55   39.02  1.25       0.27   5.45       7.98
+   3066.24   48.30  1.17       0.26   6.12       7.98
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   433     2         0   21         0          43
+   530     1         0   18         0          47
   steptime[ms] runtime[s]
-           0.7     32.126
+           1.6     14.642
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 228
     t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   2860.81   39.26  1.24       0.27   5.48       7.98
+   3066.52    0.28  1.17       0.26   6.12       7.98
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   433     2         0   21         0          43
+   530     1         0   18         0          47
   steptime[ms] runtime[s]
-          72.4     32.202
+           0.5     14.646
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 229
     t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   2900.38   39.58  1.22       0.27   5.51       7.98
+   3115.24   48.72  1.16       0.26   6.16       7.98
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   430     1         0   21         0          43
+   527     2         0   18         0          47
   steptime[ms] runtime[s]
-         143.2     32.349
+           3.0     14.653
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 230
     t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   2940.16   39.77  1.21       0.27   5.54       7.98
+   3164.51   49.27  1.14       0.26   6.20       7.98
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   428     1         0   21         0          43
+   527     2         0   18         0          47
   steptime[ms] runtime[s]
-           0.5     32.354
+           1.5     14.658
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 231
     t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   2980.23   40.08  1.20       0.27   5.57       7.98
+   3165.45    0.95  1.14       0.26   6.20       7.98
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   428     1         0   21         0          43
+   527     2         0   18         0          47
   steptime[ms] runtime[s]
-           0.3     32.357
+           0.6     14.662
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 232
     t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   3020.64   40.40  1.19       0.27   5.59       7.98
+   3215.20   49.74  1.13       0.26   6.25       7.97
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   428     1         0   21         0          43
+   520     2         0   18         0          47
   steptime[ms] runtime[s]
-          71.8     32.433
+           2.4     14.668
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 233
     t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   3061.36   40.73  1.17       0.27   5.62       7.98
+   3265.20   50.00  1.12       0.26   6.29       7.97
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   425     0         0   21         0          43
+   518     3         0   18         0          47
   steptime[ms] runtime[s]
-           0.4     32.437
+           2.7     14.674
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 234
     t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   3102.33   40.97  1.16       0.27   5.65       7.98
+   3315.20   50.00  1.10       0.26   6.33       7.97
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   422     1         0   21         0          43
+   514     3         0   18         0          47
   steptime[ms] runtime[s]
-          71.7     32.512
+           1.1     14.679
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 235
     t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   3143.60   41.26  1.15       0.27   5.68       7.98
+   3365.20   50.00  1.09       0.26   6.37       7.97
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   421     1         0   21         0          43
+   510     2         0   18         0          47
   steptime[ms] runtime[s]
-           0.4     32.517
+           1.5     14.684
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 236
     t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   3185.21   41.61  1.14       0.27   5.71       7.97
+   3415.20   50.00  1.08       0.26   6.41       7.97
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   414     2         0   21         0          44
+   507     1         0   18         0          47
   steptime[ms] runtime[s]
-          72.8     32.593
+           1.2     14.689
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 237
     t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   3226.99   41.78  1.13       0.27   5.74       7.97
+   3465.20   50.00  1.06       0.26   6.45       7.97
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   410     2         0   21         0          44
+   503     0         0   18         0          47
   steptime[ms] runtime[s]
-          67.6     32.664
+           0.5     14.693
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 238
     t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   3269.11   42.12  1.12       0.27   5.77       7.97
+   3515.20   50.00  1.05       0.26   6.49       7.97
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   403     1         0   21         0          44
+   503     1         0   18         0          47
   steptime[ms] runtime[s]
-          66.4     32.735
+           1.0     14.698
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 239
     t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   3311.36   42.25  1.10       0.27   5.80       7.97
+   3565.20   50.00  1.04       0.26   6.53       7.97
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   401     2         0   21         0          44
+   503     1         0   18         0          47
   steptime[ms] runtime[s]
-         187.3     32.926
+           1.5     14.703
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 240
     t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   3353.83   42.47  1.09       0.27   5.83       7.97
+   3565.66    0.46  1.04       0.26   6.53       7.97
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   397     2         0   21         0          44
+   503     1         0   18         0          47
   steptime[ms] runtime[s]
-         123.8     33.053
+           0.5     14.707
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 241
     t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   3396.66   42.83  1.08       0.27   5.86       7.97
+   3615.66   50.00  1.02       0.25   6.57       7.97
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   397     1         0   21         0          44
+   500     1         0   18         0          47
   steptime[ms] runtime[s]
-           0.9     33.058
+           2.1     14.713
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 242
     t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   3439.81   43.15  1.07       0.26   5.88       7.97
+   3665.66   50.00  1.01       0.25   6.61       7.97
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   397     1         0   21         0          44
+   493     2         0   18         0          47
   steptime[ms] runtime[s]
-          61.9     33.124
+           2.5     14.719
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 243
     t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   3483.28   43.47  1.06       0.26   5.91       7.97
+   3715.66   50.00  1.00       0.25   6.65       7.97
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   397     1         0   21         0          44
+   489     1         0   18         0          47
   steptime[ms] runtime[s]
-          61.9     33.189
+           0.8     14.723
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 244
     t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   3527.06   43.79  1.05       0.26   5.94       7.97
+   3765.66   50.00  0.99       0.25   6.68       7.97
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   396     2         0   21         0          44
+   488     1         0   18         0          47
   steptime[ms] runtime[s]
-         121.7     33.315
+           0.4     14.727
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 245
     t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   3571.12   44.06  1.03       0.26   5.97       7.97
+   3815.66   50.00  0.97       0.25   6.72       7.97
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   396     2         0   21         0          44
+   486     2         0   18         0          47
   steptime[ms] runtime[s]
-          61.0     33.380
+           1.9     14.733
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 246
     t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   3615.51   44.38  1.02       0.26   6.00       7.97
+   3865.66   50.00  0.96       0.25   6.76       7.97
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   392     1         0   21         0          45
+   477     0         0   18         0          47
   steptime[ms] runtime[s]
-          63.5     33.447
+           1.2     14.738
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 247
     t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   3660.34   44.83  1.01       0.26   6.03       7.97
+   3866.73    1.08  0.96       0.25   6.76       7.97
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   392     1         0   21         0          45
+   477     1         0   18         0          47
   steptime[ms] runtime[s]
-           0.4     33.451
+           1.5     14.743
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 248
     t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   3705.50   45.16  1.00       0.26   6.05       7.97
+   3916.73   50.00  0.95       0.25   6.79       7.97
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   389     0         0   21         0          45
+   475     0         0   19         0          48
   steptime[ms] runtime[s]
-           0.4     33.455
+         304.3     15.051
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 249
     t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   3750.97   45.47  0.99       0.26   6.08       7.97
+   3966.73   50.00  0.94       0.25   6.83       7.97
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   389     1         0   21         0          45
+   475     0         0   19         0          48
   steptime[ms] runtime[s]
-         177.1     33.636
+           0.3     15.055
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 250
     t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   3796.77   45.80  0.98       0.26   6.11       7.97
+   4016.73   50.00  0.93       0.25   6.86       7.97
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   387     1         0   21         0          45
+   475     0         0   19         0          48
   steptime[ms] runtime[s]
-           0.7     33.640
+           0.3     15.059
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 251
     t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   3842.87   46.10  0.97       0.26   6.14       7.97
+   4066.73   50.00  0.92       0.25   6.90       7.97
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   384     1         0   21         0          45
+   475     0         0   19         0          48
   steptime[ms] runtime[s]
-          59.6     33.704
+           0.3     15.062
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 252
     t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   3889.28   46.41  0.96       0.26   6.17       7.97
+   4116.73   50.00  0.90       0.25   6.94       7.97
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   384     1         0   21         0          45
+   475     0         0   19         0          48
   steptime[ms] runtime[s]
-          58.8     33.766
+           0.2     15.066
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 253
     t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   3936.02   46.74  0.95       0.26   6.20       7.97
+   4166.73   50.00  0.89       0.25   6.97       7.97
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   380     1         0   21         0          45
+   475     0         0   19         0          48
   steptime[ms] runtime[s]
-           0.7     33.771
+           0.2     15.070
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 254
     t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   3983.05   47.02  0.93       0.26   6.22       7.97
+   4216.73   50.00  0.88       0.25   7.00       7.97
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   377     0         0   21         0          45
+   475     0         0   19         0          48
   steptime[ms] runtime[s]
-           0.4     33.775
+           0.2     15.074
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 255
     t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   4030.48   47.43  0.92       0.26   6.25       7.97
+   4266.73   50.00  0.87       0.25   7.04       7.97
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   377     1         0   21         0          45
+   474     1         0   19         0          48
   steptime[ms] runtime[s]
-          56.9     33.835
+           2.2     15.079
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 256
     t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   4078.24   47.76  0.91       0.26   6.28       7.97
+   4316.73   50.00  0.86       0.25   7.07       7.97
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   377     1         0   21         0          45
+   464     1         0   19         0          48
   steptime[ms] runtime[s]
-          56.1     33.895
+           2.1     15.085
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 257
     t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   4126.34   48.10  0.90       0.26   6.31       7.97
+   4366.73   50.00  0.85       0.24   7.11       7.97
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   371     2         0   21         0          45
+   462     2         0   19         0          48
   steptime[ms] runtime[s]
-          56.9     33.956
+           1.8     15.091
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 258
     t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   4174.80   48.46  0.89       0.26   6.34       7.97
+   4416.73   50.00  0.84       0.24   7.14       7.97
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   370     3         0   21         0          45
+   462     2         0   19         0          48
   steptime[ms] runtime[s]
-         106.4     34.066
+           1.7     15.096
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 259
     t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   4223.59   48.80  0.88       0.26   6.37       7.97
+   4466.73   50.00  0.83       0.24   7.17       7.97
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   367     3         0   21         0          45
+   462     1         0   19         0          48
   steptime[ms] runtime[s]
-           0.9     34.071
+           1.6     15.101
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 260
     t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   4272.58   48.98  0.87       0.25   6.39       7.97
+   4516.73   50.00  0.82       0.24   7.21       7.97
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   360     3         0   21         0          45
+   460     1         0   19         0          48
   steptime[ms] runtime[s]
-           1.4     34.076
+           0.5     15.105
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 261
     t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   4321.59   49.01  0.86       0.25   6.42       7.97
+   4566.73   50.00  0.81       0.24   7.24       7.97
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   357     1         0   21         0          45
+   457     2         0   19         0          48
   steptime[ms] runtime[s]
-          51.6     34.131
+           2.3     15.111
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 262
     t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   4370.75   49.16  0.85       0.25   6.45       7.97
+   4616.73   50.00  0.80       0.24   7.27       7.97
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   357     1         0   21         0          45
+   455     2         0   19         0          48
   steptime[ms] runtime[s]
-           0.3     34.135
+           0.6     15.115
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 263
     t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   4420.23   49.48  0.84       0.25   6.48       7.97
+   4666.73   50.00  0.79       0.24   7.30       7.97
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   354     1         0   21         0          45
+   450     2         0   19         0          48
   steptime[ms] runtime[s]
-           1.0     34.140
+           2.1     15.121
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 264
     t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   4420.66    0.43  0.84       0.25   6.48       7.97
+   4716.73   50.00  0.78       0.24   7.34       7.97
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   354     1         0   21         0          45
+   445     0         0   20         0          48
   steptime[ms] runtime[s]
-           0.5     34.144
+           2.0     15.127
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 265
     t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   4470.28   49.62  0.83       0.25   6.50       7.97
+   4766.73   50.00  0.77       0.24   7.37       7.97
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   354     1         0   21         0          45
+   443     1         0   20         0          48
   steptime[ms] runtime[s]
-          49.5     34.197
+           2.0     15.132
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 266
     t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   4520.27   49.98  0.82       0.25   6.53       7.97
+   4816.73   50.00  0.76       0.24   7.40       7.96
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   353     0         0   22         0          45
+   443     1         0   20         0          48
   steptime[ms] runtime[s]
-           0.4     34.201
+           0.3     15.136
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 267
     t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   4568.87   48.60  0.81       0.25   6.56       7.97
+   4866.73   50.00  0.75       0.24   7.43       7.96
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   353     2         0   22         0          45
+   439     1         0   21         0          48
   steptime[ms] runtime[s]
-         195.6     34.400
+           1.9     15.142
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 268
     t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   4617.77   48.91  0.80       0.25   6.59       7.97
+   4916.73   50.00  0.74       0.24   7.46       7.96
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   352     1         0   22         0          45
+   439     1         0   21         0          48
   steptime[ms] runtime[s]
-          97.1     34.501
+           0.4     15.146
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 269
     t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   4667.01   49.24  0.79       0.25   6.61       7.97
+   4966.73   50.00  0.73       0.24   7.49       7.96
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   352     1         0   22         0          45
+   439     1         0   21         0          48
   steptime[ms] runtime[s]
-          50.6     34.556
+           0.4     15.149
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 270
     t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   4716.55   49.55  0.78       0.25   6.64       7.96
+   5016.73   50.00  0.72       0.24   7.52       7.96
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   343     1         0   22         0          46
+   438     1         0   21         0          48
   steptime[ms] runtime[s]
-           3.4     34.563
+           0.6     15.154
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 271
     t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   4765.89   49.33  0.77       0.25   6.66       7.96
+   5066.73   50.00  0.72       0.24   7.55       7.96
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   343     1         0   22         0          46
+   437     2         0   21         0          48
   steptime[ms] runtime[s]
-          92.9     34.659
+           3.6     15.161
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 272
     t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   4815.52   49.63  0.76       0.25   6.69       7.96
+   5116.73   50.00  0.71       0.24   7.58       7.96
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   341     2         0   22         0          46
+   433     1         0   21         0          48
   steptime[ms] runtime[s]
-          92.0     34.755
+           1.3     15.166
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 273
     t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   4865.30   49.78  0.75       0.25   6.72       7.96
+   5166.73   50.00  0.70       0.24   7.61       7.96
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   336     2         0   22         0          46
+   430     0         0   21         0          48
   steptime[ms] runtime[s]
-          46.2     34.805
+           0.4     15.170
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 274
     t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   4915.04   49.73  0.74       0.25   6.74       7.96
+   5216.73   50.00  0.69       0.24   7.64       7.96
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   334     0         0   23         0          46
+   430     1         0   21         0          48
   steptime[ms] runtime[s]
-         180.3     34.989
+           1.5     15.175
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 275
     t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   4965.04   50.00  0.73       0.25   6.77       7.96
+   5266.73   50.00  0.68       0.23   7.67       7.96
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   330     1         0   23         0          46
+   429     1         0   21         0          48
   steptime[ms] runtime[s]
-          46.2     35.039
+           0.5     15.179
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 276
     t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   5015.04   50.00  0.72       0.25   6.79       7.96
+   5316.73   50.00  0.67       0.23   7.70       7.96
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   328     1         0   23         0          46
+   429     1         0   21         0          48
   steptime[ms] runtime[s]
-          44.1     35.087
+           0.3     15.183
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 277
     t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   5065.04   50.00  0.72       0.25   6.82       7.96
+   5366.73   50.00  0.66       0.23   7.73       7.96
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   327     2         0   23         0          46
+   425     1         0   21         0          48
   steptime[ms] runtime[s]
-          42.9     35.134
+           0.7     15.187
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 278
     t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   5115.04   50.00  0.71       0.25   6.84       7.96
+   5416.73   50.00  0.66       0.23   7.75       7.96
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   324     2         0   23         0          46
+   422     2         0   21         0          48
   steptime[ms] runtime[s]
-         124.1     35.262
+           1.2     15.192
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 279
     t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   5165.04   50.00  0.70       0.25   6.87       7.96
+   5466.73   50.00  0.65       0.23   7.78       7.96
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   323     1         0   23         0          46
+   420     2         0   21         0          48
   steptime[ms] runtime[s]
-           1.3     35.267
+           0.6     15.196
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 280
     t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   5215.04   50.00  0.69       0.25   6.89       7.96
+   5516.73   50.00  0.64       0.23   7.81       7.96
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   323     1         0   23         0          46
+   420     2         0   21         0          48
   steptime[ms] runtime[s]
-          83.1     35.354
+           1.3     15.201
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 281
     t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   5265.04   50.00  0.68       0.25   6.91       7.96
+   5566.73   50.00  0.63       0.23   7.84       7.96
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   323     1         0   23         0          46
+   420     2         0   21         0          48
   steptime[ms] runtime[s]
-           0.7     35.358
+           1.6     15.206
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 282
     t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   5267.15    2.11  0.68       0.25   6.91       7.96
+   5616.73   50.00  0.62       0.23   7.87       7.96
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   323     1         0   23         0          46
+   420     2         0   21         0          48
   steptime[ms] runtime[s]
-           0.3     35.362
+           0.7     15.210
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 283
     t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   5269.26    2.11  0.68       0.25   6.92       7.96
+   5666.73   50.00  0.61       0.23   7.90       7.96
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   323     1         0   23         0          46
+   417     2         0   21         0          48
   steptime[ms] runtime[s]
-           0.5     35.366
+           1.0     15.215
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 284
     t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   5319.26   50.00  0.67       0.24   6.94       7.96
+   5716.73   50.00  0.61       0.23   7.92       7.96
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   323     1         0   23         0          46
+   414     0         0   21         0          48
   steptime[ms] runtime[s]
-          41.9     35.412
+           0.5     15.219
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 285
     t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   5369.26   50.00  0.66       0.24   6.96       7.96
+   5766.73   50.00  0.60       0.23   7.95       7.96
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   320     0         0   23         0          46
+   400     1         0   21         0          48
   steptime[ms] runtime[s]
-           0.4     35.416
+           4.7     15.227
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 286
     t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   5419.26   50.00  0.65       0.24   6.99       7.96
+   5816.73   50.00  0.59       0.23   7.98       7.96
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   320     1         0   23         0          46
+   396     2         0   21         0          48
   steptime[ms] runtime[s]
-          81.6     35.501
+           2.5     15.233
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 287
     t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   5469.26   50.00  0.65       0.24   7.01       7.96
+   5866.73   50.00  0.58       0.23   8.00       7.96
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   320     2         0   23         0          46
+   393     2         0   21         0          48
   steptime[ms] runtime[s]
-          42.2     35.547
+           0.8     15.238
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 288
     t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   5519.26   50.00  0.64       0.24   7.03       7.96
+   5916.73   50.00  0.58       0.23   8.03       7.96
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   317     2         0   23         0          46
+   393     2         0   21         0          48
   steptime[ms] runtime[s]
-          41.6     35.592
+           2.0     15.243
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 289
     t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   5569.26   50.00  0.63       0.24   7.06       7.96
+   5966.73   50.00  0.57       0.23   8.05       7.96
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   317     1         0   23         0          47
+   388     2         0   21         0          48
   steptime[ms] runtime[s]
-           2.5     35.599
+           1.0     15.248
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 290
     t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   5619.26   50.00  0.62       0.24   7.08       7.96
+   6016.73   50.00  0.56       0.23   8.08       7.96
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   315     2         0   23         0          47
+   382     2         0   21         0          48
   steptime[ms] runtime[s]
-         117.2     35.720
+           0.9     15.252
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 291
     t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   5669.26   50.00  0.61       0.24   7.10       7.96
+   6066.73   50.00  0.55       0.23   8.10       7.96
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   306     1         0   23         0          47
+   378     1         0   21         0          48
   steptime[ms] runtime[s]
-           1.5     35.725
+           1.3     15.257
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 292
     t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   5719.26   50.00  0.61       0.24   7.12       7.96
+   6116.73   50.00  0.55       0.23   8.13       7.96
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   303     2         0   23         0          47
+   375     1         0   21         0          48
   steptime[ms] runtime[s]
-          38.6     35.767
+           0.6     15.261
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 293
     t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   5769.26   50.00  0.60       0.24   7.15       7.96
+   6166.73   50.00  0.54       0.23   8.15       7.96
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   301     2         0   23         0          47
+   372     1         0   21         0          48
   steptime[ms] runtime[s]
-           0.6     35.772
+           2.7     15.268
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 294
     t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   5819.26   50.00  0.59       0.24   7.17       7.96
+   6216.73   50.00  0.53       0.23   8.18       7.96
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   300     2         0   23         0          47
+   369     0         0   21         0          48
   steptime[ms] runtime[s]
-          36.9     35.812
+           0.4     15.272
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 295
     t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   5820.99    1.72  0.59       0.24   7.17       7.96
+   6266.73   50.00  0.53       0.22   8.20       7.96
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   300     2         0   23         0          47
+   369     1         0   21         0          48
   steptime[ms] runtime[s]
-           0.5     35.816
+           1.3     15.277
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 296
     t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   5822.71    1.72  0.59       0.24   7.17       7.96
+   6316.73   50.00  0.52       0.22   8.22       7.96
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   300     2         0   23         0          47
+   367     1         0   21         0          48
   steptime[ms] runtime[s]
-           1.3     35.821
+           0.8     15.281
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 297
     t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   5872.71   50.00  0.58       0.24   7.19       7.96
+   6366.73   50.00  0.51       0.22   8.25       7.96
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   298     2         0   23         0          47
+   364     1         0   21         0          48
   steptime[ms] runtime[s]
-           0.6     35.826
+           0.6     15.285
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 298
     t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   5922.71   50.00  0.58       0.24   7.21       7.96
+   6416.73   50.00  0.50       0.22   8.27       7.96
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   298     2         0   23         0          47
+   362     2         0   21         0          48
   steptime[ms] runtime[s]
-         104.5     35.934
+           1.3     15.290
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 299
     t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   5972.71   50.00  0.57       0.24   7.24       7.96
+   6466.73   50.00  0.50       0.22   8.29       7.96
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   295     3         0   23         0          47
+   362     1         0   21         0          48
   steptime[ms] runtime[s]
-          69.6     36.007
+           1.0     15.295
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 300
     t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   6022.71   50.00  0.56       0.24   7.26       7.96
+   6516.73   50.00  0.49       0.22   8.32       7.95
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   295     3         0   23         0          47
+   361     2         0   21         0          48
   steptime[ms] runtime[s]
-          68.3     36.079
+           0.8     15.299
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 301
     t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   6072.71   50.00  0.55       0.24   7.28       7.96
+   6566.73   50.00  0.48       0.22   8.34       7.95
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   294     2         0   23         0          47
+   361     2         0   21         0          48
   steptime[ms] runtime[s]
-           1.7     36.085
+           1.3     15.304
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 302
     t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   6122.71   50.00  0.55       0.24   7.30       7.96
+   6616.73   50.00  0.48       0.22   8.36       7.95
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   290     1         0   23         0          47
+   361     3         0   21         0          48
   steptime[ms] runtime[s]
-           0.6     36.089
+           3.5     15.311
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 303
     t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   6172.71   50.00  0.54       0.24   7.32       7.96
+   6666.73   50.00  0.47       0.22   8.38       7.95
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   288     2         0   23         0          47
+   361     3         0   21         0          48
   steptime[ms] runtime[s]
-          35.2     36.128
+           0.6     15.315
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 304
     t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   6222.71   50.00  0.53       0.24   7.34       7.96
+   6716.73   50.00  0.46       0.22   8.41       7.95
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   287     2         0   23         0          47
+   355     1         0   21         0          48
   steptime[ms] runtime[s]
-           0.5     36.132
+           0.9     15.320
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 305
     t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   6272.71   50.00  0.52       0.24   7.36       7.96
+   6766.73   50.00  0.46       0.22   8.43       7.95
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   285     1         0   24         0          47
+   355     1         0   21         0          48
   steptime[ms] runtime[s]
-         178.3     36.314
+           0.4     15.324
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 306
     t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   6322.71   50.00  0.52       0.24   7.38       7.95
+   6816.73   50.00  0.45       0.22   8.45       7.95
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   278     1         0   24         0          47
+   355     2         0   21         0          48
   steptime[ms] runtime[s]
-           1.0     36.319
+           1.1     15.328
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 307
     t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   6372.71   50.00  0.51       0.24   7.40       7.95
+   6818.79    2.06  0.45       0.22   8.45       7.95
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   278     1         0   24         0          47
+   354     2         0   21         0          48
   steptime[ms] runtime[s]
-          32.4     36.355
+           1.0     15.333
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 308
     t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   6422.71   50.00  0.50       0.24   7.42       7.95
+   6868.79   50.00  0.44       0.22   8.47       7.95
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   276     1         0   24         0          47
+   351     2         0   21         0          48
   steptime[ms] runtime[s]
-          32.2     36.391
+           2.0     15.339
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 309
     t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   6472.71   50.00  0.50       0.24   7.44       7.95
+   6918.79   50.00  0.44       0.22   8.49       7.95
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   273     1         0   24         0          47
+   346     2         0   21         0          48
   steptime[ms] runtime[s]
-           0.7     36.396
+           1.0     15.343
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 310
     t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   6522.71   50.00  0.49       0.23   7.46       7.95
+   6968.79   50.00  0.43       0.22   8.51       7.95
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   271     2         0   24         0          47
+   346     2         0   21         0          48
   steptime[ms] runtime[s]
-         118.1     36.517
+           1.7     15.349
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 311
     t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   6572.71   50.00  0.48       0.23   7.48       7.95
+   7018.79   50.00  0.43       0.22   8.54       7.95
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   265     1         0   24         0          47
+   340     2         0   21         0          48
   steptime[ms] runtime[s]
-           1.6     36.523
+           1.0     15.353
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 312
     t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   6622.71   50.00  0.48       0.23   7.50       7.95
+   7068.79   50.00  0.42       0.22   8.56       7.95
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   262     1         0   24         0          47
+   339     3         0   21         0          48
   steptime[ms] runtime[s]
-           0.6     36.527
+           1.8     15.359
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 313
     t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   6672.71   50.00  0.47       0.23   7.52       7.95
+   7118.79   50.00  0.41       0.22   8.58       7.95
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   261     1         0   24         0          47
+   333     2         0   21         0          48
   steptime[ms] runtime[s]
-          56.2     36.587
+           1.2     15.363
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 314
     t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   6722.71   50.00  0.46       0.23   7.54       7.95
+   7168.79   50.00  0.41       0.22   8.60       7.95
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   258     2         0   24         0          47
+   327     2         0   21         0          48
   steptime[ms] runtime[s]
-          29.5     36.620
+           1.0     15.368
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 315
     t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   6772.71   50.00  0.46       0.23   7.56       7.95
+   7218.79   50.00  0.40       0.22   8.62       7.95
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   254     2         0   24         0          47
+   323     1         0   21         0          48
   steptime[ms] runtime[s]
-           0.8     36.625
+           1.6     15.373
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 316
     t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   6822.71   50.00  0.45       0.23   7.58       7.95
+   7268.79   50.00  0.39       0.22   8.64       7.95
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   254     2         0   24         0          47
+   323     2         0   21         0          48
   steptime[ms] runtime[s]
-           0.4     36.629
+           1.0     15.378
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 317
     t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   6872.71   50.00  0.44       0.23   7.59       7.95
+   7318.79   50.00  0.39       0.22   8.66       7.95
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   253     2         0   24         0          47
+   323     3         0   21         0          48
   steptime[ms] runtime[s]
-           0.5     36.633
+           2.0     15.383
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 318
     t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   6922.71   50.00  0.44       0.23   7.61       7.95
+   7368.79   50.00  0.38       0.22   8.68       7.95
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   250     3         0   24         0          47
+   323     3         0   21         0          48
   steptime[ms] runtime[s]
-          51.7     36.688
+           1.0     15.388
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 319
     t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   6972.71   50.00  0.43       0.23   7.63       7.95
+   7418.79   50.00  0.38       0.22   8.70       7.95
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   244     2         0   24         0          47
+   320     2         0   21         0          48
   steptime[ms] runtime[s]
-           1.0     36.693
+           1.4     15.393
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 320
     t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   7022.71   50.00  0.42       0.23   7.65       7.95
+   7468.79   50.00  0.37       0.21   8.72       7.95
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   241     1         0   24         0          47
+   320     2         0   21         0          48
   steptime[ms] runtime[s]
-           0.8     36.698
+           0.6     15.397
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 321
     t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   7072.71   50.00  0.42       0.23   7.67       7.95
+   7518.79   50.00  0.37       0.21   8.73       7.95
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   239     1         0   24         0          47
+   317     2         0   21         0          48
   steptime[ms] runtime[s]
-           0.5     36.702
+           2.3     15.403
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 322
     t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   7122.71   50.00  0.41       0.23   7.68       7.95
+   7568.79   50.00  0.36       0.21   8.75       7.95
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   238     1         0   24         0          47
+   317     2         0   21         0          48
   steptime[ms] runtime[s]
-           0.4     36.706
+           1.6     15.408
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 323
     t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   7172.71   50.00  0.41       0.23   7.70       7.95
+   7618.79   50.00  0.35       0.21   8.77       7.95
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   238     1         0   24         0          47
+   313     2         0   21         0          48
   steptime[ms] runtime[s]
-          24.8     36.735
+           0.9     15.413
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 324
     t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   7222.71   50.00  0.40       0.23   7.72       7.95
+   7668.79   50.00  0.35       0.21   8.79       7.95
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   238     1         0   24         0          47
+   313     2         0   21         0          48
   steptime[ms] runtime[s]
-           0.3     36.739
+           0.4     15.417
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 325
     t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   7272.71   50.00  0.39       0.23   7.74       7.95
+   7718.79   50.00  0.34       0.21   8.81       7.95
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   238     2         0   24         0          47
+   311     2         0   21         0          48
   steptime[ms] runtime[s]
-          23.1     36.765
+           2.4     15.423
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 326
     t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   7322.71   50.00  0.39       0.23   7.75       7.95
+   7768.79   50.00  0.34       0.21   8.83       7.95
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   238     1         0   24         0          47
+   310     2         0   21         0          48
   steptime[ms] runtime[s]
-           1.8     36.771
+           1.7     15.428
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 327
     t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   7372.71   50.00  0.38       0.23   7.77       7.95
+   7818.79   50.00  0.33       0.21   8.85       7.95
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   237     1         0   24         0          47
+   310     2         0   21         0          48
   steptime[ms] runtime[s]
-           0.4     36.775
+           1.8     15.433
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 328
     t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   7422.71   50.00  0.38       0.23   7.79       7.95
+   7868.79   50.00  0.33       0.21   8.86       7.95
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   234     0         0   24         0          47
+   305     1         0   21         0          48
   steptime[ms] runtime[s]
-           0.4     36.779
+           0.6     15.438
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 329
     t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   7472.71   50.00  0.37       0.23   7.81       7.95
+   7918.79   50.00  0.32       0.21   8.88       7.95
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   233     1         0   24         0          47
+   305     1         0   21         0          48
   steptime[ms] runtime[s]
-          24.4     36.807
+           0.3     15.441
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 330
     t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   7522.71   50.00  0.37       0.23   7.82       7.95
+   7968.79   50.00  0.32       0.21   8.90       7.95
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   230     1         0   24         0          47
+   303     1         0   21         0          48
   steptime[ms] runtime[s]
-           0.7     36.812
+           0.6     15.446
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 331
     t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   7572.71   50.00  0.36       0.23   7.84       7.95
+   8018.79   50.00  0.31       0.21   8.92       7.95
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   230     1         0   24         0          47
+   302     3         0   21         0          48
   steptime[ms] runtime[s]
-          21.8     36.837
+           1.3     15.451
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 332
     t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   7622.71   50.00  0.35       0.23   7.86       7.95
+   8068.79   50.00  0.30       0.21   8.94       7.95
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   227     1         0   24         0          47
+   302     2         0   21         0          48
   steptime[ms] runtime[s]
-           0.7     36.841
+           0.5     15.455
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 333
     t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   7672.71   50.00  0.35       0.23   7.87       7.95
+   8118.79   50.00  0.30       0.21   8.95       7.95
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   226     1         0   24         0          47
+   302     2         0   21         0          48
   steptime[ms] runtime[s]
-           0.4     36.846
+           0.7     15.459
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 334
     t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   7722.71   50.00  0.34       0.23   7.89       7.95
+   8168.79   50.00  0.29       0.21   8.97       7.95
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   223     2         0   24         0          47
+   300     2         0   21         0          48
   steptime[ms] runtime[s]
-          22.7     36.872
+           0.7     15.463
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 335
     t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   7725.31    2.60  0.34       0.23   7.89       7.95
+   8218.79   50.00  0.29       0.21   8.99       7.95
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   223     3         0   24         0          47
+   293     1         0   21         0          48
   steptime[ms] runtime[s]
-           1.0     36.877
+           0.8     15.468
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 336
     t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   7775.31   50.00  0.34       0.23   7.91       7.95
+   8268.79   50.00  0.28       0.21   9.01       7.95
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   221     2         0   24         0          47
+   291     1         0   21         0          48
   steptime[ms] runtime[s]
-           1.5     36.882
+           0.5     15.472
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 337
     t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   7825.31   50.00  0.33       0.23   7.92       7.95
+   8318.79   50.00  0.28       0.21   9.02       7.94
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   216     1         0   24         0          47
+   291     1         0   21         0          48
   steptime[ms] runtime[s]
-           0.7     36.886
+           1.8     15.477
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 338
     t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   7875.31   50.00  0.33       0.23   7.94       7.95
+   8368.79   50.00  0.27       0.21   9.04       7.94
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   214     1         0   24         0          47
+   288     1         0   21         0          48
   steptime[ms] runtime[s]
-           0.6     36.890
+           0.7     15.481
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 339
     t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   7925.31   50.00  0.32       0.23   7.96       7.95
+   8418.79   50.00  0.27       0.21   9.06       7.94
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   214     1         0   24         0          47
+   284     2         0   21         0          48
   steptime[ms] runtime[s]
-           0.3     36.894
+           2.6     15.488
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 340
     t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   7975.31   50.00  0.31       0.23   7.97       7.95
+   8468.79   50.00  0.26       0.21   9.07       7.94
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   212     1         0   24         0          47
+   281     3         0   21         0          48
   steptime[ms] runtime[s]
-           0.5     36.898
+           2.3     15.493
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 341
     t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   8025.31   50.00  0.31       0.23   7.99       7.94
+   8518.79   50.00  0.26       0.21   9.09       7.94
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   209     1         0   24         0          47
+   280     1         0   21         0          48
   steptime[ms] runtime[s]
-          20.6     36.923
+           0.8     15.498
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 342
     t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   8075.31   50.00  0.30       0.22   8.00       7.94
+   8568.79   50.00  0.25       0.21   9.10       7.94
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   204     1         0   24         0          47
+   278     1         0   21         0          48
   steptime[ms] runtime[s]
-           0.8     36.927
+           0.5     15.502
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 343
     t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   8125.31   50.00  0.30       0.22   8.02       7.94
+   8618.79   50.00  0.25       0.21   9.12       7.94
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   203     2         0   24         0          47
+   276     1         0   21         0          48
   steptime[ms] runtime[s]
-          35.5     36.966
+           0.5     15.506
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 344
     t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   8126.48    1.18  0.30       0.22   8.02       7.94
+   8668.79   50.00  0.24       0.21   9.14       7.94
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   203     2         0   24         0          47
+   276     3         0   21         0          48
   steptime[ms] runtime[s]
-           1.4     36.971
+           3.0     15.512
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 345
     t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   8176.48   50.00  0.29       0.22   8.03       7.94
+   8718.79   50.00  0.24       0.21   9.15       7.94
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   201     2         0   24         0          47
+   276     3         0   21         0          48
   steptime[ms] runtime[s]
-           0.7     36.976
+           1.2     15.517
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 346
     t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   8226.48   50.00  0.29       0.22   8.05       7.94
+   8768.79   50.00  0.23       0.21   9.17       7.94
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   201     2         0   24         0          47
+   276     3         0   21         0          48
   steptime[ms] runtime[s]
-           0.4     36.980
+           1.7     15.523
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 347
     t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   8276.48   50.00  0.28       0.22   8.06       7.94
+   8818.79   50.00  0.23       0.21   9.18       7.94
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   201     3         0   24         0          47
+   273     3         0   21         0          48
   steptime[ms] runtime[s]
-          50.7     37.034
+           0.8     15.527
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 348
     t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   8326.48   50.00  0.28       0.22   8.08       7.94
+   8868.79   50.00  0.22       0.20   9.20       7.94
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   195     3         0   24         0          47
+   269     2         0   21         0          48
   steptime[ms] runtime[s]
-          16.7     37.054
+           0.7     15.531
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 349
     t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   8376.48   50.00  0.27       0.22   8.09       7.94
+   8918.79   50.00  0.22       0.20   9.22       7.94
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   195     1         0   24         0          47
+   267     3         0   21         0          48
   steptime[ms] runtime[s]
-           1.1     37.059
+           0.8     15.536
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 350
     t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   8426.48   50.00  0.27       0.22   8.11       7.94
+   8968.79   50.00  0.22       0.20   9.23       7.94
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   193     2         0   24         0          47
+   263     3         0   21         0          48
   steptime[ms] runtime[s]
-          47.2     37.110
+           2.9     15.542
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 351
     t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   8476.48   50.00  0.26       0.22   8.12       7.94
+   9018.79   50.00  0.21       0.20   9.25       7.94
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   190     1         0   24         0          47
+   261     3         0   21         0          48
   steptime[ms] runtime[s]
-           1.3     37.115
+           2.3     15.548
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 352
     t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   8479.24    2.75  0.26       0.22   8.12       7.94
+   9068.79   50.00  0.21       0.20   9.26       7.94
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   190     1         0   24         0          47
+   257     2         0   21         0          48
   steptime[ms] runtime[s]
-           1.4     37.120
+           1.7     15.553
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 353
     t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   8529.24   50.00  0.26       0.22   8.14       7.94
+   9118.79   50.00  0.20       0.20   9.27       7.94
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   187     1         0   24         0          47
+   252     3         0   21         0          48
   steptime[ms] runtime[s]
-           0.6     37.125
+           2.1     15.559
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 354
     t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   8579.24   50.00  0.25       0.22   8.15       7.94
+   9168.79   50.00  0.20       0.20   9.29       7.94
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   186     2         0   24         0          47
+   247     2         0   21         0          48
   steptime[ms] runtime[s]
-          16.2     37.144
+           1.1     15.564
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 355
     t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   8629.24   50.00  0.25       0.22   8.17       7.94
+   9218.79   50.00  0.19       0.20   9.30       7.94
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   185     2         0   24         0          47
+   246     2         0   21         0          48
   steptime[ms] runtime[s]
-           0.6     37.149
+           2.0     15.569
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 356
     t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   8679.24   50.00  0.24       0.22   8.18       7.94
+   9268.79   50.00  0.19       0.20   9.32       7.94
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   179     1         0   25         0          47
+   240     3         0   21         0          48
   steptime[ms] runtime[s]
-          49.5     37.202
+           2.8     15.575
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 357
     t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   8729.24   50.00  0.24       0.22   8.19       7.94
+   9318.79   50.00  0.18       0.20   9.33       7.94
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   179     1         0   25         0          47
+   236     2         0   21         0          48
   steptime[ms] runtime[s]
-          14.9     37.221
+           1.0     15.580
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 358
     t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   8779.24   50.00  0.23       0.22   8.21       7.94
+   9368.79   50.00  0.18       0.20   9.34       7.94
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   179     1         0   25         0          47
+   231     2         0   22         0          48
   steptime[ms] runtime[s]
-          14.7     37.239
+           1.4     15.585
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 359
     t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   8829.24   50.00  0.23       0.22   8.22       7.94
+   9418.79   50.00  0.17       0.20   9.36       7.94
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   179     1         0   25         0          47
+   231     2         0   22         0          48
   steptime[ms] runtime[s]
-          14.5     37.257
+           0.5     15.589
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 360
     t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   8879.24   50.00  0.22       0.22   8.24       7.94
+   9468.79   50.00  0.17       0.20   9.37       7.94
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   178     1         0   25         0          47
+   230     2         0   22         0          48
   steptime[ms] runtime[s]
-           0.4     37.261
+           0.9     15.594
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 361
     t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   8929.24   50.00  0.22       0.22   8.25       7.94
+   9518.79   50.00  0.17       0.20   9.38       7.94
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   177     1         0   25         0          47
+   230     2         0   22         0          48
   steptime[ms] runtime[s]
-          15.8     37.281
+           0.5     15.598
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 362
     t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   8979.24   50.00  0.21       0.22   8.26       7.94
+   9568.79   50.00  0.16       0.20   9.40       7.94
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   175     1         0   25         0          47
+   230     2         0   22         0          48
   steptime[ms] runtime[s]
-          28.5     37.313
+           0.4     15.601
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 363
     t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   8982.60    3.36  0.21       0.22   8.26       7.94
+   9618.79   50.00  0.16       0.20   9.41       7.94
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   175     1         0   25         0          47
+   227     2         0   22         0          48
   steptime[ms] runtime[s]
-           1.5     37.318
+           0.9     15.606
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 364
     t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   9032.60   50.00  0.21       0.22   8.28       7.94
+   9668.79   50.00  0.15       0.20   9.42       7.94
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   175     1         0   25         0          47
+   227     2         0   22         0          48
   steptime[ms] runtime[s]
-           0.3     37.322
+           0.7     15.610
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 365
     t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   9082.60   50.00  0.20       0.22   8.29       7.94
+   9718.79   50.00  0.15       0.20   9.44       7.94
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   172     0         0   25         0          47
+   227     3         0   22         0          48
   steptime[ms] runtime[s]
-           0.4     37.326
+           0.7     15.614
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 366
     t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   9132.60   50.00  0.20       0.22   8.30       7.94
+   9768.79   50.00  0.14       0.20   9.45       7.94
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   172     2         0   25         0          47
+   226     3         0   22         0          48
   steptime[ms] runtime[s]
-          28.7     37.359
+           1.6     15.620
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 367
     t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   9182.60   50.00  0.20       0.22   8.32       7.94
+   9818.79   50.00  0.14       0.20   9.46       7.94
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   172     2         0   25         0          47
+   222     3         0   22         0          48
   steptime[ms] runtime[s]
-          13.7     37.376
+           1.0     15.624
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 368
     t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   9232.60   50.00  0.19       0.22   8.33       7.94
+   9868.79   50.00  0.14       0.20   9.47       7.94
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   170     2         0   25         0          47
+   220     3         0   22         0          48
   steptime[ms] runtime[s]
-          13.8     37.394
+           2.8     15.631
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 369
     t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   9282.60   50.00  0.19       0.22   8.34       7.94
+   9918.79   50.00  0.13       0.20   9.49       7.94
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   167     2         0   25         0          47
+   218     3         0   22         0          48
   steptime[ms] runtime[s]
-           0.8     37.398
+           0.6     15.635
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 370
     t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   9332.60   50.00  0.18       0.22   8.36       7.94
+   9968.79   50.00  0.13       0.20   9.50       7.94
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   164     2         0   25         0          47
+   211     1         0   22         0          48
   steptime[ms] runtime[s]
-           0.7     37.403
+           0.7     15.639
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 371
-    t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   9382.60   50.00  0.18       0.22   8.37       7.94
+     t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
+   10018.79   50.00  0.12       0.20   9.51       7.94
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   162     2         0   25         0          47
+   210     1         0   22         0          48
   steptime[ms] runtime[s]
-          24.1     37.430
+           0.4     15.643
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 372
-    t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   9432.60   50.00  0.17       0.22   8.38       7.94
+     t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
+   10068.79   50.00  0.12       0.20   9.52       7.94
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   160     2         0   25         0          47
+   210     1         0   22         0          48
   steptime[ms] runtime[s]
-          12.5     37.447
+           0.3     15.647
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 373
-    t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   9482.60   50.00  0.17       0.22   8.40       7.94
+     t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
+   10118.79   50.00  0.11       0.20   9.53       7.94
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   159     2         0   25         0          47
+   208     1         0   22         0          48
   steptime[ms] runtime[s]
-          11.6     37.462
+           0.5     15.651
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 374
-    t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   9532.60   50.00  0.16       0.22   8.41       7.94
+     t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
+   10168.79   50.00  0.11       0.20   9.55       7.94
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   156     2         0   25         0          47
+   205     0         0   22         0          48
   steptime[ms] runtime[s]
-           0.8     37.467
+           0.4     15.655
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 375
-    t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   9582.60   50.00  0.16       0.22   8.42       7.94
+     t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
+   10218.79   50.00  0.11       0.20   9.56       7.94
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   155     2         0   25         0          47
+   205     1         0   22         0          48
   steptime[ms] runtime[s]
-          11.7     37.482
+           1.3     15.660
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 376
-    t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   9585.01    2.41  0.16       0.22   8.42       7.94
+     t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
+   10268.79   50.00  0.10       0.20   9.57       7.93
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   155     2         0   25         0          47
+   205     1         0   22         0          48
   steptime[ms] runtime[s]
-           0.4     37.486
+           0.8     15.664
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 377
-    t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   9587.41    2.41  0.16       0.22   8.42       7.94
+     t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
+   10318.79   50.00  0.10       0.20   9.58       7.93
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   155     2         0   25         0          47
+   205     1         0   22         0          48
   steptime[ms] runtime[s]
-           1.9     37.491
+           1.2     15.669
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 378
-    t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   9637.41   50.00  0.15       0.22   8.43       7.94
+     t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
+   10368.79   50.00  0.09       0.20   9.59       7.93
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   153     3         0   25         0          47
+   203     2         0   22         0          48
   steptime[ms] runtime[s]
-          21.6     37.517
+           1.5     15.674
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 379
-    t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   9687.41   50.00  0.15       0.22   8.45       7.94
+     t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
+   10370.77    1.97  0.09       0.20   9.59       7.93
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   153     3         0   25         0          47
+   203     2         0   22         0          48
   steptime[ms] runtime[s]
-           0.5     37.521
+           0.8     15.678
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 380
-    t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   9737.41   50.00  0.15       0.22   8.46       7.94
+     t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
+   10420.77   50.00  0.09       0.20   9.60       7.93
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   151     2         0   25         0          47
+   202     2         0   22         0          48
   steptime[ms] runtime[s]
-           0.7     37.525
+           0.8     15.683
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 381
-    t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   9787.41   50.00  0.14       0.22   8.47       7.93
+     t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
+   10470.77   50.00  0.09       0.20   9.61       7.93
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   150     2         0   25         0          47
+   201     2         0   22         0          48
   steptime[ms] runtime[s]
-          11.1     37.540
+           2.0     15.688
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 382
-    t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   9837.41   50.00  0.14       0.22   8.48       7.93
+     t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
+   10520.77   50.00  0.08       0.20   9.63       7.93
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   147     2         0   25         0          47
+   200     3         0   22         0          48
   steptime[ms] runtime[s]
-          20.5     37.564
+           1.1     15.693
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 383
-    t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   9887.41   50.00  0.13       0.22   8.50       7.93
+     t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
+   10570.77   50.00  0.08       0.20   9.64       7.93
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   147     2         0   25         0          47
+   199     3         0   22         0          48
   steptime[ms] runtime[s]
-           9.7     37.577
+           1.9     15.698
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 384
-    t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   9937.41   50.00  0.13       0.21   8.51       7.93
+     t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
+   10620.77   50.00  0.07       0.19   9.65       7.93
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   146     2         0   25         0          47
+   198     3         0   22         0          48
   steptime[ms] runtime[s]
-          10.2     37.591
+           1.0     15.703
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 385
-    t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   9987.41   50.00  0.13       0.21   8.52       7.93
+     t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
+   10623.96    3.19  0.07       0.19   9.65       7.93
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   145     1         0   25         0          47
+   197     4         0   22         0          48
   steptime[ms] runtime[s]
-           0.5     37.595
+           0.6     15.707
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 386
      t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   10037.41   50.00  0.12       0.21   8.53       7.93
+   10673.96   50.00  0.07       0.19   9.66       7.93
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   141     1         0   25         0          47
+   193     3         0   22         0          48
   steptime[ms] runtime[s]
-          19.7     37.619
+           1.8     15.713
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 387
      t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   10087.41   50.00  0.12       0.21   8.54       7.93
+   10723.96   50.00  0.07       0.19   9.67       7.93
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   140     2         0   25         0          47
+   191     3         0   22         0          48
   steptime[ms] runtime[s]
-          10.5     37.633
+           1.4     15.718
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 388
      t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   10137.41   50.00  0.11       0.21   8.55       7.93
+   10773.96   50.00  0.06       0.19   9.68       7.93
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   138     2         0   25         0          47
+   188     3         0   22         0          48
   steptime[ms] runtime[s]
-           9.7     37.647
+           1.8     15.723
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 389
      t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   10187.41   50.00  0.11       0.21   8.57       7.93
+   10823.96   50.00  0.06       0.19   9.69       7.93
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   136     2         0   25         0          47
+   188     2         0   22         0          48
   steptime[ms] runtime[s]
-          17.8     37.668
+           1.1     15.728
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 390
      t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   10237.41   50.00  0.10       0.21   8.58       7.93
+   10873.96   50.00  0.06       0.19   9.70       7.93
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   135     2         0   25         0          47
+   187     3         0   22         0          48
   steptime[ms] runtime[s]
-           9.3     37.681
+           1.5     15.733
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 391
      t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   10287.41   50.00  0.10       0.21   8.59       7.93
+   10923.96   50.00  0.05       0.19   9.71       7.93
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   129     1         0   25         0          47
+   187     3         0   22         0          48
   steptime[ms] runtime[s]
-           8.7     37.693
+           2.4     15.739
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 392
      t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   10337.41   50.00  0.10       0.21   8.60       7.93
+   10973.96   50.00  0.05       0.19   9.72       7.93
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   128     1         0   25         0          47
+   185     2         0   22         0          48
   steptime[ms] runtime[s]
-           8.3     37.705
+           1.5     15.744
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 393
      t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   10387.41   50.00  0.09       0.21   8.61       7.93
+   11023.96   50.00  0.04       0.19   9.73       7.93
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   127     1         0   25         0          47
+   185     2         0   22         0          48
   steptime[ms] runtime[s]
-           0.5     37.710
+           0.4     15.748
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 394
      t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   10437.41   50.00  0.09       0.21   8.62       7.93
+   11073.96   50.00  0.04       0.19   9.74       7.93
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   126     1         0   25         0          47
+   182     1         0   22         0          48
   steptime[ms] runtime[s]
-           0.4     37.714
+           0.4     15.752
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 395
      t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   10487.41   50.00  0.09       0.21   8.63       7.93
+   11123.96   50.00  0.04       0.19   9.75       7.93
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   125     1         0   25         0          47
+   181     2         0   22         0          48
   steptime[ms] runtime[s]
-           8.0     37.725
+           1.5     15.757
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 396
      t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   10537.41   50.00  0.08       0.21   8.64       7.93
+   11173.96   50.00  0.03       0.19   9.76       7.93
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   125     1         0   25         0          47
+   180     2         0   22         0          48
   steptime[ms] runtime[s]
-           7.9     37.737
+           0.7     15.761
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 397
      t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   10587.41   50.00  0.08       0.21   8.66       7.93
+   11223.96   50.00  0.03       0.19   9.77       7.93
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   125     1         0   25         0          47
+   180     4         0   22         0          48
   steptime[ms] runtime[s]
-           9.3     37.750
+           3.0     15.768
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 398
      t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   10637.41   50.00  0.07       0.21   8.67       7.93
+   11273.96   50.00  0.03       0.19   9.78       7.93
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   125     1         0   25         0          47
+   179     4         0   22         0          48
   steptime[ms] runtime[s]
-           0.3     37.754
+           3.7     15.775
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 399
      t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   10687.41   50.00  0.07       0.21   8.68       7.93
+   11323.96   50.00  0.02       0.19   9.79       7.93
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   121     1         0   25         0          47
+   175     3         0   22         0          48
   steptime[ms] runtime[s]
-          17.2     37.775
+           1.1     15.780
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 400
      t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   10737.41   50.00  0.07       0.21   8.69       7.93
+   11373.96   50.00  0.02       0.19   9.80       7.93
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   121     1         0   25         0          47
+   172     3         0   22         0          48
   steptime[ms] runtime[s]
-          14.2     37.792
+           0.7     15.784
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 401
      t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   10787.41   50.00  0.06       0.21   8.70       7.93
+   11423.96   50.00  0.02       0.19   9.81       7.93
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   119     2         0   25         0          47
+   167     2         0   22         0          48
   steptime[ms] runtime[s]
-          20.1     37.816
+           0.7     15.789
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 402
      t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   10837.41   50.00  0.06       0.21   8.71       7.93
+   11473.96   50.00  0.01       0.19   9.82       7.93
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   119     1         0   25         0          47
+   167     2         0   22         0          48
   steptime[ms] runtime[s]
-           7.7     37.827
+           1.3     15.793
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 403
      t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   10887.41   50.00  0.05       0.21   8.72       7.93
+   11523.96   50.00  0.01       0.19   9.83       7.93
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   116     2         0   25         0          47
+   164     2         0   22         0          48
   steptime[ms] runtime[s]
-          14.4     37.846
+           1.8     15.799
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 404
      t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   10937.41   50.00  0.05       0.21   8.73       7.93
+   11573.96   50.00  0.00       0.19   9.84       7.93
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   114     2         0   25         0          47
+   162     2         0   22         0          48
   steptime[ms] runtime[s]
-           0.7     37.850
+           0.6     15.803
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Iteration # 405
      t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   10987.41   50.00  0.05       0.21   8.74       7.93
+   11623.96   50.00  0.00       0.19   9.85       7.93
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   111     1         0   25         0          47
+   162     2         0   22         0          48
   steptime[ms] runtime[s]
-           0.7     37.854
-
-
-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-Iteration # 406
-     t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   11037.41   50.00  0.04       0.21   8.75       7.93
-  N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   111     1         0   25         0          47
-  steptime[ms] runtime[s]
-           7.4     37.865
-
-
-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-Iteration # 407
-     t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   11087.41   50.00  0.04       0.21   8.76       7.93
-  N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   110     1         0   25         0          47
-  steptime[ms] runtime[s]
-           0.4     37.870
-
-
-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-Iteration # 408
-     t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   11137.41   50.00  0.04       0.21   8.77       7.93
-  N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   108     1         0   25         0          47
-  steptime[ms] runtime[s]
-           0.5     37.874
-
-
-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-Iteration # 409
-     t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   11187.41   50.00  0.03       0.21   8.78       7.93
-  N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   105     0         0   25         0          47
-  steptime[ms] runtime[s]
-           0.4     37.878
-
-
-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-Iteration # 410
-     t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   11237.41   50.00  0.03       0.21   8.79       7.93
-  N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   105     1         0   25         0          47
-  steptime[ms] runtime[s]
-           6.7     37.888
-
-
-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-Iteration # 411
-     t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   11287.41   50.00  0.03       0.21   8.80       7.93
-  N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   105     2         0   25         0          47
-  steptime[ms] runtime[s]
-          11.2     37.903
-
-
-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-Iteration # 412
-     t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   11337.41   50.00  0.02       0.21   8.81       7.93
-  N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   103     2         0   25         0          47
-  steptime[ms] runtime[s]
-           6.5     37.913
-
-
-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-Iteration # 413
-     t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   11387.41   50.00  0.02       0.21   8.82       7.93
-  N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   101     1         0   25         0          47
-  steptime[ms] runtime[s]
-           0.8     37.917
-
-
-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-Iteration # 414
-     t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   11437.41   50.00  0.01       0.21   8.83       7.93
-  N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   101     1         0   25         0          47
-  steptime[ms] runtime[s]
-           5.1     37.926
-
-
-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-Iteration # 415
-     t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   11487.41   50.00  0.01       0.21   8.84       7.93
-  N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   100     2         0   25         0          47
-  steptime[ms] runtime[s]
-          10.6     37.940
-
-
-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-Iteration # 416
-     t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   11537.41   50.00  0.01       0.21   8.85       7.93
-  N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-   100     2         0   25         0          47
-  steptime[ms] runtime[s]
-           1.1     37.945
-
-
-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-Iteration # 417
-     t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   11587.41   50.00  0.00       0.21   8.86       7.93
-  N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-    98     2         0   25         0          47
-  steptime[ms] runtime[s]
-          10.4     37.959
-
-
-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-Iteration # 418
-     t[Myr] dt[Myr]     z Mcl[MMsun] rh[pc] R_gal[kpc]
-   11637.41   50.00  0.00       0.21   8.87       7.92
-  N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar
-    98     2         0   25         0          47
-  steptime[ms] runtime[s]
-           9.5     37.972
+           2.0     15.809
 
 
 REDSHIFT 0 REACHED
-END OF SIMULATION. RUNTIME: 38 s
+END OF SIMULATION. RUNTIME: 15.9 s
 
 

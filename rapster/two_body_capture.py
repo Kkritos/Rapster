@@ -20,14 +20,38 @@ from .constants import *
 from .functions import *
 from .remnant import *
 
-def p_2capture(m1, m2):
+def fast_sample_2capture(mBH, n_samples=1):
     """
-    Joint probability density function for masses m1 and m2 to be captured.
-    The result is not normalized.
+    Fast sampling for using rejection sampling with complexity O(N).
+
+    @in mBH: array of BH masses
+    @in n_samples: number of samples (m1, m2)
     """
     
-    return (m1 + m2)**(10/7) * m1**(2/7) * m2**(2/7)
-p_2capture = np.vectorize(p_2capture)
+    # Pre-calculate individual weights based on the separable part: m^(2/7)
+    # This acts as our "proposal" distribution.
+    individual_weights = mBH**(2/7)
+    p_proposal = individual_weights / individual_weights.sum()
+    
+    max_m = np.max(mBH)
+    # The maximum possible value of the non-separable part (m1 + m2)^(10/7)
+    # used to normalize the rejection criteria.
+    max_weight_factor = (2 * max_m)**(10/7)
+    
+    results = []
+    while len(results) < n_samples:
+        # Sample two candidates based on p_proposal
+        candidates = np.random.choice(mBH, size=2, replace=False, p=p_proposal)
+        m1_cand, m2_cand = candidates
+        
+        # Acceptance/Rejection step
+        # We check the "interaction" term: (m1 + m2)^(10/7)
+        acceptance_prob = (m1_cand + m2_cand)**(10/7) / max_weight_factor
+        
+        if np.random.rand() < acceptance_prob:
+            results.append((m1_cand, m2_cand))
+            
+    return results[0] if n_samples == 1 else results
 
 def two_body_capture(seed, t, dt, z, zCl_form, k_2cap, mBH_avg, binaries, mBH, sBH, gBH, hBH, vBH, v_star, N_2cap, N_BH, N_BBH, N_me, N_meRe, N_meEj, mergers, random_pairing=False):
     """
@@ -70,12 +94,7 @@ def two_body_capture(seed, t, dt, z, zCl_form, k_2cap, mBH_avg, binaries, mBH, s
             if random_pairing:
                 m1, m2 = np.random.choice(mBH, size=2, replace=False)
             else:
-                p1 = np.array([p_2capture(m_1, mBH[mBH!=m_1]).sum() for m_1 in mBH]) # marginalized probability
-                p1 /= p1.sum() # normalize margninalized probability
-                m1 = np.random.choice(mBH, size=1, replace=False, p=p1)[0] # sample first mass
-                p2 = p_2capture(m1, mBH[mBH!=m1]) # conditional probability
-                p2 /= p2.sum() # normalize conditional probability
-                m2 = np.random.choice(mBH[mBH!=m1], size=1, replace=False, p=p2)[0] # sample second mass
+                m1, m2 = fast_sample_2capture(mBH, n_samples=1)
             
             # find index locations of the sampled BHs:
             k1 = np.squeeze(np.where(mBH==m1))+0
