@@ -19,7 +19,7 @@
 from .constants import *
 from .functions import *
 
-def StarStar_to_BHstar(k_ex1, N_ex1, m_avg, mBH, sBH, gBH, ab, pairs, N_BHstar):
+def StarStar_to_BHstar(k_ex1, N_ex1, m_avg, mBH, sBH, gBH, hBH, ab, pairs, N_BHstar):
     """
     @in k_ex1: current number of star-star -> BH-star exchanges
     @in N_ex1: total number of star-star -> BH-star exchanges
@@ -27,6 +27,7 @@ def StarStar_to_BHstar(k_ex1, N_ex1, m_avg, mBH, sBH, gBH, ab, pairs, N_BHstar):
     @in mBH: array of single BH masses
     @in sBH: array of single BH spins
     @in gBH: array of single BH generations
+    @in hBH: array of BH tdes count
     @in ab: array of star-star semimajor axes
     @in pairs: array of BH-star pairs
     @in N_BHstar: number of BH-star pairs
@@ -50,6 +51,7 @@ def StarStar_to_BHstar(k_ex1, N_ex1, m_avg, mBH, sBH, gBH, ab, pairs, N_BHstar):
                 
             s = sBH[k]
             g = gBH[k]
+            h = hBH[k]
                 
             a = np.random.choice(ab, p=ab/np.sum(ab))
                 
@@ -61,7 +63,7 @@ def StarStar_to_BHstar(k_ex1, N_ex1, m_avg, mBH, sBH, gBH, ab, pairs, N_BHstar):
             a = a * m / m_avg
             
             # append pair:
-            pairs = np.append(pairs, [[a, m, s, g]], axis=0)
+            pairs = np.append(pairs, [[a, m, s, g, h]], axis=0)
             
             # delete star-star:
             ab = np.delete(ab, kss)
@@ -71,13 +73,14 @@ def StarStar_to_BHstar(k_ex1, N_ex1, m_avg, mBH, sBH, gBH, ab, pairs, N_BHstar):
             mBH = np.delete(mBH, k)
             sBH = np.delete(sBH, k)
             gBH = np.delete(gBH, k)
+            hBH = np.delete(hBH, k)
 
-    return k_ex1, N_ex1, m_avg, mBH, sBH, gBH, ab, pairs, N_BHstar
+    return k_ex1, N_ex1, m_avg, mBH, sBH, gBH, hBH, ab, pairs, N_BHstar
 
-def BHstar_to_BBH(t, z, k_ex2, N_ex2, m_avg, mBH, sBH, gBH, pairs, binaries, N_BBH, N_BHstar):
+def BHstar_to_BBH(t, z, k_ex2, N_ex2, m_avg, mBH, sBH, gBH, hBH, pairs, binaries, N_BBH, N_BHstar):
     """
-    @in :
-    
+    Creates BH-BH binaries from BH-star pairs.    
+
     @out: all inputs
     """
     
@@ -98,6 +101,7 @@ def BHstar_to_BBH(t, z, k_ex2, N_ex2, m_avg, mBH, sBH, gBH, pairs, binaries, N_B
                 
             s2 = sBH[k2] # spin of the second BH
             g2 = gBH[k2] # generation of the second BH
+            h2 = hBH[k2] # number of second BH's tdes
             
             # draw a BH-star pair:
             ap = np.random.choice(pairs[:, 0], p=pairs[:, 0] / np.sum(pairs[:, 0]))
@@ -110,6 +114,7 @@ def BHstar_to_BBH(t, z, k_ex2, N_ex2, m_avg, mBH, sBH, gBH, pairs, binaries, N_B
             m1 = pairs[kp][1]
             s1 = pairs[kp][2]
             g1 = pairs[kp][3]
+            h1 = pairs[kp][4]
             
             # semimajor axis:
             sma = ap * m2 / m_avg
@@ -118,7 +123,7 @@ def BHstar_to_BBH(t, z, k_ex2, N_ex2, m_avg, mBH, sBH, gBH, pairs, binaries, N_B
             eccen = np.sqrt(np.random.rand())
             
             # append binary:
-            binaries = np.append(binaries, [[np.random.randint(0, 999999999), 1, sma, eccen, m1, m2, s1, s2, g1, g2, t, z, 0]], axis=0)
+            binaries = np.append(binaries, [[np.random.randint(0, 999999999), 1, sma, eccen, m1, m2, s1, s2, g1, g2, t, z, 0, h1, h2]], axis=0)
             
             # delete pair:
             pairs = np.delete(pairs, kp, axis=0)
@@ -126,11 +131,12 @@ def BHstar_to_BBH(t, z, k_ex2, N_ex2, m_avg, mBH, sBH, gBH, pairs, binaries, N_B
             mBH = np.delete(mBH, k2)
             sBH = np.delete(sBH, k2)
             gBH = np.delete(gBH, k2)
+            hBH = np.delete(hBH, k2)
             
             N_BHstar = N_BHstar - 1
             
             N_BBH+=1
             
-    return t, z, k_ex2, N_ex2, m_avg, mBH, sBH, gBH, pairs, binaries, N_BBH, N_BHstar
+    return t, z, k_ex2, N_ex2, m_avg, mBH, sBH, gBH, hBH, pairs, binaries, N_BBH, N_BHstar
 
 # end of file

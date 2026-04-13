@@ -19,7 +19,7 @@
 from .constants import *
 from .functions import *
 
-def BH_TidalDisruptions(seed, t, z, k_tde, N_tde, tde_type, m_star, R_star, mBH, sBH, gBH, vSTAR, vBH, tdes, binaries, pairs):
+def BH_TidalDisruptions(seed, t, z, k_tde, N_tde, tde_type, m_star, R_star, mBH, sBH, gBH, hBH, vSTAR, vBH, tdes, binaries, pairs):
     """
     @in seed: seed number of the main simulation
     @in t: current time (Myr)
@@ -32,11 +32,12 @@ def BH_TidalDisruptions(seed, t, z, k_tde, N_tde, tde_type, m_star, R_star, mBH,
     @in mBH: single BH masses (Msun)
     @in sBH: single BH dimensionless spins
     @in gBH: single BH generations
+    @in hBH: array of BH tdes count
     @in vSTAR: velocity dispersion of stars (km/s)
     @in vBH: velocity dispersion of BHs (km/s)
-    @in tdes: tdes array [seed, t, z, type, m_star, R_star, m_BH, s_BH, g_BH, r_t, r_p, beta, iota, r_mb, dm, s_new, v_rel]
-    @in binaries: [ind, channel, a, e, m1, m2, s1, s2, g1, g2, t_form, z_form, Nex]
-    @in pairs: [a, m, s, g]
+    @in tdes: tdes array [seed, t, z, type, m_star, R_star, m_BH, s_BH, g_BH, r_t, r_p, beta, iota, r_mb, dm, s_new, v_rel, h_BH]
+    @in binaries: [ind, channel, a, e, m1, m2, s1, s2, g1, g2, t_form, z_form, Nex, h1, h2]
+    @in pairs: [a, m, s, g, h]
 
     @out: all inputs
     """
@@ -59,6 +60,7 @@ def BH_TidalDisruptions(seed, t, z, k_tde, N_tde, tde_type, m_star, R_star, mBH,
                 
             s = sBH[k] # get BH's (dimensionless) spin
             g = gBH[k] # get BH's generation
+            h = hBH[k] # get BH's tdes count
             
             # orbital inclination:
             iota = np.arccos(np.random.uniform(-1, 1)) # radians
@@ -83,16 +85,11 @@ def BH_TidalDisruptions(seed, t, z, k_tde, N_tde, tde_type, m_star, R_star, mBH,
             # final spin:
             s_new = evolve_spin_RungeKutta(m, m+dm, s, prograde, dM=dm/100)
             
-            ENERGY = G_Newton*m*R_star/r_p**2 # energy of most-bound debris
-            t_fb = 2*np.pi*G_Newton*(ENERGY)**(-3/2) # fallback time
-            eta_R = 2*ENERGY/c_light**2 # radiative efficiency
-            L_pk = eta_R*dm*c_light**2/t_fb # peak luminosity
-            
             # relative velocity:
             v_rel = np.sqrt(vSTAR**2 + np.mean(mBH)/m*vBH**2)
             
             # append tde:
-            tdes = np.append(tdes, [[seed, t, z, tde_type, m_star, R_star, m, s, g, r_t, r_p, beta, iota, r_mb, dm, s_new, v_rel]], axis=0)
+            tdes = np.append(tdes, [[seed, t, z, tde_type, m_star, R_star, m, s, g, r_t, r_p, beta, iota, r_mb, dm, s_new, v_rel, h]], axis=0)
             
             # update BH mass:
             mBH[k] = m + dm
@@ -100,6 +97,9 @@ def BH_TidalDisruptions(seed, t, z, k_tde, N_tde, tde_type, m_star, R_star, mBH,
             # update BH spin:
             sBH[k] = s_new
 
-    return seed, t, z, k_tde, N_tde, tde_type, m_star, R_star, mBH, sBH, gBH, vSTAR, vBH, tdes, binaries, pairs
+            # update BH tdes count:
+            hBH[k] += 1
+
+    return seed, t, z, k_tde, N_tde, tde_type, m_star, R_star, mBH, sBH, gBH, hBH, vSTAR, vBH, tdes, binaries, pairs
 
 # End of file.

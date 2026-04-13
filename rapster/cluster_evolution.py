@@ -243,15 +243,16 @@ def initialize_cluster(config):
 
     # BH generations:
     gBH = np.ones(mBH.size)
+    hBH = np.zeros(mBH.size)
 
     # data arrays:
-    binaries = np.zeros(shape=(1, 13))
-    pairs = np.zeros(shape=(1, 4))
-    triples = np.zeros(shape=(1, 21))
-    mergers = np.zeros(shape=(1, 25))
+    binaries = np.zeros(shape=(1, 15))
+    pairs = np.zeros(shape=(1, 5))
+    triples = np.zeros(shape=(1, 24))
+    mergers = np.zeros(shape=(1, 27))
     evolution = np.zeros(shape=(1, 69))
     hardening = np.zeros(shape=(1, 12))
-    tdes = np.zeros(shape=(1, 17))
+    tdes = np.zeros(shape=(1, 18))
 
     # bundle all mutable simulation variables into the state dictionary:
     state = {
@@ -263,7 +264,7 @@ def initialize_cluster(config):
         't_cc': t_cc, 't_rlx': 0.0,
         'N': N, 'Z': Z,
         # BH properties:
-        'mBH': mBH, 'sBH': sBH, 'gBH': gBH,
+        'mBH': mBH, 'sBH': sBH, 'gBH': gBH, 'hBH': hBH, 
         'mBH_avg': 0.0, 'vBH': 0.0,
         # data arrays:
         'binaries': binaries, 'pairs': pairs, 'triples': triples,
@@ -280,7 +281,7 @@ def initialize_cluster(config):
         # aux:
         'i_aux1': 0,
         # tracking lists:
-        'simulation_times': [], 'black_hole_masses': [], 'black_hole_spins': [], 'black_hole_generations': [],
+        'simulation_times': [], 'black_hole_masses': [], 'black_hole_spins': [], 'black_hole_generations': [], 'black_hole_tdes': []
     }
 
     return state
@@ -626,6 +627,7 @@ def form_binaries(state, config):
     mBH = state['mBH']
     sBH = state['sBH']
     gBH = state['gBH']
+    hBH = state['hBH']
     vBH = state['vBH']
     v_star = state['v_star']
     m_avg = state['m_avg']
@@ -655,15 +657,15 @@ def form_binaries(state, config):
     k_3bb = np.min([poisson.rvs(mu=dt / t_3bb), int(N_BHsin / 3)])
 
     # 3bb formation:
-    t, z, k_3bb, mBH_avg, binaries, mBH, sBH, gBH, vBH, N_3bb, N_BBH = three_body_binary(t, z, k_3bb, mBH_avg, binaries, mBH, sBH, gBH, vBH, N_3bb, N_BBH, random_pairing=config['random_pairing'])
+    t, z, k_3bb, mBH_avg, binaries, mBH, sBH, gBH, hBH, vBH, N_3bb, N_BBH = three_body_binary(t, z, k_3bb, mBH_avg, binaries, mBH, sBH, gBH, hBH, vBH, N_3bb, N_BBH, random_pairing=config['random_pairing'])
 
     # number of 2-body captures:
     N_BHsin = N_BH - 2*N_BBH - N_BHstar - 3*N_Triples
     k_2cap = np.min([poisson.rvs(mu=dt / t_2cap), int(N_BHsin / 2)])
 
     # 2-body capture(s):
-    seed, t, dt, z, zCl_form, k_2cap, mBH_avg, binaries, mBH, sBH, gBH, vBH, v_star, N_2cap, N_BH, N_BBH, N_me, N_meRe, N_meEj, mergers = \
-        two_body_capture(seed, t, dt, z, zCl_form, k_2cap, mBH_avg, binaries, mBH, sBH, gBH, vBH, v_star, N_2cap, N_BH, N_BBH, N_me, N_meRe, N_meEj, mergers, random_pairing=config['random_pairing'])
+    seed, t, dt, z, zCl_form, k_2cap, mBH_avg, binaries, mBH, sBH, gBH, hBH, vBH, v_star, N_2cap, N_BH, N_BBH, N_me, N_meRe, N_meEj, mergers = \
+        two_body_capture(seed, t, dt, z, zCl_form, k_2cap, mBH_avg, binaries, mBH, sBH, gBH, hBH, vBH, v_star, N_2cap, N_BH, N_BBH, N_me, N_meRe, N_meEj, mergers, random_pairing=config['random_pairing'])
 
     # number of star-star -> BH-star exchanges:
     N_BHsin = N_BH - 2*N_BBH - N_BHstar - 3*N_Triples
@@ -671,7 +673,7 @@ def form_binaries(state, config):
 
     # star-star -> BH-star exchange(s):
     if k_ex1 > 0:
-        k_ex1, N_ex1, m_avg, mBH, sBH, gBH, ab, pairs, N_BHstar = StarStar_to_BHstar(k_ex1, N_ex1, m_avg, mBH, sBH, gBH, ab, pairs, N_BHstar)
+        k_ex1, N_ex1, m_avg, mBH, sBH, gBH, hBH, ab, pairs, N_BHstar = StarStar_to_BHstar(k_ex1, N_ex1, m_avg, mBH, sBH, gBH, hBH, ab, pairs, N_BHstar)
 
     # number of BH-star -> BH-BH exchanges:
     N_BHsin = N_BH - 2*N_BBH - N_BHstar - 3*N_Triples
@@ -679,12 +681,12 @@ def form_binaries(state, config):
 
     # BH-star -> BBH exchange(s):
     if k_ex2 > 0:
-        t, z, k_ex2, N_ex2, m_avg, mBH, sBH, gBH, pairs, binaries, N_BBH, N_BHstar = BHstar_to_BBH(t, z, k_ex2, N_ex2, m_avg, mBH, sBH, gBH, pairs, binaries, N_BBH, N_BHstar)
+        t, z, k_ex2, N_ex2, m_avg, mBH, sBH, gBH, hBH, pairs, binaries, N_BBH, N_BHstar = BHstar_to_BBH(t, z, k_ex2, N_ex2, m_avg, mBH, sBH, gBH, hBH, pairs, binaries, N_BBH, N_BHstar)
 
     # write back:
     state['t'] = t; state['z'] = z; state['dt'] = dt; state['seed'] = seed
     state['mBH_avg'] = mBH_avg; state['binaries'] = binaries; state['mBH'] = mBH
-    state['sBH'] = sBH; state['gBH'] = gBH; state['vBH'] = vBH; state['v_star'] = v_star
+    state['sBH'] = sBH; state['gBH'] = gBH; state['hBH'] = hBH; state['vBH'] = vBH; state['v_star'] = v_star
     state['m_avg'] = m_avg; state['ab'] = ab; state['pairs'] = pairs; state['mergers'] = mergers
     state['N_BH'] = N_BH; state['N_BBH'] = N_BBH; state['N_BHstar'] = N_BHstar
     state['N_3bb'] = N_3bb; state['N_2cap'] = N_2cap; state['N_me'] = N_me
@@ -712,7 +714,7 @@ def evolve_interactions(state, config):
     seed = state['seed']
     t = state['t']; z = state['z']; dt = state['dt']; zCl_form = state['zCl_form']
     binaries = state['binaries']; hardening = state['hardening']; mergers = state['mergers']
-    mBH = state['mBH']; sBH = state['sBH']; gBH = state['gBH']
+    mBH = state['mBH']; sBH = state['sBH']; gBH = state['gBH']; hBH = state['hBH']
     n_star = state['n_star']; v_star = state['v_star']; vBH = state['vBH']
     t_rlx = state['t_rlx']; m_avg = state['m_avg']; mBH_avg = state['mBH_avg']
     na_BH = state['na_BH']; nc_BH = state['nc_BH']
@@ -729,7 +731,7 @@ def evolve_interactions(state, config):
     t_cc = state['t_cc']
 
     # BBH evolution:
-    seed, t, z, dt, zCl_form, binaries, hardening, mergers, mBH, sBH, gBH, n_star, v_star, vBH, t_rlx, m_avg, mBH_avg, na_BH, nc_BH, N_BH, N_BBH, N_me, N_me2b, N_3cap, N_meFi, N_meRe, N_meEj, N_dis, N_ex, N_BHej, N_BBHej, N_hardening, Vc_BH, N_bb, triples, N_Triples = evolve_BBHs(seed, t, z, dt, zCl_form, binaries, hardening, mergers, mBH, sBH, gBH, n_star, v_star, vBH, t_rlx, m_avg, mBH_avg, na_BH, nc_BH, N_BH, N_BBH, N_me, N_me2b, N_3cap, N_meFi, N_meRe, N_meEj, N_dis, N_ex, N_BHej, N_BBHej, N_hardening, Vc_BH, N_bb, triples, N_Triples)
+    seed, t, z, dt, zCl_form, binaries, hardening, mergers, mBH, sBH, gBH, hBH, n_star, v_star, vBH, t_rlx, m_avg, mBH_avg, na_BH, nc_BH, N_BH, N_BBH, N_me, N_me2b, N_3cap, N_meFi, N_meRe, N_meEj, N_dis, N_ex, N_BHej, N_BBHej, N_hardening, Vc_BH, N_bb, triples, N_Triples = evolve_BBHs(seed, t, z, dt, zCl_form, binaries, hardening, mergers, mBH, sBH, gBH, hBH, n_star, v_star, vBH, t_rlx, m_avg, mBH_avg, na_BH, nc_BH, N_BH, N_BBH, N_me, N_me2b, N_3cap, N_meFi, N_meRe, N_meEj, N_dis, N_ex, N_BHej, N_BBHej, N_hardening, Vc_BH, N_bb, triples, N_Triples)
 
     # average BBH number density:
     if i_aux1==1:
@@ -783,8 +785,8 @@ def evolve_interactions(state, config):
             if isinstance(k2, np.ndarray):
                 k2=k2[0]
 
-            m1 = pairs[k1][1]; s1 = pairs[k1][2]; g1 = pairs[k1][3]
-            m2 = pairs[k2][1]; s2 = pairs[k2][2]; g2 = pairs[k2][3]
+            m1 = pairs[k1][1]; s1 = pairs[k1][2]; g1 = pairs[k1][3]; h1 = pairs[k1][4]
+            m2 = pairs[k2][1]; s2 = pairs[k2][2]; g2 = pairs[k2][3]; h2 = pairs[k2][4]
 
             if m2/a2 < m1/a1:
                 sma = m2 / m_avg * a1
@@ -793,19 +795,19 @@ def evolve_interactions(state, config):
 
             eccen = np.sqrt(np.random.rand())
 
-            binaries = np.append(binaries, [[np.random.randint(0, 999999999), 1, sma, eccen, m1, m2, s1, s2, g1, g2, t, z, 0]], axis=0)
+            binaries = np.append(binaries, [[np.random.randint(0, 999999999), 1, sma, eccen, m1, m2, s1, s2, g1, g2, t, z, 0, h1, h2]], axis=0)
             pairs = np.delete(pairs, [k1, k2], axis=0)
             N_BHstar = N_BHstar - 2
             N_BBH+=1
 
     # Triple evolution:
-    seed, t, z, zCl_form, triples, binaries, mBH, sBH, gBH, mBH_avg, N_Triples, N_BBH, N_BH, N_me, N_meRe, N_meEj, N_ZLK, v_star, vBH, nc_BH, mergers = \
-        evolve_triples(seed, t, z, zCl_form, triples, binaries, mBH, sBH, gBH, mBH_avg, N_Triples, N_BBH, N_BH, N_me, N_meRe, N_meEj, N_ZLK, v_star, vBH, nc_BH, mergers)
+    seed, t, z, zCl_form, triples, binaries, mBH, sBH, gBH, hBH, mBH_avg, N_Triples, N_BBH, N_BH, N_me, N_meRe, N_meEj, N_ZLK, v_star, vBH, nc_BH, mergers = \
+        evolve_triples(seed, t, z, zCl_form, triples, binaries, mBH, sBH, gBH, hBH, mBH_avg, N_Triples, N_BBH, N_BH, N_me, N_meRe, N_meEj, N_ZLK, v_star, vBH, nc_BH, mergers)
 
     # write back:
     state['seed'] = seed; state['t'] = t; state['z'] = z; state['dt'] = dt; state['zCl_form'] = zCl_form
     state['binaries'] = binaries; state['hardening'] = hardening; state['mergers'] = mergers
-    state['mBH'] = mBH; state['sBH'] = sBH; state['gBH'] = gBH
+    state['mBH'] = mBH; state['sBH'] = sBH; state['gBH'] = gBH; state['hBH'] = hBH
     state['n_star'] = n_star; state['v_star'] = v_star; state['vBH'] = vBH
     state['t_rlx'] = t_rlx; state['m_avg'] = m_avg; state['mBH_avg'] = mBH_avg
     state['na_BH'] = na_BH; state['nc_BH'] = nc_BH
@@ -845,7 +847,7 @@ def evolve_tdes(state, config):
 
     # unpack current state into local variables:
     seed = state['seed']; t = state['t']; z = state['z']; dt = state['dt']
-    mBH = state['mBH']; sBH = state['sBH']; gBH = state['gBH']
+    mBH = state['mBH']; sBH = state['sBH']; gBH = state['gBH']; hBH = state['hBH']
     vBH = state['vBH']; v_star = state['v_star']
     mBH_avg = state['mBH_avg']; m_avg = state['m_avg']
     N_BH = state['N_BH']; N_Triples = state['N_Triples']
@@ -887,7 +889,7 @@ def evolve_tdes(state, config):
     # execute BH-WD tidal disruption events:
     if k_tdeBHWD > 0:
         tde_type = 11
-        seed, t, z, k_tdeBHWD, N_tdeBHWD, tde_type, m_WD, R_WD, mBH, sBH, gBH, v_star, vBH, tdes, binaries, pairs = BH_TidalDisruptions(seed, t, z, k_tdeBHWD, N_tdeBHWD, tde_type, m_WD, R_WD, mBH, sBH, gBH, v_WD, vBH, tdes, binaries, pairs)
+        seed, t, z, k_tdeBHWD, N_tdeBHWD, tde_type, m_WD, R_WD, mBH, sBH, gBH, hBH, v_star, vBH, tdes, binaries, pairs = BH_TidalDisruptions(seed, t, z, k_tdeBHWD, N_tdeBHWD, tde_type, m_WD, R_WD, mBH, sBH, gBH, hBH, v_WD, vBH, tdes, binaries, pairs)
 
     # micro-TDEs:
     v_BHstar = np.sqrt(v_star**2 + vBH**2)
@@ -900,11 +902,11 @@ def evolve_tdes(state, config):
     # execute BH-star tidal disruption events (micro-TDEs):
     if k_tdeBHstar > 0:
         tde_type = 1
-        seed, t, z, k_tdeBHstar, N_tdeBHstar, tde_type, m_avg, _R_sun, mBH, sBH, gBH, v_star, vBH, tdes, binaries, pairs = BH_TidalDisruptions(seed, t, z, k_tdeBHstar, N_tdeBHstar, tde_type, m_avg, R_sun, mBH, sBH, gBH, v_star, vBH, tdes, binaries, pairs)
+        seed, t, z, k_tdeBHstar, N_tdeBHstar, tde_type, m_avg, _R_sun, mBH, sBH, gBH, hBH, v_star, vBH, tdes, binaries, pairs = BH_TidalDisruptions(seed, t, z, k_tdeBHstar, N_tdeBHstar, tde_type, m_avg, R_sun, mBH, sBH, gBH, hBH, v_star, vBH, tdes, binaries, pairs)
 
     # write back:
     state['seed'] = seed; state['t'] = t; state['z'] = z
-    state['mBH'] = mBH; state['sBH'] = sBH; state['gBH'] = gBH
+    state['mBH'] = mBH; state['sBH'] = sBH; state['gBH'] = gBH; state['hBH'] = hBH
     state['v_star'] = v_star; state['vBH'] = vBH
     state['binaries'] = binaries; state['pairs'] = pairs; state['tdes'] = tdes
     state['N_WD'] = N_WD; state['v_WD'] = v_WD
@@ -1173,7 +1175,8 @@ def write_output(state, config):
             "t": state['simulation_times'],
             "mBH": state['black_hole_masses'],
             "sBH": state['black_hole_spins'],
-            "gBH": state['black_hole_generations']
+            "gBH": state['black_hole_generations'],
+            "hBH": state['black_hole_tdes']
         }
         BOF_path = os.path.join(RESULTS_DIR, config['BOF'] + '.pkl')
         with open(BOF_path, "wb") as f:
@@ -1197,7 +1200,7 @@ def write_output(state, config):
                              str(tdes[i][ 4])+' '+str(tdes[i][ 5])+' '+str(tdes[i][ 6])+' '+str(tdes[i][ 7])+' '+\
                              str(tdes[i][ 8])+' '+str(tdes[i][ 9])+' '+str(tdes[i][10])+' '+str(tdes[i][11])+' '+\
                              str(tdes[i][12])+' '+str(tdes[i][13])+' '+str(tdes[i][14])+' '+str(tdes[i][15])+' '+\
-                             str(tdes[i][16]))
+                             str(tdes[i][16])+' '+str(tdes[i][17]))
                 f_tdes.write('\n')
 
     if config['Mi']==1:
@@ -1208,7 +1211,7 @@ def write_output(state, config):
                 f_mergers.write(str(mergers[i][0 ])+' '+str(mergers[i][1 ])+' '+str(mergers[i][2 ])+' '+str(mergers[i][3 ])+' '+str(mergers[i][4 ])+' '+str(mergers[i][5 ])+' '+str(mergers[i][6 ])+' '+\
                                 str(mergers[i][7 ])+' '+str(mergers[i][8 ])+' '+str(mergers[i][9 ])+' '+str(mergers[i][10])+' '+str(mergers[i][11])+' '+str(mergers[i][12])+' '+str(mergers[i][13])+' '+\
                                 str(mergers[i][14])+' '+str(mergers[i][15])+' '+str(mergers[i][16])+' '+str(mergers[i][17])+' '+str(mergers[i][18])+' '+str(mergers[i][19])+' '+str(mergers[i][20])+' '+\
-                                str(mergers[i][21])+' '+str(mergers[i][22])+' '+str(mergers[i][23])+' '+str(mergers[i][24])+' '+str(Mcl0)+' '+str(rh0)+' '+str(Z)+' '+str(zCl_form)+' '+str(R_gal0)+' '+str(Mcl)+' '+str(rh)+' '+str(R_gal))
+                                str(mergers[i][21])+' '+str(mergers[i][22])+' '+str(mergers[i][23])+' '+str(mergers[i][24])+' '+str(mergers[i][25])+' '+str(mergers[i][26])+' '+str(Mcl0)+' '+str(rh0)+' '+str(Z)+' '+str(zCl_form)+' '+str(R_gal0)+' '+str(Mcl)+' '+str(rh)+' '+str(R_gal))
                 f_mergers.write('\n')
 
     if config['Ei']==1:

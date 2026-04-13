@@ -20,7 +20,7 @@ from .constants import *
 from .functions import *
 from .remnant import *
 
-def evolve_triples(seed, t, z, zCl_form, triples, binaries, mBH, sBH, gBH, mBH_avg, N_Triples, N_BBH, N_BH, N_me, N_meRe, N_meEj, N_ZLK, v_star, vBH, nc_BH, mergers):
+def evolve_triples(seed, t, z, zCl_form, triples, binaries, mBH, sBH, gBH, hBH, mBH_avg, N_Triples, N_BBH, N_BH, N_me, N_meRe, N_meEj, N_ZLK, v_star, vBH, nc_BH, mergers):
     """
     @in seed: simulation seed number
     @in t: simulation time
@@ -31,6 +31,7 @@ def evolve_triples(seed, t, z, zCl_form, triples, binaries, mBH, sBH, gBH, mBH_a
     @in mBH: array of single BH masses
     @in sBH: array of single BH spins
     @in gBH: array of single BH generations
+    @in hBH: array of BH tdes count
     @in mBH_avg: average BH mass
     @in N_Triples: number of triples
     @in N_BBH: number of BBHs
@@ -42,7 +43,7 @@ def evolve_triples(seed, t, z, zCl_form, triples, binaries, mBH, sBH, gBH, mBH_a
     @in v_star: 3D star velocity dispersion
     @in vBH: 3D BH velocity dispersion
     @in nc_BH: central BH density
-    @in mergers: array of mergers: [seed, ind, channel, a, e, m1, m2, s1, s2, g1, g2, theta1, theta2, dPhi, t_form, z_form, t_merge, z_merge, m_rem, s_rem, g_rem, vGW_kick, s_eff, q, v_esc]
+    @in mergers: array of mergers: [seed, ind, channel, a, e, m1, m2, s1, s2, g1, g2, theta1, theta2, dPhi, t_form, z_form, t_merge, z_merge, m_rem, s_rem, g_rem, vGW_kick, s_eff, q, v_esc, h1, h2]
     
     @out: all inputs
     """
@@ -75,6 +76,9 @@ def evolve_triples(seed, t, z, zCl_form, triples, binaries, mBH, sBH, gBH, mBH_a
             channel_in = triples[i][18]
             t_form_in = triples[i][19]
             z_form_in = triples[i][20]
+            h0 = triples[i][21]
+            h1 = triples[i][22]
+            h2 = triples[i][23]
 
             # inner argument of periapsis:
             w_in = np.random.uniform(0, 2*np.pi)
@@ -97,8 +101,9 @@ def evolve_triples(seed, t, z, zCl_form, triples, binaries, mBH, sBH, gBH, mBH_a
                 
                 # merger remnant properties:
                 m_rem, s_rem, vGW_kick = merger_remnant(m0, m1, s0, s1, theta0, theta1, dPhi)
-                g_rem = np.max([g1, g2]) + 1
-                
+                g_rem = np.max([g0, g1]) + 1
+                h_rem = h0 + h1
+
                 N_me+=1
                 N_ZLK+=1
                 
@@ -106,14 +111,14 @@ def evolve_triples(seed, t, z, zCl_form, triples, binaries, mBH, sBH, gBH, mBH_a
                 t_merge = t + t_ZLK
                 
                 # order BHs by mass:
-                mA = m0; sA = s0; gA = g0; thetaA = theta0
-                mB = m1; sB = s1; gB = g1; thetaB = theta1
+                mA = m0; sA = s0; gA = g0; hA = h0; thetaA = theta0
+                mB = m1; sB = s1; gB = g1; hB = h1; thetaB = theta1
                 if mA>mB:
-                    m0 = mA; s0 = sA; g0 = gA; theta0 = thetaA
-                    m1 = mB; s1 = sB; g1 = gB; theta1 = thetaB
+                    m0 = mA; s0 = sA; g0 = gA; h0 = hA; theta0 = thetaA
+                    m1 = mB; s1 = sB; g1 = gB; h1 = hB; theta1 = thetaB
                 else:
-                    m0 = mB; s0 = sB; g0 = gB; theta0 = thetaB
-                    m1 = mA; s1 = sA; g1 = gA; theta1 = thetaA
+                    m0 = mB; s0 = sB; g0 = gB; h0 = hB; theta0 = thetaB
+                    m1 = mA; s1 = sA; g1 = gA; h1 = hA; theta1 = thetaA
                     
                 # mass ratio:
                 q = m1 / m0
@@ -123,7 +128,7 @@ def evolve_triples(seed, t, z, zCl_form, triples, binaries, mBH, sBH, gBH, mBH_a
                 
                 # append merger:
                 mergers = np.append(mergers, [[seed, ind_in, 4, a_in, eMAX, m0, m1, s0, s1, g0, g1, theta0, theta1, dPhi, t_form_in, z_form_in, t_merge,
-                                               redshift(lookback(zCl_form) - t_merge), m_rem, s_rem, g_rem, vGW_kick, s_eff, q, 2*v_star]], axis=0)
+                                               redshift(lookback(zCl_form) - t_merge), m_rem, s_rem, g_rem, vGW_kick, s_eff, q, 2*v_star, h0, h1]], axis=0)
                 
                 triples = np.delete(triples, i, axis=0)
 
@@ -138,7 +143,8 @@ def evolve_triples(seed, t, z, zCl_form, triples, binaries, mBH, sBH, gBH, mBH_a
                     mBH = np.append(mBH, m2)
                     sBH = np.append(sBH, s2)
                     gBH = np.append(gBH, g2)
-                    
+                    hBH = np.append(hBH, h2)
+
                     if vGW_kick > 2 * np.sqrt(v_star**2 + vBH**2): # merger remnant is ejected
 
                         N_BH = N_BH - 1
@@ -152,11 +158,12 @@ def evolve_triples(seed, t, z, zCl_form, triples, binaries, mBH, sBH, gBH, mBH_a
                         mBH = np.append(mBH, m_rem)
                         sBH = np.append(sBH, s_rem)
                         gBH = np.append(gBH, g_rem)
-                        
+                        hBH = np.append(hBH, h_rem)
+
                 else: # new outer binary survives
                     
                     # append binary:
-                    binaries = np.append(binaries, [[np.random.randint(0, 999999999), 5, a_out, np.sqrt(np.random.rand()), m2, m_rem, s2, s_rem, g2, g_rem, t + t_ZLK, redshift(lookback(zCl_form) - t - t_ZLK), 0]], axis=0)
+                    binaries = np.append(binaries, [[np.random.randint(0, 999999999), 5, a_out, np.sqrt(np.random.rand()), m2, m_rem, s2, s_rem, g2, g_rem, t + t_ZLK, redshift(lookback(zCl_form) - t - t_ZLK), 0, h2, h_rem]], axis=0)
                     
                     N_BBH+=1
                     N_meRe+=1
@@ -175,11 +182,12 @@ def evolve_triples(seed, t, z, zCl_form, triples, binaries, mBH, sBH, gBH, mBH_a
                 mBH = np.append(mBH, m2)
                 sBH = np.append(sBH, s2)
                 gBH = np.append(gBH, g2)
-                
-                binaries = np.append(binaries, [[ind_in, channel_in, a_in, e_in, m0, m1, s0, s1, g0, g1, t, z, 0]], axis=0)
+                hBH = np.append(hBH, h2)
+
+                binaries = np.append(binaries, [[ind_in, channel_in, a_in, e_in, m0, m1, s0, s1, g0, g1, t, z, 0, h0, h1]], axis=0)
                 
             i+=1
             
-    return seed, t, z, zCl_form, triples, binaries, mBH, sBH, gBH, mBH_avg, N_Triples, N_BBH, N_BH, N_me, N_meRe, N_meEj, N_ZLK, v_star, vBH, nc_BH, mergers
+    return seed, t, z, zCl_form, triples, binaries, mBH, sBH, gBH, hBH, mBH_avg, N_Triples, N_BBH, N_BH, N_me, N_meRe, N_meEj, N_ZLK, v_star, vBH, nc_BH, mergers
 
 # End of file.
