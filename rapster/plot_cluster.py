@@ -226,17 +226,25 @@ def plot_merger_channels(data, save_dir):
 
 
 def plot_tdes(data, save_dir):
-    """Plot TDE BH mass vs penetration factor and fallback time."""
+    """Plot TDE BH mass vs penetration factor and available time column."""
     tdes = data['tdes']
     if tdes is None or len(tdes) == 0:
         return
 
+    if 't_fb' in tdes:
+        y_values = tdes['t_fb'] * MYR_TO_SEC / 60
+        y_label = 'Fallback time (min)'
+    else:
+        y_values = tdes['t']
+        y_label = 'Cluster time (Myr)'
+
     fig, ax = plt.subplots(figsize=(8, 5))
-    sc = ax.scatter(tdes['beta'], tdes['t_fb'] * MYR_TO_SEC / 60, c=tdes['m_BH'], cmap='gnuplot')
+    sc = ax.scatter(tdes['beta'], y_values, c=tdes['m_BH'], cmap='gnuplot')
     plt.colorbar(sc, ax=ax, label=r'Black-hole mass ($M_\odot$)')
-    ax.set_yscale('log')
+    if np.all(y_values > 0):
+        ax.set_yscale('log')
     ax.set_xlabel(r'Penetration factor ($r_t/r_p$)')
-    ax.set_ylabel('Fallback time (min)')
+    ax.set_ylabel(y_label)
     ax.set_title('Tidal disruption events')
     fig.tight_layout()
     fig.savefig(os.path.join(save_dir, 'tdes.png'), dpi=150)

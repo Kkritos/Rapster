@@ -80,8 +80,8 @@ def initialize_cluster(config):
     n_star0 = n_star
 
     # average stellar mass:
-    Kroupa_norm = 1 / integrate.quad(lambda x: IMF_kroupa(np.array([x])), m_min, m_max)[0]
-    m_avg = Kroupa_norm * integrate.quad(lambda x: x * IMF_kroupa(np.array([x])), m_min, m_max)[0]
+    Kroupa_norm = 1 / integrate.quad(IMF_kroupa, m_min, m_max)[0]
+    m_avg = Kroupa_norm * integrate.quad(lambda x: x * IMF_kroupa(x), m_min, m_max)[0]
 
     # initial average stellar mass:
     m_avg0 = m_avg
@@ -94,8 +94,8 @@ def initialize_cluster(config):
     R_gal0 = R_gal
 
     # initial multimass relaxation factor:
-    psi0 = integrate.quad(lambda x: x**(5/2) * IMF_kroupa(np.array([x])), m_min, m_max)[0] \
-        / integrate.quad(lambda x: IMF_kroupa(np.array([x])), m_min, m_max)[0] / m_avg**(5/2)
+    psi0 = integrate.quad(lambda x: x**(5/2) * IMF_kroupa(x), m_min, m_max)[0] \
+        / integrate.quad(IMF_kroupa, m_min, m_max)[0] / m_avg**(5/2)
 
     # initial relaxation timescale:
     t_rlx0 = t_relax(Mcl0, rh0, m_avg, psi0, np.log(lc * N))
@@ -130,8 +130,8 @@ def initialize_cluster(config):
         v_star = np.sqrt(0.4 * G_Newton * Mcl / rh)
 
     # number of massive stars:
-    N_massive = int(Mcl * integrate.quad(lambda x: IMF_kroupa(np.array([x])), mM_min, m_max)[0] \
-                    / integrate.quad(lambda x: x * IMF_kroupa(np.array([x])), m_min, m_max)[0])
+    N_massive = int(Mcl * integrate.quad(IMF_kroupa, mM_min, m_max)[0] \
+                    / integrate.quad(lambda x: x * IMF_kroupa(x), m_min, m_max)[0])
 
     if BMD==0:
         # default: Kroupa IMF + stellar collapse + SN kicks
@@ -227,7 +227,7 @@ def initialize_cluster(config):
 
     # optionally form and retain neutron stars based on natal kicks:
     if with_NSs==1:
-        f_NS_form = Kroupa_norm*integrate.quad(lambda m: IMF_kroupa(np.array([m])), 8, 18)[0]
+        f_NS_form = Kroupa_norm*integrate.quad(IMF_kroupa, 8, 18)[0]
         N_NS_form = int(f_NS_form*N)
         v_NS_natal = maxwell.rvs(loc=0, scale=np.sqrt(3)*wSN_kick, size=N_NS_form)
         N_NS_ret = v_NS_natal[v_NS_natal < v_esc(Mcl, rh)].size

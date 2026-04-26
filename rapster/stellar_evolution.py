@@ -23,10 +23,14 @@ def IMF_kroupa(m):
     """
     Kroupa (2002) initial mass function.
 
-    @in m : stellar mass array [Msun]
+    @in m : stellar mass or stellar mass array [Msun]
 
     @out: number dN of stars in mass bin (m,m+dm) [1/Msun]
     """
+
+    m = np.asarray(m, dtype=float)
+    scalar_input = (m.ndim == 0)
+    m = np.atleast_1d(m)
 
     # mass boundaries (in solar masses):
     m1 = 0.08
@@ -64,7 +68,7 @@ def IMF_kroupa(m):
             
             out[i] = c3 * m[i]**a3
                     
-    return out
+    return float(out[0]) if scalar_input else out
 
 N_grid = 700
 M_grid = np.linspace(10, 340, N_grid)
