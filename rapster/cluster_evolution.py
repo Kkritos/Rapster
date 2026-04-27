@@ -649,6 +649,11 @@ def form_binaries(state, config):
     N_ex2 = state['N_ex2']
     t_3bb = state['t_3bb']
     t_2cap = state['t_2cap']
+    N_tdeBHstar = state['N_tdeBHstar']
+    tdes = state['tdes']
+    m_min = config['m_min']
+    m_max = config['m_max']
+    with_tdes = config['with_tdes']
 
     # number of single (unbound) BHs available for interactions:
     N_BHsin = N_BH - 2*N_BBH - N_BHstar - 3*N_Triples
@@ -673,16 +678,16 @@ def form_binaries(state, config):
 
     # star-star -> BH-star exchange(s):
     if k_ex1 > 0:
-        k_ex1, N_ex1, m_avg, mBH, sBH, gBH, hBH, ab, pairs, N_BHstar = StarStar_to_BHstar(k_ex1, N_ex1, m_avg, mBH, sBH, gBH, hBH, ab, pairs, N_BHstar)
-
+        seed, t, z, k_ex1, N_ex1, m_avg, mBH, sBH, gBH, hBH, ab, pairs, N_BHstar, N_tdeBHstar, v_star, vBH, tdes, binaries, m_min, m_max, with_tdes = StarStar_to_BHstar(seed, t, z, k_ex1, N_ex1, m_avg, mBH, sBH, gBH, hBH, ab, pairs, N_BHstar, N_tdeBHstar, v_star, vBH, tdes, binaries, m_min, m_max, with_tdes)
+    
     # number of BH-star -> BH-BH exchanges:
     N_BHsin = N_BH - 2*N_BBH - N_BHstar - 3*N_Triples
     k_ex2 = np.min([poisson.rvs(mu=dt / state['t_ex2']), int(N_BHsin), int(N_BHstar)])
 
     # BH-star -> BBH exchange(s):
     if k_ex2 > 0:
-        t, z, k_ex2, N_ex2, m_avg, mBH, sBH, gBH, hBH, pairs, binaries, N_BBH, N_BHstar = BHstar_to_BBH(t, z, k_ex2, N_ex2, m_avg, mBH, sBH, gBH, hBH, pairs, binaries, N_BBH, N_BHstar)
-
+        seed, t, z, k_ex2, N_ex2, m_avg, mBH, sBH, gBH, hBH, pairs, binaries, N_BBH, N_BHstar, N_tdeBHstar, v_star, vBH, tdes, m_min, m_max, with_tdes = BHstar_to_BBH(seed, t, z, k_ex2, N_ex2, m_avg, mBH, sBH, gBH, hBH, pairs, binaries, N_BBH, N_BHstar, N_tdeBHstar, v_star, vBH, tdes, m_min, m_max, with_tdes)
+    
     # write back:
     state['t'] = t; state['z'] = z; state['dt'] = dt; state['seed'] = seed
     state['mBH_avg'] = mBH_avg; state['binaries'] = binaries; state['mBH'] = mBH
@@ -695,6 +700,7 @@ def form_binaries(state, config):
     state['k_3bb'] = k_3bb; state['k_2cap'] = k_2cap
     state['k_ex1'] = k_ex1; state['k_ex2'] = k_ex2
     state['zCl_form'] = zCl_form
+    state['N_tdeBHstar'] = N_tdeBHstar; state['tdes'] = tdes
 
 
 def evolve_interactions(state, config):
@@ -857,6 +863,8 @@ def evolve_tdes(state, config):
     binaries = state['binaries']; pairs = state['pairs']; tdes = state['tdes']
     Kroupa_norm = state['Kroupa_norm']
     xi_e = state['xi_e']
+    m_min = config['m_min']
+    m_max = config['m_max']
 
     # white dwarf formation parameters (solar lifetime and max WD progenitor mass):
     solar_life = 1.0e4
@@ -889,7 +897,7 @@ def evolve_tdes(state, config):
     # execute BH-WD tidal disruption events:
     if k_tdeBHWD > 0:
         tde_type = 11
-        seed, t, z, k_tdeBHWD, N_tdeBHWD, tde_type, m_WD, R_WD, mBH, sBH, gBH, hBH, v_star, vBH, tdes, binaries, pairs = BH_TidalDisruptions(seed, t, z, k_tdeBHWD, N_tdeBHWD, tde_type, m_WD, R_WD, mBH, sBH, gBH, hBH, v_WD, vBH, tdes, binaries, pairs)
+        seed, t, z, k_tdeBHWD, N_tdeBHWD, tde_type, m_avg, m_WD, R_WD, mBH, sBH, gBH, hBH, v_star, vBH, tdes, binaries, pairs = BH_TidalDisruptions(seed, t, z, k_tdeBHWD, N_tdeBHWD, tde_type, m_avg, m_WD, R_WD, mBH, sBH, gBH, hBH, v_WD, vBH, tdes, binaries, pairs)
 
     # micro-TDEs:
     v_BHstar = np.sqrt(v_star**2 + vBH**2)
@@ -902,7 +910,11 @@ def evolve_tdes(state, config):
     # execute BH-star tidal disruption events (micro-TDEs):
     if k_tdeBHstar > 0:
         tde_type = 1
-        seed, t, z, k_tdeBHstar, N_tdeBHstar, tde_type, m_avg, _R_sun, mBH, sBH, gBH, hBH, v_star, vBH, tdes, binaries, pairs = BH_TidalDisruptions(seed, t, z, k_tdeBHstar, N_tdeBHstar, tde_type, m_avg, R_sun, mBH, sBH, gBH, hBH, v_star, vBH, tdes, binaries, pairs)
+
+        # Sample star mass from evolving mass function:
+        m_star, R_star = get_star(t, tBH_form, m_min, m_max)
+
+        seed, t, z, k_tdeBHstar, N_tdeBHstar, tde_type, m_avg, m_star, R_star, mBH, sBH, gBH, hBH, v_star, vBH, tdes, binaries, pairs = BH_TidalDisruptions(seed, t, z, k_tdeBHstar, N_tdeBHstar, tde_type, m_avg, m_star, R_star, mBH, sBH, gBH, hBH, v_star, vBH, tdes, binaries, pairs)
 
     # write back:
     state['seed'] = seed; state['t'] = t; state['z'] = z

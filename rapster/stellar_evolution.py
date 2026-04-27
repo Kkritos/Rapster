@@ -408,4 +408,42 @@ def R_WhiteDwarf(M_wd=white_dwarf_mass, M_Ch=M_Chandrasekhar):
 
     return 7.80e6*(M_wd/M_Ch)**(-1/3)*np.sqrt(1 - (M_wd/M_Ch)**(4/3))/3.086e16
 
+# Sampling a stellar mass from evolving mass function at simulation time t:
+
+m_fine_grid = np.logspace(np.log10(0.08), np.log10(340.0), 10**5)
+pdf_values = IMF_kroupa(m_fine_grid)
+
+# calculate the CDF:
+cdf_values = np.cumsum(pdf_values)
+cdf_values /= cdf_values[-1] # normalize
+
+# create an "Inverse CDF" function: Maps [0, 1] -> Mass
+inv_cdf = interpolate.interp1d(cdf_values, m_fine_grid, bounds_error=False, fill_value=(0.08, 340.0))
+
+def get_star(t, tBH_form, m_min, m_max):
+    """
+    Returns a main-sequence star (mass/Msun and radius/pc) from an evolving mass function at time t.
+
+    @in t: current simulation time (Myr)
+    @in tBH_form: time of BH-subsystem formation (Myr)
+    @in m_min: ZAMS minimum mass (Msun)
+    @in m_max: ZAMS maximum mass (Msun)
+    """
+    
+    # current mass limit:
+    current_m_max = (1e4/t)**(1/2.5) if t > tBH_form else m_max
+    
+    # find the CDF value corresponding to the current mass limit:
+    cutoff_percentile = np.interp(current_m_max, m_fine_grid, cdf_values)
+    
+    # draw a random number scaled to the available percentile range:
+    u = np.random.random() * cutoff_percentile
+    
+    # map back to mass:
+    mstar = inv_cdf(u)
+    
+    # radius calculation: (Ryu et al. 2020)
+    rstar = 0.93 * mstar**0.88 * R_sun # in pc
+    return mstar, rstar
+
 # End of file.
