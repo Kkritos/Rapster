@@ -649,6 +649,11 @@ def form_binaries(state, config):
     N_ex2 = state['N_ex2']
     t_3bb = state['t_3bb']
     t_2cap = state['t_2cap']
+    N_tdeBHstar = state['N_tdeBHstar']
+    tdes = state['tdes']
+    m_min = config['m_min']
+    m_max = config['m_max']
+    with_tdes = config['with_tdes']
 
     # number of single (unbound) BHs available for interactions:
     N_BHsin = N_BH - 2*N_BBH - N_BHstar - 3*N_Triples
@@ -673,16 +678,16 @@ def form_binaries(state, config):
 
     # star-star -> BH-star exchange(s):
     if k_ex1 > 0:
-        k_ex1, N_ex1, m_avg, mBH, sBH, gBH, hBH, ab, pairs, N_BHstar, state, config = StarStar_to_BHstar(k_ex1, N_ex1, m_avg, mBH, sBH, gBH, hBH, ab, pairs, N_BHstar, state, config)
-
+        seed, t, z, k_ex1, N_ex1, m_avg, mBH, sBH, gBH, hBH, ab, pairs, N_BHstar, N_tdeBHstar, v_star, vBH, tdes, binaries, m_min, m_max, with_tdes = StarStar_to_BHstar(seed, t, z, k_ex1, N_ex1, m_avg, mBH, sBH, gBH, hBH, ab, pairs, N_BHstar, N_tdeBHstar, v_star, vBH, tdes, binaries, m_min, m_max, with_tdes)
+    
     # number of BH-star -> BH-BH exchanges:
     N_BHsin = N_BH - 2*N_BBH - N_BHstar - 3*N_Triples
     k_ex2 = np.min([poisson.rvs(mu=dt / state['t_ex2']), int(N_BHsin), int(N_BHstar)])
 
     # BH-star -> BBH exchange(s):
     if k_ex2 > 0:
-        t, z, k_ex2, N_ex2, m_avg, mBH, sBH, gBH, hBH, pairs, binaries, N_BBH, N_BHstar, state, config = BHstar_to_BBH(t, z, k_ex2, N_ex2, m_avg, mBH, sBH, gBH, hBH, pairs, binaries, N_BBH, N_BHstar, state, config)
-
+        seed, t, z, k_ex2, N_ex2, m_avg, mBH, sBH, gBH, hBH, pairs, binaries, N_BBH, N_BHstar, N_tdeBHstar, v_star, vBH, tdes, m_min, m_max, with_tdes = BHstar_to_BBH(seed, t, z, k_ex2, N_ex2, m_avg, mBH, sBH, gBH, hBH, pairs, binaries, N_BBH, N_BHstar, N_tdeBHstar, v_star, vBH, tdes, m_min, m_max, with_tdes)
+    
     # write back:
     state['t'] = t; state['z'] = z; state['dt'] = dt; state['seed'] = seed
     state['mBH_avg'] = mBH_avg; state['binaries'] = binaries; state['mBH'] = mBH
@@ -695,6 +700,7 @@ def form_binaries(state, config):
     state['k_3bb'] = k_3bb; state['k_2cap'] = k_2cap
     state['k_ex1'] = k_ex1; state['k_ex2'] = k_ex2
     state['zCl_form'] = zCl_form
+    state['N_tdeBHstar'] = N_tdeBHstar; state['tdes'] = tdes
 
 
 def evolve_interactions(state, config):

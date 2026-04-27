@@ -21,10 +21,13 @@ from .functions import *
 from .stellar_evolution import *
 from .tidal_disruptions import *
 
-def StarStar_to_BHstar(k_ex1, N_ex1, m_avg, mBH, sBH, gBH, hBH, ab, pairs, N_BHstar, state, config):
+def StarStar_to_BHstar(seed, t, z, k_ex1, N_ex1, m_avg, mBH, sBH, gBH, hBH, ab, pairs, N_BHstar, N_tdeBHstar, v_star, vBH, tdes, binaries, m_min, m_max, with_tdes):
     """
     Creates BH-star binaries from star-star pairs, or a TDE occurs during the binary-single interaction.
 
+    @in seed: simulation seed
+    @in t: current simulation time
+    @in z: current redshift
     @in k_ex1: current number of star-star -> BH-star exchanges
     @in N_ex1: total number of star-star -> BH-star exchanges
     @in m_avg: average mass
@@ -35,26 +38,18 @@ def StarStar_to_BHstar(k_ex1, N_ex1, m_avg, mBH, sBH, gBH, hBH, ab, pairs, N_BHs
     @in ab: array of star-star semimajor axes
     @in pairs: array of BH-star pairs
     @in N_BHstar: number of BH-star pairs
-    @in state: current state of cluster
-    @in config: initial cluster configuration
+    @in N_tdeBHstar: number of BH-star TDEs
+    @in v_star: stellar velocity dispersion (3D)
+    @in vBH: BH velocity dispersion (3D)
+    @in tdes: tdes array 
+    @in binaries: binaries array 
+    @in m_min: min ZAMS star mass 
+    @in m_max: max ZAMS star mass
+    @in with_tdes: if =1 allow TDEs, else do not allow them
 
     @out: all inputs
     """
  
-    # unpack current state into local variables:
-    seed = state['seed']; t = state['t']; z = state['z']; dt = state['dt']
-    mBH = state['mBH']; sBH = state['sBH']; gBH = state['gBH']; hBH = state['hBH']
-    vBH = state['vBH']; v_star = state['v_star']
-    mBH_avg = state['mBH_avg']; m_avg = state['m_avg']
-    N_BH = state['N_BH']; N_Triples = state['N_Triples']
-    n_star = state['n_star']; t_rlx = state['t_rlx']
-    Mcl = state['Mcl']; rh = state['rh']
-    binaries = state['binaries']; pairs = state['pairs']; tdes = state['tdes']
-    Kroupa_norm = state['Kroupa_norm']
-    xi_e = state['xi_e']
-    m_min = config['m_min']
-    m_max = config['m_max']
-   
     if k_ex1>0: # perform star-star -> BH-star exchange(s)
         
         for i in range(k_ex1):
@@ -82,7 +77,7 @@ def StarStar_to_BHstar(k_ex1, N_ex1, m_avg, mBH, sBH, gBH, hBH, ab, pairs, N_BHs
             ab = np.delete(ab, kss)
 
             # probability for TDE:
-            p_TDE = min(2*R_sun*(m/m_avg)**(1/3)/a, 1.0) if config['with_tdes']==1 else 0.0
+            p_TDE = min(2*R_sun*(m/m_avg)**(1/3)/a, 1.0) if with_tdes==1 else 0.0
 
             if np.random.rand() < p_TDE:
                 # then TDE occurs and binary disrupts:
@@ -92,6 +87,7 @@ def StarStar_to_BHstar(k_ex1, N_ex1, m_avg, mBH, sBH, gBH, hBH, ab, pairs, N_BHs
                 # Sample star mass from evolving mass function:
                 m_star, R_star = get_star(t, tBH_form, m_min, m_max)
 
+                k_tdeBHstar = 1
                 seed, t, z, k_tdeBHstar, N_tdeBHstar, tde_type, m_avg, m_star, R_star, m, s, g, h, v_star, vBH, tdes, binaries, pairs = BH_TidalDisruptions(seed, t, z, k_tdeBHstar, N_tdeBHstar, tde_type, m_avg, m_star, R_star, np.array([m]), np.array([s]), np.array([g]), np.array([h]), v_star, vBH, tdes, binaries, pairs)
 
                 # update and release m1 into the single population:
@@ -117,37 +113,14 @@ def StarStar_to_BHstar(k_ex1, N_ex1, m_avg, mBH, sBH, gBH, hBH, ab, pairs, N_BHs
                 gBH = np.delete(gBH, k)
                 hBH = np.delete(hBH, k)
 
-    # write back:
-    state['seed'] = seed; state['t'] = t; state['z'] = z
-    state['mBH'] = mBH; state['sBH'] = sBH; state['gBH'] = gBH; state['hBH'] = hBH
-    state['v_star'] = v_star; state['vBH'] = vBH
-    state['binaries'] = binaries; state['pairs'] = pairs; state['tdes'] = tdes
-    state['N_tdeBHstar'] = N_tdeBHstar
-    state['k_tdeBHstar'] = k_tdeBHstar
-    state['dN_tdeBHstardt'] = dN_tdeBHstardt
+    return seed, t, z, k_ex1, N_ex1, m_avg, mBH, sBH, gBH, hBH, ab, pairs, N_BHstar, N_tdeBHstar, v_star, vBH, tdes, binaries, m_min, m_max, with_tdes
 
-    return k_ex1, N_ex1, m_avg, mBH, sBH, gBH, hBH, ab, pairs, N_BHstar, state, config
-
-def BHstar_to_BBH(t, z, k_ex2, N_ex2, m_avg, mBH, sBH, gBH, hBH, pairs, binaries, N_BBH, N_BHstar, state, config):
+def BHstar_to_BBH(seed, t, z, k_ex2, N_ex2, m_avg, mBH, sBH, gBH, hBH, pairs, binaries, N_BBH, N_BHstar, N_tdeBHstar, v_star, vBH, tdes, m_min, m_max, with_tdes):
     """
     Creates BH-BH binaries from BH-star pairs, or a TDE occurs during the binary-single interaction.
 
     @out: all inputs
     """
-
-    # unpack current state into local variables:
-    seed = state['seed']; t = state['t']; z = state['z']; dt = state['dt']
-    mBH = state['mBH']; sBH = state['sBH']; gBH = state['gBH']; hBH = state['hBH']
-    vBH = state['vBH']; v_star = state['v_star']
-    mBH_avg = state['mBH_avg']; m_avg = state['m_avg']
-    N_BH = state['N_BH']; N_Triples = state['N_Triples']
-    n_star = state['n_star']; t_rlx = state['t_rlx']
-    Mcl = state['Mcl']; rh = state['rh']
-    binaries = state['binaries']; pairs = state['pairs']; tdes = state['tdes']
-    Kroupa_norm = state['Kroupa_norm']
-    xi_e = state['xi_e']
-    m_min = config['m_min']
-    m_max = config['m_max']    
 
     if k_ex2>0: # perform BH-star -> BH-BH exchange(s)
         
@@ -171,9 +144,6 @@ def BHstar_to_BBH(t, z, k_ex2, N_ex2, m_avg, mBH, sBH, gBH, hBH, pairs, binaries
             
             kp = np.squeeze(np.where(pairs[:, 0]==ap))+0
 
-            # delete pair:
-            pairs = np.delete(pairs, kp, axis=0)
-
             if isinstance(kp, np.ndarray):
                 kp=kp[0]
                 
@@ -181,9 +151,12 @@ def BHstar_to_BBH(t, z, k_ex2, N_ex2, m_avg, mBH, sBH, gBH, hBH, pairs, binaries
             s1 = pairs[kp][2]
             g1 = pairs[kp][3]
             h1 = pairs[kp][4]
+
+            # delete pair:
+            pairs = np.delete(pairs, kp, axis=0)
             
             # probability for TDE:
-            p_TDE = min(R_sun*(m2/m_avg)**(1/3)/ap, 1.0) if config['with_tdes']==1 else 0.0
+            p_TDE = min(R_sun*(m2/m_avg)**(1/3)/ap, 1.0) if with_tdes==1 else 0.0
 
             if np.random.rand() < p_TDE:
                 # then TDE occurs and BH-star binary disrupts:
@@ -193,6 +166,7 @@ def BHstar_to_BBH(t, z, k_ex2, N_ex2, m_avg, mBH, sBH, gBH, hBH, pairs, binaries
                 # Sample star mass from evolving mass function:
                 m_star, R_star = get_star(t, tBH_form, m_min, m_max)
 
+                k_tdeBHstar = 1
                 seed, t, z, k_tdeBHstar, N_tdeBHstar, tde_type, m_avg, m_star, R_star, m2, s2, g2, h2, v_star, vBH, tdes, binaries, pairs = BH_TidalDisruptions(seed, t, z, k_tdeBHstar, N_tdeBHstar, tde_type, m_avg, m_star, R_star, np.array([m2]), np.array([s2]), np.array([g2]), np.array([h2]), v_star, vBH, tdes, binaries, pairs)
                 
                 # release BH from BH-star pair into the single population:
@@ -229,15 +203,6 @@ def BHstar_to_BBH(t, z, k_ex2, N_ex2, m_avg, mBH, sBH, gBH, hBH, pairs, binaries
                 N_ex2+=1 # update number of BH-star -> BH-BH exchanges
                 N_BBH+=1
             
-    # write back:
-    state['seed'] = seed; state['t'] = t; state['z'] = z
-    state['mBH'] = mBH; state['sBH'] = sBH; state['gBH'] = gBH; state['hBH'] = hBH
-    state['v_star'] = v_star; state['vBH'] = vBH
-    state['binaries'] = binaries; state['pairs'] = pairs; state['tdes'] = tdes
-    state['N_tdeBHstar'] = N_tdeBHstar
-    state['k_tdeBHstar'] = k_tdeBHstar
-    state['dN_tdeBHstardt'] = dN_tdeBHstardt
-
-    return t, z, k_ex2, N_ex2, m_avg, mBH, sBH, gBH, hBH, pairs, binaries, N_BBH, N_BHstar, state, config
+    return seed, t, z, k_ex2, N_ex2, m_avg, mBH, sBH, gBH, hBH, pairs, binaries, N_BBH, N_BHstar, N_tdeBHstar, v_star, vBH, tdes, m_min, m_max, with_tdes
 
 # end of file
