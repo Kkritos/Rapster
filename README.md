@@ -262,12 +262,12 @@ a) Column description of mergers .txt file:
 
 ##### Note:
 CBC assembly channel (first column of mergers file), the ``-`` sign means BBH was ejected and merged outside the cluster:
-- (-)1: exchange processes
--    2: two-body capture
-- (-)3: three-BH binary induced
--    4: von Zeipel-Lidov-Kozai (ZLK) merger
-- (-)5: ZLK remnant CBC
--    6: binary-single capture
+- ``(-)1``: exchange processes
+-    ``2``: two-body capture
+- ``(-)3``: three-BH binary induced
+-    ``4``: von Zeipel-Lidov-Kozai (ZLK) merger
+- ``(-)5``: ZLK remnant CBC
+-    ``6``: binary-single capture
 
 b) Column description of evolution .txt file:
 
@@ -362,13 +362,13 @@ c) Column description of hardening .txt file:
 
 ##### Note:
 Condition or binary status (second to last column of hardening file):
-- 0: BBH available to evolve (see the flowchart of our algorithm in Fig.3 of [K. Kritos et al. (2022)](https://arxiv.org/abs/2210.10055))
-- 1: Local time exceeds global time
-- 2: 2-body merger (the BBH hardens and merges in the cluster after entering the GW regime)
-- 3: binary ionized during binary-single interaction
-- 4: Binary ionized during binary-binary interaction
-- 5: Binary ejected
-- 6: Binary-single capture
+- ``0``: BBH available to evolve (see the flowchart of our algorithm in Fig.3 of [K. Kritos et al. (2022)](https://arxiv.org/abs/2210.10055))
+- ``1``: Local time exceeds global time
+- ``2``: 2-body merger (the BBH hardens and merges in the cluster after entering the GW regime)
+- ``3``: binary ionized during binary-single interaction
+- ``4``: Binary ionized during binary-binary interaction
+- ``5``: Binary ejected
+- ``6``: Binary-single capture
 
 The local simulation is terminated unless ${\rm condition}=0$.
 
@@ -396,11 +396,11 @@ d) Column description of tdes .txt file:
 | 18 | $h_{\rm BH}$ | Number of previous TDEs the compact object has undergone |
 
 ##### Note:
-TDE type:
-- 1: BH/star TDE during single BH - single star encounter
-- 2: BH/star TDE during star-star binary - single BH strong interaction
-- 3: BH/star TDE during BH-star binary - single BH strong interaction
-- 11: BH/WD TDE during single BH - single WD encounter
+TDE type is an integer index that corresponds to the following:
+- ``1``: BH/star TDE during single BH - single star encounter
+- ``2``: BH/star TDE during star-star binary - single BH strong interaction
+- ``3``: BH/star TDE during BH-star binary - single BH strong interaction
+- ``11``: BH/WD TDE during single BH - single WD encounter
 
 e) The outputBHs.pkl file (if exported) contains the properties of all BHs in the system at each time step.
 
