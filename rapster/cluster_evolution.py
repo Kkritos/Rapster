@@ -857,6 +857,8 @@ def evolve_tdes(state, config):
     binaries = state['binaries']; pairs = state['pairs']; tdes = state['tdes']
     Kroupa_norm = state['Kroupa_norm']
     xi_e = state['xi_e']
+    m_min = config['m_min']
+    m_max = config['m_max']
 
     # white dwarf formation parameters (solar lifetime and max WD progenitor mass):
     solar_life = 1.0e4
@@ -889,7 +891,7 @@ def evolve_tdes(state, config):
     # execute BH-WD tidal disruption events:
     if k_tdeBHWD > 0:
         tde_type = 11
-        seed, t, z, k_tdeBHWD, N_tdeBHWD, tde_type, m_WD, R_WD, mBH, sBH, gBH, hBH, v_star, vBH, tdes, binaries, pairs = BH_TidalDisruptions(seed, t, z, k_tdeBHWD, N_tdeBHWD, tde_type, m_WD, R_WD, mBH, sBH, gBH, hBH, v_WD, vBH, tdes, binaries, pairs)
+        seed, t, z, k_tdeBHWD, N_tdeBHWD, tde_type, m_avg, m_WD, R_WD, mBH, sBH, gBH, hBH, v_star, vBH, tdes, binaries, pairs = BH_TidalDisruptions(seed, t, z, k_tdeBHWD, N_tdeBHWD, tde_type, m_avg, m_WD, R_WD, mBH, sBH, gBH, hBH, v_WD, vBH, tdes, binaries, pairs)
 
     # micro-TDEs:
     v_BHstar = np.sqrt(v_star**2 + vBH**2)
@@ -902,7 +904,11 @@ def evolve_tdes(state, config):
     # execute BH-star tidal disruption events (micro-TDEs):
     if k_tdeBHstar > 0:
         tde_type = 1
-        seed, t, z, k_tdeBHstar, N_tdeBHstar, tde_type, m_avg, _R_sun, mBH, sBH, gBH, hBH, v_star, vBH, tdes, binaries, pairs = BH_TidalDisruptions(seed, t, z, k_tdeBHstar, N_tdeBHstar, tde_type, m_avg, R_sun, mBH, sBH, gBH, hBH, v_star, vBH, tdes, binaries, pairs)
+
+        # Sample star mass from evolving mass function:
+        m_star, R_star = get_star(t, tBH_form, m_min, m_max)
+
+        seed, t, z, k_tdeBHstar, N_tdeBHstar, tde_type, m_avg, mstar, Rstar, mBH, sBH, gBH, hBH, v_star, vBH, tdes, binaries, pairs = BH_TidalDisruptions(seed, t, z, k_tdeBHstar, N_tdeBHstar, tde_type, m_avg, m_star, R_star, mBH, sBH, gBH, hBH, v_star, vBH, tdes, binaries, pairs)
 
     # write back:
     state['seed'] = seed; state['t'] = t; state['z'] = z
