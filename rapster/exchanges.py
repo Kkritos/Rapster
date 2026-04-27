@@ -47,7 +47,6 @@ def StarStar_to_BHstar(k_ex1, N_ex1, m_avg, mBH, sBH, gBH, hBH, ab, pairs, N_BHs
     vBH = state['vBH']; v_star = state['v_star']
     mBH_avg = state['mBH_avg']; m_avg = state['m_avg']
     N_BH = state['N_BH']; N_Triples = state['N_Triples']
-    N_WD = state['N_WD']; N_tdeBHWD = state['N_tdeBHWD']; N_tdeBHstar = state['N_tdeBHstar']
     n_star = state['n_star']; t_rlx = state['t_rlx']
     Mcl = state['Mcl']; rh = state['rh']
     binaries = state['binaries']; pairs = state['pairs']; tdes = state['tdes']
@@ -123,11 +122,9 @@ def StarStar_to_BHstar(k_ex1, N_ex1, m_avg, mBH, sBH, gBH, hBH, ab, pairs, N_BHs
     state['mBH'] = mBH; state['sBH'] = sBH; state['gBH'] = gBH; state['hBH'] = hBH
     state['v_star'] = v_star; state['vBH'] = vBH
     state['binaries'] = binaries; state['pairs'] = pairs; state['tdes'] = tdes
-    state['N_WD'] = N_WD; state['v_WD'] = v_WD
-    state['N_tdeBHWD'] = N_tdeBHWD; state['N_tdeBHstar'] = N_tdeBHstar
-    state['k_tdeBHWD'] = k_tdeBHWD; state['k_tdeBHstar'] = k_tdeBHstar
-    state['dN_WDformdt'] = dN_WDformdt; state['dN_WDevdt'] = dN_WDevdt
-    state['dN_tdeBHWDdt'] = dN_tdeBHWDdt; state['dN_tdeBHstardt'] = dN_tdeBHstardt
+    state['N_tdeBHstar'] = N_tdeBHstar
+    state['k_tdeBHstar'] = k_tdeBHstar
+    state['dN_tdeBHstardt'] = dN_tdeBHstardt
 
     return k_ex1, N_ex1, m_avg, mBH, sBH, gBH, hBH, ab, pairs, N_BHstar, state, config
 
@@ -144,7 +141,6 @@ def BHstar_to_BBH(t, z, k_ex2, N_ex2, m_avg, mBH, sBH, gBH, hBH, pairs, binaries
     vBH = state['vBH']; v_star = state['v_star']
     mBH_avg = state['mBH_avg']; m_avg = state['m_avg']
     N_BH = state['N_BH']; N_Triples = state['N_Triples']
-    N_WD = state['N_WD']; N_tdeBHWD = state['N_tdeBHWD']; N_tdeBHstar = state['N_tdeBHstar']
     n_star = state['n_star']; t_rlx = state['t_rlx']
     Mcl = state['Mcl']; rh = state['rh']
     binaries = state['binaries']; pairs = state['pairs']; tdes = state['tdes']
@@ -238,11 +234,9 @@ def BHstar_to_BBH(t, z, k_ex2, N_ex2, m_avg, mBH, sBH, gBH, hBH, pairs, binaries
     state['mBH'] = mBH; state['sBH'] = sBH; state['gBH'] = gBH; state['hBH'] = hBH
     state['v_star'] = v_star; state['vBH'] = vBH
     state['binaries'] = binaries; state['pairs'] = pairs; state['tdes'] = tdes
-    state['N_WD'] = N_WD; state['v_WD'] = v_WD
-    state['N_tdeBHWD'] = N_tdeBHWD; state['N_tdeBHstar'] = N_tdeBHstar
-    state['k_tdeBHWD'] = k_tdeBHWD; state['k_tdeBHstar'] = k_tdeBHstar
-    state['dN_WDformdt'] = dN_WDformdt; state['dN_WDevdt'] = dN_WDevdt
-    state['dN_tdeBHWDdt'] = dN_tdeBHWDdt; state['dN_tdeBHstardt'] = dN_tdeBHstardt
+    state['N_tdeBHstar'] = N_tdeBHstar
+    state['k_tdeBHstar'] = k_tdeBHstar
+    state['dN_tdeBHstardt'] = dN_tdeBHstardt
 
     return t, z, k_ex2, N_ex2, m_avg, mBH, sBH, gBH, hBH, pairs, binaries, N_BBH, N_BHstar, state, config
 
