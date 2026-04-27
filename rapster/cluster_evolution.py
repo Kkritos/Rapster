@@ -673,7 +673,7 @@ def form_binaries(state, config):
 
     # star-star -> BH-star exchange(s):
     if k_ex1 > 0:
-        k_ex1, N_ex1, m_avg, mBH, sBH, gBH, hBH, ab, pairs, N_BHstar = StarStar_to_BHstar(k_ex1, N_ex1, m_avg, mBH, sBH, gBH, hBH, ab, pairs, N_BHstar)
+        k_ex1, N_ex1, m_avg, mBH, sBH, gBH, hBH, ab, pairs, N_BHstar, state, config = StarStar_to_BHstar(k_ex1, N_ex1, m_avg, mBH, sBH, gBH, hBH, ab, pairs, N_BHstar, state, config)
 
     # number of BH-star -> BH-BH exchanges:
     N_BHsin = N_BH - 2*N_BBH - N_BHstar - 3*N_Triples
@@ -681,7 +681,7 @@ def form_binaries(state, config):
 
     # BH-star -> BBH exchange(s):
     if k_ex2 > 0:
-        t, z, k_ex2, N_ex2, m_avg, mBH, sBH, gBH, hBH, pairs, binaries, N_BBH, N_BHstar = BHstar_to_BBH(t, z, k_ex2, N_ex2, m_avg, mBH, sBH, gBH, hBH, pairs, binaries, N_BBH, N_BHstar)
+        t, z, k_ex2, N_ex2, m_avg, mBH, sBH, gBH, hBH, pairs, binaries, N_BBH, N_BHstar, state, config = BHstar_to_BBH(t, z, k_ex2, N_ex2, m_avg, mBH, sBH, gBH, hBH, pairs, binaries, N_BBH, N_BHstar, state, config)
 
     # write back:
     state['t'] = t; state['z'] = z; state['dt'] = dt; state['seed'] = seed
@@ -908,7 +908,7 @@ def evolve_tdes(state, config):
         # Sample star mass from evolving mass function:
         m_star, R_star = get_star(t, tBH_form, m_min, m_max)
 
-        seed, t, z, k_tdeBHstar, N_tdeBHstar, tde_type, m_avg, mstar, Rstar, mBH, sBH, gBH, hBH, v_star, vBH, tdes, binaries, pairs = BH_TidalDisruptions(seed, t, z, k_tdeBHstar, N_tdeBHstar, tde_type, m_avg, m_star, R_star, mBH, sBH, gBH, hBH, v_star, vBH, tdes, binaries, pairs)
+        seed, t, z, k_tdeBHstar, N_tdeBHstar, tde_type, m_avg, m_star, R_star, mBH, sBH, gBH, hBH, v_star, vBH, tdes, binaries, pairs = BH_TidalDisruptions(seed, t, z, k_tdeBHstar, N_tdeBHstar, tde_type, m_avg, m_star, R_star, mBH, sBH, gBH, hBH, v_star, vBH, tdes, binaries, pairs)
 
     # write back:
     state['seed'] = seed; state['t'] = t; state['z'] = z
