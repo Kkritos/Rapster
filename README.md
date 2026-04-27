@@ -121,8 +121,8 @@ For the user’s convenience, we paste the list of optional arguments in the for
 |:--- |:--- |:--- |:--- |
 | -N, --number | Initial number of stars | int | ``1000000`` |
 | -r, --half_mass_radius | Initial half-mass radius [pc] | float | ``1`` |
-| -mm, --minimum_star_mass | Smallest ZAMS mass [Msun] | float | ``0.08`` |
-| -mM, --maximum_star_mass | Largest ZAMS mass [Msun] | float | ``150`` |
+| -mm, --minimum_star_mass | Smallest ZAMS mass [Msun] (not below 0.08 suns) | float | ``0.08`` |
+| -mM, --maximum_star_mass | Largest ZAMS mass [Msun] (not above 340 suns) | float | ``150`` |
 | -Z, --metallicity | Absolute metallicity | float | ``0.001`` |
 | -z, --cluster_formation_redshift | Redshift of cluster formation | float | ``3.0`` |
 | -n, --central_stellar_density | Initial central stellar number density [pc^-3] | float | ``5.3e5`` |
@@ -379,7 +379,7 @@ d) Column description of tdes .txt file:
 | 1 | $\rm seed$ | Simulation seed number |
 | 2 | $t$ | Simulation time of TDE event ($\rm Myr$) |
 | 3 | $z$ | Redshift of TDE event |
-| 4 | $\rm type$ | Type of TDE: =1 for MS-BH TDE or =11 for WD-BH TDE |
+| 4 | $\rm type$ | Type of TDE (1, 2, 3, or 11), see Note below this table |
 | 5 | $m_{\rm star}$ | Mass of the star disrupted ($M_\odot$) |
 | 6 | $R_{\rm star}$ | Radius of the star disrupted ($\rm pc$) |
 | 7 | $m_{\rm BH}$ | Mass of the compact object ($M_\odot$) |
@@ -394,6 +394,13 @@ d) Column description of tdes .txt file:
 | 16 | $\chi_{\rm new}$ | Post-accretion value of the dimensionless spin parameter |
 | 17 | $v_{\rm rel}$ | Relative velocity between compact object and star at infinity $(\rm km\,s^{-1})$ |
 | 18 | $h_{\rm BH}$ | Number of previous TDEs the compact object has undergone |
+
+##### Note:
+TDE type:
+- 1: BH/star TDE during single BH - single star encounter
+- 2: BH/star TDE during star-star binary - single BH strong interaction
+- 3: BH/star TDE during BH-star binary - single BH strong interaction
+- 11: BH/WD TDE during single BH - single WD encounter
 
 e) The outputBHs.pkl file (if exported) contains the properties of all BHs in the system at each time step.
 
