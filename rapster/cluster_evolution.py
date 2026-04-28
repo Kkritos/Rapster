@@ -735,7 +735,12 @@ def evolve_interactions(state, config):
     N_pp = state['N_pp']; N_ZLK = state['N_ZLK']
     i_aux1 = state['i_aux1']
     t_cc = state['t_cc']
-
+    tdes = state['tdes']
+    N_tdeBHstar = state['N_tdeBHstar']
+    m_min = config['m_min']
+    m_max = config['m_max']
+    with_tdes = config['with_tdes']
+    
     # BBH evolution:
     seed, t, z, dt, zCl_form, binaries, hardening, mergers, mBH, sBH, gBH, hBH, n_star, v_star, vBH, t_rlx, m_avg, mBH_avg, na_BH, nc_BH, N_BH, N_BBH, N_me, N_me2b, N_3cap, N_meFi, N_meRe, N_meEj, N_dis, N_ex, N_BHej, N_BBHej, N_hardening, Vc_BH, N_bb, triples, N_Triples = evolve_BBHs(seed, t, z, dt, zCl_form, binaries, hardening, mergers, mBH, sBH, gBH, hBH, n_star, v_star, vBH, t_rlx, m_avg, mBH_avg, na_BH, nc_BH, N_BH, N_BBH, N_me, N_me2b, N_3cap, N_meFi, N_meRe, N_meEj, N_dis, N_ex, N_BHej, N_BBHej, N_hardening, Vc_BH, N_bb, triples, N_Triples)
 
@@ -794,16 +799,47 @@ def evolve_interactions(state, config):
             m1 = pairs[k1][1]; s1 = pairs[k1][2]; g1 = pairs[k1][3]; h1 = pairs[k1][4]
             m2 = pairs[k2][1]; s2 = pairs[k2][2]; g2 = pairs[k2][3]; h2 = pairs[k2][4]
 
+            pairs = np.delete(pairs, [k1, k2], axis=0)
+            N_BHstar = N_BHstar - 2
+
+            # probabilities for TDE:
+            p1_TDE = min(R_sun*(m1/m_avg)**(1/3)/(a1 + a2), 1.0) if with_tdes==1 else 0.0
+            p2_TDE = min(R_sun*(m2/m_avg)**(1/3)/(a1 + a2), 1.0) if with_tdes==1 else 0.0
+
+            if np.random.rand() < p1_TDE:
+                # then TDE-1 occurs:
+
+                tde_type = 4 # TDE during BH-star+BH-star encounter
+
+                # Sample star mass from evolving mass function:
+                m_star, R_star = get_star(t, tBH_form, m_min, m_max)
+
+                k_tdeBHstar = 1
+                seed, t, z, k_tdeBHstar, N_tdeBHstar, tde_type, m_avg, m_star, R_star, m1, s1, g1, h1, v_star, vBH, tdes, binaries, pairs = BH_TidalDisruptions(seed, t, z, k_tdeBHstar, N_tdeBHstar, tde_type, m_avg, m_star, R_star, np.array([m1]), np.array([s1]), np.array([g1]), np.array([h1]), v_star, vBH, tdes, binaries, pairs)
+
+            if np.random.rand() < p2_TDE:
+                # then TDE-2 occurs:
+
+                tde_type = 4 # TDE during BH-star+BH-star encounter
+
+                # Sample star mass from evolving mass function:
+                m_star, R_star = get_star(t, tBH_form, m_min, m_max)
+
+                k_tdeBHstar = 1
+                seed, t, z, k_tdeBHstar, N_tdeBHstar, tde_type, m_avg, m_star, R_star, m2, s2, g2, h2, v_star, vBH, tdes, binaries, pairs = BH_TidalDisruptions(seed, t, z, k_tdeBHstar, N_tdeBHstar, tde_type, m_avg, m_star, R_star, np.array([m2]), np.array([s2]), np.array([g2]), np.array([h2]), v_star, vBH, tdes, binaries, pairs)
+
+            # the following exchange happens:
+            # BH-star + BH-star -> BH-BH + star' + star'
+
             if m2/a2 < m1/a1:
                 sma = m2 / m_avg * a1
             else:
                 sma = m1 / m_avg * a2
 
-            eccen = np.sqrt(np.random.rand())
+            eccen = np.sqrt(np.random.rand()) # thermal eccentricity
 
+            # append new BBH:
             binaries = np.append(binaries, [[np.random.randint(0, 999999999), 1, sma, eccen, m1, m2, s1, s2, g1, g2, t, z, 0, h1, h2]], axis=0)
-            pairs = np.delete(pairs, [k1, k2], axis=0)
-            N_BHstar = N_BHstar - 2
             N_BBH+=1
 
     # Triple evolution:
@@ -827,6 +863,8 @@ def evolve_interactions(state, config):
     state['pairs'] = pairs; state['N_BHstar'] = N_BHstar
     state['N_pp'] = N_pp; state['N_ZLK'] = N_ZLK
     state['t_bb'] = t_bb; state['t_pp'] = t_pp; state['k_pp'] = k_pp
+    state['tdes'] = tdes
+    state['N_tdeBHstar'] = N_tdeBHstar
 
 
 def evolve_tdes(state, config):
