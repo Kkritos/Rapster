@@ -396,11 +396,12 @@ d) Column description of tdes .txt file:
 | 18 | $h_{\rm BH}$ | Number of previous TDEs the compact object has undergone |
 
 ##### Note:
-TDE type is an integer index that corresponds to the following:
-- ``1``: BH/star TDE during single BH - single star encounter
-- ``2``: BH/star TDE during star-star binary - single BH strong interaction
-- ``3``: BH/star TDE during BH-star binary - single BH strong interaction
-- ``11``: BH/WD TDE during single BH - single WD encounter
+TDE type is an integer index that corresponds to the following (CO may be a BH or a NS):
+- ``1``: CO/star TDE during single CO - single star encounter
+- ``2``: CO/star TDE during star-star binary - single CO strong interaction
+- ``3``: CO/star TDE during CO-star binary - single CO strong interaction
+- ``4``: CO/star TDE during CO-star binary - CO-star binary strong interaction
+- ``11``: CO/WD TDE during single CO - single WD encounter
 
 e) The outputBHs.pkl file (if exported) contains the properties of all BHs in the system at each time step.
 
