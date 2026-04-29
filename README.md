@@ -149,7 +149,7 @@ For the user’s convenience, we paste the list of optional arguments in the for
 | -BOi, --blackholes_out_file_indicator | Export BH masses file (0 for no, 1 for yes) | int | ``1`` |
 | -BOF, --blackholes_out_file_name | Name of .npz file with the masses of all BHs in solar masses | str | ``output_BHs.npz`` |
 | -RP, --remnant_mass_prescription | Remnant mass prescription (0 for SEVN delayed, 1 for Fryer+2012 delayed, 2 for SEVN rapid, 3 for Fryer+2012 rapid) | int | ``1`` |
-| -NS, --with_neutron_stars | Include neutron stars (if =1) else no (if =0) | int | ``1`` |
+| -NS, --with_neutron_stars | Include neutron stars (if =1 with monochromatic at 1.4 suns by default or =2 with bimodal NS mass distribution from Rocha et al. 2023) else no (if =0) | int | ``2`` |
 | -WT, --with_tdes | Include tdes (if =1) else no (if =0) | int | ``1`` |
 | -Ti, --tdes_file_indicator | Export tdes file (0 for no, 1 for yes) | 1 | ``1`` |
 | -TF, --tdes_file_name | Name of .txt file containing tde parameters | str | ``tdes`` |
