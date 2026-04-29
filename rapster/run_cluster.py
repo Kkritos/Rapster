@@ -105,7 +105,7 @@ def parse_args():
     parser.add_argument('-BOi', '--blackholes_out_file_indicator', type=int, metavar=' ', default=1, help='Export BH masses file (0 for no, 1 for yes)')
     parser.add_argument('-BOF', '--blackholes_out_file_name', type=str, metavar=' ', default='outputBHs', help='Name of .pkl file with the masses of all BHs in solar masses')
     parser.add_argument('-RP', '--remnant_mass_prescription', type=int, metavar=' ', default=1, help='Remnant mass prescription (0 for SEVN delayed, 1 for Fryer+2012 delayed, 2 for SEVN rapid, 3 for Fryer+2012 rapid)')
-    parser.add_argument('-NS', '--with_neutron_stars', type=int, metavar=' ', default=1, help='include neutron stars (if =1) else no (if =0)')
+    parser.add_argument('-NS', '--with_neutron_stars', type=int, metavar=' ', default=1, help='include neutron stars (if =1 with monochromatic or =2 with bimodal mass distribution) else no (if =0)')
     parser.add_argument('-WT', '--with_tdes', type=int, metavar=' ', default=1, help='include tdes (if =1) else no (if =0)')
     parser.add_argument('-Ti', '--tdes_file_indicator', type=int, metavar=' ', default=1, help='Export tdes file (0 for no, 1 for yes)')
     parser.add_argument('-TF', '--tdes_file_name', type=str, metavar=' ', default='tdes', help='Name of .txt file containing tde parameters')
