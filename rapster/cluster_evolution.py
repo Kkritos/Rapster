@@ -243,7 +243,7 @@ def initialize_cluster(config):
                     # generate a single NS mass:
                     m_NS = np.random.normal(loc=1.351, scale=0.084) if np.random.rand() < 0.539 else np.random.normal(loc=1.816, scale=0.260)
                     if 0 < m_NS < mBH_min:
-                        m.append(m_NS)
+                        mNS.append(m_NS)
                 mBH = np.concatenate((mBH, np.array(mNS)))
             else:
                 sys.exit("Invalid `with_NSs` option flag. Please use -NS, --with_neutron_stars: 0, 1, or 2.")
