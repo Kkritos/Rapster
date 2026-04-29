@@ -411,7 +411,7 @@ def R_WhiteDwarf(M_wd=white_dwarf_mass, M_Ch=M_Chandrasekhar):
 # Sampling a stellar mass from evolving mass function at simulation time t:
 
 m_fine_grid = np.logspace(np.log10(0.08), np.log10(340.0), 10**5)
-pdf_values = IMF_kroupa(m_fine_grid)
+pdf_values = IMF_kroupa(m_fine_grid)*m_fine_grid**(2.55) # includes IMF and rate-dependent mass factor
 
 # calculate the CDF:
 cdf_values = np.cumsum(pdf_values)

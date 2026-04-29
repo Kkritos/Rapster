@@ -51,7 +51,7 @@ def BH_TidalDisruptions(seed, t, z, k_tde, N_tde, tde_type, m_avg, m_star, R_sta
             N_tde+=1 # update number of BH TDEs
             
             # sample single BH mass:
-            p = mBH**(4/3) # weighting probability
+            p = (m_star + mBH)*mBH**(1/3) # weighting probability
             m = np.random.choice(mBH, p=p/np.sum(p))
             
             # find index location of that BH mass:
