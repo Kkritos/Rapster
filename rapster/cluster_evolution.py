@@ -226,14 +226,28 @@ def initialize_cluster(config):
         sBH = rng.beta(1.4, 3.6, mBH.size) * s1g_max
 
     # optionally form and retain neutron stars based on natal kicks:
-    if with_NSs==1:
+    if with_NSs>0:
         f_NS_form = Kroupa_norm*integrate.quad(IMF_kroupa, 8, 18)[0]
         N_NS_form = int(f_NS_form*N)
         v_NS_natal = maxwell.rvs(loc=0, scale=np.sqrt(3)*wSN_kick, size=N_NS_form)
         N_NS_ret = v_NS_natal[v_NS_natal < v_esc(Mcl, rh)].size
 
         if N_NS_ret > 0:
-            mBH = np.concatenate((mBH, neutron_star_mass * np.ones(N_NS_ret)))
+            if with_NSs==1:
+                # monochromatic NS mass distribution:
+                mBH = np.concatenate((mBH, neutron_star_mass * np.ones(N_NS_ret)))
+            elif with_NSs==2:
+                # bimodal mass distribution from Rocha et al. 2023:
+                mNS = []
+                while len(mNS) < N_NS_ret:
+                    # generate a single NS mass:
+                    m_NS = np.random.normal(loc=1.351, scale=0.084) if np.random.rand() < 0.539 else np.random.normal(loc=1.816, scale=0.260)
+                    if 0 < m_NS < mBH_min:
+                        m.append(m_NS)
+                mBH = np.concatenate((mBH, np.array(mNS)))
+            else:
+                sys.exit("Invalid `with_NSs` option flag. Please use -NS, --with_neutron_stars: 0, 1, or 2.")
+            # initialize NS spins to zero:
             sBH = np.concatenate((sBH, np.zeros(N_NS_ret)))
 
     # optionally add a massive BH seed to the initial conditions:
