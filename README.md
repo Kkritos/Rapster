@@ -102,7 +102,7 @@ The current version of the code uses astrophysical units; see, e.g., [Heggie & H
  - Mass: solar mass ($M_\odot$)
  - Distance: parsec ($\rm pc$)
  - Time: million years ($\rm Myr$)
- - Velocity: $\rm km\ s^{-1}$
+ - Velocity: $\rm km\ s^{-1}\approx pc\ Myr^{-1}$
  - Gravitational constant: $G=1/232$
  - Speed of light: $c=3\times10^5$
 
