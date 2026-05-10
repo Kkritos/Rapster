@@ -163,7 +163,7 @@ For the user’s convenience, we paste the list of optional arguments in the for
 | -plot, --generate_plots | Generate diagnostic plots after simulation (0 for no, 1 for yes) | int | ``0`` |
 | -analyze, --analyze_results | Print analysis summary after simulation (0 for no, 1 for yes) | int | ``0`` |
 | -facc, --accreted_fraction | Fraction of a disrupted star accreted by the compact object | float | ``0.5`` |
-| -mbp, --mass_bias_power | Mass bias power index p for drawing stars from IMF*m^p for TDEs | ``0.0`` |
+| -mbp, --mass_bias_power | Mass bias power index p for drawing stars from IMF*m^p for TDEs | float | ``0.0`` |
 
 ##### Note:
 
