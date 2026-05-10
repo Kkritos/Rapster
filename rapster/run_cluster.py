@@ -34,7 +34,7 @@ from .cluster_evolution import (
 )
 from .plot_cluster import generate_all_plots
 from .analyze_cluster import analyze_cluster
-
+from .stellar_evolution import init_stellar_mass_sampler
 
 class TeeStream:
     """Write to both a file and optionally to stdout.
@@ -119,6 +119,7 @@ def parse_args():
     parser.add_argument('-plot', '--generate_plots', type=int, metavar=' ', default=0, help='Generate diagnostic plots after simulation (0 for no, 1 for yes)')
     parser.add_argument('-analyze', '--analyze_results', type=int, metavar=' ', default=0, help='Print analysis summary after simulation (0 for no, 1 for yes)')
     parser.add_argument('-fA', '--accreted_fraction', type=float, metavar=' ', default=0.5, help='Fraction of a disrupted star accreted by the compact object')
+    parser.add_argument('-mb', '--mass_bias_power', type=float, metavar=' ', default=0.0, help='Mass bias power index p for drawing stars from IMF*m^p for TDEs')
 
     args = parser.parse_args()
 
@@ -167,6 +168,7 @@ def parse_args():
         'generate_plots': bool(args.generate_plots),
         'analyze_results': bool(args.analyze_results),
         'f_accreted': args.accreted_fraction,
+        'mass_bias_power': args.mass_bias_power,
     }
 
     return config
@@ -188,6 +190,7 @@ def main():
     initialization_time_initial = time.time()
     print('INITIALIZING...')
 
+    init_stellar_mass_sampler(config['mass_bias_power'])
     state = initialize_cluster(config)
 
     print('END OF INITIALIZATION. RUNTIME:', "{:.3g}".format(np.abs(time.time() - initialization_time_initial)), 's')
