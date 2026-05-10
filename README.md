@@ -97,7 +97,7 @@ Finally, include the virtual environment in the kernel:
 <a name="units"></a>
 ### 3. Units
 
-The current version of the code uses astrophysical units; see, e.g., [Heggie & Hut (2003)](https://ui.adsabs.harvard.edu/abs/2003gmbp.book.....H/abstract):
+The current version of the code uses astrophysical units (unless stated otherwise); see, e.g., [Heggie & Hut (2003)](https://ui.adsabs.harvard.edu/abs/2003gmbp.book.....H/abstract):
 
  - Mass: solar mass ($M_\odot$)
  - Distance: parsec ($\rm pc$)
