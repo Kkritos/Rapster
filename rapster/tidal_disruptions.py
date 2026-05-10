@@ -45,6 +45,9 @@ def BH_TidalDisruptions(seed, t, z, k_tde, N_tde, tde_type, m_avg, m_star, R_sta
     @out: all inputs
     """
 
+    if mBH.size==0:
+        k_tde = 0
+
     if k_tde>0: # perform BH TDE(s)
         
        	for i in range(k_tde):
