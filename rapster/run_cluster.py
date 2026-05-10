@@ -118,6 +118,7 @@ def parse_args():
     parser.add_argument('-RMP', '--random_mass_pairing_2body_3body', type=int, metavar=' ', default=0, help='Use uniform random pairing for 3bb and 2-body capture instead of mass-weighted (0 for no, 1 for yes)')
     parser.add_argument('-plot', '--generate_plots', type=int, metavar=' ', default=0, help='Generate diagnostic plots after simulation (0 for no, 1 for yes)')
     parser.add_argument('-analyze', '--analyze_results', type=int, metavar=' ', default=0, help='Print analysis summary after simulation (0 for no, 1 for yes)')
+    parser.add_argument('-facc', '--accreted_fraction', type=float, metavar=' ', default=0.5, help='Fraction of a disrupted star accreted by the compact object')
 
     args = parser.parse_args()
 
@@ -165,6 +166,7 @@ def parse_args():
         'random_pairing': bool(args.random_mass_pairing_2body_3body),
         'generate_plots': bool(args.generate_plots),
         'analyze_results': bool(args.analyze_results),
+        'f_accreted': args.accreted_fraction,
     }
 
     return config

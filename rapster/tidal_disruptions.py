@@ -20,7 +20,7 @@ from .constants import *
 from .functions import *
 from .stellar_evolution import *
 
-def BH_TidalDisruptions(seed, t, z, k_tde, N_tde, tde_type, m_avg, m_star, R_star, mBH, sBH, gBH, hBH, vSTAR, vBH, tdes, binaries, pairs):
+def BH_TidalDisruptions(seed, t, z, k_tde, N_tde, tde_type, m_avg, m_star, R_star, mBH, sBH, gBH, hBH, vSTAR, vBH, tdes, binaries, pairs, f_accreted):
     """
     @in seed: seed number of the main simulation
     @in t: current time (Myr)
@@ -40,6 +40,7 @@ def BH_TidalDisruptions(seed, t, z, k_tde, N_tde, tde_type, m_avg, m_star, R_sta
     @in tdes: tdes array [seed, t, z, type, mstar, Rstar, m_BH, s_BH, g_BH, r_t, r_p, beta, iota, r_mb, dm, s_new, v_rel, h_BH]
     @in binaries: [ind, channel, a, e, m1, m2, s1, s2, g1, g2, t_form, z_form, Nex, h1, h2]
     @in pairs: [a, m, s, g, h]
+    @in f_accreted: fraction of the disrupted star accreted
 
     @out: all inputs
     """
@@ -79,7 +80,6 @@ def BH_TidalDisruptions(seed, t, z, k_tde, N_tde, tde_type, m_avg, m_star, R_sta
             # penetration parameter:
             beta = r_t/r_p
             
-            f_accreted = 0.5 # fraction of stellar mass accreted
             # mass increment:
             dm = f_accreted*m_star
             
@@ -102,6 +102,6 @@ def BH_TidalDisruptions(seed, t, z, k_tde, N_tde, tde_type, m_avg, m_star, R_sta
             # update BH tdes count:
             hBH[k] += 1
 
-    return seed, t, z, k_tde, N_tde, tde_type, m_avg, m_star, R_star, mBH, sBH, gBH, hBH, vSTAR, vBH, tdes, binaries, pairs
+    return seed, t, z, k_tde, N_tde, tde_type, m_avg, m_star, R_star, mBH, sBH, gBH, hBH, vSTAR, vBH, tdes, binaries, pairs, f_accreted
 
 # End of file.
