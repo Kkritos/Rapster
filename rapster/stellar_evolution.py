@@ -411,14 +411,20 @@ def R_WhiteDwarf(M_wd=white_dwarf_mass, M_Ch=M_Chandrasekhar):
 # Sampling a stellar mass from evolving mass function at simulation time t:
 
 m_fine_grid = np.logspace(np.log10(0.08), np.log10(340.0), 10**5)
-pdf_values = IMF_kroupa(m_fine_grid)*m_fine_grid**(star_mass_bias_index) # includes IMF and rate-dependent mass factor
+cdf_values = None
+inv_cdf = None
 
-# calculate the CDF:
-cdf_values = np.cumsum(pdf_values)
-cdf_values /= cdf_values[-1] # normalize
+def init_stellar_mass_sampler(mass_bias_power):
+    """
+    Initialise the IMF-based mass sampler with the given bias index.
+    Must be called once before get_star() is used.
+    """
 
-# create an "Inverse CDF" function: Maps [0, 1] -> Mass
-inv_cdf = interpolate.interp1d(cdf_values, m_fine_grid, bounds_error=False, fill_value=(0.08, 340.0))
+    global cdf_values, inv_cdf
+    pdf_values = IMF_kroupa(m_fine_grid) * m_fine_grid**mass_bias_power
+    cdf_values = np.cumsum(pdf_values)
+    cdf_values /= cdf_values[-1]
+    inv_cdf = interpolate.interp1d(cdf_values, m_fine_grid, bounds_error=False, fill_value=(0.08, 340.0))
 
 def get_star(t, tBH_form, m_min, m_max):
     """

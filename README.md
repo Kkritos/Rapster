@@ -6,7 +6,7 @@ $\tt Rapster$ stands for $\rm RAPid\ cluSTER$ evolution.
 
 Author: Konstantinos Kritos <kkritos1@jhu.edu>
 
-Version: 2.9.2, May 10, 2026.
+Version: 2.9.3, May 10, 2026.
 (Thanks to Tousif Islam for helping modularize this repository!)
 
 ![LOGO](.assets/LOGO.png)
@@ -163,6 +163,7 @@ For the user’s convenience, we paste the list of optional arguments in the for
 | -plot, --generate_plots | Generate diagnostic plots after simulation (0 for no, 1 for yes) | int | ``0`` |
 | -analyze, --analyze_results | Print analysis summary after simulation (0 for no, 1 for yes) | int | ``0`` |
 | -facc, --accreted_fraction | Fraction of a disrupted star accreted by the compact object | float | ``0.5`` |
+| -mbp, --mass_bias_power | Mass bias power index p for drawing stars from IMF*m^p for TDEs | float | ``0.0`` |
 
 ##### Note:
 
