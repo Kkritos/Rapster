@@ -6,7 +6,7 @@ $\tt Rapster$ stands for $\rm RAPid\ cluSTER$ evolution.
 
 Author: Konstantinos Kritos <kkritos1@jhu.edu>
 
-Version: 2.9.3, May 10, 2026.
+Version: 2.9.4, May 14, 2026.
 (Thanks to Tousif Islam for helping modularize this repository!)
 
 ![LOGO](.assets/LOGO.png)
