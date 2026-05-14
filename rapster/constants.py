@@ -126,6 +126,9 @@ neutron_star_mass = M_Chandrasekhar
 # white dwarf mass:
 white_dwarf_mass = 0.60
 
+# Thorne spin limit:
+Thorne_spin_limit = 0.998
+
 evolution_keys = [
     'seed', 't', 'z', 'dt', 'm_avg', 'M_cl', 'r_h', 'R_gal', 'v_gal', 't_rh', 't_rhBH', 'n_star', 'N_BH', 'mBH_avg', 'mBH_max', 'r_hBH', 'r_cBH', 'S', 'xi', 'psi', 'psi_BH', 't_3bb', 't_2cap', 'k_3bb', 'k_2cap', 'N_me', 'N_BBH', 'N_meRe', 
     'N_meEj', 'v_star', 'v_BH', 'n_hBH', 'n_cBH', 'n_aBH', 'N_3bb', 'N_2cap', 'N_3cap', 'N_BHej', 'N_BBHej', 'N_dis', 'N_ex', 't_bb', 'N_bb', 'N_meFi', 'N_me2b', 't_ex1', 't_ex2', 'k_ex1', 'k_ex2', 'N_ex1', 'N_ex2', 'N_BHstar', 
