@@ -19,8 +19,9 @@
 from .constants import *
 from .functions import *
 from .stellar_evolution import *
+from .compact_accretion import *
 
-def BH_TidalDisruptions(seed, t, z, k_tde, N_tde, tde_type, m_avg, m_star, R_star, mBH, sBH, gBH, hBH, vSTAR, vBH, tdes, binaries, pairs, f_accreted):
+def BH_TidalDisruptions(seed, t, z, k_tde, N_tde, tde_type, m_avg, m_star, R_star, mBH, sBH, gBH, hBH, vSTAR, vBH, tdes, binaries, pairs, f_accreted, EoS):
     """
     @in seed: seed number of the main simulation
     @in t: current time (Myr)
@@ -41,6 +42,7 @@ def BH_TidalDisruptions(seed, t, z, k_tde, N_tde, tde_type, m_avg, m_star, R_sta
     @in binaries: [ind, channel, a, e, m1, m2, s1, s2, g1, g2, t_form, z_form, Nex, h1, h2]
     @in pairs: [a, m, s, g, h]
     @in f_accreted: fraction of the disrupted star accreted
+    @in EoS: equation of state for neutron stars; either 'APR' or 'AU'
 
     @out: all inputs
     """
@@ -88,10 +90,28 @@ def BH_TidalDisruptions(seed, t, z, k_tde, N_tde, tde_type, m_avg, m_star, R_sta
             
             # mass increment:
             dm = f_accreted*m_star
-            
-            prograde = +1 if np.cos(iota)>0 else -1
+
+            # direction of accretion:
+            prograde = True if np.cos(iota)>0 else False
+
+            # define NS range (min/max masses):
+            if EoS=='APR':
+                M_NS_min = M_APR_min
+                M_NS_max = M_APR_max # TOV for APR
+            elif EoS=='AU':
+                M_NS_min = M_AU_min
+                M_NS_max = M_AU_max # TOV for AU
+            else: # nonexistent EoS string does not match 'APR' or 'AU'
+                sys.exit("Invalid EoS; please use 'APR' or 'AU'")
+
+            # nature of compact object:
+            NS = True if m<M_NS_max else False
+
+            # evolve spin during disk accretion:
+            evo = evolve(Mi=m, Mf=m+dm, NS=NS, f=None, chi=s, dM=dm/100, eos=EoS, prograde=prograde)
+
             # final spin:
-            s_new = evolve_spin_RungeKutta(m, m+dm, s, prograde, dM=dm/100)
+            s_new = evo['chi'][-1]
             
             # relative velocity:
             v_rel = np.sqrt(vSTAR**2*m_avg/m_star + np.mean(mBH)/m*vBH**2)
@@ -108,6 +128,6 @@ def BH_TidalDisruptions(seed, t, z, k_tde, N_tde, tde_type, m_avg, m_star, R_sta
             # update BH tdes count:
             hBH[k] += 1
 
-    return seed, t, z, k_tde, N_tde, tde_type, m_avg, m_star, R_star, mBH, sBH, gBH, hBH, vSTAR, vBH, tdes, binaries, pairs, f_accreted
+    return seed, t, z, k_tde, N_tde, tde_type, m_avg, m_star, R_star, mBH, sBH, gBH, hBH, vSTAR, vBH, tdes, binaries, pairs, f_accreted, EoS
 
 # End of file.

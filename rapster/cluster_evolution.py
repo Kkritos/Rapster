@@ -25,6 +25,7 @@ from .triples import evolve_triples
 from .two_body_capture import two_body_capture
 from .exchanges import StarStar_to_BHstar, BHstar_to_BBH
 from .tidal_disruptions import BH_TidalDisruptions
+from .compact_accretion import *
 
 
 def initialize_cluster(config):
@@ -69,6 +70,7 @@ def initialize_cluster(config):
     BMD = config['BMD']
     min_1g_bh_mass = config['min_1g_bh_mass']
     max_1g_bh_mass = config['max_1g_bh_mass']
+    EoS = config['EoS']
 
     # initialize pseudo-random number generator:
     np.random.seed(seed)
@@ -237,12 +239,23 @@ def initialize_cluster(config):
                 # monochromatic NS mass distribution:
                 mBH = np.concatenate((mBH, neutron_star_mass * np.ones(N_NS_ret)))
             elif with_NSs==2:
+
+                # define NS range (min/max masses):
+                if EoS=='APR':
+                    M_NS_min = M_APR_min
+                    M_NS_max = M_APR_max # TOV for APR
+                elif EoS=='AU':
+                    M_NS_min = M_AU_min
+                    M_NS_max = M_AU_max # TOV for AU
+                else: # nonexistent EoS string does not match 'APR' or 'AU'
+                    sys.exit("Invalid EoS; please use 'APR' or 'AU'")
+
                 # bimodal mass distribution from Rocha et al. 2023:
                 mNS = []
                 while len(mNS) < N_NS_ret:
                     # generate a single NS mass:
                     m_NS = np.random.normal(loc=1.351, scale=0.084) if np.random.rand() < 0.539 else np.random.normal(loc=1.816, scale=0.260)
-                    if 0 < m_NS < mBH_min:
+                    if M_NS_min < m_NS < M_NS_max:
                         mNS.append(m_NS)
                 mBH = np.concatenate((mBH, np.array(mNS)))
             else:
@@ -669,6 +682,7 @@ def form_binaries(state, config):
     m_max = config['m_max']
     with_tdes = config['with_tdes']
     f_accreted = config['f_accreted']
+    EoS = config['EoS']
 
     # number of single (unbound) BHs available for interactions:
     N_BHsin = N_BH - 2*N_BBH - N_BHstar - 3*N_Triples
@@ -693,7 +707,7 @@ def form_binaries(state, config):
 
     # star-star -> BH-star exchange(s):
     if k_ex1 > 0:
-        seed, t, z, k_ex1, N_ex1, m_avg, mBH, sBH, gBH, hBH, ab, pairs, N_BHstar, N_tdeBHstar, v_star, vBH, tdes, binaries, m_min, m_max, with_tdes, f_accreted = StarStar_to_BHstar(seed, t, z, k_ex1, N_ex1, m_avg, mBH, sBH, gBH, hBH, ab, pairs, N_BHstar, N_tdeBHstar, v_star, vBH, tdes, binaries, m_min, m_max, with_tdes, f_accreted)
+        seed, t, z, k_ex1, N_ex1, m_avg, mBH, sBH, gBH, hBH, ab, pairs, N_BHstar, N_tdeBHstar, v_star, vBH, tdes, binaries, m_min, m_max, with_tdes, f_accreted, EoS = StarStar_to_BHstar(seed, t, z, k_ex1, N_ex1, m_avg, mBH, sBH, gBH, hBH, ab, pairs, N_BHstar, N_tdeBHstar, v_star, vBH, tdes, binaries, m_min, m_max, with_tdes, f_accreted, EoS)
     
     # number of BH-star -> BH-BH exchanges:
     N_BHsin = N_BH - 2*N_BBH - N_BHstar - 3*N_Triples
@@ -701,7 +715,7 @@ def form_binaries(state, config):
 
     # BH-star -> BBH exchange(s):
     if k_ex2 > 0:
-        seed, t, z, k_ex2, N_ex2, m_avg, mBH, sBH, gBH, hBH, pairs, binaries, N_BBH, N_BHstar, N_tdeBHstar, v_star, vBH, tdes, m_min, m_max, with_tdes, f_accreted = BHstar_to_BBH(seed, t, z, k_ex2, N_ex2, m_avg, mBH, sBH, gBH, hBH, pairs, binaries, N_BBH, N_BHstar, N_tdeBHstar, v_star, vBH, tdes, m_min, m_max, with_tdes, f_accreted)
+        seed, t, z, k_ex2, N_ex2, m_avg, mBH, sBH, gBH, hBH, pairs, binaries, N_BBH, N_BHstar, N_tdeBHstar, v_star, vBH, tdes, m_min, m_max, with_tdes, f_accreted, EoS = BHstar_to_BBH(seed, t, z, k_ex2, N_ex2, m_avg, mBH, sBH, gBH, hBH, pairs, binaries, N_BBH, N_BHstar, N_tdeBHstar, v_star, vBH, tdes, m_min, m_max, with_tdes, f_accreted, EoS)
     
     # write back:
     state['t'] = t; state['z'] = z; state['dt'] = dt; state['seed'] = seed
@@ -756,7 +770,8 @@ def evolve_interactions(state, config):
     m_max = config['m_max']
     with_tdes = config['with_tdes']
     f_accreted = config['f_accreted']
-    
+    EoS = config['EoS']
+
     # BBH evolution:
     seed, t, z, dt, zCl_form, binaries, hardening, mergers, mBH, sBH, gBH, hBH, n_star, v_star, vBH, t_rlx, m_avg, mBH_avg, na_BH, nc_BH, N_BH, N_BBH, N_me, N_me2b, N_3cap, N_meFi, N_meRe, N_meEj, N_dis, N_ex, N_BHej, N_BBHej, N_hardening, Vc_BH, N_bb, triples, N_Triples = evolve_BBHs(seed, t, z, dt, zCl_form, binaries, hardening, mergers, mBH, sBH, gBH, hBH, n_star, v_star, vBH, t_rlx, m_avg, mBH_avg, na_BH, nc_BH, N_BH, N_BBH, N_me, N_me2b, N_3cap, N_meFi, N_meRe, N_meEj, N_dis, N_ex, N_BHej, N_BBHej, N_hardening, Vc_BH, N_bb, triples, N_Triples)
 
@@ -831,7 +846,7 @@ def evolve_interactions(state, config):
                 m_star, R_star = get_star(t, tBH_form, m_min, m_max)
 
                 k_tdeBHstar = 1
-                seed, t, z, k_tdeBHstar, N_tdeBHstar, tde_type, m_avg, m_star, R_star, m1, s1, g1, h1, v_star, vBH, tdes, binaries, pairs, f_accreted = BH_TidalDisruptions(seed, t, z, k_tdeBHstar, N_tdeBHstar, tde_type, m_avg, m_star, R_star, np.array([m1]), np.array([s1]), np.array([g1]), np.array([h1]), v_star, vBH, tdes, binaries, pairs, f_accreted)
+                seed, t, z, k_tdeBHstar, N_tdeBHstar, tde_type, m_avg, m_star, R_star, m1, s1, g1, h1, v_star, vBH, tdes, binaries, pairs, f_accreted, EoS = BH_TidalDisruptions(seed, t, z, k_tdeBHstar, N_tdeBHstar, tde_type, m_avg, m_star, R_star, np.array([m1]), np.array([s1]), np.array([g1]), np.array([h1]), v_star, vBH, tdes, binaries, pairs, f_accreted, EoS)
 
             if np.random.rand() < p2_TDE:
                 # then TDE-2 occurs:
@@ -842,7 +857,7 @@ def evolve_interactions(state, config):
                 m_star, R_star = get_star(t, tBH_form, m_min, m_max)
 
                 k_tdeBHstar = 1
-                seed, t, z, k_tdeBHstar, N_tdeBHstar, tde_type, m_avg, m_star, R_star, m2, s2, g2, h2, v_star, vBH, tdes, binaries, pairs, f_accreted = BH_TidalDisruptions(seed, t, z, k_tdeBHstar, N_tdeBHstar, tde_type, m_avg, m_star, R_star, np.array([m2]), np.array([s2]), np.array([g2]), np.array([h2]), v_star, vBH, tdes, binaries, pairs, f_accreted)
+                seed, t, z, k_tdeBHstar, N_tdeBHstar, tde_type, m_avg, m_star, R_star, m2, s2, g2, h2, v_star, vBH, tdes, binaries, pairs, f_accreted, EoS = BH_TidalDisruptions(seed, t, z, k_tdeBHstar, N_tdeBHstar, tde_type, m_avg, m_star, R_star, np.array([m2]), np.array([s2]), np.array([g2]), np.array([h2]), v_star, vBH, tdes, binaries, pairs, f_accreted, EoS)
 
             # the following exchange happens:
             # BH-star + BH-star -> BH-BH + star' + star'
@@ -920,6 +935,7 @@ def evolve_tdes(state, config):
     m_min = config['m_min']
     m_max = config['m_max']
     f_accreted = config['f_accreted']
+    EoS = config['EoS']
 
     # white dwarf formation parameters (solar lifetime and max WD progenitor mass):
     solar_life = 1.0e4
@@ -952,7 +968,7 @@ def evolve_tdes(state, config):
     # execute BH-WD tidal disruption events:
     if k_tdeBHWD > 0:
         tde_type = 11
-        seed, t, z, k_tdeBHWD, N_tdeBHWD, tde_type, m_avg, m_WD, R_WD, mBH, sBH, gBH, hBH, v_star, vBH, tdes, binaries, pairs, f_accreted = BH_TidalDisruptions(seed, t, z, k_tdeBHWD, N_tdeBHWD, tde_type, m_avg, m_WD, R_WD, mBH, sBH, gBH, hBH, v_WD, vBH, tdes, binaries, pairs, f_accreted)
+        seed, t, z, k_tdeBHWD, N_tdeBHWD, tde_type, m_avg, m_WD, R_WD, mBH, sBH, gBH, hBH, v_star, vBH, tdes, binaries, pairs, f_accreted, EoS = BH_TidalDisruptions(seed, t, z, k_tdeBHWD, N_tdeBHWD, tde_type, m_avg, m_WD, R_WD, mBH, sBH, gBH, hBH, v_WD, vBH, tdes, binaries, pairs, f_accreted, EoS)
 
     # micro-TDEs:
     v_BHstar = np.sqrt(v_star**2 + vBH**2)
@@ -969,7 +985,7 @@ def evolve_tdes(state, config):
         # Sample star mass from evolving mass function:
         m_star, R_star = get_star(t, tBH_form, m_min, m_max)
 
-        seed, t, z, k_tdeBHstar, N_tdeBHstar, tde_type, m_avg, m_star, R_star, mBH, sBH, gBH, hBH, v_star, vBH, tdes, binaries, pairs, f_accreted = BH_TidalDisruptions(seed, t, z, k_tdeBHstar, N_tdeBHstar, tde_type, m_avg, m_star, R_star, mBH, sBH, gBH, hBH, v_star, vBH, tdes, binaries, pairs, f_accreted)
+        seed, t, z, k_tdeBHstar, N_tdeBHstar, tde_type, m_avg, m_star, R_star, mBH, sBH, gBH, hBH, v_star, vBH, tdes, binaries, pairs, f_accreted, EoS = BH_TidalDisruptions(seed, t, z, k_tdeBHstar, N_tdeBHstar, tde_type, m_avg, m_star, R_star, mBH, sBH, gBH, hBH, v_star, vBH, tdes, binaries, pairs, f_accreted, EoS)
 
     # write back:
     state['seed'] = seed; state['t'] = t; state['z'] = z
