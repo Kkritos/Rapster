@@ -350,8 +350,8 @@ def evolve_spin_RungeKutta(Mi, Mf, xi, s, dM):
         k3 = dM*dxdM(M+dM/2, x+k2/2, s)
         k4 = dM*dxdM(M+dM, x+k3, s)
         dx = (k1 + 2*k2 + 2*k3 + k4)/6
-        if x + dx > Thorne_spin_limit:
-            x = Thorne_spin_limit
+        if x + dx > THORNE_SPIN_LIMIT:
+            x = THORNE_SPIN_LIMIT
             break
         elif x + dx < 0 and s==-1:
             s = +1
