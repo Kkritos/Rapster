@@ -19,7 +19,7 @@
 from .constants import *
 
 # ---------------------------------------------------------------------------
-# Constants (SI) — used internally for physics computations
+# Constants (SI) used internally for physics computations
 # ---------------------------------------------------------------------------
 Msun = 1.989e30   # kg
 c    = 2.998e8    # m/s
@@ -27,7 +27,7 @@ km   = 1e3        # m  (conversion: 1 km = 1e3 m)
 G    = 6.674e-11  # m^3 kg^-1 s^-2
 
 # Geometric mass conversion: G*Msun/c^2 in km
-Msun_to_km = G * Msun / c**2 / km    # ~ 1.477 km / M_sun  (= G*Msun/c^2 in km)
+Msun_to_km = G * Msun / c**2 / km    # about 1.477 km / M_sun  (= G*Msun/c^2 in km)
 
 # Thorne (1974) spin limit: radiation captured by the BH prevents chi=1
 THORNE_LIMIT = 0.998
@@ -51,11 +51,12 @@ def Radius_APR(M):
 def Radius_AU(M):
     return np.interp(M, M_AU, R_AU)
 
+# minimum and maximum allowed NS mass for different EoS:
 M_APR_min, M_APR_max = M_APR.min(), M_APR.max()
 M_AU_min,  M_AU_max  = M_AU.min(),  M_AU.max()
 
 # ---------------------------------------------------------------------------
-# Supramassive limit  —  Breu & Rezzolla (2016)
+# Supramassive limit  -  Breu & Rezzolla (2016)
 #   M_max,rot ~ 1.203 * M_TOV  (EOS-insensitive to ~2%)
 # ---------------------------------------------------------------------------
 BREU_REZZOLLA_FACTOR = 1.203
@@ -76,7 +77,7 @@ def geom_mass(M):
 
     Parameters
     ----------
-    M : float — gravitational mass [M_sun]
+    M : float - gravitational mass [M_sun]
 
     Returns
     -------
@@ -85,7 +86,7 @@ def geom_mass(M):
     return M * Msun_to_km
 
 # ---------------------------------------------------------------------------
-# Moment of inertia  —  Lattimer & Schutz (2005)
+# Moment of inertia  -  Lattimer & Schutz (2005)
 #
 #   I / (M R^2) = 0.237 (1 + 0.674 C + 4.48 C^4),   C = M/R
 #
@@ -99,8 +100,8 @@ def moment_of_inertia(M, R):
 
     Parameters
     ----------
-    M : float — mass [M_sun]
-    R : float — radius [km]
+    M : float - mass [M_sun]
+    R : float - radius [km]
 
     Returns
     -------
@@ -153,9 +154,9 @@ def chi_from_frequency(M, R, f):
 
     Parameters
     ----------
-    M : float — mass [M_sun]
-    R : float — radius [km]
-    f : float — spin frequency [Hz]
+    M : float - mass [M_sun]
+    R : float - radius [km]
+    f : float - spin frequency [Hz]
 
     Returns
     -------
@@ -175,10 +176,10 @@ def f_from_chi(M, chi, R=None, NS=True):
 
     Parameters
     ----------
-    M   : float — mass [M_sun]
-    chi : float — dimensionless spin parameter
-    R   : float — radius [km], required if NS=True
-    NS  : bool  — True for neutron star, False for black hole
+    M   : float - mass [M_sun]
+    chi : float - dimensionless spin parameter
+    R   : float - radius [km], required if NS=True
+    NS  : bool  - True for neutron star, False for black hole
 
     Returns
     -------
@@ -204,18 +205,18 @@ def R_ISCO(M, NS=True, R=None, f=None, chi=None, prograde=True):
     ISCO radius [km].
 
     NS=True  : Luk & Lin (2018) Eq. (6) universal NS relation.  f required.
-               No Schwarzschild floor applied — the fit is self-consistent.
+               No Schwarzschild floor applied - the fit is self-consistent.
     NS=False : Bardeen, Press & Teukolsky (1972) exact Kerr.     chi required.
     R        : accepted but unused; kept for uniform call signature.
 
     Parameters
     ----------
-    M        : float — mass [M_sun]
-    NS       : bool  — True for NS, False for BH
-    R        : float — radius [km], unused
-    f        : float — spin frequency [Hz], required if NS=True
-    chi      : float — dimensionless spin, required if NS=False
-    prograde : bool  — prograde orbit (default True)
+    M        : float - mass [M_sun]
+    NS       : bool  - True for NS, False for BH
+    R        : float - radius [km], unused
+    f        : float - spin frequency [Hz], required if NS=True
+    chi      : float - dimensionless spin, required if NS=False
+    prograde : bool  - prograde orbit (default True)
 
     Returns
     -------
@@ -260,9 +261,9 @@ def f_kepler(M, NS=True, R=None):
 
     Parameters
     ----------
-    M  : float — mass [M_sun]
-    NS : bool  — True for NS, False for BH
-    R  : float — radius [km], required if NS=True
+    M  : float - mass [M_sun]
+    NS : bool  - True for NS, False for BH
+    R  : float - radius [km], required if NS=True
 
     Returns
     -------
@@ -282,9 +283,9 @@ def chi_kepler(M, NS=True, R=None):
 
     Parameters
     ----------
-    M  : float — mass [M_sun]
-    NS : bool  — True for NS, False for BH
-    R  : float — radius [km], required if NS=True
+    M  : float - mass [M_sun]
+    NS : bool  - True for NS, False for BH
+    R  : float - radius [km], required if NS=True
 
     Returns
     -------
@@ -381,16 +382,16 @@ def E_isco(M, NS=True, R=None, f=None, chi=None, prograde=True):
 
     Parameters
     ----------
-    M        : float — mass [M_sun]
-    NS       : bool  — True for NS, False for BH
-    R        : float — radius [km], required if NS=True
-    f        : float — spin frequency [Hz], required if NS=True
-    chi      : float — dimensionless spin, required if NS=False
-    prograde : bool  — prograde orbit (default True)
+    M        : float - mass [M_sun]
+    NS       : bool  - True for NS, False for BH
+    R        : float - radius [km], required if NS=True
+    f        : float - spin frequency [Hz], required if NS=True
+    chi      : float - dimensionless spin, required if NS=False
+    prograde : bool  - prograde orbit (default True)
 
     Returns
     -------
-    E : float — dimensionless specific energy
+    E : float - dimensionless specific energy
     """
     if NS:
         if R is None or f is None:
@@ -422,16 +423,16 @@ def J_isco(M, NS=True, R=None, f=None, chi=None, prograde=True):
 
     Parameters
     ----------
-    M        : float — mass [M_sun]
-    NS       : bool  — True for NS, False for BH
-    R        : float — radius [km], required if NS=True
-    f        : float — spin frequency [Hz], required if NS=True
-    chi      : float — dimensionless spin, required if NS=False
-    prograde : bool  — prograde orbit (default True)
+    M        : float - mass [M_sun]
+    NS       : bool  - True for NS, False for BH
+    R        : float - radius [km], required if NS=True
+    f        : float - spin frequency [Hz], required if NS=True
+    chi      : float - dimensionless spin, required if NS=False
+    prograde : bool  - prograde orbit (default True)
 
     Returns
     -------
-    J : float — specific angular momentum [km]
+    J : float - specific angular momentum [km]
     """
     if NS:
         if R is None or f is None:
@@ -460,7 +461,7 @@ def J_isco(M, NS=True, R=None, f=None, chi=None, prograde=True):
 # Spin evolver
 #
 # State variable: J [km^2]  (geometric angular momentum = chi * Mg^2)
-# J is continuous across NS -> BH transition — no state variable switch.
+# J is continuous across NS -> BH transition - no state variable switch.
 # chi = J/Mg^2 is always >= 0 (spin magnitude). Orbit direction is tracked
 # separately via prograde_now (mutable flag inside evolve()). When retrograde
 # accretion drives chi to 0, prograde_now flips to True, matching Bardeen (1970).
@@ -473,7 +474,7 @@ def J_isco(M, NS=True, R=None, f=None, chi=None, prograde=True):
 #
 #   BH phase  (M >= M_max_rot):
 #     dJ/dM_grav = (J_isco / E_isco) * Msun_to_km   [km^2 / M_sun]
-#     M_grav    += dM   (same as NS — M steps in gravitational mass)
+#     M_grav    += dM   (same as NS - M steps in gravitational mass)
 #
 #     Bardeen (1970) gives dchi/dM_grav directly; the E_isco factor
 #     relating dM_grav to dM_acc is already absorbed into dJ/dM_grav.
@@ -484,7 +485,7 @@ def J_isco(M, NS=True, R=None, f=None, chi=None, prograde=True):
 #
 # Units of J update:
 #   J_isco [km] * dM [M_sun] * Msun_to_km [km/M_sun] / E_isco [dimensionless]
-#   = km^2  ✓
+#   = km^2 
 # ---------------------------------------------------------------------------
 
 def evolve(Mi, Mf, NS, f=None, chi=0.0, dM=1e-3, eos='APR', prograde=True):
@@ -497,14 +498,14 @@ def evolve(Mi, Mf, NS, f=None, chi=0.0, dM=1e-3, eos='APR', prograde=True):
 
     Parameters
     ----------
-    Mi  : float — initial mass [M_sun]
-    Mf  : float — final mass [M_sun]
-    NS  : bool  — True if the initial object is a neutron star
-    f   : float — initial spin frequency [Hz]  (provide f or chi, not both)
-    chi : float — initial dimensionless spin    (default 0.0)
-    dM       : float — mass step [M_sun] (sign set automatically from Mf-Mi)
-    eos      : str   — 'APR' or 'AU', required if NS=True
-    prograde : bool  — True for prograde accretion (spin-up), False for retrograde
+    Mi  : float - initial mass [M_sun]
+    Mf  : float - final mass [M_sun]
+    NS  : bool  - True if the initial object is a neutron star
+    f   : float - initial spin frequency [Hz]  (provide f or chi, not both)
+    chi : float - initial dimensionless spin    (default 0.0)
+    dM       : float - mass step [M_sun] (sign set automatically from Mf-Mi)
+    eos      : str   - 'APR' or 'AU', required if NS=True
+    prograde : bool  - True for prograde accretion (spin-up), False for retrograde
                        (spin-down). When retrograde drives chi to 0 the orbit
                        automatically flips to prograde, matching Bardeen (1970).
 
