@@ -127,7 +127,10 @@ neutron_star_mass = M_Chandrasekhar
 white_dwarf_mass = 0.60
 
 # Thorne spin limit:
-Thorne_spin_limit = 0.998
+THORNE_SPIN_LIMIT = 0.998
+
+# Brau & Rezzolla supermassive rotating NS factor:
+BREU_REZZOLLA_FACTOR = 1.203
 
 evolution_keys = [
     'seed', 't', 'z', 'dt', 'm_avg', 'M_cl', 'r_h', 'R_gal', 'v_gal', 't_rh', 't_rhBH', 'n_star', 'N_BH', 'mBH_avg', 'mBH_max', 'r_hBH', 'r_cBH', 'S', 'xi', 'psi', 'psi_BH', 't_3bb', 't_2cap', 'k_3bb', 'k_2cap', 'N_me', 'N_BBH', 'N_meRe', 
