@@ -6,7 +6,7 @@ $\tt Rapster$ stands for $\rm RAPid\ cluSTER$ evolution.
 
 Author: Konstantinos Kritos <kkritos1@jhu.edu>
 
-Version: 2.9.4, May 14, 2026.
+Version: 2.9.5, May 25, 2026.
 (Thanks to Tousif Islam for helping modularize this repository!)
 
 ![LOGO](.assets/LOGO.png)
@@ -31,7 +31,7 @@ Version: 2.9.4, May 14, 2026.
 
 The repository provides the source code files for the current version in ``rapster/`` and all necessary data files in the ``Data/`` folder, for the rapid evolution of dense star cluster environments and the dynamical assembly of compact-object coalescences and tidal disruption events.
 
-The modeling accounts for the necessary physical processes for forming compact-object binaries and cluster evolution employing semi-analytic prescriptions described in Sec. 2 of [K. Kritos et al. PRD (2024)](https://arxiv.org/abs/2210.10055). This is our code paper, which we wrote together with Vladirim Strokov, Vishal Baibhav, and Emanuele Berti.
+The modeling accounts for the necessary physical processes governing the formation of compact-object binaries and cluster evolution, employing semi-analytic prescriptions described in Sec. 2 of [K. Kritos et al. PRD (2024)](https://arxiv.org/abs/2210.10055). This is our code paper, which we wrote together with Vladirim Strokov, Vishal Baibhav, and Emanuele Berti.
 
 ##### Note:
 
@@ -65,9 +65,9 @@ The following Python packages are required to run the code:
 - $\tt scipy$ (=1.15.2)
 - $\tt pandas$ (=2.2.3)
 
-The code is tested with packages in the versions shown in parentheses above; however, likely, other versions work too.
+The code is tested with packages in the versions shown in parentheses above; however, other versions likely work as well.
 
-It is recommended that the user create and work in a local Python environment, installing all the dependencies above.
+It is recommended that the user create and work in a local Python environment and install all the dependencies above.
 
 The following packages are recommended for running the tutorial notebook in ``Examples/``, but are not necessary to run cluster simulations:
 
