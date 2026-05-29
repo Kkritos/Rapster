@@ -18,6 +18,9 @@ dependencies = [
     "astropy"
 ]
 
+[project.optional-dependencies]
+gwkick = ["gwModels"]
+
 [tool.setuptools]
 packages = ["rapster"]
 
