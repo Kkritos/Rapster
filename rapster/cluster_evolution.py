@@ -26,6 +26,7 @@ from .two_body_capture import two_body_capture
 from .exchanges import StarStar_to_BHstar, BHstar_to_BBH
 from .tidal_disruptions import BH_TidalDisruptions
 from .compact_accretion import *
+from .remnant import configure_kick_model
 
 
 def initialize_cluster(config):
@@ -280,6 +281,8 @@ def initialize_cluster(config):
     evolution = np.zeros(shape=(1, 69))
     hardening = np.zeros(shape=(1, 12))
     tdes = np.zeros(shape=(1, 18))
+
+    configure_kick_model(config['recoil_kick_model'])
 
     # bundle all mutable simulation variables into the state dictionary:
     state = {

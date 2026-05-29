@@ -121,6 +121,7 @@ def parse_args():
     parser.add_argument('-fA', '--accreted_fraction', type=float, metavar=' ', default=0.5, help='Fraction of a disrupted star accreted by the compact object')
     parser.add_argument('-mb', '--mass_bias_power', type=float, metavar=' ', default=0.0, help='Mass bias power index p for drawing stars from IMF*m^p for TDEs')
     parser.add_argument('-EoS', '--equation_of_state', type=str, metavar=' ', default='APR', help='Neutron Star equation of state; either "APR" or "AU"')
+    parser.add_argument('-RK', '--recoil_kick_model', type=int, metavar=' ', default=0, help='GW recoil kick model (0 for Gerosa & Kesden 2016, 1 for gwModel_kick_prec_flow from Islam & Wadekar 2025)')
 
     args = parser.parse_args()
 
@@ -171,6 +172,7 @@ def parse_args():
         'f_accreted': args.accreted_fraction,
         'mass_bias_power': args.mass_bias_power,
         'EoS': args.equation_of_state,
+        'recoil_kick_model': args.recoil_kick_model,
     }
 
     return config

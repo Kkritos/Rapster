@@ -168,6 +168,7 @@ For the user’s convenience, we paste the list of optional arguments in the for
 | -fA, --accreted_fraction | Fraction of a disrupted star accreted by the compact object | float | ``0.5`` |
 | -mb, --mass_bias_power | Mass bias power index p for drawing stars from IMF*m^p for TDEs | float | ``0.0`` |
 | -EoS, --equation_of_state | Neutron Star equation of state; either "APR" or "AU" | str | ``APR`` |
+| -RK, --recoil_kick_model | GW recoil kick model (0 for Gerosa & Kesden 2016, 1 for gwModel_kick_prec_flow from Islam & Wadekar 2025) | int | ``0`` |
 
 ##### Note:
 
@@ -176,7 +177,7 @@ The initial value of the central stellar density is set by default to 5.3e5 (pc^
 <a name="runningasimulation"></a>
 ### 5. Running a simulation
 
-usage: -m [-h] [-N] [-r] [-mm] [-mM] [-Z] [-z] [-n] [-fb] [-S] [-dtm] [-dtM] [-tM] [-wK] [-K] [-R] [-vg] [-s] [-SD] [-P] [-Mi] [-MF] [-Ei] [-EF] [-Hi] [-HF] [-BIi] [-BIF] [-BOi] [-BOF] [-RP] [-NS] [-WT] [-Ti] [-TF] [-MBH] [-sBH] [-RF] [-BMD] [-mBH1gMin] [-mBH1gMax] [-RMP] [-plot] [-analyze] [-fA] [-mb] [-EoS]
+usage: -m [-h] [-N] [-r] [-mm] [-mM] [-Z] [-z] [-n] [-fb] [-S] [-dtm] [-dtM] [-tM] [-wK] [-K] [-R] [-vg] [-s] [-SD] [-P] [-Mi] [-MF] [-Ei] [-EF] [-Hi] [-HF] [-BIi] [-BIF] [-BOi] [-BOF] [-RP] [-NS] [-WT] [-Ti] [-TF] [-MBH] [-sBH] [-RF] [-BMD] [-mBH1gMin] [-mBH1gMax] [-RMP] [-plot] [-analyze] [-fA] [-mb] [-EoS] [-RK]
 
 ##### Examples:
 
