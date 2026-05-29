@@ -18,8 +18,10 @@
 
 from .constants import *
 
-_recoil_kick_model = 0
-_flow_model = None
+# Safe defaults before configure_kick_model() is called.
+# The -RK flag drives everything: it flows through config -> configure_kick_model() -> these module-level variables.
+_recoil_kick_model = 0  # 0 = Gerosa & Kesden (2016), 1 = gwModel_kick_prec_flow (Islam & Wadekar 2025)
+_flow_model = None  # initialized by configure_kick_model() when recoil_kick_model == 1
 
 def configure_kick_model(recoil_kick_model):
     global _recoil_kick_model, _flow_model
