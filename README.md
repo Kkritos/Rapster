@@ -75,6 +75,10 @@ The following packages are recommended for running the tutorial notebook in ``Ex
 - $\tt jupyterlab$
 - $\tt ipykernel$
 
+To use the ``gwModel_kick_prec_flow`` recoil kick model (``-RK 1``), install [gwModels](https://github.com/tousifislam/gwModels):
+
+> pip install gwModels
+
 First, create an environment called ``.rapsterenv`` in the root directory of the repository Rapster/, and hidden from view:
 
 > python3 -m venv .rapsterenv
