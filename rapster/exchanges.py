@@ -61,9 +61,8 @@ def StarStar_to_BHstar(seed, t, z, k_ex1, N_ex1, m_avg, mBH, sBH, gBH, hBH, ab, 
             
             k = np.squeeze(np.where(mBH==m))+0
             
-            if isinstance(k, np.ndarray):
-                k=k[0]
-                
+            k = int(np.atleast_1d(k)[0])
+            
             s = sBH[k]
             g = gBH[k]
             h = hBH[k]
@@ -72,8 +71,7 @@ def StarStar_to_BHstar(seed, t, z, k_ex1, N_ex1, m_avg, mBH, sBH, gBH, hBH, ab, 
                 
             kss = np.squeeze(np.where(ab==a))+0
             
-            if isinstance(kss, np.ndarray):
-                kss=kss[0]
+            kss = int(np.atleast_1d(kss)[0])
 
             # delete star-star:
             ab = np.delete(ab, kss)
@@ -134,8 +132,7 @@ def BHstar_to_BBH(seed, t, z, k_ex2, N_ex2, m_avg, mBH, sBH, gBH, hBH, pairs, bi
             # location of the sampled BH:
             k2 = np.squeeze(np.where(mBH==m2))+0
             
-            if isinstance(k2, np.ndarray):
-                k2=k2[0]
+            k2 = int(np.atleast_1d(k2)[0])
                 
             s2 = sBH[k2] # spin of the second BH
             g2 = gBH[k2] # generation of the second BH
@@ -146,8 +143,7 @@ def BHstar_to_BBH(seed, t, z, k_ex2, N_ex2, m_avg, mBH, sBH, gBH, hBH, pairs, bi
             
             kp = np.squeeze(np.where(pairs[:, 0]==ap))+0
 
-            if isinstance(kp, np.ndarray):
-                kp=kp[0]
+            kp = int(np.atleast_1d(kp)[0])
                 
             m1 = pairs[kp][1]
             s1 = pairs[kp][2]
