@@ -96,11 +96,6 @@ def three_body_binary(t, z, k_3bb, mBH_avg, binaries, mBH, sBH, gBH, hBH, vBH, N
             k1 = np.squeeze(np.where(mBH==m1))+0
             k2 = np.squeeze(np.where(mBH==m2))+0
             
-            #if isinstance(k1, np.ndarray):
-            #    k1 = k1[0]
-            #if isinstance(k2, np.ndarray):
-            #    k2 = k2[0]
-            
             k1 = int(np.atleast_1d(k1)[0])
             k2 = int(np.atleast_1d(k2)[0])
             
