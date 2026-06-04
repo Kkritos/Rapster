@@ -30,7 +30,7 @@ G    = 6.674e-11  # m^3 kg^-1 s^-2
 Msun_to_km = G * Msun / c**2 / km    # about 1.477 km / M_sun  (= G*Msun/c^2 in km)
 
 # Thorne (1974) spin limit: radiation captured by the BH prevents chi=1
-THORNE_LIMIT = 0.998
+THORNE_LIMIT = THORNE_SPIN_LIMIT
 
 # ---------------------------------------------------------------------------
 # EOS tables  (mass in M_sun, radius in km)
