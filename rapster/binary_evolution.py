@@ -255,8 +255,7 @@ def evolve_BBHs(seed, t, z, dt, zCl_form, binaries, hardening, mergers, mBH, sBH
                     # find index location of binary:
                     k2 = np.squeeze(np.where(binaries[:, 2]==a2))+0
                     
-                    if isinstance(k2, np.ndarray):
-                        k2 = k2[0]
+                    k2 = int(np.atleast_1d(k2)[0])
                         
                     # order based on hardness:
                     if a1 < a2:
@@ -356,8 +355,7 @@ def evolve_BBHs(seed, t, z, dt, zCl_form, binaries, hardening, mergers, mBH, sBH
                     
                     k3 = np.squeeze(np.where(mBH==m3))+0
                     
-                    if isinstance(k3, np.ndarray):
-                        k3 = k3[0]
+                    k3 = int(np.atleast_1d(k3)[0])
                     
                     s3 = sBH[k3]
                     g3 = gBH[k3]
