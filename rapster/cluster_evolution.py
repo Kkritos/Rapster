@@ -854,6 +854,7 @@ def evolve_interactions(state, config):
 
                 k_tdeBHstar = 1
                 seed, t, z, k_tdeBHstar, N_tdeBHstar, tde_type, m_avg, m_star, R_star, m1, s1, g1, h1, v_star, vBH, tdes, binaries, pairs, f_accreted, EoS = BH_TidalDisruptions(seed, t, z, k_tdeBHstar, N_tdeBHstar, tde_type, m_avg, m_star, R_star, np.array([m1]), np.array([s1]), np.array([g1]), np.array([h1]), v_star, vBH, tdes, binaries, pairs, f_accreted, EoS)
+                m1, s1, g1, h1 = float(m1[0]), float(s1[0]), float(g1[0]), float(h1[0])
 
             if np.random.rand() < p2_TDE:
                 # then TDE-2 occurs:
@@ -865,6 +866,7 @@ def evolve_interactions(state, config):
 
                 k_tdeBHstar = 1
                 seed, t, z, k_tdeBHstar, N_tdeBHstar, tde_type, m_avg, m_star, R_star, m2, s2, g2, h2, v_star, vBH, tdes, binaries, pairs, f_accreted, EoS = BH_TidalDisruptions(seed, t, z, k_tdeBHstar, N_tdeBHstar, tde_type, m_avg, m_star, R_star, np.array([m2]), np.array([s2]), np.array([g2]), np.array([h2]), v_star, vBH, tdes, binaries, pairs, f_accreted, EoS)
+                m2, s2, g2, h2 = float(m2[0]), float(s2[0]), float(g2[0]), float(h2[0])
 
             # the following exchange happens:
             # BH-star + BH-star -> BH-BH + star' + star'
