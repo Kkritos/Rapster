@@ -825,10 +825,14 @@ def evolve_interactions(state, config):
             k1 = np.squeeze(np.where(smas==a1))+0
             k2 = np.squeeze(np.where(smas==a2))+0
 
-            if isinstance(k1, np.ndarray):
-                k1=k1[0]
-            if isinstance(k2, np.ndarray):
-                k2=k2[0]
+            k1 = int(np.atleast_1d(k1)[0])
+            k2 = int(np.atleast_1d(k2)[0])
+
+            if k1 == k2:
+                candidates = np.where(smas == a2)[0]
+                k2 = int(candidates[1]) if len(candidates) > 1 else None
+                if k2 is None:
+                    continue
 
             m1 = pairs[k1][1]; s1 = pairs[k1][2]; g1 = pairs[k1][3]; h1 = pairs[k1][4]
             m2 = pairs[k2][1]; s2 = pairs[k2][2]; g2 = pairs[k2][3]; h2 = pairs[k2][4]
