@@ -318,6 +318,7 @@ def X_isco(x, s):
     s: 1 for prograde and -1 for retrograde orbits.
     """
     
+    x = np.clip(x, 0.0, THORNE_SPIN_LIMIT)
     Z1 = 1 + (1 - x**2)**(1/3)*((1+x)**(1/3) + (1-x)**(1/3))
     Z2 = np.sqrt(3*x**2 + Z1**2)
     XX = 3 + Z2 - s*np.sqrt((3-Z1)*(3+Z1+2*Z2))

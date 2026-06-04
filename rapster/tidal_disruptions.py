@@ -66,9 +66,8 @@ def BH_TidalDisruptions(seed, t, z, k_tde, N_tde, tde_type, m_avg, m_star, R_sta
             # find index location of that BH mass:
             k = np.squeeze(np.where(mBH==m))+0
             
-            if isinstance(k, np.ndarray):
-                k=k[0]
-                
+            k = int(np.atleast_1d(k)[0])
+            
             s = sBH[k] # get BH's (dimensionless) spin
             g = gBH[k] # get BH's generation
             h = hBH[k] # get BH's tdes count
