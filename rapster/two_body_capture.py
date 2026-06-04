@@ -99,11 +99,15 @@ def two_body_capture(seed, t, dt, z, zCl_form, k_2cap, mBH_avg, binaries, mBH, s
             # find index locations of the sampled BHs:
             k1 = np.squeeze(np.where(mBH==m1))+0
             k2 = np.squeeze(np.where(mBH==m2))+0
-            
-            if isinstance(k1, np.ndarray):
-                k1=k1[0]
-            if isinstance(k2, np.ndarray):
-                k2=k2[0]
+
+            k1 = int(np.atleast_1d(k1)[0])
+            k2 = int(np.atleast_1d(k2)[0])
+
+            if k1 == k2:
+                candidates = np.where(mBH == m2)[0]
+                k2 = int(candidates[1]) if len(candidates) > 1 else None
+                if k2 is None:
+                    continue
                 
             s1 = sBH[k1]; g1 = gBH[k1]; h1 = hBH[k1]
             s2 = sBH[k2]; g2 = gBH[k2]; h2 = hBH[k2]
