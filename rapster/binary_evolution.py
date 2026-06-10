@@ -247,7 +247,10 @@ def evolve_BBHs(seed, t, z, dt, zCl_form, binaries, hardening, mergers, mBH, sBH
                     a1 = a
                     
                     # sample binary:
-                    a2 = np.random.choice(smas, p=masses * smas / np.sum(masses * smas))
+                    valid = np.where(masses * smas > 0)[0]
+                    if len(valid) < 1:
+                        continue
+                    a2 = np.random.choice(smas[valid], p=(masses * smas)[valid] / np.sum((masses * smas)[valid]))
 
                     # index of current BBH:
                     k1 = i
