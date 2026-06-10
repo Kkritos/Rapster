@@ -166,6 +166,9 @@ def two_body_capture(seed, t, dt, z, zCl_form, k_2cap, mBH_avg, binaries, mBH, s
                 # final energy:
                 E_fin = mu * v_rel**2 / 2 - E_gw
                 
+            if n_iter > max_iter:  # capture event skipped due to no valid eccentricity found
+                continue
+                
             # semimajor axis at formation:
             sma = - G_Newton * m12 * mu / 2 / E_fin
             
