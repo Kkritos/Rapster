@@ -68,7 +68,7 @@ def evolve_BBHs(seed, t, z, dt, zCl_form, binaries, hardening, mergers, mBH, sBH
     if N_BBH>0:
         
         # shuffle binaries to avoid biases:
-        np.random.shuffle(binaries[1:binaries.size])
+        np.random.shuffle(binaries[1:])  # shuffle all BBH rows excluding the placeholder first row
         
         # initialize iteration index:
         i=1
