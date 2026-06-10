@@ -163,11 +163,12 @@ def evolve_triples(seed, t, z, zCl_form, triples, binaries, mBH, sBH, gBH, hBH, 
 
                 else: # new outer binary survives
                     
-                    # append binary:
-                    binaries = np.append(binaries, [[np.random.randint(0, 999999999), 5, a_out, np.sqrt(np.random.rand()), m2, m_rem, s2, s_rem, g2, g_rem, t + t_ZLK, redshift(lookback(zCl_form) - t - t_ZLK), 0, h2, h_rem]], axis=0)
-                    
-                    N_BBH+=1
-                    N_meRe+=1
+                    # append binary;
+                    # only append the new outer binary if the merger time is within the simulation horizon:
+                    if t + t_ZLK < lookback(zCl_form):
+                        binaries = np.append(binaries, [[np.random.randint(0, 999999999), 5, a_out, np.sqrt(np.random.rand()), m2, m_rem, s2, s_rem, g2, g_rem, t + t_ZLK, redshift(lookback(zCl_form) - t - t_ZLK), 0, h2, h_rem]], axis=0)
+                        N_BBH+=1
+                        N_meRe+=1
 
             else: # triple breaks and inner binary is released
                 
