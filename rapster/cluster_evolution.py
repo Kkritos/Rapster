@@ -821,7 +821,10 @@ def evolve_interactions(state, config):
             smas = pairs[:, 0]
             masses = pairs[:, 1]
 
-            a1, a2 = np.random.choice(smas, size=2, replace=False, p=smas*masses / np.sum(smas*masses))
+            valid = np.where(smas * masses > 0)[0]
+            if len(valid) < 2:
+                break
+            a1, a2 = np.random.choice(smas[valid], size=2, replace=False, p=(smas*masses)[valid] / np.sum((smas*masses)[valid]))
 
             k1 = np.squeeze(np.where(smas==a1))+0
             k2 = np.squeeze(np.where(smas==a2))+0
