@@ -85,6 +85,7 @@ def evolve_triples(seed, t, z, zCl_form, triples, binaries, mBH, sBH, gBH, hBH, 
             
             # maximum eccentricity of inner pair during the ZLK cycle:
             eMAX = find_eMAX(m0, m1, m2, a_in, a_out, e_in, e_out, np.cos(inclination1), np.cos(inclination2), w_in)
+            eMAX = np.clip(eMAX, 0.0, 1.0)  # clamp to physical range in case root finder returns slightly out-of-bounds value
             epsilon_min = 1 - eMAX**2
             
             # ZLK merger timescale:
