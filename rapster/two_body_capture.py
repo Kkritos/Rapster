@@ -89,6 +89,8 @@ def two_body_capture(seed, t, dt, z, zCl_form, k_2cap, mBH_avg, binaries, mBH, s
         hBH_temp = []
 
         for i in range(k_2cap):
+            if len(mBH) < 2:
+                break # avoid infinite loop in the fast_sample_2capture function.
             
             # sample the masses that form the captured binary:
             if random_pairing:
