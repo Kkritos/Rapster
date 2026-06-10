@@ -146,8 +146,13 @@ def two_body_capture(seed, t, dt, z, zCl_form, k_2cap, mBH_avg, binaries, mBH, s
             # final energy:
             E_fin = mu * v_rel**2 / 2 - E_gw
             
+            max_iter = 1000  # safety cap to prevent infinite loop for extreme mass/velocity combinations
+            n_iter = 0
             # make sure eccentricity is strictly smaller than unity:
             while 1 + 2 * E_fin * b**2 * v_rel**2 / m12**2 / mu / G_Newton**2 < 0:
+                n_iter += 1
+                if n_iter > max_iter:  # could not find valid eccentricity, skip this capture event
+                    break
                 
                 # impact parameter sampled from uniform in b^2 distribution:
                 b = np.sqrt(np.random.rand() * b_max**2)
