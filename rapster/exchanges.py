@@ -175,7 +175,8 @@ def BHstar_to_BBH(seed, t, z, k_ex2, N_ex2, m_avg, mBH, sBH, gBH, hBH, pairs, bi
 
                 k_tdeBHstar = 1
                 seed, t, z, k_tdeBHstar, N_tdeBHstar, tde_type, m_avg, m_star, R_star, m2, s2, g2, h2, v_star, vBH, tdes, binaries, pairs, f_accreted, EoS = BH_TidalDisruptions(seed, t, z, k_tdeBHstar, N_tdeBHstar, tde_type, m_avg, m_star, R_star, np.array([m2]), np.array([s2]), np.array([g2]), np.array([h2]), v_star, vBH, tdes, binaries, pairs, f_accreted, EoS)
-                
+                m2, s2, g2, h2 = float(m2[0]), float(s2[0]), float(g2[0]), float(h2[0])  # unpack from single-element arrays returned by BH_TidalDisruptions
+
                 # release BH from BH-star pair into the single population:
                 mBH = np.append(mBH, m1)
                 sBH = np.append(sBH, s1)
