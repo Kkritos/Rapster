@@ -89,6 +89,7 @@ def StarStar_to_BHstar(seed, t, z, k_ex1, N_ex1, m_avg, mBH, sBH, gBH, hBH, ab, 
 
                 k_tdeBHstar = 1
                 seed, t, z, k_tdeBHstar, N_tdeBHstar, tde_type, m_avg, m_star, R_star, m, s, g, h, v_star, vBH, tdes, binaries, pairs, f_accreted, EoS = BH_TidalDisruptions(seed, t, z, k_tdeBHstar, N_tdeBHstar, tde_type, m_avg, m_star, R_star, np.array([m]), np.array([s]), np.array([g]), np.array([h]), v_star, vBH, tdes, binaries, pairs, f_accreted, EoS)
+                m, s, g, h = float(m[0]), float(s[0]), float(g[0]), float(h[0])
 
                 # update and release m1 into the single population:
                 mBH[k] = m
