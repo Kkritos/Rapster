@@ -140,6 +140,8 @@ def BHstar_to_BBH(seed, t, z, k_ex2, N_ex2, m_avg, mBH, sBH, gBH, hBH, pairs, bi
             h2 = hBH[k2] # number of second BH's tdes
             
             # draw a BH-star pair:
+            if np.sum(pairs[:, 0]) == 0:
+                continue
             ap = np.random.choice(pairs[:, 0], p=pairs[:, 0] / np.sum(pairs[:, 0]))
             
             kp = np.squeeze(np.where(pairs[:, 0]==ap))+0
