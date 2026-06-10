@@ -353,6 +353,8 @@ def evolve_BBHs(seed, t, z, dt, zCl_form, binaries, hardening, mergers, mBH, sBH
                     vS_before = v_star
 
                 else:
+                    if mBH.size == 0:  # no single BHs left to interact with, skip
+                        continue
                     p3 = (m1 + m2 + mBH) / np.sqrt((m1 + m2)**(-2/5) + mBH**(-2/5)) * mBH**(3/2)
                     m3 = np.random.choice(mBH, replace=False, p=p3/np.sum(p3))
                     
