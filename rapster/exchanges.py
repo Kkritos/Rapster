@@ -129,7 +129,10 @@ def BHstar_to_BBH(seed, t, z, k_ex2, N_ex2, m_avg, mBH, sBH, gBH, hBH, pairs, bi
     if k_ex2>0: # perform BH-star -> BH-BH exchange(s)
         
         for i in range(k_ex2):
-            
+
+            if mBH.size == 0: # no single BHs left for exchange, exit loop
+                break
+
             # draw a single BH that will substitute the star in the BH-star pair:
             m2 = np.random.choice(mBH, p=(np.mean(pairs[:, 1]) + mBH)/np.sum(np.mean(pairs[:, 1]) + mBH))
             
