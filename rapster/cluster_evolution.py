@@ -610,7 +610,8 @@ def compute_timescales(state, config):
     # BH-star -> BH-BH timescale:
     if t>t_cc and N_BHstar>0 and N_BHsin>0:
         if N_BHstar>0:
-            t_ex2 = 1 / Rate_exc(m_avg, np.mean(pairs[:, 1]), mBH_avg, nc_BH, vBH, np.mean(pairs[:, 0])) / N_BHstar
+            rate_ex2 = Rate_exc(m_avg, np.mean(pairs[:, 1]), mBH_avg, nc_BH, vBH, np.mean(pairs[:, 0]))
+            t_ex2 = 1 / rate_ex2 / N_BHstar if rate_ex2 > 0 else 1e100
         else:
             t_ex2 = 1e100
     else:
