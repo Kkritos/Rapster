@@ -55,7 +55,10 @@ def StarStar_to_BHstar(seed, t, z, k_ex1, N_ex1, m_avg, mBH, sBH, gBH, hBH, ab, 
     if k_ex1>0: # perform star-star -> BH-star exchange(s)
         
         for i in range(k_ex1):
-            
+
+            if ab.size == 0:  # no star-star binaries left to exchange, exit loop
+                break
+
             # sample mass of the BH that substitutes one of the stars:
             m = np.random.choice(mBH, p=mBH/np.sum(mBH))
             
