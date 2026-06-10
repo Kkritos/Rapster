@@ -68,7 +68,7 @@ def evolve_BBHs(seed, t, z, dt, zCl_form, binaries, hardening, mergers, mBH, sBH
     if N_BBH>0:
         
         # shuffle binaries to avoid biases:
-        np.random.shuffle(binaries[1:binaries.size])
+        np.random.shuffle(binaries[1:])  # shuffle all BBH rows excluding the placeholder first row
         
         # initialize iteration index:
         i=1
@@ -247,7 +247,10 @@ def evolve_BBHs(seed, t, z, dt, zCl_form, binaries, hardening, mergers, mBH, sBH
                     a1 = a
                     
                     # sample binary:
-                    a2 = np.random.choice(smas, p=masses * smas / np.sum(masses * smas))
+                    valid = np.where(masses * smas > 0)[0]
+                    if len(valid) < 1:
+                        continue
+                    a2 = np.random.choice(smas[valid], p=(masses * smas)[valid] / np.sum((masses * smas)[valid]))
 
                     # index of current BBH:
                     k1 = i
@@ -350,6 +353,8 @@ def evolve_BBHs(seed, t, z, dt, zCl_form, binaries, hardening, mergers, mBH, sBH
                     vS_before = v_star
 
                 else:
+                    if mBH.size == 0:  # no single BHs left to interact with, skip
+                        continue
                     p3 = (m1 + m2 + mBH) / np.sqrt((m1 + m2)**(-2/5) + mBH**(-2/5)) * mBH**(3/2)
                     m3 = np.random.choice(mBH, replace=False, p=p3/np.sum(p3))
                     

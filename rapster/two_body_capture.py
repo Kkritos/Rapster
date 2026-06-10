@@ -89,6 +89,8 @@ def two_body_capture(seed, t, dt, z, zCl_form, k_2cap, mBH_avg, binaries, mBH, s
         hBH_temp = []
 
         for i in range(k_2cap):
+            if len(mBH) < 2:
+                break # avoid infinite loop in the fast_sample_2capture function.
             
             # sample the masses that form the captured binary:
             if random_pairing:
@@ -144,8 +146,13 @@ def two_body_capture(seed, t, dt, z, zCl_form, k_2cap, mBH_avg, binaries, mBH, s
             # final energy:
             E_fin = mu * v_rel**2 / 2 - E_gw
             
+            max_iter = 1000  # safety cap to prevent infinite loop for extreme mass/velocity combinations
+            n_iter = 0
             # make sure eccentricity is strictly smaller than unity:
             while 1 + 2 * E_fin * b**2 * v_rel**2 / m12**2 / mu / G_Newton**2 < 0:
+                n_iter += 1
+                if n_iter > max_iter:  # could not find valid eccentricity, skip this capture event
+                    break
                 
                 # impact parameter sampled from uniform in b^2 distribution:
                 b = np.sqrt(np.random.rand() * b_max**2)
@@ -158,6 +165,9 @@ def two_body_capture(seed, t, dt, z, zCl_form, k_2cap, mBH_avg, binaries, mBH, s
                 
                 # final energy:
                 E_fin = mu * v_rel**2 / 2 - E_gw
+                
+            if n_iter > max_iter:  # capture event skipped due to no valid eccentricity found
+                continue
                 
             # semimajor axis at formation:
             sma = - G_Newton * m12 * mu / 2 / E_fin
@@ -213,7 +223,7 @@ def two_body_capture(seed, t, dt, z, zCl_form, k_2cap, mBH_avg, binaries, mBH, s
                 
                 # append merger:
                 mergers = np.append(mergers, [[seed, ind, 2, sma, eccen, m1, m2, s1, s2, g1, g2, theta1, theta2, dPhi, t, z, t + T_GW(m1, m2, sma, eccen),
-                                               redshift(lookback(zCl_form) - t + T_GW(m1, m2, sma, eccen)), m_rem, s_rem, g_rem, vGW_kick, s_eff, q, 2*v_star, h1, h2]], axis=0)
+                                               redshift(lookback(zCl_form) - t - T_GW(m1, m2, sma, eccen)), m_rem, s_rem, g_rem, vGW_kick, s_eff, q, 2*v_star, h1, h2]], axis=0)
 
             else:
                 

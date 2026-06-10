@@ -85,6 +85,7 @@ def evolve_triples(seed, t, z, zCl_form, triples, binaries, mBH, sBH, gBH, hBH, 
             
             # maximum eccentricity of inner pair during the ZLK cycle:
             eMAX = find_eMAX(m0, m1, m2, a_in, a_out, e_in, e_out, np.cos(inclination1), np.cos(inclination2), w_in)
+            eMAX = np.clip(eMAX, 0.0, 1.0)  # clamp to physical range in case root finder returns slightly out-of-bounds value
             epsilon_min = 1 - eMAX**2
             
             # ZLK merger timescale:
@@ -163,11 +164,12 @@ def evolve_triples(seed, t, z, zCl_form, triples, binaries, mBH, sBH, gBH, hBH, 
 
                 else: # new outer binary survives
                     
-                    # append binary:
-                    binaries = np.append(binaries, [[np.random.randint(0, 999999999), 5, a_out, np.sqrt(np.random.rand()), m2, m_rem, s2, s_rem, g2, g_rem, t + t_ZLK, redshift(lookback(zCl_form) - t - t_ZLK), 0, h2, h_rem]], axis=0)
-                    
-                    N_BBH+=1
-                    N_meRe+=1
+                    # append binary;
+                    # only append the new outer binary if the merger time is within the simulation horizon:
+                    if t + t_ZLK < lookback(zCl_form):
+                        binaries = np.append(binaries, [[np.random.randint(0, 999999999), 5, a_out, np.sqrt(np.random.rand()), m2, m_rem, s2, s_rem, g2, g_rem, t + t_ZLK, redshift(lookback(zCl_form) - t - t_ZLK), 0, h2, h_rem]], axis=0)
+                        N_BBH+=1
+                        N_meRe+=1
 
             else: # triple breaks and inner binary is released
                 

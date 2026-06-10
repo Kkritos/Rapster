@@ -55,7 +55,10 @@ def StarStar_to_BHstar(seed, t, z, k_ex1, N_ex1, m_avg, mBH, sBH, gBH, hBH, ab, 
     if k_ex1>0: # perform star-star -> BH-star exchange(s)
         
         for i in range(k_ex1):
-            
+
+            if ab.size == 0:  # no star-star binaries left to exchange, exit loop
+                break
+
             # sample mass of the BH that substitutes one of the stars:
             m = np.random.choice(mBH, p=mBH/np.sum(mBH))
             
@@ -89,6 +92,7 @@ def StarStar_to_BHstar(seed, t, z, k_ex1, N_ex1, m_avg, mBH, sBH, gBH, hBH, ab, 
 
                 k_tdeBHstar = 1
                 seed, t, z, k_tdeBHstar, N_tdeBHstar, tde_type, m_avg, m_star, R_star, m, s, g, h, v_star, vBH, tdes, binaries, pairs, f_accreted, EoS = BH_TidalDisruptions(seed, t, z, k_tdeBHstar, N_tdeBHstar, tde_type, m_avg, m_star, R_star, np.array([m]), np.array([s]), np.array([g]), np.array([h]), v_star, vBH, tdes, binaries, pairs, f_accreted, EoS)
+                m, s, g, h = float(m[0]), float(s[0]), float(g[0]), float(h[0])
 
                 # update and release m1 into the single population:
                 mBH[k] = m
@@ -125,7 +129,10 @@ def BHstar_to_BBH(seed, t, z, k_ex2, N_ex2, m_avg, mBH, sBH, gBH, hBH, pairs, bi
     if k_ex2>0: # perform BH-star -> BH-BH exchange(s)
         
         for i in range(k_ex2):
-            
+
+            if mBH.size == 0: # no single BHs left for exchange, exit loop
+                break
+
             # draw a single BH that will substitute the star in the BH-star pair:
             m2 = np.random.choice(mBH, p=(np.mean(pairs[:, 1]) + mBH)/np.sum(np.mean(pairs[:, 1]) + mBH))
             
@@ -139,6 +146,8 @@ def BHstar_to_BBH(seed, t, z, k_ex2, N_ex2, m_avg, mBH, sBH, gBH, hBH, pairs, bi
             h2 = hBH[k2] # number of second BH's tdes
             
             # draw a BH-star pair:
+            if np.sum(pairs[:, 0]) == 0:
+                continue
             ap = np.random.choice(pairs[:, 0], p=pairs[:, 0] / np.sum(pairs[:, 0]))
             
             kp = np.squeeze(np.where(pairs[:, 0]==ap))+0
@@ -166,7 +175,8 @@ def BHstar_to_BBH(seed, t, z, k_ex2, N_ex2, m_avg, mBH, sBH, gBH, hBH, pairs, bi
 
                 k_tdeBHstar = 1
                 seed, t, z, k_tdeBHstar, N_tdeBHstar, tde_type, m_avg, m_star, R_star, m2, s2, g2, h2, v_star, vBH, tdes, binaries, pairs, f_accreted, EoS = BH_TidalDisruptions(seed, t, z, k_tdeBHstar, N_tdeBHstar, tde_type, m_avg, m_star, R_star, np.array([m2]), np.array([s2]), np.array([g2]), np.array([h2]), v_star, vBH, tdes, binaries, pairs, f_accreted, EoS)
-                
+                m2, s2, g2, h2 = float(m2[0]), float(s2[0]), float(g2[0]), float(h2[0])  # unpack from single-element arrays returned by BH_TidalDisruptions
+
                 # release BH from BH-star pair into the single population:
                 mBH = np.append(mBH, m1)
                 sBH = np.append(sBH, s1)

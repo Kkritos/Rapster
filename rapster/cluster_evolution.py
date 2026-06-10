@@ -610,7 +610,8 @@ def compute_timescales(state, config):
     # BH-star -> BH-BH timescale:
     if t>t_cc and N_BHstar>0 and N_BHsin>0:
         if N_BHstar>0:
-            t_ex2 = 1 / Rate_exc(m_avg, np.mean(pairs[:, 1]), mBH_avg, nc_BH, vBH, np.mean(pairs[:, 0])) / N_BHstar
+            rate_ex2 = Rate_exc(m_avg, np.mean(pairs[:, 1]), mBH_avg, nc_BH, vBH, np.mean(pairs[:, 0]))
+            t_ex2 = 1 / rate_ex2 / N_BHstar if rate_ex2 > 0 else 1e100
         else:
             t_ex2 = 1e100
     else:
@@ -820,7 +821,10 @@ def evolve_interactions(state, config):
             smas = pairs[:, 0]
             masses = pairs[:, 1]
 
-            a1, a2 = np.random.choice(smas, size=2, replace=False, p=smas*masses / np.sum(smas*masses))
+            valid = np.where(smas * masses > 0)[0]
+            if len(valid) < 2:
+                break
+            a1, a2 = np.random.choice(smas[valid], size=2, replace=False, p=(smas*masses)[valid] / np.sum((smas*masses)[valid]))
 
             k1 = np.squeeze(np.where(smas==a1))+0
             k2 = np.squeeze(np.where(smas==a2))+0

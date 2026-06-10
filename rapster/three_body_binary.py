@@ -83,7 +83,10 @@ def three_body_binary(t, z, k_3bb, mBH_avg, binaries, mBH, sBH, gBH, hBH, vBH, N
         
         for i in range(k_3bb):
 
-            N_3bb+=1
+            if len(mBH) < 3:  # not enough single BHs left to form a 3bb, exit loop
+                break
+
+            N_3bb+=1 # update number of three-body-binaries
 
             # sample masses that form the 3bb:
             if random_pairing:
