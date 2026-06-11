@@ -6,7 +6,7 @@ $\tt Rapster$ stands for $\rm RAPid\ cluSTER$ evolution.
 
 Author: Konstantinos Kritos <kkritos1@jhu.edu>
 
-Version: 2.9.7, June 10, 2026.
+Version: 2.9.7, June 11, 2026.
 (Thanks to Tousif Islam for helping modularize this repository!)
 
 ![LOGO](.assets/LOGO.png)
@@ -67,17 +67,13 @@ The following Python packages are required to run the code:
 
 The code is tested with packages in the versions shown in parentheses above; however, other versions likely work as well.
 
-It is recommended that the user create and work in a local Python environment and install all the dependencies above.
+It is recommended that the user create and work in a local Python environment using Python >= 3.10 and install all the dependencies listed above.
 
 The following packages are recommended for running the tutorial notebook in ``Examples/``, but are not necessary to run cluster simulations:
 
 - $\tt matplotlib$
 - $\tt jupyterlab$
 - $\tt ipykernel$
-
-To use the ``gwModel_kick_prec_flow`` recoil kick model (``-RK 1``), install [gwModels](https://github.com/tousifislam/gwModels):
-
-> pip install gwModels
 
 First, create an environment called ``.rapsterenv`` in the root directory of the repository Rapster/, and hidden from view:
 
@@ -100,6 +96,10 @@ Verify the installation (along with dependencies) and package version:
 Finally, include the virtual environment in the kernel:
 
 > python -m ipykernel install --user --name=rapsterenv --display-name "Python (.rapsterenv)"
+
+To use the ``gwModel_kick_prec_flow`` recoil kick model (``-RK 1``), install [gwModels](https://github.com/tousifislam/gwModels):
+
+> pip install gwModels
 
 <a name="units"></a>
 ### 3. Units
@@ -217,7 +217,7 @@ This should create five files: ``Results/mergers.txt``, ``Results/evolution.txt`
 
 We also include a Python notebook ``/Rapster/Example/example.ipynb`` that loads the data results from ``/Rapster/Example/Results_Test/`` and does some plots. As a check, the user is encouraged to load their simulated results and redo the plots in the provided example notebook.
 
-To run the notebook, open jupyterlab:
+To run the notebook, open JupyterLab:
 
 > jupyter-lab &
 
@@ -470,6 +470,6 @@ Feel free to contribute. Suggestions and pull requests are welcome :)
 <a name="thanks"></a>
 ### 10. Thank you
 
-Andrea Antonelli, Fabio Antonini, Dany Atallah, Muhsin Aljaf, Vishal Baibhav, Emanuele Berti, Mario Cadelano, Mark Cheung, Roberto Cotesta, Hector Cruz, Elena Di Biagio, Giacomo Fragione, Gabriele Franciolini, Rosanna Hagen, Thomas Helfer, Tousif Islam, Veome Kapil, Xiao-Xiao Kou, Kyle Kremer, Iason Krommydas, Miguel Martinez, Akshita Mittal, Rosalba Perna, Luca Reali, Carl Rodriguez, Giada Caneva Santoro, Vladimir Strokov, Newlin Weatherford, Ilaria Usai.
+Andrea Antonelli, Fabio Antonini, Dany Atallah, Muhsin Aljaf, Vishal Baibhav, Emanuele Berti, Mario Cadelano, Mark Cheung, Roberto Cotesta, Hector Cruz, Elena Di Biagio, Giacomo Fragione, Gabriele Franciolini, Rosanna Hagen, Thomas Helfer, Tousif Islam, Veome Kapil, Xiao-Xiao Kou, Kyle Kremer, Iason Krommydas, Miguel Martinez, Akshita Mittal, Rosalba Perna, Luca Reali, Carl Rodriguez, Sanika Khadkikar, Giada Caneva Santoro, Vladimir Strokov, Newlin Weatherford, Ilaria Usai.
 
 
