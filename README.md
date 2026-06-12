@@ -99,7 +99,7 @@ Finally, include the virtual environment in the kernel:
 
 To use the ``gwModel_kick_prec_flow`` recoil kick model (``-RK 1``), install [gwModels](https://github.com/tousifislam/gwModels):
 
-> pip install gwModels
+> pip install gwModels[kicks]
 
 <a name="units"></a>
 ### 3. Units
