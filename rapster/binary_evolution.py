@@ -20,7 +20,7 @@ from .constants import *
 from .functions import *
 from .remnant import *
 
-def evolve_BBHs(seed, t, z, dt, zCl_form, binaries, hardening, mergers, mBH, sBH, gBH, hBH, n_star, v_star, vBH, t_rlx, m_avg, mBH_avg, na_BH, nc_BH, N_BH, N_BBH, N_me, N_me2b, N_3cap, N_meFi, N_meRe, N_meEj, N_dis, N_ex, N_BHej, N_BBHej, N_hardening, Vc_BH, N_bb, triples, N_Triples):
+def evolve_BBHs(seed, t, z, dt, zCl_form, binaries, hardening, mergers, mBH, sBH, gBH, hBH, n_star, v_star, vBH, t_rlx, m_avg, mBH_avg, na_BH, nc_BH, N_BH, N_BBH, N_me, N_me2b, N_3cap, N_meFi, N_meRe, N_meEj, N_dis, N_ex, N_BHej, N_BBHej, N_hardening, Vc_BH, N_bb, triples, N_Triples, tdes, N_tdeBBHstar, m_min, m_max, f_accreted, EoS):
     """
     @in seed: simulation seed number
     @in t: simulation time
@@ -60,7 +60,13 @@ def evolve_BBHs(seed, t, z, dt, zCl_form, binaries, hardening, mergers, mBH, sBH
     @in N_bb: number of BBH-BBH interactions
     @in triples: array of hierarchical triple-BH systems
     @in N_Triples: number of hierarchical triple-BHs
-    
+    @in tdes: tdes array [seed, t, z, type, mstar, Rstar, m_BH, s_BH, g_BH, r_t, r_p, beta, iota, r_mb, dm, s_new, v_rel, h_BH]
+    @in N_tdeBBHstar: cumulative number of BBH-star TDEs
+    @in m_min: minimum stellar mass
+    @in m_max: maximum stellar mass
+    @in f_accreted: fraction of disrupted star mass accreted
+    @in EoS: equation of state for neutron stars; either 'APR' or 'AU'
+
     @out: all inputs
     """
     
@@ -109,9 +115,13 @@ def evolve_BBHs(seed, t, z, dt, zCl_form, binaries, hardening, mergers, mBH, sBH
                 h1 = binaries[i][13]
                 h2 = binaries[i][14]
                 
-                # BBH-star interaction timescale:
-                t_BBH_star = 1e100 #1 / Rate_int(m1+m2+m_avg, n_star, v_star, kp_max * a)
-                
+                # BBH-star interaction timescale (encounter cross-section set by the binary separation a):
+                if n_star>0:
+                    v_rel = np.sqrt(v_star**2 + vBH**2)  # relative velocity between star and BBH center of mass
+                    t_BBH_star = 1 / Rate_int(m1 + m2 + m_avg, n_star, v_rel, kp_max * a)
+                else:
+                    t_BBH_star = 1e100
+
                 # BBH-BH interaction timescale:
                 if mBH.size>0:
                     t_BBH_BH = 1 / Rate_int(m1+m2+mBH_avg, nc_BH, vBH, kp_max * a) + t_conv
@@ -127,18 +137,23 @@ def evolve_BBHs(seed, t, z, dt, zCl_form, binaries, hardening, mergers, mBH, sBH
                 else:
                     t_BBH_BBH = 1e100
                     
-                # probability for BBH-star encounter:
-                p_BBH_star = t_BBH_BH * t_BBH_BBH / (t_BBH_star * t_BBH_BH + t_BBH_BH * t_BBH_BBH + t_BBH_BBH * t_BBH_star)
-                
-                # probability for BBH-BH encounter:
-                p_BBH_BH = t_BBH_BBH / (t_BBH_BBH + t_BBH_BH) #t_BBH_star * t_BBH_BBH / (t_BBH_star * t_BBH_BH + t_BBH_BH * t_BBH_BBH + t_BBH_BBH * t_BBH_star)
-                
-                # probability for BBH-BBH encounter:
-                p_BBH_BBH = 1 - p_BBH_BH #- p_BBH_star
-                
+                # competing rates for the three possible encounter types:
+                rate_star = 1 / t_BBH_star
+                rate_BH = 1 / t_BBH_BH
+                rate_BBH = 1 / t_BBH_BBH
+                rate_tot = rate_star + rate_BH + rate_BBH
+
+                # probabilities proportional to each channel's rate:
+                p_BBH_star = rate_star / rate_tot
+                p_BBH_BH = rate_BH / rate_tot
+                p_BBH_BBH = rate_BBH / rate_tot
+
                 u_int = np.random.rand()
-                
-                if u_int < p_BBH_BH: # do BBH-BH interaction
+
+                if u_int < p_BBH_star: # do BBH-star interaction
+                    dt_local = t_BBH_star
+                    type_int = 1
+                elif u_int < p_BBH_star + p_BBH_BH: # do BBH-BH interaction
                     dt_local = t_BBH_BH
                     type_int = 2
                 else: # do BBH-BBH interaction
@@ -655,6 +670,6 @@ def evolve_BBHs(seed, t, z, dt, zCl_form, binaries, hardening, mergers, mBH, sBH
             N_hardening+=1
             i+=1
             
-    return seed, t, z, dt, zCl_form, binaries, hardening, mergers, mBH, sBH, gBH, hBH, n_star, v_star, vBH, t_rlx, m_avg, mBH_avg, na_BH, nc_BH, N_BH, N_BBH, N_me, N_me2b, N_3cap, N_meFi, N_meRe, N_meEj, N_dis, N_ex, N_BHej, N_BBHej, N_hardening, Vc_BH, N_bb, triples, N_Triples
+    return seed, t, z, dt, zCl_form, binaries, hardening, mergers, mBH, sBH, gBH, hBH, n_star, v_star, vBH, t_rlx, m_avg, mBH_avg, na_BH, nc_BH, N_BH, N_BBH, N_me, N_me2b, N_3cap, N_meFi, N_meRe, N_meEj, N_dis, N_ex, N_BHej, N_BBHej, N_hardening, Vc_BH, N_bb, triples, N_Triples, tdes, N_tdeBBHstar, m_min, m_max, f_accreted, EoS
 
 # End of file.
