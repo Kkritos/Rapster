@@ -278,7 +278,7 @@ def initialize_cluster(config):
     pairs = np.zeros(shape=(1, 5))
     triples = np.zeros(shape=(1, 24))
     mergers = np.zeros(shape=(1, 27))
-    evolution = np.zeros(shape=(1, 69))
+    evolution = np.zeros(shape=(1, 70))
     hardening = np.zeros(shape=(1, 12))
     tdes = np.zeros(shape=(1, 18))
 
@@ -305,7 +305,7 @@ def initialize_cluster(config):
         'N_iter': 0, 'N_bb': 0, 'N_meFi': 0, 'N_me2b': 0,
         'N_ex1': 0, 'N_ex2': 0, 'N_BHstar': 0, 'N_pp': 0,
         'N_Triples': 0, 'N_ZLK': 0, 'N_WD': 0,
-        'N_tdeBHWD': 0, 'N_tdeBHstar': 0, 'N_hardening': 0,
+        'N_tdeBHWD': 0, 'N_tdeBHstar': 0, 'N_tdeBBHstar': 0, 'N_hardening': 0,
         # time:
         't': 0, 'z': zCl_form, 'dt': dt_min, 'zCl_form': zCl_form, 'seed': seed,
         # aux:
@@ -770,6 +770,7 @@ def evolve_interactions(state, config):
     t_cc = state['t_cc']
     tdes = state['tdes']
     N_tdeBHstar = state['N_tdeBHstar']
+    N_tdeBBHstar = state['N_tdeBBHstar']
     m_min = config['m_min']
     m_max = config['m_max']
     with_tdes = config['with_tdes']
@@ -777,7 +778,7 @@ def evolve_interactions(state, config):
     EoS = config['EoS']
 
     # BBH evolution:
-    seed, t, z, dt, zCl_form, binaries, hardening, mergers, mBH, sBH, gBH, hBH, n_star, v_star, vBH, t_rlx, m_avg, mBH_avg, na_BH, nc_BH, N_BH, N_BBH, N_me, N_me2b, N_3cap, N_meFi, N_meRe, N_meEj, N_dis, N_ex, N_BHej, N_BBHej, N_hardening, Vc_BH, N_bb, triples, N_Triples = evolve_BBHs(seed, t, z, dt, zCl_form, binaries, hardening, mergers, mBH, sBH, gBH, hBH, n_star, v_star, vBH, t_rlx, m_avg, mBH_avg, na_BH, nc_BH, N_BH, N_BBH, N_me, N_me2b, N_3cap, N_meFi, N_meRe, N_meEj, N_dis, N_ex, N_BHej, N_BBHej, N_hardening, Vc_BH, N_bb, triples, N_Triples)
+    seed, t, z, dt, zCl_form, binaries, hardening, mergers, mBH, sBH, gBH, hBH, n_star, v_star, vBH, t_rlx, m_avg, mBH_avg, na_BH, nc_BH, N_BH, N_BBH, N_me, N_me2b, N_3cap, N_meFi, N_meRe, N_meEj, N_dis, N_ex, N_BHej, N_BBHej, N_hardening, Vc_BH, N_bb, triples, N_Triples, tdes, N_tdeBBHstar, m_min, m_max, f_accreted, EoS = evolve_BBHs(seed, t, z, dt, zCl_form, binaries, hardening, mergers, mBH, sBH, gBH, hBH, n_star, v_star, vBH, t_rlx, m_avg, mBH_avg, na_BH, nc_BH, N_BH, N_BBH, N_me, N_me2b, N_3cap, N_meFi, N_meRe, N_meEj, N_dis, N_ex, N_BHej, N_BBHej, N_hardening, Vc_BH, N_bb, triples, N_Triples, tdes, N_tdeBBHstar, m_min, m_max, f_accreted, EoS)
 
     # average BBH number density:
     if i_aux1==1:
@@ -909,6 +910,7 @@ def evolve_interactions(state, config):
     state['t_bb'] = t_bb; state['t_pp'] = t_pp; state['k_pp'] = k_pp
     state['tdes'] = tdes
     state['N_tdeBHstar'] = N_tdeBHstar
+    state['N_tdeBBHstar'] = N_tdeBBHstar
 
 
 def evolve_tdes(state, config):
@@ -1060,15 +1062,15 @@ def record_evolution(state):
     k_tdeBHstar = state.get('k_tdeBHstar', 0)
     dN_tdeBHstardt = state.get('dN_tdeBHstardt', 0.0)
     N_tdeBHstar = state['N_tdeBHstar']
+    N_tdeBBHstar = state['N_tdeBBHstar']
 
-    # append a row of 69 time-dependent quantities to the evolution array:
+    # append a row of 70 time-dependent quantities to the evolution array:
     state['evolution'] = np.append(state['evolution'], [[seed, t, z, dt, m_avg, Mcl, rh, R_gal, v_gal, t_rlx, tBH_rlx, n_star, N_BH, mBH_avg, mBH_max, rh_BH, rc_BH, S,
                                        xi, psi, psi_BH, t_3bb, t_2cap, k_3bb, k_2cap, N_me, N_BBH, N_meRe, N_meEj, v_star, vBH,
                                        nh_BH, nc_BH, na_BH, N_3bb, N_2cap, N_3cap, N_BHej, N_BBHej, N_dis, N_ex, t_bb, N_bb,
                                        N_meFi, N_me2b, t_ex1, t_ex2, k_ex1, k_ex2, N_ex1, N_ex2, N_BHstar, t_pp, k_pp, N_pp, 2*v_star,
                                        2*vBH, N_Triples, N_ZLK, N_WD, v_WD, k_tdeBHWD, N_tdeBHWD, dN_WDformdt, dN_WDevdt, dN_tdeBHWDdt, k_tdeBHstar,
-                                       dN_tdeBHstardt, N_tdeBHstar]], axis=0)
-
+                                       dN_tdeBHstardt, N_tdeBHstar, N_tdeBBHstar]], axis=0)
 
 def compute_external_params(state, config):
     """Compute external/environmental parameters for the cluster.
@@ -1219,7 +1221,7 @@ def print_status(state, config, local_time_initial, simulation_time_initial):
     t = state['t']; dt = state['dt']; z = state['z']
     Mcl = state['Mcl']; rh = state['rh']; R_gal = state['R_gal']
     N_BH = state['N_BH']; N_BBH = state['N_BBH']; N_Triples = state['N_Triples']
-    N_me = state['N_me']; N_tdeBHWD = state['N_tdeBHWD']; N_tdeBHstar = state['N_tdeBHstar']
+    N_me = state['N_me']; N_tdeBHWD = state['N_tdeBHWD']; N_tdeBHstar = state['N_tdeBHstar']; N_tdeBBHstar = state['N_tdeBBHstar']
     N_iter = state['N_iter']
 
     local_time_final = time.time()
@@ -1231,7 +1233,7 @@ def print_status(state, config, local_time_initial, simulation_time_initial):
     frmt_3 = '%.3f'
     frmt_4 = "%.1f"
     data_1 = {"t[Myr]": [frmt_1%t], "dt[Myr]": [frmt_1%dt], "z": [frmt_1%z], "Mcl[MMsun]": [frmt_1%(Mcl/1e6)], "rh[pc]": [frmt_1%rh], "R_gal[kpc]": [frmt_1%(R_gal/1e3)]}
-    data_2 = {"N_BH": [frmt_2%N_BH], "N_BBH": [frmt_2%N_BBH], "N_Triples": [frmt_2%N_Triples], "N_me": [frmt_2%N_me], "N_tdeBHWD": [frmt_2%N_tdeBHWD], "N_tdeBHstar": [frmt_2%N_tdeBHstar]}
+    data_2 = {"N_BH": [frmt_2%N_BH], "N_BBH": [frmt_2%N_BBH], "N_Triples": [frmt_2%N_Triples], "N_me": [frmt_2%N_me], "N_tdeBHWD": [frmt_2%N_tdeBHWD], "N_tdeBHstar": [frmt_2%N_tdeBHstar], "N_tdeBBHstar": [frmt_2%N_tdeBBHstar]}
     data_3 = {"steptime[ms]": [frmt_4%(np.abs(local_time_final - local_time_initial)*1e3)], "runtime[s]": [frmt_3%np.abs(time.time() - simulation_time_initial)]}
     headers = [" "]
     df_1 = pd.DataFrame(data_1, headers)
@@ -1326,7 +1328,7 @@ def write_output(state, config):
                                   str(evolution[i][48])+' '+str(evolution[i][49])+' '+str(evolution[i][50])+' '+str(evolution[i][51])+' '+str(evolution[i][52])+' '+str(evolution[i][53])+' '+\
                                   str(evolution[i][54])+' '+str(evolution[i][55])+' '+str(evolution[i][56])+' '+str(evolution[i][57])+' '+str(evolution[i][58])+' '+str(evolution[i][59])+' '+\
                                   str(evolution[i][60])+' '+str(evolution[i][61])+' '+str(evolution[i][62])+' '+str(evolution[i][63])+' '+str(evolution[i][64])+' '+str(evolution[i][65])+' '+\
-                                  str(evolution[i][66])+' '+str(evolution[i][67])+' '+str(evolution[i][68]))
+                                  str(evolution[i][66])+' '+str(evolution[i][67])+' '+str(evolution[i][68])+' '+str(evolution[i][69]))
                 f_evolution.write('\n')
 
     if config['Hi']==1:

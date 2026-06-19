@@ -16,11 +16,15 @@
 
 '''
 
+import sys
 from .constants import *
 from .functions import *
 from .remnant import *
+from .compact_accretion import *  # provides the evolve() spin-accretion routine
+from .stellar_evolution import *  # provides the get_star() field-star sampling routine
+from .tidal_disruptions import *  # provides the try_BBH_star_disruption() helper
 
-def evolve_BBHs(seed, t, z, dt, zCl_form, binaries, hardening, mergers, mBH, sBH, gBH, hBH, n_star, v_star, vBH, t_rlx, m_avg, mBH_avg, na_BH, nc_BH, N_BH, N_BBH, N_me, N_me2b, N_3cap, N_meFi, N_meRe, N_meEj, N_dis, N_ex, N_BHej, N_BBHej, N_hardening, Vc_BH, N_bb, triples, N_Triples):
+def evolve_BBHs(seed, t, z, dt, zCl_form, binaries, hardening, mergers, mBH, sBH, gBH, hBH, n_star, v_star, vBH, t_rlx, m_avg, mBH_avg, na_BH, nc_BH, N_BH, N_BBH, N_me, N_me2b, N_3cap, N_meFi, N_meRe, N_meEj, N_dis, N_ex, N_BHej, N_BBHej, N_hardening, Vc_BH, N_bb, triples, N_Triples, tdes, N_tdeBBHstar, m_min, m_max, f_accreted, EoS):
     """
     @in seed: simulation seed number
     @in t: simulation time
@@ -60,7 +64,13 @@ def evolve_BBHs(seed, t, z, dt, zCl_form, binaries, hardening, mergers, mBH, sBH
     @in N_bb: number of BBH-BBH interactions
     @in triples: array of hierarchical triple-BH systems
     @in N_Triples: number of hierarchical triple-BHs
-    
+    @in tdes: tdes array [seed, t, z, type, mstar, Rstar, m_BH, s_BH, g_BH, r_t, r_p, beta, iota, r_mb, dm, s_new, v_rel, h_BH]
+    @in N_tdeBBHstar: cumulative number of BBH-star TDEs
+    @in m_min: minimum stellar mass
+    @in m_max: maximum stellar mass
+    @in f_accreted: fraction of disrupted star mass accreted
+    @in EoS: equation of state for neutron stars; either 'APR' or 'AU'
+
     @out: all inputs
     """
     
@@ -109,9 +119,13 @@ def evolve_BBHs(seed, t, z, dt, zCl_form, binaries, hardening, mergers, mBH, sBH
                 h1 = binaries[i][13]
                 h2 = binaries[i][14]
                 
-                # BBH-star interaction timescale:
-                t_BBH_star = 1e100 #1 / Rate_int(m1+m2+m_avg, n_star, v_star, kp_max * a)
-                
+                # BBH-star interaction timescale (encounter cross-section set by the binary separation a):
+                if n_star>0:
+                    v_rel = np.sqrt(v_star**2 + vBH**2)  # relative velocity between star and BBH center of mass
+                    t_BBH_star = 1 / Rate_int(m1 + m2 + m_avg, n_star, v_rel, kp_max * a)
+                else:
+                    t_BBH_star = 1e100
+
                 # BBH-BH interaction timescale:
                 if mBH.size>0:
                     t_BBH_BH = 1 / Rate_int(m1+m2+mBH_avg, nc_BH, vBH, kp_max * a) + t_conv
@@ -127,18 +141,23 @@ def evolve_BBHs(seed, t, z, dt, zCl_form, binaries, hardening, mergers, mBH, sBH
                 else:
                     t_BBH_BBH = 1e100
                     
-                # probability for BBH-star encounter:
-                p_BBH_star = t_BBH_BH * t_BBH_BBH / (t_BBH_star * t_BBH_BH + t_BBH_BH * t_BBH_BBH + t_BBH_BBH * t_BBH_star)
-                
-                # probability for BBH-BH encounter:
-                p_BBH_BH = t_BBH_BBH / (t_BBH_BBH + t_BBH_BH) #t_BBH_star * t_BBH_BBH / (t_BBH_star * t_BBH_BH + t_BBH_BH * t_BBH_BBH + t_BBH_BBH * t_BBH_star)
-                
-                # probability for BBH-BBH encounter:
-                p_BBH_BBH = 1 - p_BBH_BH #- p_BBH_star
-                
+                # competing rates for the three possible encounter types:
+                rate_star = 1 / t_BBH_star
+                rate_BH = 1 / t_BBH_BH
+                rate_BBH = 1 / t_BBH_BBH
+                rate_tot = rate_star + rate_BH + rate_BBH
+
+                # probabilities proportional to each channel's rate:
+                p_BBH_star = rate_star / rate_tot
+                p_BBH_BH = rate_BH / rate_tot
+                p_BBH_BBH = rate_BBH / rate_tot
+
                 u_int = np.random.rand()
-                
-                if u_int < p_BBH_BH: # do BBH-BH interaction
+
+                if u_int < p_BBH_star: # do BBH-star interaction
+                    dt_local = t_BBH_star
+                    type_int = 1
+                elif u_int < p_BBH_star + p_BBH_BH: # do BBH-BH interaction
                     dt_local = t_BBH_BH
                     type_int = 2
                 else: # do BBH-BBH interaction
@@ -343,16 +362,30 @@ def evolve_BBHs(seed, t, z, dt, zCl_form, binaries, hardening, mergers, mBH, sBH
                     else:
                         continue
                     
-                # at this point BBH-BH interaction occurs
-                
-                if type_int==1:
-                    
-                    m3 = m_avg
-                    
-                    # single velocity before interaction:
-                    vS_before = v_star
+                # at this point BBH-single interaction occurs (signle= star or BH)
 
-                else:
+                if type_int==1: # BBH-star interaction occurs: a field star is gravitationally
+                                 # focused toward the binary (encounter cross-section ~ a).
+                                 # Disruption is checked later, once the pericenter rp is
+                                 # sampled (shared with the resonance check below), so this
+                                 # block only samples the star and sets up m3 for the
+                                 # generic 3-body dynamics that follow if no disruption occurs.
+
+                    # sample a field star (mass and radius) from the current stellar mass function:
+                    m_star, R_star = get_star(t, tBH_form, m_min, m_max)
+
+                    # treat the star as a generic 3rd body, using its actual sampled mass
+                    # rather than the population average:
+                    m3 = m_star
+
+                    # single velocity before interaction, sampled from a Maxwellian whose
+                    # dispersion reflects energy equipartition with the star's own mass,
+                    # anchored to the stellar population's characteristic energy scale
+                    # (m_avg * v_star^2), mirroring the analogous BH formula below:
+                    vS_before = get_maxwell_sample(np.sqrt(m_avg * v_star**2 / 3 / m3))
+
+                else: # BBH-BH occurs
+
                     if mBH.size == 0:  # no single BHs left to interact with, skip
                         continue
                     p3 = (m1 + m2 + mBH) / np.sqrt((m1 + m2)**(-2/5) + mBH**(-2/5)) * mBH**(3/2)
@@ -399,13 +432,44 @@ def evolve_BBHs(seed, t, z, dt, zCl_form, binaries, hardening, mergers, mBH, sBH
                     condition=3
                     hardening[i][10]=condition
                     break
-                
-                # sample pericenter of interaction:
+
+                # sample pericenter of interaction (shared between TDE and dynamical checks,
+                # since both refer to the same physical passage); uniform in rp itself,
+                # consistent with the linear (gravitational-focusing) cross-section scaling:
                 rp = np.random.uniform(0, kp_max * a)
-                
+
                 # critical pericenter for resonant interaction:
                 rp_c = np.max([m1, m2]) / (m1 + m2) * a
-                
+
+                if type_int==1: # check for tidal disruption on this passage
+                    disrupted, m1, m2, s1, s2, h1, h2, tdes = try_BBH_star_disruption(
+                        rp, a, m1, m2, s1, s2, g1, g2, h1, h2, m_star, R_star, f_accreted, EoS,
+                        seed, t, z, tdes, m_avg, vBH, v_star)
+
+                    if disrupted:
+                        N_tdeBBHstar+=1
+                        binaries[i][4] = m1; binaries[i][6] = s1; binaries[i][13] = h1
+                        binaries[i][5] = m2; binaries[i][7] = s2; binaries[i][14] = h2
+                        continue # star consumed; move to next interaction draw for this binary
+
+                    if rp < rp_c: # resonant encounter: multiple close passages possible
+                        for _ in range(N_IMS - 1): # passage 1 already checked above
+                            rp = np.random.uniform(0, kp_max * a)
+                            disrupted, m1, m2, s1, s2, h1, h2, tdes = try_BBH_star_disruption(
+                                rp, a, m1, m2, s1, s2, g1, g2, h1, h2, m_star, R_star, f_accreted, EoS,
+                                seed, t, z, tdes, m_avg, vBH, v_star)
+                            if disrupted:
+                                N_tdeBBHstar+=1
+                                binaries[i][4] = m1; binaries[i][6] = s1; binaries[i][13] = h1
+                                binaries[i][5] = m2; binaries[i][7] = s2; binaries[i][14] = h2
+                                break
+                        if disrupted:
+                            continue # star consumed during one of the resonant passages
+
+                        # no disruption across all N_IMS passages: fall through to ordinary
+                        # hardening below (no capture/merger physics -- stars never merge
+                        # with BHs, enforced by the type_int==2 gates further down)
+
                 if rp < rp_c and type_int==2: # interaction is resonant
                     
                     u_3bm = np.random.rand(3)
@@ -655,6 +719,6 @@ def evolve_BBHs(seed, t, z, dt, zCl_form, binaries, hardening, mergers, mBH, sBH
             N_hardening+=1
             i+=1
             
-    return seed, t, z, dt, zCl_form, binaries, hardening, mergers, mBH, sBH, gBH, hBH, n_star, v_star, vBH, t_rlx, m_avg, mBH_avg, na_BH, nc_BH, N_BH, N_BBH, N_me, N_me2b, N_3cap, N_meFi, N_meRe, N_meEj, N_dis, N_ex, N_BHej, N_BBHej, N_hardening, Vc_BH, N_bb, triples, N_Triples
+    return seed, t, z, dt, zCl_form, binaries, hardening, mergers, mBH, sBH, gBH, hBH, n_star, v_star, vBH, t_rlx, m_avg, mBH_avg, na_BH, nc_BH, N_BH, N_BBH, N_me, N_me2b, N_3cap, N_meFi, N_meRe, N_meEj, N_dis, N_ex, N_BHej, N_BBHej, N_hardening, Vc_BH, N_bb, triples, N_Triples, tdes, N_tdeBBHstar, m_min, m_max, f_accreted, EoS
 
 # End of file.
