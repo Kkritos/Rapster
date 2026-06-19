@@ -434,9 +434,10 @@ def evolve_BBHs(seed, t, z, dt, zCl_form, binaries, hardening, mergers, mBH, sBH
                     break
 
                 # sample pericenter of interaction (shared between TDE and dynamical checks,
-                # since both refer to the same physical passage):
-                rp = np.sqrt(np.random.rand()) * kp_max * a
-                
+                # since both refer to the same physical passage); uniform in rp itself,
+                # consistent with the linear (gravitational-focusing) cross-section scaling:
+                rp = np.random.uniform(0, kp_max * a)
+
                 # critical pericenter for resonant interaction:
                 rp_c = np.max([m1, m2]) / (m1 + m2) * a
 
