@@ -454,7 +454,7 @@ def evolve_BBHs(seed, t, z, dt, zCl_form, binaries, hardening, mergers, mBH, sBH
 
                     if rp < rp_c: # resonant encounter: multiple close passages possible
                         for _ in range(N_IMS - 1): # passage 1 already checked above
-                            rp = np.sqrt(np.random.rand()) * kp_max * a
+                            rp = np.random.uniform(0, kp_max * a)
                             disrupted, m1, m2, s1, s2, h1, h2, tdes = try_BBH_star_disruption(
                                 rp, a, m1, m2, s1, s2, g1, g2, h1, h2, m_star, R_star, f_accreted, EoS,
                                 seed, t, z, tdes, m_avg, vBH, v_star)
