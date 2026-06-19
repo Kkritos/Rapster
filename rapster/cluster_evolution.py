@@ -1328,7 +1328,7 @@ def write_output(state, config):
                                   str(evolution[i][48])+' '+str(evolution[i][49])+' '+str(evolution[i][50])+' '+str(evolution[i][51])+' '+str(evolution[i][52])+' '+str(evolution[i][53])+' '+\
                                   str(evolution[i][54])+' '+str(evolution[i][55])+' '+str(evolution[i][56])+' '+str(evolution[i][57])+' '+str(evolution[i][58])+' '+str(evolution[i][59])+' '+\
                                   str(evolution[i][60])+' '+str(evolution[i][61])+' '+str(evolution[i][62])+' '+str(evolution[i][63])+' '+str(evolution[i][64])+' '+str(evolution[i][65])+' '+\
-                                  str(evolution[i][66])+' '+str(evolution[i][67])+' '+str(evolution[i][68]))
+                                  str(evolution[i][66])+' '+str(evolution[i][67])+' '+str(evolution[i][68])+' '+str(evolution[i][69]))
                 f_evolution.write('\n')
 
     if config['Hi']==1:
