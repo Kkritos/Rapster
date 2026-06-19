@@ -278,7 +278,7 @@ def initialize_cluster(config):
     pairs = np.zeros(shape=(1, 5))
     triples = np.zeros(shape=(1, 24))
     mergers = np.zeros(shape=(1, 27))
-    evolution = np.zeros(shape=(1, 69))
+    evolution = np.zeros(shape=(1, 70))
     hardening = np.zeros(shape=(1, 12))
     tdes = np.zeros(shape=(1, 18))
 
