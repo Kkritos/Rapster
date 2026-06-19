@@ -432,17 +432,43 @@ def evolve_BBHs(seed, t, z, dt, zCl_form, binaries, hardening, mergers, mBH, sBH
                     condition=3
                     hardening[i][10]=condition
                     break
-                
-                # sample pericenter of interaction (reuse the TDE pericenter for the star
-                # case, since it's the same physical encounter; redraw for the BH case):
-                if type_int==1:
-                    rp = r_p_tde
-                else:
-                    rp = np.random.uniform(0, kp_max * a)
+
+                # sample pericenter of interaction (shared between TDE and dynamical checks,
+                # since both refer to the same physical passage):
+                rp = np.sqrt(np.random.rand()) * kp_max * a
                 
                 # critical pericenter for resonant interaction:
                 rp_c = np.max([m1, m2]) / (m1 + m2) * a
-                
+
+                if type_int==1: # check for tidal disruption on this passage
+                    disrupted, m1, m2, s1, s2, h1, h2, tdes = try_BBH_star_disruption(
+                        rp, a, m1, m2, s1, s2, g1, g2, h1, h2, m_star, R_star, f_accreted, EoS,
+                        seed, t, z, tdes, m_avg, vBH, v_star)
+
+                    if disrupted:
+                        N_tdeBBHstar+=1
+                        binaries[i][4] = m1; binaries[i][6] = s1; binaries[i][13] = h1
+                        binaries[i][5] = m2; binaries[i][7] = s2; binaries[i][14] = h2
+                        continue # star consumed; move to next interaction draw for this binary
+
+                    if rp < rp_c: # resonant encounter: multiple close passages possible
+                        for _ in range(N_IMS - 1): # passage 1 already checked above
+                            rp = np.sqrt(np.random.rand()) * kp_max * a
+                            disrupted, m1, m2, s1, s2, h1, h2, tdes = try_BBH_star_disruption(
+                                rp, a, m1, m2, s1, s2, g1, g2, h1, h2, m_star, R_star, f_accreted, EoS,
+                                seed, t, z, tdes, m_avg, vBH, v_star)
+                            if disrupted:
+                                N_tdeBBHstar+=1
+                                binaries[i][4] = m1; binaries[i][6] = s1; binaries[i][13] = h1
+                                binaries[i][5] = m2; binaries[i][7] = s2; binaries[i][14] = h2
+                                break
+                        if disrupted:
+                            continue # star consumed during one of the resonant passages
+
+                        # no disruption across all N_IMS passages: fall through to ordinary
+                        # hardening below (no capture/merger physics -- stars never merge
+                        # with BHs, enforced by the type_int==2 gates further down)
+
                 if rp < rp_c and type_int==2: # interaction is resonant
                     
                     u_3bm = np.random.rand(3)
