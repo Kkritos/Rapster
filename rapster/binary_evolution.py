@@ -579,8 +579,12 @@ def evolve_BBHs(seed, t, z, dt, zCl_form, binaries, hardening, mergers, mBH, sBH
                     hardening[i][10]=condition
                     break
                 
-                # sample pericenter of interaction:
-                rp = np.random.uniform(0, kp_max * a)
+                # sample pericenter of interaction (reuse the TDE pericenter for the star
+                # case, since it's the same physical encounter; redraw for the BH case):
+                if type_int==1:
+                    rp = r_p_tde
+                else:
+                    rp = np.random.uniform(0, kp_max * a)
                 
                 # critical pericenter for resonant interaction:
                 rp_c = np.max([m1, m2]) / (m1 + m2) * a
