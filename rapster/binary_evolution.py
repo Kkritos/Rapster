@@ -381,7 +381,7 @@ def evolve_BBHs(seed, t, z, dt, zCl_form, binaries, hardening, mergers, mBH, sBH
                     # impact-parameter-squared out to the binary's own encounter cross-section a
                     # (NOT the tidal radius -- the star is gravitationally focused on the scale
                     # of the binary's separation, since a >> r_t_bin is typical for NSC BBHs):
-                    r_p_tde = np.sqrt(np.random.rand()) * a
+                    r_p_tde = np.sqrt(np.random.rand()) * kp_max * a
 
                     disrupted = False # tracks whether this encounter results in a TDE
 
@@ -519,13 +519,16 @@ def evolve_BBHs(seed, t, z, dt, zCl_form, binaries, hardening, mergers, mBH, sBH
                         # generic 3rd body below, so move on to the next interaction draw
                         # for this same binary:
                         continue
-
+                        
                     # no disruption occurred: treat the star as a generic 3rd body,
-                    # exactly as in the original (pre-TDE) scaffolding:
-                    m3 = m_avg
+                    # using its actual sampled mass rather than the population average:
+                    m3 = m_star
 
-                    # single velocity before interaction:
-                    vS_before = v_star
+                    # single velocity before interaction, sampled from a Maxwellian whose
+                    # dispersion reflects energy equipartition with the star's own mass,
+                    # anchored to the stellar population's characteristic energy scale
+                    # (m_avg * v_star^2), mirroring the analogous BH formula below:
+                    vS_before = get_maxwell_sample(np.sqrt(m_avg * v_star**2 / 3 / m3))
 
                 else: # BBH-BH occurs
 
