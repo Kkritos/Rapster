@@ -305,7 +305,7 @@ def initialize_cluster(config):
         'N_iter': 0, 'N_bb': 0, 'N_meFi': 0, 'N_me2b': 0,
         'N_ex1': 0, 'N_ex2': 0, 'N_BHstar': 0, 'N_pp': 0,
         'N_Triples': 0, 'N_ZLK': 0, 'N_WD': 0,
-        'N_tdeBHWD': 0, 'N_tdeBHstar': 0, 'N_hardening': 0,
+        'N_tdeBHWD': 0, 'N_tdeBHstar': 0, 'N_tdeBBHstar': 0 'N_hardening': 0,
         # time:
         't': 0, 'z': zCl_form, 'dt': dt_min, 'zCl_form': zCl_form, 'seed': seed,
         # aux:
