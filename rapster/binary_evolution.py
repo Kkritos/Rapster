@@ -16,7 +16,7 @@
 
 '''
 
-inport sys
+import sys
 from .constants import *
 from .functions import *
 from .remnant import *
