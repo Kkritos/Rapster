@@ -910,6 +910,7 @@ def evolve_interactions(state, config):
     state['t_bb'] = t_bb; state['t_pp'] = t_pp; state['k_pp'] = k_pp
     state['tdes'] = tdes
     state['N_tdeBHstar'] = N_tdeBHstar
+    state['N_tdeBBHstar'] = N_tdeBBHstar
 
 
 def evolve_tdes(state, config):
