@@ -770,6 +770,7 @@ def evolve_interactions(state, config):
     t_cc = state['t_cc']
     tdes = state['tdes']
     N_tdeBHstar = state['N_tdeBHstar']
+    N_tdeBBHstar = state['N_tdeBBHstar']
     m_min = config['m_min']
     m_max = config['m_max']
     with_tdes = config['with_tdes']
