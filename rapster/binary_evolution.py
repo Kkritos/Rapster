@@ -840,4 +840,117 @@ def evolve_BBHs(seed, t, z, dt, zCl_form, binaries, hardening, mergers, mBH, sBH
             
     return seed, t, z, dt, zCl_form, binaries, hardening, mergers, mBH, sBH, gBH, hBH, n_star, v_star, vBH, t_rlx, m_avg, mBH_avg, na_BH, nc_BH, N_BH, N_BBH, N_me, N_me2b, N_3cap, N_meFi, N_meRe, N_meEj, N_dis, N_ex, N_BHej, N_BBHej, N_hardening, Vc_BH, N_bb, triples, N_Triples, tdes, N_tdeBBHstar, m_min, m_max, f_accreted, EoS
 
+def try_BBH_star_disruption(rp, a, m1, m2, s1, s2, g1, g2, h1, h2, m_star, R_star, f_accreted, EoS, seed, t, z, tdes, m_avg, vBH, v_star):
+    """
+    Checks whether a single passage of a field star past a BBH (at pericenter rp)
+    results in tidal disruption, and if so, performs the disruption (Channel A or B).
+    Designed to be called once per passage, so it can be reused for both a single
+    (non-resonant) encounter and for each individual passage of a resonant encounter.
+
+    @in rp: pericenter of this passage (pc)
+    @in a: BBH semimajor axis (pc)
+    @in m1, m2: BBH component masses (Msun)
+    @in s1, s2: BBH component dimensionless spins
+    @in g1, g2: BBH component generations
+    @in h1, h2: BBH component tdes counts
+    @in m_star: mass of the field star (Msun)
+    @in R_star: radius of the field star (pc)
+    @in f_accreted: fraction of disrupted star mass accreted
+    @in EoS: equation of state for neutron stars; either 'APR' or 'AU'
+    @in seed, t, z: simulation seed, time, redshift
+    @in tdes: tdes array [seed, t, z, type, mstar, Rstar, m_BH, s_BH, g_BH, r_t, r_p, beta, iota, r_mb, dm, s_new, v_rel, h_BH]
+    @in m_avg: average stellar mass (Msun)
+    @in vBH: 3D BH velocity dispersion (km/s)
+    @in v_star: 3D star velocity dispersion (km/s)
+
+    @out: disrupted (bool), m1, m2, s1, s2, h1, h2, tdes (updated if disrupted=True, unchanged otherwise)
+    """
+
+    # whole-binary (monopole) tidal radius: treats the BBH as a single point mass
+    # of total mass (m1+m2), valid when the star's pericenter stays well outside
+    # the binary's own separation a:
+    r_t_bin = R_star * ((m1+m2)/m_star)**(1/3)
+
+    if rp > r_t_bin:
+        # pericenter is outside the binary's tidal radius: no disruption this passage.
+        return False, m1, m2, s1, s2, h1, h2, tdes
+
+    # determine the neutron-star mass range for the chosen equation of state,
+    # needed by the spin-evolution routine to decide BH vs NS accretion physics:
+    if EoS=='APR':
+        M_NS_min = M_APR_min; M_NS_max = M_APR_max
+    elif EoS=='AU':
+        M_NS_min = M_AU_min; M_NS_max = M_AU_max
+    else: # invalid EoS string supplied by the user
+        sys.exit("Invalid EoS; please use 'APR' or 'AU'")
+
+    if rp > a:
+        # CHANNEL A: "whole-binary" disruption (monopole regime, rp between a and r_t_bin).
+        # tde_type = 22.
+
+        # debris mass fraction accreted by each BH, weighted by its own mass:
+        f1 = m1 / (m1+m2)
+        f2 = m2 / (m1+m2)
+
+        # mass increment accreted by each BH:
+        dm1 = f1 * f_accreted * m_star
+        dm2 = f2 * f_accreted * m_star
+
+        NS1 = True if m1<M_NS_max else False
+        NS2 = True if m2<M_NS_max else False
+
+        # evolve the spin of each BH/NS as it accretes its share of the debris:
+        evo1 = evolve(Mi=m1, Mf=m1+dm1, NS=NS1, f=None, chi=s1, dM=dm1/100, eos=EoS, prograde=True)
+        evo2 = evolve(Mi=m2, Mf=m2+dm2, NS=NS2, f=None, chi=s2, dM=dm2/100, eos=EoS, prograde=True)
+
+        s1_new = evo1['chi'][-1]
+        s2_new = evo2['chi'][-1]
+
+        # relative velocity between the star and the binary's center of mass:
+        v_rel_tde = np.sqrt(v_star**2*m_avg/m_star + (m1+m2)/m_star*vBH**2)
+
+        # record one TDE entry per accreting BH; beta = r_t_bin/rp is the penetration parameter:
+        tdes = np.append(tdes, [[seed, t, z, 22, m_star, R_star, m1, s1, g1, r_t_bin, rp, r_t_bin/rp, 0.0, 0.0, dm1, s1_new, vBH, h1]], axis=0)
+        tdes = np.append(tdes, [[seed, t, z, 22, m_star, R_star, m2, s2, g2, r_t_bin, rp, r_t_bin/rp, 0.0, 0.0, dm2, s2_new, vBH, h2]], axis=0)
+
+        m1 = m1 + dm1; s1 = s1_new; h1 = h1 + 1
+        m2 = m2 + dm2; s2 = s2_new; h2 = h2 + 1
+
+        return True, m1, m2, s1, s2, h1, h2, tdes
+
+    else:
+        # CHANNEL B: "single-component" disruption (rp <= a). tde_type = 21.
+
+        # select which BH is the disruptor, weighted by mass:
+        p1 = (m_star + m1) * m1**(1/3)
+        p2 = (m_star + m2) * m2**(1/3)
+        disrupt_1 = np.random.rand() < p1/(p1+p2)
+
+        m_d = m1 if disrupt_1 else m2
+        s_d = s1 if disrupt_1 else s2
+        g_d = g1 if disrupt_1 else g2
+        h_d = h1 if disrupt_1 else h2
+
+        # standard single-BH tidal radius for the chosen disruptor:
+        r_t = R_star * (m_d/m_star)**(1/3)
+
+        dm = f_accreted * m_star
+
+        NS = True if m_d<M_NS_max else False
+
+        evo = evolve(Mi=m_d, Mf=m_d+dm, NS=NS, f=None, chi=s_d, dM=dm/100, eos=EoS, prograde=True)
+        s_new = evo['chi'][-1]
+
+        v_rel_tde = np.sqrt(v_star**2*m_avg/m_star + np.mean([m1, m2])/m_star*vBH**2)
+
+        # record the TDE entry; beta = r_t/rp is the penetration parameter:
+        tdes = np.append(tdes, [[seed, t, z, 21, m_star, R_star, m_d, s_d, g_d, r_t, rp, r_t/rp, 0.0, 0.0, dm, s_new, v_rel_tde, h_d]], axis=0)
+
+        if disrupt_1:
+            m1 = m_d + dm; s1 = s_new; h1 = h_d + 1
+        else:
+            m2 = m_d + dm; s2 = s_new; h2 = h_d + 1
+
+        return True, m1, m2, s1, s2, h1, h2, tdes
+
 # End of file.
