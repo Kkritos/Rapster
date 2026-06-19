@@ -6,7 +6,7 @@ $\tt Rapster$ stands for $\rm RAPid\ cluSTER$ evolution.
 
 Author: Konstantinos Kritos <kkritos1@jhu.edu>
 
-Version: 2.9.7, June 11, 2026.
+Version: 2.10.1, June 19, 2026.
 (Thanks to Tousif Islam for helping modularize this repository!)
 
 ![LOGO](.assets/LOGO.png)
@@ -413,6 +413,8 @@ TDE type is an integer index that corresponds to the following (CO may be a BH o
 - ``3``: CO/star TDE during CO-star binary - single CO strong interaction
 - ``4``: CO/star TDE during CO-star binary - CO-star binary strong interaction
 - ``11``: CO/WD TDE during single CO - single WD encounter
+- ``21``: CO/star hard-TDE during binary CO - single star encounter
+- ``22``: CO-CO/star soft-TDE during binary CO - single star encounter
 
 e) The outputBHs.pkl file (if exported) contains the properties of all BHs in the system at each time step.
 
