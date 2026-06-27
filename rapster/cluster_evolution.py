@@ -959,7 +959,7 @@ def evolve_tdes(state, config):
     N_strs = Mcl/m_avg
 
     # WD formation rate (/Myr):
-    dN_WDformdt = N_strs/t/2.5 * Kroupa_norm*IMF_kroupa(np.array([(solar_life/t)**(1/2.5)]))[0] * (solar_life/t)**(1/2.5) if t>t_WN else 0.0
+    dN_WDformdt = N_strs/t/2.5 * Kroupa_norm*IMF_kroupa((solar_life/t)**(1/2.5)) * (solar_life/t)**(1/2.5) if t>t_WN else 0.0
 
     # WD evaporation rate (/Myr):
     dN_WDevdt = xi_e*N_WD/t_rlx if N_WD>0 else 0.0
