@@ -100,6 +100,10 @@ def Mrem_F12d(M, Z):
     M_lowerEdge = 45  # absolute lower edge of the upper mass gap (in solar masses)
     M_upperEdge = 120 # absolute upper edge of the upper mass gap (in solar masses)
     
+    # accept a python list too, by converting it to an array:
+    if isinstance(M, list):
+        M = np.asarray(M, dtype=float)
+
     # check if mass input is an array or not:
     if isinstance(M, np.ndarray): # M is array
         
@@ -112,7 +116,6 @@ def Mrem_F12d(M, Z):
         out = float(out)
     
     return out
-Mrem_F12d = np.vectorize(Mrem_F12d)
 
 def Mrem_F12r(M, Z):
     """
@@ -127,6 +130,10 @@ def Mrem_F12r(M, Z):
     M_lowerEdge = 45  # absolute lower edge of the upper mass gap (in solar masses)
     M_upperEdge = 120 # absolute upper edge of the upper mass gap (in solar masses)
     
+    # accept a python list too, by converting it to an array:
+    if isinstance(M, list):
+        M = np.asarray(M, dtype=float)
+
     # check if mass input is an array or not:
     if isinstance(M, np.ndarray): # M is array
         
@@ -137,9 +144,8 @@ def Mrem_F12r(M, Z):
         out = MremInterpol_F12r((M, Z)) * (np.heaviside(M_lowerEdge - MremInterpol_F12r((M, Z)), 0) \
             + np.heaviside(MremInterpol_F12r((M, Z)) - M_upperEdge, 0))
         out = float(out)
-    
+
     return out
-Mrem_F12r = np.vectorize(Mrem_F12r)
 
 DATA_DIR = os.path.join(BASE_DIR, '..', 'Data', 'MzamsMrem')
 
@@ -189,6 +195,10 @@ def Mrem_SEVNdelayed(M, Z):
     M_lowerEdge = 55  # absolute lower edge of the upper mass gap (in solar masses)
     M_upperEdge = 120 # absolute upper edge of the upper mass gap (in solar masses)
     
+    # accept a python list too, by converting it to an array:
+    if isinstance(M, list):
+        M = np.asarray(M, dtype=float)
+
     # check if mass input is an array or not:
     if isinstance(M, np.ndarray): # M is array
         
@@ -202,7 +212,6 @@ def Mrem_SEVNdelayed(M, Z):
         out = float(out)
 
     return out
-Mrem_SEVNdelayed = np.vectorize(Mrem_SEVNdelayed)
 
 def Mrem_SEVNrapid(M, Z):
     '''
@@ -218,6 +227,10 @@ def Mrem_SEVNrapid(M, Z):
     M_lowerEdge = 55  # absolute lower edge of the upper mass gap (in solar masses)
     M_upperEdge = 120 # absolute upper edge of the upper mass gap (in solar masses)
     
+    # accept a python list too, by converting it to an array:
+    if isinstance(M, list):
+        M = np.asarray(M, dtype=float)
+
     # check if mass input is an array or not:
     if isinstance(M, np.ndarray): # M is array
         
@@ -231,7 +244,6 @@ def Mrem_SEVNrapid(M, Z):
         out = float(out)
 
     return out
-Mrem_SEVNrapid = np.vectorize(Mrem_SEVNrapid)
 
 def M_CO_SSE(M, Z):
     """
