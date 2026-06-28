@@ -16,6 +16,8 @@
 
 '''
 
+import math
+
 from .constants import *
 
 # ---------------------------------------------------------------------------
@@ -627,6 +629,142 @@ def evolve(Mi, Mf, NS, f=None, chi=0.0, dM=1e-3, eos='APR', prograde=True):
             # at spin limit: clamp J to Kepler/Thorne value, advance M
             M  += dM
             Mg  = geom_mass(M)
+            J   = chiK * Mg**2
+
+    return {
+        'NS'  : np.array(NS_arr),
+        'M'   : np.array(M_arr),
+        'J'   : np.array(J_arr),
+        'R'   : np.array(R_arr),
+        'f'   : np.array(f_arr),
+        'chi' : np.array(chi_arr),
+        'fK'  : np.array(fK_arr),
+        'chiK': np.array(chiK_arr),
+    }
+
+def evolve_v2(Mi, Mf, NS, f=None, chi=0.0, dM=1e-3, eos='APR', prograde=True):
+    """
+    Faster, behavior-identical reimplementation of evolve().
+
+    Same physics and (bit-)identical outputs as evolve(); optimized by:
+      - using math.sqrt (Python-float, no numpy scalar dispatch) for the
+        correctly-rounded sqrt calls,
+      - inlining the BH-branch isco/f_from_chi math into the loop, and
+      - computing the BH ISCO radius once per step (shared by E and J) instead
+        of twice.
+    The rarer NS branch reuses the original helper functions (still correct).
+    """
+    # --- input validation (identical to evolve) ---
+    if f is not None and chi != 0.0:
+        raise ValueError("Provide either f or chi as initial condition, not both.")
+    if Mi == Mf:
+        raise ValueError("Mi and Mf must differ.")
+    if NS and eos is None:
+        raise ValueError("NS=True requires an EOS: 'APR' or 'AU'.")
+
+    # --- EOS selection (identical to evolve) ---
+    if NS:
+        if eos == 'APR':
+            Radius    = Radius_APR
+            M_TOV     = M_APR_TOV
+            M_max_rot = M_APR_max_rot
+        elif eos == 'AU':
+            Radius    = Radius_AU
+            M_TOV     = M_AU_TOV
+            M_max_rot = M_AU_max_rot
+        else:
+            raise ValueError(f"Unknown EOS '{eos}'. Choose 'APR' or 'AU'.")
+        if Mi > M_max_rot:
+            raise ValueError(
+                f"Mi={Mi:.3f} M_sun exceeds M_max_rot={M_max_rot:.3f} M_sun "
+                f"for EOS={eos}. Use NS=False to treat as a BH."
+            )
+        R_TOV = Radius(M_TOV)
+    else:
+        Radius    = None
+        M_TOV     = None
+        M_max_rot = -math.inf
+        R_TOV     = None
+
+    # dM sign follows direction (np.sign identical to this for nonzero) ---
+    step = abs(dM)
+    dM = step if (Mf - Mi) > 0 else (-step if (Mf - Mi) < 0 else 0.0)
+
+    # --- initialise (identical to evolve) ---
+    M  = float(Mi)
+    Mg = M * Msun_to_km
+
+    if NS:
+        R = Radius(min(M, M_TOV))
+        if f is not None:
+            chi = chi_from_frequency(M, R, f)
+        chi = float(min(max(chi, 0.0), THORNE_LIMIT))
+    else:
+        chi = float(min(max(chi, 0.0), THORNE_LIMIT))
+        R   = Mg * (1.0 + math.sqrt(1.0 - chi**2))
+
+    J = chi * Mg**2
+
+    NS_arr, M_arr, J_arr, R_arr      = [], [], [], []
+    f_arr, chi_arr, fK_arr, chiK_arr = [], [], [], []
+
+    def not_done(m):
+        return m > Mf if dM < 0 else m < Mf
+
+    prograde_now = prograde
+
+    while not_done(M):
+
+        is_NS = NS and (M < M_max_rot)
+
+        Mg  = M * Msun_to_km
+        chi = float(min(max(J / Mg**2, 0.0), THORNE_LIMIT))
+
+        if is_NS:
+            # rarer NS path: reuse original (correct) helpers
+            R    = Radius(min(M, M_TOV))
+            f    = f_from_chi(M, chi, R=R, NS=True)
+            fK   = f_kepler(M, NS=True, R=R)
+            chiK = chi_kepler(M, NS=True, R=R)
+        else:
+            # BH path, inlined with math.sqrt (mirrors f_from_chi / R_ISCO / E_isco / J_isco)
+            R    = Mg * (1.0 + math.sqrt(1.0 - chi**2))
+            M_SI = M * Msun
+            f    = c**3 * chi / (4.0 * math.pi * G * M_SI * (1.0 + math.sqrt(1.0 - chi**2)))
+            fK   = c**3 * THORNE_LIMIT / (4.0 * math.pi * G * M_SI
+                                          * (1.0 + math.sqrt(1.0 - THORNE_LIMIT**2)))
+            chiK = THORNE_LIMIT
+
+        NS_arr.append(is_NS); M_arr.append(M); J_arr.append(J); R_arr.append(R)
+        f_arr.append(f); chi_arr.append(chi); fK_arr.append(fK); chiK_arr.append(chiK)
+
+        if f < fK:
+            if is_NS:
+                e = E_isco(M, NS=True, R=R, f=f, prograde=prograde_now)
+                j = J_isco(M, NS=True, R=R, f=f, prograde=prograde_now)
+            else:
+                # BH: R_ISCO computed once, shared by E~ and J~ (mirrors E_isco/J_isco, NS=False)
+                sign = +1.0 if prograde_now else -1.0
+                Z1   = 1.0 + (1.0 - chi**2)**(1.0/3.0) * (
+                           (1.0 + chi)**(1.0/3.0) + (1.0 - chi)**(1.0/3.0))
+                Z2   = math.sqrt(3.0 * chi**2 + Z1**2)
+                r    = Mg * (3.0 + Z2 - sign * math.sqrt((3.0 - Z1) * (3.0 + Z1 + 2.0*Z2)))
+                rt   = r / Mg
+                e    = ((1.0 - 2.0/rt + sign*chi/rt**1.5)
+                        / math.sqrt(1.0 - 3.0/rt + 2.0*sign*chi/rt**1.5))
+                num   = sign * (rt**2 - 2.0*sign*chi*rt**0.5 + chi**2)
+                denom = rt**0.75 * math.sqrt(rt**1.5 - 3.0*rt**0.5 + 2.0*sign*chi)
+                j    = Mg * num / denom
+
+            J_new = J + (j / e) * dM * Msun_to_km
+            if J_new < 0.0 and not prograde_now:
+                J_new        = 0.0
+                prograde_now = True
+            J  = J_new
+            M += dM
+        else:
+            M  += dM
+            Mg  = M * Msun_to_km
             J   = chiK * Mg**2
 
     return {
