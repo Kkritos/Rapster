@@ -30,7 +30,6 @@ def IMF_kroupa(m):
 
     m = np.asarray(m, dtype=float)
     scalar_input = (m.ndim == 0)
-    m = np.atleast_1d(m)
 
     # mass boundaries (in solar masses):
     m1 = 0.08
@@ -48,27 +47,24 @@ def IMF_kroupa(m):
     c2 = c1 * m2**a1 / m2**a2
     c3 = c2 * m3**a2 / m3**a3
 
-    out = np.zeros(m.size)
+    # fast scalar path (avoids np.select overhead for the per-element quad calls):
+    if scalar_input:
+        mv = float(m)
+        if   mv <= m1: return mv**a0
+        elif mv <= m2: return c1 * mv**a1
+        elif mv <= m3: return c2 * mv**a2
+        else:          return c3 * mv**a3
 
-    for i in range(0,m.size):
-        
-        if  (m[i] <= m1):
-            
-            out[i] = m[i]**a0
-            
-        elif(m[i] <= m2 and m[i] > m1):
-            
-            out[i] = c1 * m[i]**a1
-            
-        elif(m[i] <= m3 and m[i] > m2):
-            
-            out[i] = c2 * m[i]**a2
-            
-        elif(m[i] >= m3):
-            
-            out[i] = c3 * m[i]**a3
-                    
-    return float(out[0]) if scalar_input else out
+    # vectorized array path (same bin edges as the original loop):
+    conditions = [m <= m1,
+                  (m > m1) & (m <= m2),
+                  (m > m2) & (m <= m3),
+                  m > m3]
+    choices = [m**a0,
+               c1 * m**a1,
+               c2 * m**a2,
+               c3 * m**a3]
+    return np.select(conditions, choices, default=0.0)
 
 N_grid = 700
 M_grid = np.linspace(10, 340, N_grid)
@@ -100,6 +96,10 @@ def Mrem_F12d(M, Z):
     M_lowerEdge = 45  # absolute lower edge of the upper mass gap (in solar masses)
     M_upperEdge = 120 # absolute upper edge of the upper mass gap (in solar masses)
     
+    # accept a python list too, by converting it to an array:
+    if isinstance(M, list):
+        M = np.asarray(M, dtype=float)
+
     # check if mass input is an array or not:
     if isinstance(M, np.ndarray): # M is array
         
@@ -112,7 +112,6 @@ def Mrem_F12d(M, Z):
         out = float(out)
     
     return out
-Mrem_F12d = np.vectorize(Mrem_F12d)
 
 def Mrem_F12r(M, Z):
     """
@@ -127,6 +126,10 @@ def Mrem_F12r(M, Z):
     M_lowerEdge = 45  # absolute lower edge of the upper mass gap (in solar masses)
     M_upperEdge = 120 # absolute upper edge of the upper mass gap (in solar masses)
     
+    # accept a python list too, by converting it to an array:
+    if isinstance(M, list):
+        M = np.asarray(M, dtype=float)
+
     # check if mass input is an array or not:
     if isinstance(M, np.ndarray): # M is array
         
@@ -137,9 +140,8 @@ def Mrem_F12r(M, Z):
         out = MremInterpol_F12r((M, Z)) * (np.heaviside(M_lowerEdge - MremInterpol_F12r((M, Z)), 0) \
             + np.heaviside(MremInterpol_F12r((M, Z)) - M_upperEdge, 0))
         out = float(out)
-    
+
     return out
-Mrem_F12r = np.vectorize(Mrem_F12r)
 
 DATA_DIR = os.path.join(BASE_DIR, '..', 'Data', 'MzamsMrem')
 
@@ -189,6 +191,10 @@ def Mrem_SEVNdelayed(M, Z):
     M_lowerEdge = 55  # absolute lower edge of the upper mass gap (in solar masses)
     M_upperEdge = 120 # absolute upper edge of the upper mass gap (in solar masses)
     
+    # accept a python list too, by converting it to an array:
+    if isinstance(M, list):
+        M = np.asarray(M, dtype=float)
+
     # check if mass input is an array or not:
     if isinstance(M, np.ndarray): # M is array
         
@@ -202,7 +208,6 @@ def Mrem_SEVNdelayed(M, Z):
         out = float(out)
 
     return out
-Mrem_SEVNdelayed = np.vectorize(Mrem_SEVNdelayed)
 
 def Mrem_SEVNrapid(M, Z):
     '''
@@ -218,6 +223,10 @@ def Mrem_SEVNrapid(M, Z):
     M_lowerEdge = 55  # absolute lower edge of the upper mass gap (in solar masses)
     M_upperEdge = 120 # absolute upper edge of the upper mass gap (in solar masses)
     
+    # accept a python list too, by converting it to an array:
+    if isinstance(M, list):
+        M = np.asarray(M, dtype=float)
+
     # check if mass input is an array or not:
     if isinstance(M, np.ndarray): # M is array
         
@@ -231,7 +240,6 @@ def Mrem_SEVNrapid(M, Z):
         out = float(out)
 
     return out
-Mrem_SEVNrapid = np.vectorize(Mrem_SEVNrapid)
 
 def M_CO_SSE(M, Z):
     """

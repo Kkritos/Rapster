@@ -278,8 +278,8 @@ def initialize_cluster(config):
     pairs = np.zeros(shape=(1, 5))
     triples = np.zeros(shape=(1, 24))
     mergers = np.zeros(shape=(1, 27))
-    evolution = np.zeros(shape=(1, 70))
-    hardening = np.zeros(shape=(1, 12))
+    evolution = [[0.0] * 70]   # list-accumulated (one placeholder row); -> array at write_output
+    hardening = [[0.0] * 12]   # list-accumulated (one placeholder row); -> array at write_output
     tdes = np.zeros(shape=(1, 18))
 
     configure_kick_model(config['recoil_kick_model'])
@@ -959,7 +959,7 @@ def evolve_tdes(state, config):
     N_strs = Mcl/m_avg
 
     # WD formation rate (/Myr):
-    dN_WDformdt = N_strs/t/2.5 * Kroupa_norm*IMF_kroupa(np.array([(solar_life/t)**(1/2.5)]))[0] * (solar_life/t)**(1/2.5) if t>t_WN else 0.0
+    dN_WDformdt = N_strs/t/2.5 * Kroupa_norm*IMF_kroupa((solar_life/t)**(1/2.5)) * (solar_life/t)**(1/2.5) if t>t_WN else 0.0
 
     # WD evaporation rate (/Myr):
     dN_WDevdt = xi_e*N_WD/t_rlx if N_WD>0 else 0.0
@@ -1065,12 +1065,12 @@ def record_evolution(state):
     N_tdeBBHstar = state['N_tdeBBHstar']
 
     # append a row of 70 time-dependent quantities to the evolution array:
-    state['evolution'] = np.append(state['evolution'], [[seed, t, z, dt, m_avg, Mcl, rh, R_gal, v_gal, t_rlx, tBH_rlx, n_star, N_BH, mBH_avg, mBH_max, rh_BH, rc_BH, S,
+    state['evolution'].append([seed, t, z, dt, m_avg, Mcl, rh, R_gal, v_gal, t_rlx, tBH_rlx, n_star, N_BH, mBH_avg, mBH_max, rh_BH, rc_BH, S,
                                        xi, psi, psi_BH, t_3bb, t_2cap, k_3bb, k_2cap, N_me, N_BBH, N_meRe, N_meEj, v_star, vBH,
                                        nh_BH, nc_BH, na_BH, N_3bb, N_2cap, N_3cap, N_BHej, N_BBHej, N_dis, N_ex, t_bb, N_bb,
                                        N_meFi, N_me2b, t_ex1, t_ex2, k_ex1, k_ex2, N_ex1, N_ex2, N_BHstar, t_pp, k_pp, N_pp, 2*v_star,
                                        2*vBH, N_Triples, N_ZLK, N_WD, v_WD, k_tdeBHWD, N_tdeBHWD, dN_WDformdt, dN_WDevdt, dN_tdeBHWDdt, k_tdeBHstar,
-                                       dN_tdeBHstardt, N_tdeBHstar, N_tdeBBHstar]], axis=0)
+                                       dN_tdeBHstardt, N_tdeBHstar, N_tdeBBHstar])
 
 def compute_external_params(state, config):
     """Compute external/environmental parameters for the cluster.
@@ -1260,8 +1260,8 @@ def write_output(state, config):
         config (dict): Configuration dictionary.
     """
     mergers = np.delete(state['mergers'], 0, axis=0)
-    evolution = np.delete(state['evolution'], 0, axis=0)
-    hardening = np.delete(state['hardening'], 0, axis=0)
+    evolution = np.array(state['evolution'], dtype=float)[1:]   # list -> array, drop placeholder row
+    hardening = np.array(state['hardening'], dtype=float)[1:]   # list -> array, drop placeholder row
     tdes = np.delete(state['tdes'], 0, axis=0)
 
     CURRENT_WORKING_DIR = os.getcwd()
