@@ -192,7 +192,7 @@ def f_from_chi(M, chi, R=None, NS=True):
         I_SI = moment_of_inertia(M, R) * Msun * km**2
         return chi * G * M_SI**2 / (2.0 * np.pi * c * I_SI)
     else:
-        chi = np.clip(chi, 0.0, THORNE_LIMIT)
+        chi = min(max(chi, 0.0), THORNE_LIMIT)
         return c**3 * chi / (4.0 * np.pi * G * M_SI
                              * (1.0 + np.sqrt(1.0 - chi**2)))
 
@@ -238,7 +238,7 @@ def R_ISCO(M, NS=True, R=None, f=None, chi=None, prograde=True):
     else:
         if chi is None:
             raise ValueError("chi must be provided for BH (NS=False).")
-        chi  = np.clip(chi, 0.0, THORNE_LIMIT)
+        chi  = min(max(chi, 0.0), THORNE_LIMIT)
         Mg   = geom_mass(M)
         Z1   = 1.0 + (1.0 - chi**2)**(1.0/3.0) * (
                    (1.0 + chi)**(1.0/3.0) + (1.0 - chi)**(1.0/3.0)
@@ -361,7 +361,7 @@ def _E_J_isco_NS(M, R, f, prograde=True):
 
     # prograde: frame-dragging aids orbit (subtract N^phi)
     # retrograde: frame-dragging opposes orbit (add N^phi)
-    v     = np.clip((Omega_S - sign * Nphi) * r_m / N, 0.0, 0.9999)
+    v     = min(max((Omega_S - sign * Nphi) * r_m / N, 0.0), 0.9999)
     gamma = 1.0 / np.sqrt(1.0 - v**2)
 
     E = (N + Nphi * v * r_m) * gamma                   # dimensionless (always > 0)
@@ -401,7 +401,7 @@ def E_isco(M, NS=True, R=None, f=None, chi=None, prograde=True):
     else:
         if chi is None:
             raise ValueError("chi must be provided for BH (NS=False).")
-        chi  = np.clip(chi, 0.0, 1.0 - 1e-10)
+        chi  = min(max(chi, 0.0), 1.0 - 1e-10)
         Mg   = geom_mass(M)                             # km
         r    = R_ISCO(M, NS=False, chi=chi,
                       prograde=prograde)                 # km
@@ -442,7 +442,7 @@ def J_isco(M, NS=True, R=None, f=None, chi=None, prograde=True):
     else:
         if chi is None:
             raise ValueError("chi must be provided for BH (NS=False).")
-        chi  = np.clip(chi, 0.0, 1.0 - 1e-10)
+        chi  = min(max(chi, 0.0), 1.0 - 1e-10)
         Mg   = geom_mass(M)                             # km
         r    = R_ISCO(M, NS=False, chi=chi,
                       prograde=prograde)                 # km
@@ -556,9 +556,9 @@ def evolve(Mi, Mf, NS, f=None, chi=0.0, dM=1e-3, eos='APR', prograde=True):
         R = Radius(min(M, M_TOV))
         if f is not None:
             chi = chi_from_frequency(M, R, f)
-        chi = float(np.clip(chi, 0.0, THORNE_LIMIT))
+        chi = float(min(max(chi, 0.0), THORNE_LIMIT))
     else:
-        chi = float(np.clip(chi, 0.0, THORNE_LIMIT))
+        chi = float(min(max(chi, 0.0), THORNE_LIMIT))
         R   = Mg * (1.0 + np.sqrt(1.0 - chi**2))   # outer horizon radius
 
     J = chi * Mg**2   # geometric angular momentum [km^2]
@@ -582,7 +582,7 @@ def evolve(Mi, Mf, NS, f=None, chi=0.0, dM=1e-3, eos='APR', prograde=True):
         is_NS = NS and (M < M_max_rot)
 
         Mg  = geom_mass(M)
-        chi = float(np.clip(J / Mg**2, 0.0, THORNE_LIMIT))
+        chi = float(min(max(J / Mg**2, 0.0), THORNE_LIMIT))
 
         if is_NS:
             # freeze radius in supramassive regime (M_TOV < M < M_max_rot)
