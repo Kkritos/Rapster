@@ -107,7 +107,7 @@ def BH_TidalDisruptions(seed, t, z, k_tde, N_tde, tde_type, m_avg, m_star, R_sta
             NS = True if m<M_NS_max else False
 
             # evolve spin during disk accretion:
-            evo = evolve_v2(Mi=m, Mf=m+dm, NS=NS, f=None, chi=s, dM=dm/100, eos=EoS, prograde=prograde)
+            evo = evolve_spin_during_accretion(Mi=m, Mf=m+dm, NS=NS, f=None, chi=s, dM=dm/100, eos=EoS, prograde=prograde)
 
             # final spin:
             s_new = evo['chi'][-1]
@@ -189,8 +189,8 @@ def try_BBH_star_disruption(rp, a, m1, m2, s1, s2, g1, g2, h1, h2, m_star, R_sta
         NS2 = True if m2<M_NS_max else False
 
         # evolve the spin of each BH/NS as it accretes its share of the debris:
-        evo1 = evolve_v2(Mi=m1, Mf=m1+dm1, NS=NS1, f=None, chi=s1, dM=dm1/100, eos=EoS, prograde=True)
-        evo2 = evolve_v2(Mi=m2, Mf=m2+dm2, NS=NS2, f=None, chi=s2, dM=dm2/100, eos=EoS, prograde=True)
+        evo1 = evolve_spin_during_accretion(Mi=m1, Mf=m1+dm1, NS=NS1, f=None, chi=s1, dM=dm1/100, eos=EoS, prograde=True)
+        evo2 = evolve_spin_during_accretion(Mi=m2, Mf=m2+dm2, NS=NS2, f=None, chi=s2, dM=dm2/100, eos=EoS, prograde=True)
 
         s1_new = evo1['chi'][-1]
         s2_new = evo2['chi'][-1]
@@ -227,7 +227,7 @@ def try_BBH_star_disruption(rp, a, m1, m2, s1, s2, g1, g2, h1, h2, m_star, R_sta
 
         NS = True if m_d<M_NS_max else False
 
-        evo = evolve_v2(Mi=m_d, Mf=m_d+dm, NS=NS, f=None, chi=s_d, dM=dm/100, eos=EoS, prograde=True)
+        evo = evolve_spin_during_accretion(Mi=m_d, Mf=m_d+dm, NS=NS, f=None, chi=s_d, dM=dm/100, eos=EoS, prograde=True)
         s_new = evo['chi'][-1]
 
         v_rel_tde = np.sqrt(v_star**2*m_avg/m_star + np.mean([m1, m2])/m_star*vBH**2)

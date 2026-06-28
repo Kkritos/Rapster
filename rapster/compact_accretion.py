@@ -490,30 +490,21 @@ def J_isco(M, NS=True, R=None, f=None, chi=None, prograde=True):
 #   = km^2 
 # ---------------------------------------------------------------------------
 
-def evolve(Mi, Mf, NS, f=None, chi=0.0, dM=1e-3, eos='APR', prograde=True):
+def evolve_spin_during_accretion(Mi, Mf, NS, f=None, chi=0.0, dM=1e-3, eos='APR', prograde=True):
     """
     Evolve compact object spin via disk accretion.
 
-    The object starts as a NS (NS=True) or BH (NS=False).  If NS=True and
-    the mass exceeds M_max_rot the evolution automatically switches to the
-    Bardeen (1970) BH regime.
+    The object starts as a NS (NS=True) or BH (NS=False).  If NS=True and the
+    mass exceeds M_max_rot the evolution switches to the Bardeen (1970) BH regime.
 
-    Parameters
-    ----------
-    Mi  : float - initial mass [M_sun]
-    Mf  : float - final mass [M_sun]
-    NS  : bool  - True if the initial object is a neutron star
-    f   : float - initial spin frequency [Hz]  (provide f or chi, not both)
-    chi : float - initial dimensionless spin    (default 0.0)
-    dM       : float - mass step [M_sun] (sign set automatically from Mf-Mi)
-    eos      : str   - 'APR' or 'AU', required if NS=True
-    prograde : bool  - True for prograde accretion (spin-up), False for retrograde
-                       (spin-down). When retrograde drives chi to 0 the orbit
-                       automatically flips to prograde, matching Bardeen (1970).
+    Returns a dict with keys NS, M, J, R, f, chi, fK, chiK; only the FINAL
+    per-step state is stored (as length-1 arrays), which is all the callers use.
 
-    Returns
-    -------
-    dict with keys: NS, M, J, R, f, chi, fK, chiK
+    Implementation notes (performance, physics unchanged):
+      - math.sqrt (Python-float, no numpy scalar dispatch) for the sqrt calls,
+      - the BH-branch isco/f_from_chi math is inlined into the loop, and
+      - the BH ISCO radius is computed once per step (shared by E and J).
+    The rarer NS branch uses the helper functions (E_isco/J_isco/f_from_chi/...).
     """
     # --- input validation ---
     if f is not None and chi != 0.0:
@@ -524,145 +515,6 @@ def evolve(Mi, Mf, NS, f=None, chi=0.0, dM=1e-3, eos='APR', prograde=True):
         raise ValueError("NS=True requires an EOS: 'APR' or 'AU'.")
 
     # --- EOS selection ---
-    if NS:
-        if eos == 'APR':
-            Radius    = Radius_APR
-            M_TOV     = M_APR_TOV
-            M_max_rot = M_APR_max_rot
-        elif eos == 'AU':
-            Radius    = Radius_AU
-            M_TOV     = M_AU_TOV
-            M_max_rot = M_AU_max_rot
-        else:
-            raise ValueError(f"Unknown EOS '{eos}'. Choose 'APR' or 'AU'.")
-        if Mi > M_max_rot:
-            raise ValueError(
-                f"Mi={Mi:.3f} M_sun exceeds M_max_rot={M_max_rot:.3f} M_sun "
-                f"for EOS={eos}. Use NS=False to treat as a BH."
-            )
-        R_TOV = Radius(M_TOV)   # freeze radius above M_TOV
-    else:
-        Radius    = None
-        M_TOV     = None
-        M_max_rot = -np.inf     # always in BH phase
-        R_TOV     = None
-
-    # --- dM sign follows direction of evolution ---
-    dM = abs(dM) * np.sign(Mf - Mi)
-
-    # --- initialise ---
-    M  = float(Mi)
-    Mg = geom_mass(M)
-
-    if NS:
-        R = Radius(min(M, M_TOV))
-        if f is not None:
-            chi = chi_from_frequency(M, R, f)
-        chi = float(min(max(chi, 0.0), THORNE_LIMIT))
-    else:
-        chi = float(min(max(chi, 0.0), THORNE_LIMIT))
-        R   = Mg * (1.0 + np.sqrt(1.0 - chi**2))   # outer horizon radius
-
-    J = chi * Mg**2   # geometric angular momentum [km^2]
-
-    # --- output storage ---
-    NS_arr, M_arr, J_arr, R_arr      = [], [], [], []
-    f_arr, chi_arr, fK_arr, chiK_arr = [], [], [], []
-
-    def not_done(m):
-        return m > Mf if dM < 0 else m < Mf
-
-    # --- orbit direction (mutable: flips to prograde once chi reaches 0) ---
-    # chi is always >= 0 (magnitude); prograde_now tracks direction.
-    # When retrograde accretion drives chi to 0 the disk flips prograde,
-    # matching Bardeen (1970) and the standalone evolve_spin_RK4.
-    prograde_now = prograde
-
-    # --- main loop ---
-    while not_done(M):
-
-        is_NS = NS and (M < M_max_rot)
-
-        Mg  = geom_mass(M)
-        chi = float(min(max(J / Mg**2, 0.0), THORNE_LIMIT))
-
-        if is_NS:
-            # freeze radius in supramassive regime (M_TOV < M < M_max_rot)
-            R    = Radius(min(M, M_TOV))
-            f    = f_from_chi(M, chi, R=R, NS=True)
-            fK   = f_kepler(M, NS=True, R=R)
-            chiK = chi_kepler(M, NS=True, R=R)
-        else:
-            # BH: R = outer Kerr horizon
-            R    = Mg * (1.0 + np.sqrt(1.0 - chi**2))
-            f    = f_from_chi(M, chi, NS=False)
-            fK   = f_kepler(M, NS=False)
-            chiK = chi_kepler(M, NS=False)
-
-        # --- store current state ---
-        NS_arr.append(is_NS)
-        M_arr.append(M)
-        J_arr.append(J)
-        R_arr.append(R)
-        f_arr.append(f)
-        chi_arr.append(chi)
-        fK_arr.append(fK)
-        chiK_arr.append(chiK)
-
-        # --- advance ---
-        if f < fK:
-            if is_NS:
-                e = E_isco(M, NS=True,  R=R, f=f, prograde=prograde_now)
-                j = J_isco(M, NS=True,  R=R, f=f, prograde=prograde_now)
-            else:
-                e = E_isco(M, NS=False, chi=chi, prograde=prograde_now)
-                j = J_isco(M, NS=False, chi=chi, prograde=prograde_now)
-
-            # j < 0 for retrograde: J decreases. Clamp at 0 and flip to prograde.
-            J_new = J + (j / e) * dM * Msun_to_km
-            if J_new < 0.0 and not prograde_now:
-                J_new        = 0.0
-                prograde_now = True
-            J  = J_new
-            M += dM
-        else:
-            # at spin limit: clamp J to Kepler/Thorne value, advance M
-            M  += dM
-            Mg  = geom_mass(M)
-            J   = chiK * Mg**2
-
-    return {
-        'NS'  : np.array(NS_arr),
-        'M'   : np.array(M_arr),
-        'J'   : np.array(J_arr),
-        'R'   : np.array(R_arr),
-        'f'   : np.array(f_arr),
-        'chi' : np.array(chi_arr),
-        'fK'  : np.array(fK_arr),
-        'chiK': np.array(chiK_arr),
-    }
-
-def evolve_v2(Mi, Mf, NS, f=None, chi=0.0, dM=1e-3, eos='APR', prograde=True):
-    """
-    Faster, behavior-identical reimplementation of evolve().
-
-    Same physics and (bit-)identical outputs as evolve(); optimized by:
-      - using math.sqrt (Python-float, no numpy scalar dispatch) for the
-        correctly-rounded sqrt calls,
-      - inlining the BH-branch isco/f_from_chi math into the loop, and
-      - computing the BH ISCO radius once per step (shared by E and J) instead
-        of twice.
-    The rarer NS branch reuses the original helper functions (still correct).
-    """
-    # --- input validation (identical to evolve) ---
-    if f is not None and chi != 0.0:
-        raise ValueError("Provide either f or chi as initial condition, not both.")
-    if Mi == Mf:
-        raise ValueError("Mi and Mf must differ.")
-    if NS and eos is None:
-        raise ValueError("NS=True requires an EOS: 'APR' or 'AU'.")
-
-    # --- EOS selection (identical to evolve) ---
     if NS:
         if eos == 'APR':
             Radius    = Radius_APR
@@ -690,7 +542,7 @@ def evolve_v2(Mi, Mf, NS, f=None, chi=0.0, dM=1e-3, eos='APR', prograde=True):
     step = abs(dM)
     dM = step if (Mf - Mi) > 0 else (-step if (Mf - Mi) < 0 else 0.0)
 
-    # --- initialise (identical to evolve) ---
+    # --- initialise ---
     M  = float(Mi)
     Mg = M * Msun_to_km
 
