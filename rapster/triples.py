@@ -127,10 +127,10 @@ def evolve_triples(seed, t, z, zCl_form, triples, binaries, mBH, sBH, gBH, hBH, 
                 # effective spin parameter:
                 s_eff = (m0 * s0 * np.cos(theta0) + m1 * s1 * np.cos(theta1)) / (m0 + m1)
                 
-                if t_merge < lookback(zCl_form): # check merger happens by redshift z=0 (today):
+                if t_merge < lookback_interp(zCl_form): # check merger happens by redshift z=0 (today):
                     # append merger:
                     mergers = np.append(mergers, [[seed, ind_in, 4, a_in, eMAX, m0, m1, s0, s1, g0, g1, theta0, theta1, dPhi, t_form_in, z_form_in, t_merge,
-                                                   redshift(lookback(zCl_form) - t_merge), m_rem, s_rem, g_rem, vGW_kick, s_eff, q, 2*v_star, h0, h1]], axis=0)
+                                                   redshift_interp(lookback_interp(zCl_form) - t_merge), m_rem, s_rem, g_rem, vGW_kick, s_eff, q, 2*v_star, h0, h1]], axis=0)
                 
                 triples = np.delete(triples, i, axis=0)
 
@@ -166,8 +166,8 @@ def evolve_triples(seed, t, z, zCl_form, triples, binaries, mBH, sBH, gBH, hBH, 
                     
                     # append binary;
                     # only append the new outer binary if the merger time is within the simulation horizon:
-                    if t + t_ZLK < lookback(zCl_form):
-                        binaries = np.append(binaries, [[np.random.randint(0, 999999999), 5, a_out, np.sqrt(np.random.rand()), m2, m_rem, s2, s_rem, g2, g_rem, t + t_ZLK, redshift(lookback(zCl_form) - t - t_ZLK), 0, h2, h_rem]], axis=0)
+                    if t + t_ZLK < lookback_interp(zCl_form):
+                        binaries = np.append(binaries, [[np.random.randint(0, 999999999), 5, a_out, np.sqrt(np.random.rand()), m2, m_rem, s2, s_rem, g2, g_rem, t + t_ZLK, redshift_interp(lookback_interp(zCl_form) - t - t_ZLK), 0, h2, h_rem]], axis=0)
                         N_BBH+=1
                         N_meRe+=1
 
