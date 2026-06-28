@@ -164,7 +164,7 @@ def evolve_BBHs(seed, t, z, dt, zCl_form, binaries, hardening, mergers, mBH, sBH
                     dt_local = t_BBH_BBH
                     type_int = 3
                     
-                hardening = np.append(hardening, [[t, dt, t_local, dt_local, ind, a, e, m1, m2, q, condition, Nex]], axis=0)
+                hardening.append([t, dt, t_local, dt_local, ind, a, e, m1, m2, q, condition, Nex])
                 N_hardening+=1
                 
                 if condition>0:
@@ -715,7 +715,7 @@ def evolve_BBHs(seed, t, z, dt, zCl_form, binaries, hardening, mergers, mBH, sBH
                     hardening[i][10]=condition
                     break
 
-            hardening = np.append(hardening, [[t, dt, t_local, dt_local, ind, a, e, m1, m2, q, condition, Nex]], axis=0)
+            hardening.append([t, dt, t_local, dt_local, ind, a, e, m1, m2, q, condition, Nex])
             N_hardening+=1
             i+=1
             
