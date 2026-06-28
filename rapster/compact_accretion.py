@@ -705,13 +705,11 @@ def evolve_v2(Mi, Mf, NS, f=None, chi=0.0, dM=1e-3, eos='APR', prograde=True):
 
     J = chi * Mg**2
 
-    NS_arr, M_arr, J_arr, R_arr      = [], [], [], []
-    f_arr, chi_arr, fK_arr, chiK_arr = [], [], [], []
-
     def not_done(m):
         return m > Mf if dM < 0 else m < Mf
 
     prograde_now = prograde
+    last = None   # only the final per-step state is needed by callers (evo[...][-1])
 
     while not_done(M):
 
@@ -735,8 +733,7 @@ def evolve_v2(Mi, Mf, NS, f=None, chi=0.0, dM=1e-3, eos='APR', prograde=True):
                                           * (1.0 + math.sqrt(1.0 - THORNE_LIMIT**2)))
             chiK = THORNE_LIMIT
 
-        NS_arr.append(is_NS); M_arr.append(M); J_arr.append(J); R_arr.append(R)
-        f_arr.append(f); chi_arr.append(chi); fK_arr.append(fK); chiK_arr.append(chiK)
+        last = (is_NS, M, J, R, f, chi, fK, chiK)   # current pre-advance state
 
         if f < fK:
             if is_NS:
@@ -767,15 +764,18 @@ def evolve_v2(Mi, Mf, NS, f=None, chi=0.0, dM=1e-3, eos='APR', prograde=True):
             Mg  = M * Msun_to_km
             J   = chiK * Mg**2
 
+    # only the final per-step state is returned (as length-1 arrays so callers'
+    # evo[key][-1] indexing still works); intermediate history is not stored.
+    is_NS, M, J, R, f, chi, fK, chiK = last
     return {
-        'NS'  : np.array(NS_arr),
-        'M'   : np.array(M_arr),
-        'J'   : np.array(J_arr),
-        'R'   : np.array(R_arr),
-        'f'   : np.array(f_arr),
-        'chi' : np.array(chi_arr),
-        'fK'  : np.array(fK_arr),
-        'chiK': np.array(chiK_arr),
+        'NS'  : np.array([is_NS]),
+        'M'   : np.array([M]),
+        'J'   : np.array([J]),
+        'R'   : np.array([R]),
+        'f'   : np.array([f]),
+        'chi' : np.array([chi]),
+        'fK'  : np.array([fK]),
+        'chiK': np.array([chiK]),
     }
 
 # End of file.
