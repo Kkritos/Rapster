@@ -980,7 +980,7 @@ def evolve_tdes(state, config):
     N_WD = N_WD + dN_WDdt * dt
 
     # Poisson number of BH-WD TDEs:
-    k_tdeBHWD = np.min([poisson.rvs(mu=dt*dN_tdeBHWDdt), int(N_BH-3*N_Triples), int(N_WD)]) if N_WD>0 else 0
+    k_tdeBHWD = np.min([poisson.rvs(mu=np.min([dt*dN_tdeBHWDdt, 1e8])), int(N_BH-3*N_Triples), int(N_WD)]) if N_WD>0 else 0
 
     # execute BH-WD tidal disruption events:
     if k_tdeBHWD > 0:
@@ -993,7 +993,7 @@ def evolve_tdes(state, config):
 
     # Poisson number of BH-star TDEs at this timestep:
     N_strs = Mcl/m_avg
-    k_tdeBHstar = np.min([poisson.rvs(mu=dt*dN_tdeBHstardt), int(N_BH-3*N_Triples), int(N_strs)]) if (N_BH>0)*(n_star>0) else 0
+    k_tdeBHstar = np.min([poisson.rvs(mu=np.min([dt*dN_tdeBHstardt, 1e8])), int(N_BH-3*N_Triples), int(N_strs)]) if (N_BH>0)*(n_star>0) else 0
 
     # execute BH-star tidal disruption events (micro-TDEs):
     if k_tdeBHstar > 0:
