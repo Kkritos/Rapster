@@ -692,14 +692,14 @@ def form_binaries(state, config):
     N_BHsin = N_BH - 2*N_BBH - N_BHstar - 3*N_Triples
 
     # number of 3bbs:
-    k_3bb = np.min([poisson.rvs(mu=dt / t_3bb), int(N_BHsin / 3)])
+    k_3bb = np.min([poisson.rvs(mu=np.min([dt / t_3bb, 1e8])), int(N_BHsin / 3)])
 
     # 3bb formation:
     t, z, k_3bb, mBH_avg, binaries, mBH, sBH, gBH, hBH, vBH, N_3bb, N_BBH = three_body_binary(t, z, k_3bb, mBH_avg, binaries, mBH, sBH, gBH, hBH, vBH, N_3bb, N_BBH, random_pairing=config['random_pairing'])
 
     # number of 2-body captures:
     N_BHsin = N_BH - 2*N_BBH - N_BHstar - 3*N_Triples
-    k_2cap = np.min([poisson.rvs(mu=dt / t_2cap), int(N_BHsin / 2)])
+    k_2cap = np.min([poisson.rvs(mu=np.min([dt / t_2cap, 1e8])), int(N_BHsin / 2)])
 
     # 2-body capture(s):
     seed, t, dt, z, zCl_form, k_2cap, mBH_avg, binaries, mBH, sBH, gBH, hBH, vBH, v_star, N_2cap, N_BH, N_BBH, N_me, N_meRe, N_meEj, mergers = \
@@ -707,7 +707,7 @@ def form_binaries(state, config):
 
     # number of star-star -> BH-star exchanges:
     N_BHsin = N_BH - 2*N_BBH - N_BHstar - 3*N_Triples
-    k_ex1 = np.min([poisson.rvs(mu=dt / state['t_ex1']), int(N_BHsin)])
+    k_ex1 = np.min([poisson.rvs(mu=np.min([dt / state['t_ex1'], 1e8])), int(N_BHsin)])
 
     # star-star -> BH-star exchange(s):
     if k_ex1 > 0:
@@ -715,7 +715,7 @@ def form_binaries(state, config):
     
     # number of BH-star -> BH-BH exchanges:
     N_BHsin = N_BH - 2*N_BBH - N_BHstar - 3*N_Triples
-    k_ex2 = np.min([poisson.rvs(mu=dt / state['t_ex2']), int(N_BHsin), int(N_BHstar)])
+    k_ex2 = np.min([poisson.rvs(mu=np.min([dt / state['t_ex2'], 1e8])), int(N_BHsin), int(N_BHstar)])
 
     # BH-star -> BBH exchange(s):
     if k_ex2 > 0:
