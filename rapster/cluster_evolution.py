@@ -812,7 +812,9 @@ def evolve_interactions(state, config):
 
     # number of pair-pair interactions:
     dt = state['dt']
-    k_pp = np.min([poisson.rvs(mu=dt / t_pp), int(N_BHstar / 2)])
+    
+    # cap mu to avoid scipy Poisson overflow for extremely high interaction rates:
+    k_pp = np.min([poisson.rvs(mu=np.min([dt / t_pp, 1e8])), int(N_BHstar / 2)])
 
     # execute pair-pair interactions: two BH-star pairs form a new BBH:
     if k_pp>0:
