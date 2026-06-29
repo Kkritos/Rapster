@@ -1284,6 +1284,7 @@ def write_output(state, config):
 
     N_tdeBHWD = state['N_tdeBHWD']
     N_tdeBHstar = state['N_tdeBHstar']
+    N_tdeBBHstar = state['N_tdeBBHstar']
     N_me = state['N_me']
     N_iter = state['N_iter']
     N_hardening = state['N_hardening']
@@ -1295,7 +1296,7 @@ def write_output(state, config):
         tdes_path = os.path.join(RESULTS_DIR, config['tdes_file'] + '.txt')
         with open(tdes_path, 'w') as f_tdes:
             f_tdes.write('# ' + ' '.join(tdes_keys) + '\n')
-            for i in range(N_tdeBHWD+N_tdeBHstar):
+            for i in range(N_tdeBHWD+N_tdeBHstar+N_tdeBBHstar):
                 f_tdes.write(str(tdes[i][ 0])+' '+str(tdes[i][ 1])+' '+str(tdes[i][ 2])+' '+str(tdes[i][ 3])+' '+\
                              str(tdes[i][ 4])+' '+str(tdes[i][ 5])+' '+str(tdes[i][ 6])+' '+str(tdes[i][ 7])+' '+\
                              str(tdes[i][ 8])+' '+str(tdes[i][ 9])+' '+str(tdes[i][10])+' '+str(tdes[i][11])+' '+\
