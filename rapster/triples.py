@@ -128,9 +128,14 @@ def evolve_triples(seed, t, z, zCl_form, triples, binaries, mBH, sBH, gBH, hBH, 
                 s_eff = (m0 * s0 * np.cos(theta0) + m1 * s1 * np.cos(theta1)) / (m0 + m1)
                 
                 if t_merge < lookback_interp(zCl_form): # check merger happens by redshift z=0 (today):
+
+                    # lookback time and redshift at ZLK merger:
+                    t_lb = lookback_interp(zCl_form) - t_merge  # lookback time remaining at merger
+                    z_merge = redshift_interp(t_lb) if t_lb >= 0.1 else 0.0  # merger redshift (0 if within 0.1 Myr of today)
+
                     # append merger:
                     mergers = np.append(mergers, [[seed, ind_in, 4, a_in, eMAX, m0, m1, s0, s1, g0, g1, theta0, theta1, dPhi, t_form_in, z_form_in, t_merge,
-                                                   redshift_interp(lookback_interp(zCl_form) - t_merge), m_rem, s_rem, g_rem, vGW_kick, s_eff, q, 2*v_star, h0, h1]], axis=0)
+                                                   z_merge, m_rem, s_rem, g_rem, vGW_kick, s_eff, q, 2*v_star, h0, h1]], axis=0)
                 
                 triples = np.delete(triples, i, axis=0)
 
