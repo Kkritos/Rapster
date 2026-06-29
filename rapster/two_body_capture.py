@@ -221,9 +221,14 @@ def two_body_capture(seed, t, dt, z, zCl_form, k_2cap, mBH_avg, binaries, mBH, s
                 # effective spin parameter:
                 s_eff = (m1 * s1 * np.cos(theta1) + m2 * s2 * np.cos(theta2)) / (m1 + m2)
                 
+                # merger time and redshift for 2-body GW capture:
+                t_merge = t + T_GW(m1, m2, sma, eccen)  # absolute merger time [Myr]
+                t_lb = lookback_interp(zCl_form) - t_merge  # lookback time remaining at merger
+                z_merge = redshift_interp(t_lb) if t_lb >= 0.1 else 0.0  # merger redshift (0 if within 0.1 Myr of today)
+
                 # append merger:
-                mergers = np.append(mergers, [[seed, ind, 2, sma, eccen, m1, m2, s1, s2, g1, g2, theta1, theta2, dPhi, t, z, t + T_GW(m1, m2, sma, eccen),
-                                               redshift_interp(lookback_interp(zCl_form) - t - T_GW(m1, m2, sma, eccen)), m_rem, s_rem, g_rem, vGW_kick, s_eff, q, 2*v_star, h1, h2]], axis=0)
+                mergers = np.append(mergers, [[seed, ind, 2, sma, eccen, m1, m2, s1, s2, g1, g2, theta1, theta2, dPhi, t, z, t_merge,
+                                               z_merge, m_rem, s_rem, g_rem, vGW_kick, s_eff, q, 2*v_star, h1, h2]], axis=0)
 
             else:
                 

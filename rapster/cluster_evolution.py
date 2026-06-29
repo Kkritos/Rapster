@@ -692,14 +692,14 @@ def form_binaries(state, config):
     N_BHsin = N_BH - 2*N_BBH - N_BHstar - 3*N_Triples
 
     # number of 3bbs:
-    k_3bb = np.min([poisson.rvs(mu=dt / t_3bb), int(N_BHsin / 3)])
+    k_3bb = np.min([poisson.rvs(mu=np.min([dt / t_3bb, 1e8])), int(N_BHsin / 3)])
 
     # 3bb formation:
     t, z, k_3bb, mBH_avg, binaries, mBH, sBH, gBH, hBH, vBH, N_3bb, N_BBH = three_body_binary(t, z, k_3bb, mBH_avg, binaries, mBH, sBH, gBH, hBH, vBH, N_3bb, N_BBH, random_pairing=config['random_pairing'])
 
     # number of 2-body captures:
     N_BHsin = N_BH - 2*N_BBH - N_BHstar - 3*N_Triples
-    k_2cap = np.min([poisson.rvs(mu=dt / t_2cap), int(N_BHsin / 2)])
+    k_2cap = np.min([poisson.rvs(mu=np.min([dt / t_2cap, 1e8])), int(N_BHsin / 2)])
 
     # 2-body capture(s):
     seed, t, dt, z, zCl_form, k_2cap, mBH_avg, binaries, mBH, sBH, gBH, hBH, vBH, v_star, N_2cap, N_BH, N_BBH, N_me, N_meRe, N_meEj, mergers = \
@@ -707,7 +707,7 @@ def form_binaries(state, config):
 
     # number of star-star -> BH-star exchanges:
     N_BHsin = N_BH - 2*N_BBH - N_BHstar - 3*N_Triples
-    k_ex1 = np.min([poisson.rvs(mu=dt / state['t_ex1']), int(N_BHsin)])
+    k_ex1 = np.min([poisson.rvs(mu=np.min([dt / state['t_ex1'], 1e8])), int(N_BHsin)])
 
     # star-star -> BH-star exchange(s):
     if k_ex1 > 0:
@@ -715,7 +715,7 @@ def form_binaries(state, config):
     
     # number of BH-star -> BH-BH exchanges:
     N_BHsin = N_BH - 2*N_BBH - N_BHstar - 3*N_Triples
-    k_ex2 = np.min([poisson.rvs(mu=dt / state['t_ex2']), int(N_BHsin), int(N_BHstar)])
+    k_ex2 = np.min([poisson.rvs(mu=np.min([dt / state['t_ex2'], 1e8])), int(N_BHsin), int(N_BHstar)])
 
     # BH-star -> BBH exchange(s):
     if k_ex2 > 0:
@@ -812,7 +812,9 @@ def evolve_interactions(state, config):
 
     # number of pair-pair interactions:
     dt = state['dt']
-    k_pp = np.min([poisson.rvs(mu=dt / t_pp), int(N_BHstar / 2)])
+    
+    # cap mu to avoid scipy Poisson overflow for extremely high interaction rates:
+    k_pp = np.min([poisson.rvs(mu=np.min([dt / t_pp, 1e8])), int(N_BHstar / 2)])
 
     # execute pair-pair interactions: two BH-star pairs form a new BBH:
     if k_pp>0:
@@ -978,7 +980,7 @@ def evolve_tdes(state, config):
     N_WD = N_WD + dN_WDdt * dt
 
     # Poisson number of BH-WD TDEs:
-    k_tdeBHWD = np.min([poisson.rvs(mu=dt*dN_tdeBHWDdt), int(N_BH-3*N_Triples), int(N_WD)]) if N_WD>0 else 0
+    k_tdeBHWD = np.min([poisson.rvs(mu=np.min([dt*dN_tdeBHWDdt, 1e8])), int(N_BH-3*N_Triples), int(N_WD)]) if N_WD>0 else 0
 
     # execute BH-WD tidal disruption events:
     if k_tdeBHWD > 0:
@@ -991,7 +993,7 @@ def evolve_tdes(state, config):
 
     # Poisson number of BH-star TDEs at this timestep:
     N_strs = Mcl/m_avg
-    k_tdeBHstar = np.min([poisson.rvs(mu=dt*dN_tdeBHstardt), int(N_BH-3*N_Triples), int(N_strs)]) if (N_BH>0)*(n_star>0) else 0
+    k_tdeBHstar = np.min([poisson.rvs(mu=np.min([dt*dN_tdeBHstardt, 1e8])), int(N_BH-3*N_Triples), int(N_strs)]) if (N_BH>0)*(n_star>0) else 0
 
     # execute BH-star tidal disruption events (micro-TDEs):
     if k_tdeBHstar > 0:
@@ -1282,6 +1284,7 @@ def write_output(state, config):
 
     N_tdeBHWD = state['N_tdeBHWD']
     N_tdeBHstar = state['N_tdeBHstar']
+    N_tdeBBHstar = state['N_tdeBBHstar']
     N_me = state['N_me']
     N_iter = state['N_iter']
     N_hardening = state['N_hardening']
@@ -1293,7 +1296,7 @@ def write_output(state, config):
         tdes_path = os.path.join(RESULTS_DIR, config['tdes_file'] + '.txt')
         with open(tdes_path, 'w') as f_tdes:
             f_tdes.write('# ' + ' '.join(tdes_keys) + '\n')
-            for i in range(N_tdeBHWD+N_tdeBHstar):
+            for i in range(N_tdeBHWD+N_tdeBHstar+N_tdeBBHstar):
                 f_tdes.write(str(tdes[i][ 0])+' '+str(tdes[i][ 1])+' '+str(tdes[i][ 2])+' '+str(tdes[i][ 3])+' '+\
                              str(tdes[i][ 4])+' '+str(tdes[i][ 5])+' '+str(tdes[i][ 6])+' '+str(tdes[i][ 7])+' '+\
                              str(tdes[i][ 8])+' '+str(tdes[i][ 9])+' '+str(tdes[i][10])+' '+str(tdes[i][11])+' '+\
