@@ -47,7 +47,7 @@ def StarStar_to_BHstar(seed, t, z, k_ex1, N_ex1, m_avg, mBH, sBH, gBH, hBH, ab, 
     @in m_max: max ZAMS star mass
     @in with_tdes: if =1 allow TDEs, else do not allow them
     @in f_accreted: fraction of the disrupted star accreted by the compact object
-    @in EoS: NS equation of state; a name registered in compact_accretion.EOS_TABLES
+    @in EoS: NS equation of state; 'APR' or 'AU'
 
     @out: all inputs
     """

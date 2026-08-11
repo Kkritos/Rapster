@@ -42,7 +42,7 @@ def BH_TidalDisruptions(seed, t, z, k_tde, N_tde, tde_type, m_avg, m_star, R_sta
     @in binaries: [ind, channel, a, e, m1, m2, s1, s2, g1, g2, t_form, z_form, Nex, h1, h2]
     @in pairs: [a, m, s, g, h]
     @in f_accreted: fraction of the disrupted star accreted
-    @in EoS: equation of state for neutron stars; either 'APR' or 'AU'
+    @in EoS: NS equation of state; a name registered in compact_accretion.EOS_TABLES
 
     @out: all inputs
     """
@@ -93,15 +93,8 @@ def BH_TidalDisruptions(seed, t, z, k_tde, N_tde, tde_type, m_avg, m_star, R_sta
             # direction of accretion:
             prograde = True if np.cos(iota)>0 else False
 
-            # define NS range (min/max masses):
-            if EoS=='APR':
-                M_NS_min = M_APR_min
-                M_NS_max = M_APR_max # TOV for APR
-            elif EoS=='AU':
-                M_NS_min = M_AU_min
-                M_NS_max = M_AU_max # TOV for AU
-            else: # nonexistent EoS string does not match 'APR' or 'AU'
-                sys.exit("Invalid EoS; please use 'APR' or 'AU'")
+            # maximum NS mass (TOV) for the chosen EoS:
+            M_NS_max = get_eos(EoS).M_TOV
 
             # nature of compact object:
             NS = True if m<M_NS_max else False
@@ -145,7 +138,7 @@ def try_BBH_star_disruption(rp, a, m1, m2, s1, s2, g1, g2, h1, h2, m_star, R_sta
     @in m_star: mass of the field star (Msun)
     @in R_star: radius of the field star (pc)
     @in f_accreted: fraction of disrupted star mass accreted
-    @in EoS: equation of state for neutron stars; either 'APR' or 'AU'
+    @in EoS: NS equation of state; a name registered in compact_accretion.EOS_TABLES
     @in seed, t, z: simulation seed, time, redshift
     @in tdes: tdes array [seed, t, z, type, mstar, Rstar, m_BH, s_BH, g_BH, r_t, r_p, beta, iota, r_mb, dm, s_new, v_rel, h_BH]
     @in m_avg: average stellar mass (Msun)
@@ -164,14 +157,8 @@ def try_BBH_star_disruption(rp, a, m1, m2, s1, s2, g1, g2, h1, h2, m_star, R_sta
         # pericenter is outside the binary's tidal radius: no disruption this passage.
         return False, m1, m2, s1, s2, h1, h2, tdes
 
-    # determine the neutron-star mass range for the chosen equation of state,
-    # needed by the spin-evolution routine to decide BH vs NS accretion physics:
-    if EoS=='APR':
-        M_NS_min = M_APR_min; M_NS_max = M_APR_max
-    elif EoS=='AU':
-        M_NS_min = M_AU_min; M_NS_max = M_AU_max
-    else: # invalid EoS string supplied by the user
-        sys.exit("Invalid EoS; please use 'APR' or 'AU'")
+    # maximum NS mass (TOV) for the chosen EoS:
+    M_NS_max = get_eos(EoS).M_TOV
 
     if rp > a:
         # CHANNEL A: "whole-binary" disruption (monopole regime, rp between a and r_t_bin).
