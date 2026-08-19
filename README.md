@@ -6,7 +6,7 @@ $\tt Rapster$ stands for $\rm RAPid\ cluSTER$ evolution.
 
 Author: Konstantinos Kritos <kkritos1@jhu.edu>
 
-Version: 2.10.3, June 29, 2026.
+Version: 2.10.3, August 19, 2026.
 (Thanks to Tousif Islam for helping modularize this repository!)
 
 ![LOGO](.assets/LOGO.png)
@@ -31,7 +31,7 @@ Version: 2.10.3, June 29, 2026.
 
 The repository provides the source code files for the current version in ``rapster/`` and all necessary data files in the ``Data/`` folder, for the rapid evolution of dense star cluster environments and the dynamical assembly of compact-object coalescences and tidal disruption events.
 
-The modeling accounts for the necessary physical processes governing the formation of compact-object binaries and cluster evolution, employing semi-analytic prescriptions described in Sec. 2 of [K. Kritos et al. PRD (2024)](https://arxiv.org/abs/2210.10055). This is our code paper, which we wrote together with Vladirim Strokov, Vishal Baibhav, and Emanuele Berti.
+The modeling accounts for the necessary physical processes governing the formation of compact-object binaries and cluster evolution, employing semi-analytic prescriptions described in Sec. 2 of [K. Kritos et al. PRD (2024)](https://arxiv.org/abs/2210.10055). This is our code paper, written with Vladimir Strokov, Vishal Baibhav, and Emanuele Berti.
 
 ##### Note:
 
@@ -65,7 +65,7 @@ The following Python packages are required to run the code:
 - $\tt scipy$ (=1.15.2)
 - $\tt pandas$ (=2.2.3)
 
-The code is tested with packages in the versions shown in parentheses above; however, other versions likely work as well.
+The code is tested with the package versions shown in parentheses above; however, other versions likely work as well.
 
 It is recommended that the user create and work in a local Python environment using Python >= 3.10 and install all the dependencies listed above.
 
@@ -311,8 +311,8 @@ b) Column description of evolution .txt file:
 | 25 | $k_{\rm 2,cap}$ | Number of 2-captures in current step |
 | 26 | $N_{\rm me}$ | Cumulative number of mergers |
 | 27 | $N_{\rm BBH}$ | Current number of BBHs |
-| 28 | $N_{\rm me,Re}$ | Cumulative number of ejected merger remnants |
-| 29 | $N_{\rm me,Ej}$ | Cumulative number of retained merger remnants |
+| 28 | $N_{\rm me,Re}$ | Cumulative number of retained merger remnants |
+| 29 | $N_{\rm me,Ej}$ | Cumulative number of ejected merger remnants |
 | 30 | $v_{\rm star}$ | Stellar velocity dispersion ($\rm km\ s^{-1}$) |
 | 31 | $v_{\rm BH}$ | BH velocity dispersion ($\rm km\ s^{-1}$) |
 | 32 | $n_{\rm h,BH}$ | Half-mass BH number density ($\rm pc^{-3}$) |
@@ -472,6 +472,6 @@ Feel free to contribute. Suggestions and pull requests are welcome :)
 <a name="thanks"></a>
 ### 10. Thank you
 
-Andrea Antonelli, Fabio Antonini, Dany Atallah, Muhsin Aljaf, Vishal Baibhav, Emanuele Berti, Mario Cadelano, Mark Cheung, Roberto Cotesta, Hector Cruz, Elena Di Biagio, Giacomo Fragione, Gabriele Franciolini, Rosanna Hagen, Thomas Helfer, Tousif Islam, Veome Kapil, Xiao-Xiao Kou, Kyle Kremer, Iason Krommydas, Miguel Martinez, Akshita Mittal, Rosalba Perna, Luca Reali, Carl Rodriguez, Sanika Khadkikar, Giada Caneva Santoro, Vladimir Strokov, Newlin Weatherford, Ilaria Usai.
+Andrea Antonelli, Fabio Antonini, Dany Atallah, Muhsin Aljaf, Vishal Baibhav, Emanuele Berti, Mario Cadelano, Mark Cheung, Roberto Cotesta, Hector Cruz, Elena Di Biagio, Giacomo Fragione, Gabriele Franciolini, Logan Good, Rosanna Hagen, Thomas Helfer, Tousif Islam, Veome Kapil, Xiao-Xiao Kou, Kyle Kremer, Iason Krommydas, Miguel Martinez, Akshita Mittal, Rosalba Perna, Luca Reali, Carl Rodriguez, Sanika Khadkikar, Giada Caneva Santoro, Vladimir Strokov, Newlin Weatherford, Ilaria Usai.
 
 
