@@ -465,7 +465,7 @@ $\tt Rapster$ has been used at least in the following works:
 <a name="reportingbugs"></a>
 ### 9. Reporting bugs
 
-If you find a bug in the code, don't hesitate to email us at kkritos1@jhu.edu with a description of the bug.
+If you find a bug in the code, don't hesitate to email us at kostkritos@gmail.com with a description of the bug.
 
 Feel free to contribute. Suggestions and pull requests are welcome :)
 
