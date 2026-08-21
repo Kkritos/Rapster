@@ -35,7 +35,6 @@ from .cluster_evolution import (
 from .plot_cluster import generate_all_plots
 from .analyze_cluster import analyze_cluster
 from .stellar_evolution import init_stellar_mass_sampler
-from .compact_accretion import EOS_TABLES
 
 class TeeStream:
     """Write to both a file and optionally to stdout.
@@ -106,7 +105,7 @@ def parse_args():
     parser.add_argument('-BOi', '--blackholes_out_file_indicator', type=int, metavar=' ', default=1, help='Export BH masses file (0 for no, 1 for yes)')
     parser.add_argument('-BOF', '--blackholes_out_file_name', type=str, metavar=' ', default='outputBHs', help='Name of .pkl file with the masses of all BHs in solar masses')
     parser.add_argument('-RP', '--remnant_mass_prescription', type=int, metavar=' ', default=1, help='Remnant mass prescription (0 for SEVN delayed, 1 for Fryer+2012 delayed, 2 for SEVN rapid, 3 for Fryer+2012 rapid)')
-    parser.add_argument('-NS', '--with_neutron_stars', type=int, metavar=' ', default=2, choices=[0, 1, 2, 3], help='include neutron stars (if =1 with monochromatic, =2 with bimodal or =3 with uniform mass distribution) else no (if =0)')
+    parser.add_argument('-NS', '--with_neutron_stars', type=int, metavar=' ', default=2, help='include neutron stars (if =1 with monochromatic or =2 with bimodal mass distribution) else no (if =0)')
     parser.add_argument('-WT', '--with_tdes', type=int, metavar=' ', default=1, help='include tdes (if =1) else no (if =0)')
     parser.add_argument('-Ti', '--tdes_file_indicator', type=int, metavar=' ', default=1, help='Export tdes file (0 for no, 1 for yes)')
     parser.add_argument('-TF', '--tdes_file_name', type=str, metavar=' ', default='tdes', help='Name of .txt file containing tde parameters')
@@ -121,7 +120,7 @@ def parse_args():
     parser.add_argument('-analyze', '--analyze_results', type=int, metavar=' ', default=0, help='Print analysis summary after simulation (0 for no, 1 for yes)')
     parser.add_argument('-fA', '--accreted_fraction', type=float, metavar=' ', default=0.5, help='Fraction of a disrupted star accreted by the compact object')
     parser.add_argument('-mb', '--mass_bias_power', type=float, metavar=' ', default=0.0, help='Mass bias power index p for drawing stars from IMF*m^p for TDEs')
-    parser.add_argument('-EoS', '--equation_of_state', type=str, metavar=' ', default='APR', choices=sorted(EOS_TABLES), help='Neutron Star equation of state; one of ' + ', '.join(sorted(EOS_TABLES)))
+    parser.add_argument('-EoS', '--equation_of_state', type=str, metavar=' ', default='APR', help='Neutron Star equation of state; either "APR" or "AU"')
     parser.add_argument('-RK', '--recoil_kick_model', type=int, metavar=' ', default=0, help='GW recoil kick model (0 for Gerosa & Kesden 2016, 1 for gwModel_kick_prec_flow from Islam & Wadekar 2025)')
 
     args = parser.parse_args()
