@@ -497,7 +497,7 @@ def compute_cluster_properties(state, config):
         na_BH = 0.0
 
     # stellar density updated:
-    n_star = n_star0 * (rh0 / rh)**3 * (Mcl / Mcl0)
+    n_star = n_star0 * (rh0 / rh)**3 * (Mcl / Mcl0) * (m_avg0 / m_avg)
 
     # half-mass volume:
     Vh = 4 * np.pi / 3 * rh**3
