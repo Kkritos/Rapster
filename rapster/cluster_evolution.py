@@ -1041,7 +1041,7 @@ def record_evolution(state):
     
     # unpack current state into local variables:
     seed = state['seed']; t = state['t']; z = state['z']; dt = state['dt']
-    m_avg = state['m_avg']; Mcl = state['Mcl']; rh = state['rh']
+    m_avg = state['m_avg']; Mcl = state['Mcl']; rh = state['rh']; M_gas = state['M_gas']
     R_gal = state['R_gal']; v_gal = state['v_gal']
     t_rlx = state['t_rlx']; tBH_rlx = state.get('tBH_rlx', 1e100)
     n_star = state['n_star']; N_BH = state['N_BH']
