@@ -72,6 +72,10 @@ def initialize_cluster(config):
     min_1g_bh_mass = config['min_1g_bh_mass']
     max_1g_bh_mass = config['max_1g_bh_mass']
     EoS = config['EoS']
+    SFE = config['SFE']
+    f_ge = config['f_ge']
+    c_s = config['c_s']
+    f_Edd = config['f_Edd']
 
     # initialize pseudo-random number generator:
     np.random.seed(seed)
@@ -89,9 +93,18 @@ def initialize_cluster(config):
     # initial average stellar mass:
     m_avg0 = m_avg
 
-    # initial cluster mass:
+    # initial cluster mass in stars:
     Mcl = N * m_avg
-    Mcl0 = Mcl
+    Mcl0 = Mcl # this includes only the mass in stars (not gas)
+
+    # initial residual gas mass from star formation efficiency:
+    M_gas0 = (1 - SFE) / SFE * Mcl0
+    M_gas = M_gas0
+
+    # initial crossing time (embedded, total mass) and gas expulsion timescale:
+    v_dyn0 = np.sqrt(0.4 * G_Newton * (Mcl0 + M_gas0) / rh0)
+    t_cross0 = 2 * rh0 / v_dyn0
+    t_ge = f_ge * t_cross0
 
     # initial galactocentric radius:
     R_gal0 = R_gal
@@ -276,7 +289,7 @@ def initialize_cluster(config):
     pairs = np.zeros(shape=(1, 5))
     triples = np.zeros(shape=(1, 24))
     mergers = np.zeros(shape=(1, 27))
-    evolution = [[0.0] * 70]   # list-accumulated (one placeholder row); -> array at write_output
+    evolution = [[0.0] * 71]   # list-accumulated (one placeholder row); -> array at write_output
     hardening = [[0.0] * 12]   # list-accumulated (one placeholder row); -> array at write_output
     tdes = np.zeros(shape=(1, 18))
 
@@ -288,6 +301,7 @@ def initialize_cluster(config):
         'Mcl': Mcl, 'Mcl0': Mcl0, 'rh': rh, 'rh0': rh0, 'R_gal': R_gal, 'R_gal0': R_gal0,
         'v_gal': v_gal, 'n_star': n_star, 'n_star0': n_star0,
         'm_avg': m_avg, 'm_avg0': m_avg0, 'v_star': v_star,
+        'M_gas': M_gas, 'M_gas0': M_gas0, 't_ge': t_ge,
         'Kroupa_norm': Kroupa_norm, 'Nb': Nb, 'ab': ab,
         't_cc': t_cc, 't_rlx': 0.0,
         'N': N, 'Z': Z,
@@ -1070,7 +1084,7 @@ def record_evolution(state):
                                        nh_BH, nc_BH, na_BH, N_3bb, N_2cap, N_3cap, N_BHej, N_BBHej, N_dis, N_ex, t_bb, N_bb,
                                        N_meFi, N_me2b, t_ex1, t_ex2, k_ex1, k_ex2, N_ex1, N_ex2, N_BHstar, t_pp, k_pp, N_pp, 2*v_star,
                                        2*vBH, N_Triples, N_ZLK, N_WD, v_WD, k_tdeBHWD, N_tdeBHWD, dN_WDformdt, dN_WDevdt, dN_tdeBHWDdt, k_tdeBHstar,
-                                       dN_tdeBHstardt, N_tdeBHstar, N_tdeBBHstar])
+                                       dN_tdeBHstardt, N_tdeBHstar, N_tdeBBHstar, M_gas])
 
 def compute_external_params(state, config):
     """Compute external/environmental parameters for the cluster.
@@ -1127,6 +1141,7 @@ def update_cluster(state, config):
     zCl_form = state['zCl_form']
     xi_e = state['xi_e']
     t_df = state['t_df']
+    M_gas = state['M_gas']; t_ge = state['t_ge']
 
     # average mass evolution:
     if t>t_sev:
@@ -1164,6 +1179,9 @@ def update_cluster(state, config):
     # cluster mass update:
     Mcl = Mcl + dMcl
 
+    # gas expulsion (exact exponential drain on t_ge):
+    M_gas = M_gas * np.exp(-dt / t_ge)
+
     if Mcl<0:
         print('CLUSTER DISSOLVED')
         state['Mcl'] = Mcl
@@ -1194,6 +1212,7 @@ def update_cluster(state, config):
     state['N_iter'] = state['N_iter'] + 1
     state['t'] = t; state['z'] = z; state['dt'] = dt
     state['Mcl'] = Mcl; state['rh'] = rh; state['R_gal'] = R_gal
+    state['M_gas'] = M_gas
     state['m_avg'] = m_avg
 
     return True
@@ -1329,7 +1348,7 @@ def write_output(state, config):
                                   str(evolution[i][48])+' '+str(evolution[i][49])+' '+str(evolution[i][50])+' '+str(evolution[i][51])+' '+str(evolution[i][52])+' '+str(evolution[i][53])+' '+\
                                   str(evolution[i][54])+' '+str(evolution[i][55])+' '+str(evolution[i][56])+' '+str(evolution[i][57])+' '+str(evolution[i][58])+' '+str(evolution[i][59])+' '+\
                                   str(evolution[i][60])+' '+str(evolution[i][61])+' '+str(evolution[i][62])+' '+str(evolution[i][63])+' '+str(evolution[i][64])+' '+str(evolution[i][65])+' '+\
-                                  str(evolution[i][66])+' '+str(evolution[i][67])+' '+str(evolution[i][68])+' '+str(evolution[i][69]))
+                                  str(evolution[i][66])+' '+str(evolution[i][67])+' '+str(evolution[i][68])+' '+str(evolution[i][69])+' '+str(evolution[i][70]))
                 f_evolution.write('\n')
 
     if config['Hi']==1:

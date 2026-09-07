@@ -130,6 +130,9 @@ def parse_args():
 
     args = parser.parse_args()
 
+    if not (0 < args.star_formation_efficiency <= 1):
+        parser.error('star_formation_efficiency (-sfe) must be in (0, 1]')
+
     config = {
         'N': args.number,
         'rh': args.half_mass_radius,
