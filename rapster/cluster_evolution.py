@@ -359,6 +359,7 @@ def compute_cluster_properties(state, config):
     Mcl = state['Mcl']
     rh = state['rh']
     m_avg = state['m_avg']
+    m_avg0 = state['m_avg0']
     Nb = state['Nb']
     ab = state['ab']
     n_star0 = state['n_star0']
