@@ -114,7 +114,7 @@ def initialize_cluster(config):
         / integrate.quad(IMF_kroupa, m_min, m_max)[0] / m_avg**(5/2)
 
     # initial relaxation timescale:
-    t_rlx0 = t_relax(Mcl0, rh0, m_avg, psi0, np.log(lc * N))
+    t_rlx0 = t_relax(Mcl0 + M_gas0, rh0, m_avg, psi0, np.log(lc * N))
 
     # core collapse timescale:
     t_cc = k_cc * t_rlx0
@@ -360,6 +360,7 @@ def compute_cluster_properties(state, config):
     rh = state['rh']
     m_avg = state['m_avg']
     m_avg0 = state['m_avg0']
+    M_gas = state['M_gas']
     Nb = state['Nb']
     ab = state['ab']
     n_star0 = state['n_star0']
@@ -509,7 +510,7 @@ def compute_cluster_properties(state, config):
         nb = 0.0
 
     # relaxation timescale:
-    t_rlx = t_relax(Mcl, rh, m_avg, psi, logLcl)
+    t_rlx = t_relax(Mcl + M_gas, rh, m_avg, psi, logLcl)
 
     # BH relaxation timescale:
     if i_aux1==1:
@@ -1162,17 +1163,27 @@ def update_cluster(state, config):
     # total mass loss:
     dMcl = dMcl_sev + dMcl_rlx
 
-    # stellar evolution adiabatic expansion:
-    drh_sev = - dMcl_sev * rh / Mcl
+    # total dynamical mass (stars + gas) — sets potential-dependent responses:
+    M_dyn = Mcl + M_gas
 
-    # expansion due to relaxation:
+    # gas expelled this step (exact exponential):
+    M_gas_new = M_gas * np.exp(-dt / t_ge)
+    dM_gas = M_gas_new - M_gas
+
+    # stellar-wind adiabatic expansion (total potential):
+    drh_sev = - dMcl_sev * rh / M_dyn
+
+    # gas-expulsion adiabatic expansion (Hills, total potential):
+    drh_gas = - dM_gas * rh / M_dyn
+
+    # expansion due to relaxation (balanced +2 term uses stellar mass):
     if t>t_cc:
         drh_rlx = zeta * rh * dt / t_rlx + 2 * dMcl_rlx * rh / Mcl
     else:
         drh_rlx = 0.0
 
     # total expansion:
-    drh = drh_sev + drh_rlx
+    drh = drh_sev + drh_rlx + drh_gas
 
     # galactocentric radius step:
     dR_gal = - R_gal * dt / t_df
