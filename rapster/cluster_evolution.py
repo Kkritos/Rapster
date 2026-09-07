@@ -1145,7 +1145,7 @@ def update_cluster(state, config):
 
     # average mass evolution:
     if t>t_sev:
-        m_avg = m_avg0 * (t / t_sev)**nu_sev
+        m_avg = m_avg0 * (t / t_sev)**(-nu_sev)
     else:
         m_avg = m_avg0
 
