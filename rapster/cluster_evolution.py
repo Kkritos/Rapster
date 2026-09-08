@@ -100,12 +100,14 @@ def initialize_cluster(config):
     # initial residual gas mass from star formation efficiency:
     M_gas0 = (1 - SFE) / SFE * Mcl0
     M_gas = M_gas0
-    M_gas_BHform = M_gas0 * np.exp(- tBH_form / t_ge)   # gas remaining at BH formation; reused for NSs as an upper bound
 
     # initial crossing time (embedded, total mass) and gas expulsion timescale:
     v_dyn0 = np.sqrt(0.4 * G_Newton * (Mcl0 + M_gas0) / rh0)
     t_cross0 = 2 * rh0 / v_dyn0
     t_ge = f_ge * t_cross0
+
+    # gas remaining at BH formation; reused for NSs as an upper bound
+    M_gas_BHform = M_gas0 * np.exp(- tBH_form / t_ge)
 
     # initial galactocentric radius:
     R_gal0 = R_gal
