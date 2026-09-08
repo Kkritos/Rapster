@@ -100,6 +100,7 @@ def initialize_cluster(config):
     # initial residual gas mass from star formation efficiency:
     M_gas0 = (1 - SFE) / SFE * Mcl0
     M_gas = M_gas0
+    M_gas_BHform = M_gas0 * np.exp(- tBH_form / t_ge)   # gas remaining at BH formation; reused for NSs as an upper bound
 
     # initial crossing time (embedded, total mass) and gas expulsion timescale:
     v_dyn0 = np.sqrt(0.4 * G_Newton * (Mcl0 + M_gas0) / rh0)
@@ -188,7 +189,6 @@ def initialize_cluster(config):
             vSN_kick = np.vectorize(get_SN_kick)(mBH, wSN_kick)
 
         # retain BHs with SN kick < escape velocity:
-        M_gas_BHform = M_gas0 * np.exp(- tBH_form / t_ge) # gas remained when BHs form
         mBH = mBH[vSN_kick < v_esc(Mcl + M_gas_BHform, rh)]
 
     else:
