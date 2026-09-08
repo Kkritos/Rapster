@@ -188,7 +188,8 @@ def initialize_cluster(config):
             vSN_kick = np.vectorize(get_SN_kick)(mBH, wSN_kick)
 
         # retain BHs with SN kick < escape velocity:
-        mBH = mBH[vSN_kick < v_esc(Mcl + M_gas, rh)]
+        M_gas_BHform = M_gas0 * np.exp(- tBH_form / t_ge) # gas remained when BHs form
+        mBH = mBH[vSN_kick < v_esc(Mcl + M_gas_BHform, rh)]
 
     else:
         # For BMD=1,2: run Kroupa path to determine N_BH, then replace masses.
@@ -225,7 +226,7 @@ def initialize_cluster(config):
         # stellar progenitor or CO core mass to compute the fallback fraction from.
         # Momentum-conservation kicks only depend on the BH mass, so they apply regardless.
         vSN_kick = np.vectorize(get_SN_kick)(mBH, wSN_kick)
-        mBH = mBH[vSN_kick < v_esc(Mcl + M_gas, rh)]
+        mBH = mBH[vSN_kick < v_esc(Mcl + M_gas_BHform, rh)]
 
     # optionally override BH masses from external file:
     if Bi==1:
@@ -246,7 +247,7 @@ def initialize_cluster(config):
         f_NS_form = Kroupa_norm*integrate.quad(IMF_kroupa, 8, 18)[0]
         N_NS_form = int(f_NS_form*N)
         v_NS_natal = maxwell.rvs(loc=0, scale=np.sqrt(3)*wSN_kick, size=N_NS_form)
-        N_NS_ret = v_NS_natal[v_NS_natal < v_esc(Mcl + M_gas, rh)].size
+        N_NS_ret = v_NS_natal[v_NS_natal < v_esc(Mcl + M_gas_BHform, rh)].size
 
         if N_NS_ret > 0:
             if with_NSs==1:
