@@ -35,7 +35,7 @@ from .cluster_evolution import (
 from .plot_cluster import generate_all_plots
 from .analyze_cluster import analyze_cluster
 from .stellar_evolution import init_stellar_mass_sampler
-from .compact_accretion import EOS_TABLES
+from .compact_accretion import EOS_TABLES, accrete_gas
 
 class TeeStream:
     """Write to both a file and optionally to stdout.
@@ -246,6 +246,9 @@ def main():
 
         # append evolution record:
         record_evolution(state)
+
+        # gas accretion onto compact objects (drains the gas reservoir):
+        accrete_gas(state, config)
 
         # cluster structural evolution (mass loss, expansion, time update):
         keep_going = update_cluster(state, config)
