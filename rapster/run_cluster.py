@@ -124,7 +124,7 @@ def parse_args():
     parser.add_argument('-EoS', '--equation_of_state', type=str, metavar=' ', default='APR', choices=sorted(EOS_TABLES), help='Neutron Star equation of state; one of ' + ', '.join(sorted(EOS_TABLES)))
     parser.add_argument('-RK', '--recoil_kick_model', type=int, metavar=' ', default=0, help='GW recoil kick model (0 for Gerosa & Kesden 2016, 1 for gwModel_kick_prec_flow from Islam & Wadekar 2025)')
     parser.add_argument('-sfe', '--star_formation_efficiency', type=float, metavar=' ', default=1.0, help='Star formation efficiency epsilon in (0,1]; sets initial residual gas mass. Default 1.0 = no gas (recovers gas-free Rapster)')
-    parser.add_argument('-fge', '--gas_expulsion_tcross', type=float, metavar=' ', default=2.0, help='Gas expulsion timescale in units of the initial crossing time')
+    parser.add_argument('-fge', '--gas_expulsion_tcross', type=float, metavar=' ', default=5.0, help='Gas expulsion timescale in units of the initial crossing time')
     parser.add_argument('-fEdd', '--eddington_ratio_cap', type=float, metavar=' ', default=1.0, help='Eddington ratio ceiling for gas accretion onto compact objects (1.0 = hard Eddington cap)')
     parser.add_argument('-cs', '--gas_sound_speed', type=float, metavar=' ', default=10.0, help='Gas sound speed [km/s]')
 

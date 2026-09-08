@@ -247,6 +247,9 @@ def initialize_cluster(config):
         f_NS_form = Kroupa_norm*integrate.quad(IMF_kroupa, 8, 18)[0]
         N_NS_form = int(f_NS_form*N)
         v_NS_natal = maxwell.rvs(loc=0, scale=np.sqrt(3)*wSN_kick, size=N_NS_form)
+        
+        # using tBH_form as a lower bound on NS formation time (=> gas upper bound);
+        # add a tNS_form (~15-25 Myr) for adiabatic (large f_ge) runs where it matters
         N_NS_ret = v_NS_natal[v_NS_natal < v_esc(Mcl + M_gas_BHform, rh)].size
 
         if N_NS_ret > 0:
