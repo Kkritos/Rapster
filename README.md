@@ -228,12 +228,12 @@ To run the notebook, open JupyterLab:
 > jupyter-lab &
 
 ##### Suggestion:
-Using different seed values yields different system realizations under the same initial conditions. Passing the argument ``$RANDOM`` in the -S flag (capitalized ``S`` for the seed flag, lowercase ``s`` for the spin flag) simulates the star cluster with a pseudo-randomly generated number. Notice that this syntax works only in the bash environment.
+Different seed values yield different system realizations under the same initial conditions. Passing the argument ``$RANDOM`` in the -S flag (capitalized ``S`` for the seed flag, lowercase ``s`` for the spin flag) simulates the star cluster with a pseudo-randomly generated number. This syntax works only in the bash environment.
 
 <a name="outputfiles"></a>
 ### 6. Output files:
 
-At the end of each simulation, the code generates by default four .txt and one .pkl file: one with information about all dynamical mergers that took place during the simulation; a second file that keeps track of time-dependent quantities during the evolution; a third file that stores information about the hardening evolution of each BBH; a fourth file that includes properties of all TDEs that occured during the simulation; and finally, a file with the properties of all BHs in the cluster at each timestep.
+At the end of each simulation, the code generates by default four .txt and one .pkl file: one with information about all dynamical mergers that took place during the simulation; a second file that keeps track of time-dependent quantities during the evolution; a third file that stores information about the hardening evolution of each BBH; a fourth file that includes properties of all TDEs that occurred during the simulation; and finally, a file with the properties of all BHs in the cluster at each timestep.
 
 All output files are exported in a ``<Results>/`` folder in the current directory where the code has been run.
 
@@ -466,12 +466,12 @@ $\tt Rapster$ has been used at least in the following works:
 
 - [K. Kritos, D. Wadekar, E. Berti (2026)](https://arxiv.org/abs/2605.21593)
 
-- [K. Kritos, R. Perna, F. Iacovelli, E. Berti (2026, to appear)]
+- [K. Kritos, F. Iacovelli, R. Perna, E. Berti (2026, to appear)]
 
 <a name="reportingbugs"></a>
 ### 9. Reporting bugs
 
-If you find a bug in the code, don't hesitate to email us at kostkritos@gmail.com with a description of the bug.
+If you find a bug in the code, email us at konstantinos.kritos@stonybrook.edu with a description of the bug.
 
 Feel free to contribute. Suggestions and pull requests are welcome :)
 
