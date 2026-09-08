@@ -651,4 +651,65 @@ def evolve_spin_during_accretion(Mi, Mf, NS, f=None, chi=0.0, dM=1e-3, eos='APR'
         'chiK': np.array([chiK]),
     }
 
+def radiative_efficiency(m, chi, is_NS, eos):
+    """eta = 1 - E_isco using the object's spin magnitude (prograde disk). Spin not evolved."""
+    if is_NS:
+        R = np.interp(m, eos.M, eos.R)                    # NS radius [km]
+        f = f_from_chi(m, chi, R=R, NS=True)              # spin freq [Hz] from chi
+        return 1.0 - E_isco(m, NS=True, R=R, f=f)
+    return 1.0 - E_isco(m, NS=False, chi=chi)
+
+
+def gas_accretion_rate(m, rho_gas, v_eff2, eta, f_Edd, lam=1.0):
+    """Three-way-min gas accretion rate [Msun/Myr]: Bondi, dynamical, Eddington.
+    Rapster units (Msun, pc, Myr, km/s; G_Newton=1/232). Vectorized over m/eta."""
+    v_eff3    = v_eff2**1.5
+    bondi     = 4*np.pi*lam*G_Newton**2 * m**2 * rho_gas / v_eff3
+    dynamical = v_eff3 / G_Newton
+    eddington = f_Edd * m / (eta * t_Edd)
+    return np.minimum(np.minimum(bondi, dynamical), eddington)
+
+
+def accrete_gas(state, config):
+    """Grow compact-object masses (singles/binaries/pairs/triples; BHs+NSs) by gas
+    accretion using each object's spin for the efficiency, and drain the reservoir.
+    Mass-only (spin not evolved)."""
+    M_gas = state['M_gas']; dt = state['dt']
+    if M_gas <= 0 or dt <= 0:
+        return
+    rh = state['rh']; vBH = state['vBH']
+    c_s = config['c_s']; f_Edd = config['f_Edd']
+    eos = get_eos(config['EoS']); M_TOV = eos.M_TOV
+
+    rho_gas = 3*M_gas / (8*np.pi*rh**3)                   # mean within r_h [Msun/pc^3]
+    v_eff2  = c_s**2 + vBH**2
+
+    binaries = state['binaries']; pairs = state['pairs']; triples = state['triples']
+    mass_cols = [state['mBH'], binaries[:, 4], binaries[:, 5], pairs[:, 1],
+                 triples[:, 4], triples[:, 5], triples[:, 6]]
+    spin_cols = [state['sBH'], binaries[:, 6], binaries[:, 7], pairs[:, 2],
+                 triples[:, 7], triples[:, 8], triples[:, 9]]
+
+    dms = []
+    for m, sp in zip(mass_cols, spin_cols):
+        dm = np.zeros_like(m, dtype=float)
+        valid = m > 0
+        if valid.any():
+            mv = m[valid]; sv = np.abs(sp[valid]); is_NS = mv < M_TOV
+            eta = np.array([radiative_efficiency(mv[i], sv[i], is_NS[i], eos)
+                            for i in range(mv.size)])
+            dm[valid] = gas_accretion_rate(mv, rho_gas, v_eff2, eta, f_Edd) * dt
+        dms.append(dm)
+
+    total = float(sum(d.sum() for d in dms))
+    if total > M_gas and total > 0:                       # conserve: can't accrete more than exists
+        dms = [d*(M_gas/total) for d in dms]; total = M_gas
+
+    state['mBH']   = mass_cols[0] + dms[0]
+    binaries[:, 4] += dms[1]; binaries[:, 5] += dms[2]
+    pairs[:, 1]    += dms[3]
+    triples[:, 4]  += dms[4]; triples[:, 5] += dms[5]; triples[:, 6] += dms[6]
+    state['binaries'] = binaries; state['pairs'] = pairs; state['triples'] = triples
+    state['M_gas'] = M_gas - total
+
 # End of file.
