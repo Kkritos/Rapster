@@ -378,7 +378,7 @@ c) Column description of hardening .txt file:
 | 12 | $N_{\rm ex}$ | Number of BBH-BH exchanges |
 
 ##### Note:
-Condition or binary status (second to last column of hardening file):
+Condition or binary status (second-to-last column of hardening file):
 - ``0``: BBH available to evolve (see the flowchart of our algorithm in Fig.3 of [K. Kritos et al. (2022)](https://arxiv.org/abs/2210.10055))
 - ``1``: Local time exceeds global time
 - ``2``: 2-body merger (the BBH hardens and merges in the cluster after entering the GW regime)
@@ -427,11 +427,11 @@ e) The outputBHs.pkl file (if exported) contains the properties of all BHs in th
 <a name="applicationsofthecode"></a>
 ### 7. Applications of the code
 
-The code can be useful when executed multiple times, for instance, when simulating a set of clusters and generating a population of dynamically formed BBH mergers. If the same initial conditions are used, then run multiple realizations by changing the seed number each time.
+The code can be useful when run multiple times, for instance, to simulate a set of clusters and generate a population of dynamically formed BBH mergers. If you use the same initial conditions, run multiple realizations by changing the seed each time.
 
 Although the program is not computationally expensive (we have tested it on a laptop that can generate a few binary black hole mergers per second), independent parallelization is still encouraged when simulating many star clusters to improve efficiency.
 
-The code relies on the theory by Breen & Heggie to evolve the cluster. This theory can generally be trusted for clusters with more than 40 BHs. To extrapolate to lower-number systems, we fix the Coulomb logarithm of the BH subcluster. Moreover, clusters are evolved in the Newtonian regime, which is valid as long as the compactness is much smaller than $GM_{\rm cl}/(r_{\rm h}c^2)$. If a massive BH seed is assumed, it is recommended that a mass of more than $2500 M_\odot (m_{\rm BH} / 10  M_\odot )(N_{\rm BH}/10^4)^{2/3}$, as the heating mechanism can be different from what the theory by Breen & Heggie assumes. A word of caution: even if this condition is satisfied at $t=0$, the massive BH may grow beyond that point during the simulation.
+The code uses the theory of Breen & Heggie to evolve the cluster. This theory is generally reliable for clusters with more than 40 BHs. To extrapolate to lower-number systems, we fix the Coulomb logarithm of the BH subcluster. Moreover, clusters are evolved in the Newtonian regime, which is valid as long as the compactness is much smaller than $GM_{\rm cl}/(r_{\rm h}c^2)$. If a massive BH seed is assumed, it is recommended that the mass be more than $2500 M_\odot (m_{\rm BH} / 10  M_\odot )(N_{\rm BH}/10^4)^{2/3}$, as the heating mechanism can be different from what the theory by Breen & Heggie assumes. A word of caution: even if this condition is satisfied at $t=0$, the massive BH may grow beyond that point during the simulation.
 
 <a name="citingthiswork"></a>
 ### 8. Citing this work
@@ -466,12 +466,14 @@ $\tt Rapster$ has been used at least in the following works:
 
 - [K. Kritos, D. Wadekar, E. Berti (2026)](https://arxiv.org/abs/2605.21593)
 
+-[R. O'Shaughnessy, R. Mechum, M. Qazalbash, Z. Rosenberg, M. Zeeshan (2026)](https://arxiv.org/abs/2609.05996)
+
 - [K. Kritos, F. Iacovelli, R. Perna, E. Berti (2026, to appear)]
 
 <a name="reportingbugs"></a>
 ### 9. Reporting bugs
 
-If you find a bug in the code, email us at konstantinos.kritos@stonybrook.edu with a description of the bug.
+If you find a bug in the code, email us at konstantinos.kritos@stonybrook.edu with a description.
 
 Feel free to contribute. Suggestions and pull requests are welcome :)
 
