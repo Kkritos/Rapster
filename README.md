@@ -466,7 +466,7 @@ $\tt Rapster$ has been used at least in the following works:
 
 - [K. Kritos, D. Wadekar, E. Berti (2026)](https://arxiv.org/abs/2605.21593)
 
--[R. O'Shaughnessy, R. Mechum, M. Qazalbash, Z. Rosenberg, M. Zeeshan (2026)](https://arxiv.org/abs/2609.05996)
+- [R. O'Shaughnessy, R. Mechum, M. Qazalbash, Z. Rosenberg, M. Zeeshan (2026)](https://arxiv.org/abs/2609.05996)
 
 - [K. Kritos, F. Iacovelli, R. Perna, E. Berti (2026, to appear)]
 
