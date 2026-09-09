@@ -35,7 +35,7 @@ from .cluster_evolution import (
 from .plot_cluster import generate_all_plots
 from .analyze_cluster import analyze_cluster
 from .stellar_evolution import init_stellar_mass_sampler
-from .compact_accretion import EOS_TABLES
+from .compact_accretion import EOS_TABLES, accrete_gas
 
 class TeeStream:
     """Write to both a file and optionally to stdout.
@@ -123,8 +123,15 @@ def parse_args():
     parser.add_argument('-mb', '--mass_bias_power', type=float, metavar=' ', default=0.0, help='Mass bias power index p for drawing stars from IMF*m^p for TDEs')
     parser.add_argument('-EoS', '--equation_of_state', type=str, metavar=' ', default='APR', choices=sorted(EOS_TABLES), help='Neutron Star equation of state; one of ' + ', '.join(sorted(EOS_TABLES)))
     parser.add_argument('-RK', '--recoil_kick_model', type=int, metavar=' ', default=0, help='GW recoil kick model (0 for Gerosa & Kesden 2016, 1 for gwModel_kick_prec_flow from Islam & Wadekar 2025)')
+    parser.add_argument('-sfe', '--star_formation_efficiency', type=float, metavar=' ', default=1.0, help='Star formation efficiency epsilon in (0,1]; sets initial residual gas mass. Default 1.0 = no gas (recovers gas-free Rapster)')
+    parser.add_argument('-fge', '--gas_expulsion_tcross', type=float, metavar=' ', default=5.0, help='Gas expulsion timescale in units of the initial crossing time')
+    parser.add_argument('-fEdd', '--eddington_ratio_cap', type=float, metavar=' ', default=1.0, help='Eddington ratio ceiling for gas accretion onto compact objects (1.0 = hard Eddington cap)')
+    parser.add_argument('-cs', '--gas_sound_speed', type=float, metavar=' ', default=10.0, help='Gas sound speed [km/s]')
 
     args = parser.parse_args()
+
+    if not (0 < args.star_formation_efficiency <= 1):
+        parser.error('star_formation_efficiency (-sfe) must be in (0, 1]')
 
     config = {
         'N': args.number,
@@ -174,6 +181,10 @@ def parse_args():
         'mass_bias_power': args.mass_bias_power,
         'EoS': args.equation_of_state,
         'recoil_kick_model': args.recoil_kick_model,
+        'SFE': args.star_formation_efficiency,
+        'f_ge': args.gas_expulsion_tcross,
+        'f_Edd': args.eddington_ratio_cap,
+        'c_s': args.gas_sound_speed,
     }
 
     return config
@@ -235,6 +246,9 @@ def main():
 
         # append evolution record:
         record_evolution(state)
+
+        # gas accretion onto compact objects (drains the gas reservoir):
+        accrete_gas(state, config)
 
         # cluster structural evolution (mass loss, expansion, time update):
         keep_going = update_cluster(state, config)

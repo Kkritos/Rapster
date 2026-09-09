@@ -72,6 +72,10 @@ def initialize_cluster(config):
     min_1g_bh_mass = config['min_1g_bh_mass']
     max_1g_bh_mass = config['max_1g_bh_mass']
     EoS = config['EoS']
+    SFE = config['SFE']
+    f_ge = config['f_ge']
+    c_s = config['c_s']
+    f_Edd = config['f_Edd']
 
     # initialize pseudo-random number generator:
     np.random.seed(seed)
@@ -89,9 +93,21 @@ def initialize_cluster(config):
     # initial average stellar mass:
     m_avg0 = m_avg
 
-    # initial cluster mass:
+    # initial cluster mass in stars:
     Mcl = N * m_avg
-    Mcl0 = Mcl
+    Mcl0 = Mcl # this includes only the mass in stars (not gas)
+
+    # initial residual gas mass from star formation efficiency:
+    M_gas0 = (1 - SFE) / SFE * Mcl0
+    M_gas = M_gas0
+
+    # initial crossing time (embedded, total mass) and gas expulsion timescale:
+    v_dyn0 = np.sqrt(0.4 * G_Newton * (Mcl0 + M_gas0) / rh0)
+    t_cross0 = 2 * rh0 / v_dyn0
+    t_ge = f_ge * t_cross0
+
+    # gas remaining at BH formation; reused for NSs as an upper bound
+    M_gas_BHform = M_gas0 * np.exp(- tBH_form / t_ge)
 
     # initial galactocentric radius:
     R_gal0 = R_gal
@@ -101,7 +117,7 @@ def initialize_cluster(config):
         / integrate.quad(IMF_kroupa, m_min, m_max)[0] / m_avg**(5/2)
 
     # initial relaxation timescale:
-    t_rlx0 = t_relax(Mcl0, rh0, m_avg, psi0, np.log(lc * N))
+    t_rlx0 = t_relax(Mcl0 + M_gas0, rh0, m_avg, psi0, np.log(lc * N))
 
     # core collapse timescale:
     t_cc = k_cc * t_rlx0
@@ -175,7 +191,7 @@ def initialize_cluster(config):
             vSN_kick = np.vectorize(get_SN_kick)(mBH, wSN_kick)
 
         # retain BHs with SN kick < escape velocity:
-        mBH = mBH[vSN_kick < v_esc(Mcl, rh)]
+        mBH = mBH[vSN_kick < v_esc(Mcl + M_gas_BHform, rh)]
 
     else:
         # For BMD=1,2: run Kroupa path to determine N_BH, then replace masses.
@@ -212,7 +228,7 @@ def initialize_cluster(config):
         # stellar progenitor or CO core mass to compute the fallback fraction from.
         # Momentum-conservation kicks only depend on the BH mass, so they apply regardless.
         vSN_kick = np.vectorize(get_SN_kick)(mBH, wSN_kick)
-        mBH = mBH[vSN_kick < v_esc(Mcl, rh)]
+        mBH = mBH[vSN_kick < v_esc(Mcl + M_gas_BHform, rh)]
 
     # optionally override BH masses from external file:
     if Bi==1:
@@ -233,7 +249,10 @@ def initialize_cluster(config):
         f_NS_form = Kroupa_norm*integrate.quad(IMF_kroupa, 8, 18)[0]
         N_NS_form = int(f_NS_form*N)
         v_NS_natal = maxwell.rvs(loc=0, scale=np.sqrt(3)*wSN_kick, size=N_NS_form)
-        N_NS_ret = v_NS_natal[v_NS_natal < v_esc(Mcl, rh)].size
+        
+        # using tBH_form as a lower bound on NS formation time (=> gas upper bound);
+        # add a tNS_form (~15-25 Myr) for adiabatic (large f_ge) runs where it matters
+        N_NS_ret = v_NS_natal[v_NS_natal < v_esc(Mcl + M_gas_BHform, rh)].size
 
         if N_NS_ret > 0:
             if with_NSs==1:
@@ -276,7 +295,7 @@ def initialize_cluster(config):
     pairs = np.zeros(shape=(1, 5))
     triples = np.zeros(shape=(1, 24))
     mergers = np.zeros(shape=(1, 27))
-    evolution = [[0.0] * 70]   # list-accumulated (one placeholder row); -> array at write_output
+    evolution = [[0.0] * 71]   # list-accumulated (one placeholder row); -> array at write_output
     hardening = [[0.0] * 12]   # list-accumulated (one placeholder row); -> array at write_output
     tdes = np.zeros(shape=(1, 18))
 
@@ -288,6 +307,7 @@ def initialize_cluster(config):
         'Mcl': Mcl, 'Mcl0': Mcl0, 'rh': rh, 'rh0': rh0, 'R_gal': R_gal, 'R_gal0': R_gal0,
         'v_gal': v_gal, 'n_star': n_star, 'n_star0': n_star0,
         'm_avg': m_avg, 'm_avg0': m_avg0, 'v_star': v_star,
+        'M_gas': M_gas, 'M_gas0': M_gas0, 't_ge': t_ge,
         'Kroupa_norm': Kroupa_norm, 'Nb': Nb, 'ab': ab,
         't_cc': t_cc, 't_rlx': 0.0,
         'N': N, 'Z': Z,
@@ -345,6 +365,8 @@ def compute_cluster_properties(state, config):
     Mcl = state['Mcl']
     rh = state['rh']
     m_avg = state['m_avg']
+    m_avg0 = state['m_avg0']
+    M_gas = state['M_gas']
     Nb = state['Nb']
     ab = state['ab']
     n_star0 = state['n_star0']
@@ -483,7 +505,7 @@ def compute_cluster_properties(state, config):
         na_BH = 0.0
 
     # stellar density updated:
-    n_star = n_star0 * (rh0 / rh)**3 * (Mcl / Mcl0)
+    n_star = n_star0 * (rh0 / rh)**3 * (Mcl / Mcl0) * (m_avg0 / m_avg)
 
     # half-mass volume:
     Vh = 4 * np.pi / 3 * rh**3
@@ -494,7 +516,7 @@ def compute_cluster_properties(state, config):
         nb = 0.0
 
     # relaxation timescale:
-    t_rlx = t_relax(Mcl, rh, m_avg, psi, logLcl)
+    t_rlx = t_relax(Mcl + M_gas, rh, m_avg, psi, logLcl)
 
     # BH relaxation timescale:
     if i_aux1==1:
@@ -1027,7 +1049,7 @@ def record_evolution(state):
     
     # unpack current state into local variables:
     seed = state['seed']; t = state['t']; z = state['z']; dt = state['dt']
-    m_avg = state['m_avg']; Mcl = state['Mcl']; rh = state['rh']
+    m_avg = state['m_avg']; Mcl = state['Mcl']; rh = state['rh']; M_gas = state['M_gas']
     R_gal = state['R_gal']; v_gal = state['v_gal']
     t_rlx = state['t_rlx']; tBH_rlx = state.get('tBH_rlx', 1e100)
     n_star = state['n_star']; N_BH = state['N_BH']
@@ -1070,7 +1092,7 @@ def record_evolution(state):
                                        nh_BH, nc_BH, na_BH, N_3bb, N_2cap, N_3cap, N_BHej, N_BBHej, N_dis, N_ex, t_bb, N_bb,
                                        N_meFi, N_me2b, t_ex1, t_ex2, k_ex1, k_ex2, N_ex1, N_ex2, N_BHstar, t_pp, k_pp, N_pp, 2*v_star,
                                        2*vBH, N_Triples, N_ZLK, N_WD, v_WD, k_tdeBHWD, N_tdeBHWD, dN_WDformdt, dN_WDevdt, dN_tdeBHWDdt, k_tdeBHstar,
-                                       dN_tdeBHstardt, N_tdeBHstar, N_tdeBBHstar])
+                                       dN_tdeBHstardt, N_tdeBHstar, N_tdeBBHstar, M_gas])
 
 def compute_external_params(state, config):
     """Compute external/environmental parameters for the cluster.
@@ -1127,10 +1149,11 @@ def update_cluster(state, config):
     zCl_form = state['zCl_form']
     xi_e = state['xi_e']
     t_df = state['t_df']
+    M_gas = state['M_gas']; t_ge = state['t_ge']
 
     # average mass evolution:
     if t>t_sev:
-        m_avg = m_avg0 * (t / t_sev)**nu_sev
+        m_avg = m_avg0 * (t / t_sev)**(-nu_sev)
     else:
         m_avg = m_avg0
 
@@ -1146,23 +1169,36 @@ def update_cluster(state, config):
     # total mass loss:
     dMcl = dMcl_sev + dMcl_rlx
 
-    # stellar evolution adiabatic expansion:
-    drh_sev = - dMcl_sev * rh / Mcl
+    # total dynamical mass (stars + gas) — sets potential-dependent responses:
+    M_dyn = Mcl + M_gas
 
-    # expansion due to relaxation:
+    # gas expelled this step (exact exponential):
+    M_gas_new = M_gas * np.exp(-dt / t_ge)
+    dM_gas = M_gas_new - M_gas
+
+    # stellar-wind adiabatic expansion (total potential):
+    drh_sev = - dMcl_sev * rh / M_dyn
+
+    # gas-expulsion adiabatic expansion (Hills, total potential):
+    drh_gas = - dM_gas * rh / M_dyn
+
+    # expansion due to relaxation (balanced +2 term uses stellar mass):
     if t>t_cc:
         drh_rlx = zeta * rh * dt / t_rlx + 2 * dMcl_rlx * rh / Mcl
     else:
         drh_rlx = 0.0
 
     # total expansion:
-    drh = drh_sev + drh_rlx
+    drh = drh_sev + drh_rlx + drh_gas
 
     # galactocentric radius step:
     dR_gal = - R_gal * dt / t_df
 
     # cluster mass update:
     Mcl = Mcl + dMcl
+
+    # gas expulsion (exact exponential drain on t_ge):
+    M_gas = M_gas * np.exp(-dt / t_ge)
 
     if Mcl<0:
         print('CLUSTER DISSOLVED')
@@ -1194,6 +1230,7 @@ def update_cluster(state, config):
     state['N_iter'] = state['N_iter'] + 1
     state['t'] = t; state['z'] = z; state['dt'] = dt
     state['Mcl'] = Mcl; state['rh'] = rh; state['R_gal'] = R_gal
+    state['M_gas'] = M_gas
     state['m_avg'] = m_avg
 
     return True
@@ -1329,7 +1366,7 @@ def write_output(state, config):
                                   str(evolution[i][48])+' '+str(evolution[i][49])+' '+str(evolution[i][50])+' '+str(evolution[i][51])+' '+str(evolution[i][52])+' '+str(evolution[i][53])+' '+\
                                   str(evolution[i][54])+' '+str(evolution[i][55])+' '+str(evolution[i][56])+' '+str(evolution[i][57])+' '+str(evolution[i][58])+' '+str(evolution[i][59])+' '+\
                                   str(evolution[i][60])+' '+str(evolution[i][61])+' '+str(evolution[i][62])+' '+str(evolution[i][63])+' '+str(evolution[i][64])+' '+str(evolution[i][65])+' '+\
-                                  str(evolution[i][66])+' '+str(evolution[i][67])+' '+str(evolution[i][68])+' '+str(evolution[i][69]))
+                                  str(evolution[i][66])+' '+str(evolution[i][67])+' '+str(evolution[i][68])+' '+str(evolution[i][69])+' '+str(evolution[i][70]))
                 f_evolution.write('\n')
 
     if config['Hi']==1:
