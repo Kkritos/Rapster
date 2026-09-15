@@ -82,7 +82,7 @@ def BH_TidalDisruptions(seed, t, z, k_tde, N_tde, tde_type, m_avg, m_star, R_sta
             r_t = R_star * (m/m_star)**(1/3)
             
             # pericenter radius:
-            r_p = np.sqrt(np.random.rand())*r_t
+            r_p = np.random.rand()*r_t
             
             # penetration parameter:
             beta = r_t/r_p
