@@ -1,5 +1,5 @@
 INITIALIZING...
-END OF INITIALIZATION. RUNTIME: 0.0224 s
+END OF INITIALIZATION. RUNTIME: 0.0144 s
 
 
 SIMULATING...
@@ -12,7 +12,7 @@ Iteration # 1
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar N_tdeBBHstar
      0     0         0    0         0           0            0
   steptime[ms] runtime[s]
-           1.2      0.001
+           0.9      0.001
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -22,7 +22,7 @@ Iteration # 2
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar N_tdeBBHstar
      0     0         0    0         0           0            0
   steptime[ms] runtime[s]
-           0.3      0.010
+           0.2      0.007
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -32,7 +32,7 @@ Iteration # 3
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar N_tdeBBHstar
      0     0         0    0         0           0            0
   steptime[ms] runtime[s]
-           0.3      0.017
+           0.2      0.012
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -42,7 +42,7 @@ Iteration # 4
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar N_tdeBBHstar
      0     0         0    0         0           0            0
   steptime[ms] runtime[s]
-           0.3      0.024
+           0.2      0.016
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -52,7 +52,7 @@ Iteration # 5
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar N_tdeBBHstar
      0     0         0    0         0           0            0
   steptime[ms] runtime[s]
-           0.3      0.031
+           0.2      0.020
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -62,7 +62,7 @@ Iteration # 6
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar N_tdeBBHstar
      0     0         0    0         0           0            0
   steptime[ms] runtime[s]
-           0.3      0.038
+           0.2      0.024
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -72,7 +72,7 @@ Iteration # 7
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar N_tdeBBHstar
      0     0         0    0         0           0            0
   steptime[ms] runtime[s]
-           0.3      0.044
+           0.2      0.028
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -82,7 +82,7 @@ Iteration # 8
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar N_tdeBBHstar
      0     0         0    0         0           0            0
   steptime[ms] runtime[s]
-           0.3      0.051
+           0.2      0.032
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -92,7 +92,7 @@ Iteration # 9
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar N_tdeBBHstar
      0     0         0    0         0           0            0
   steptime[ms] runtime[s]
-           0.3      0.058
+           0.2      0.036
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -102,7 +102,7 @@ Iteration # 10
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar N_tdeBBHstar
      0     0         0    0         0           0            0
   steptime[ms] runtime[s]
-           0.3      0.064
+           0.2      0.040
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -112,7 +112,7 @@ Iteration # 11
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar N_tdeBBHstar
      0     0         0    0         0           0            0
   steptime[ms] runtime[s]
-           0.3      0.071
+           0.2      0.044
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -122,7 +122,7 @@ Iteration # 12
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar N_tdeBBHstar
      0     0         0    0         0           0            0
   steptime[ms] runtime[s]
-           0.3      0.078
+           0.2      0.048
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -132,7 +132,7 @@ Iteration # 13
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar N_tdeBBHstar
      0     0         0    0         0           0            0
   steptime[ms] runtime[s]
-           0.3      0.084
+           0.2      0.052
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -142,7 +142,7 @@ Iteration # 14
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar N_tdeBBHstar
      0     0         0    0         0           0            0
   steptime[ms] runtime[s]
-           0.3      0.091
+           0.2      0.056
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -152,7 +152,7 @@ Iteration # 15
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar N_tdeBBHstar
      0     0         0    0         0           0            0
   steptime[ms] runtime[s]
-           0.3      0.098
+           0.2      0.060
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -162,7 +162,7 @@ Iteration # 16
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar N_tdeBBHstar
      0     0         0    0         0           0            0
   steptime[ms] runtime[s]
-           0.3      0.104
+           0.2      0.064
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -172,7 +172,7 @@ Iteration # 17
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar N_tdeBBHstar
      0     0         0    0         0           0            0
   steptime[ms] runtime[s]
-           0.3      0.111
+           0.2      0.068
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -182,7 +182,7 @@ Iteration # 18
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar N_tdeBBHstar
      0     0         0    0         0           0            0
   steptime[ms] runtime[s]
-           0.3      0.117
+           0.2      0.072
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -192,7 +192,7 @@ Iteration # 19
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar N_tdeBBHstar
      0     0         0    0         0           0            0
   steptime[ms] runtime[s]
-           0.3      0.124
+           0.2      0.076
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -202,7 +202,7 @@ Iteration # 20
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar N_tdeBBHstar
      0     0         0    0         0           0            0
   steptime[ms] runtime[s]
-           0.3      0.131
+           0.2      0.080
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -212,7 +212,7 @@ Iteration # 21
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar N_tdeBBHstar
      0     0         0    0         0           0            0
   steptime[ms] runtime[s]
-           0.3      0.137
+           0.2      0.084
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -222,7 +222,7 @@ Iteration # 22
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar N_tdeBBHstar
      0     0         0    0         0           0            0
   steptime[ms] runtime[s]
-           0.3      0.144
+           0.2      0.088
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -232,7 +232,7 @@ Iteration # 23
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar N_tdeBBHstar
      0     0         0    0         0           0            0
   steptime[ms] runtime[s]
-           0.3      0.150
+           0.2      0.092
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -242,7 +242,7 @@ Iteration # 24
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar N_tdeBBHstar
      0     0         0    0         0           0            0
   steptime[ms] runtime[s]
-           0.3      0.157
+           0.2      0.096
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -252,7 +252,7 @@ Iteration # 25
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar N_tdeBBHstar
      0     0         0    0         0           0            0
   steptime[ms] runtime[s]
-           0.3      0.163
+           0.2      0.100
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -262,7 +262,7 @@ Iteration # 26
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar N_tdeBBHstar
      0     0         0    0         0           0            0
   steptime[ms] runtime[s]
-           0.3      0.170
+           0.2      0.103
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -272,7 +272,7 @@ Iteration # 27
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar N_tdeBBHstar
      0     0         0    0         0           0            0
   steptime[ms] runtime[s]
-           0.3      0.176
+           0.2      0.107
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -282,7 +282,7 @@ Iteration # 28
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar N_tdeBBHstar
      0     0         0    0         0           0            0
   steptime[ms] runtime[s]
-           0.3      0.182
+           0.2      0.111
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -292,7 +292,7 @@ Iteration # 29
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar N_tdeBBHstar
      0     0         0    0         0           0            0
   steptime[ms] runtime[s]
-           0.3      0.189
+           0.2      0.115
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -302,7 +302,7 @@ Iteration # 30
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar N_tdeBBHstar
      0     0         0    0         0           0            0
   steptime[ms] runtime[s]
-           0.3      0.195
+           0.2      0.119
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -312,7 +312,7 @@ Iteration # 31
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar N_tdeBBHstar
      0     0         0    0         0           0            0
   steptime[ms] runtime[s]
-           0.3      0.202
+           0.2      0.123
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -322,7 +322,7 @@ Iteration # 32
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar N_tdeBBHstar
      0     0         0    0         0           0            0
   steptime[ms] runtime[s]
-           0.3      0.208
+           0.2      0.127
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -332,7 +332,7 @@ Iteration # 33
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar N_tdeBBHstar
      0     0         0    0         0           0            0
   steptime[ms] runtime[s]
-           0.3      0.215
+           0.2      0.131
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -342,7 +342,7 @@ Iteration # 34
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar N_tdeBBHstar
      0     0         0    0         0           0            0
   steptime[ms] runtime[s]
-           0.3      0.221
+           0.2      0.135
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -352,7 +352,7 @@ Iteration # 35
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar N_tdeBBHstar
      0     0         0    0         0           0            0
   steptime[ms] runtime[s]
-           0.3      0.228
+           0.2      0.139
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -362,7 +362,7 @@ Iteration # 36
    N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar N_tdeBBHstar
    1044     0         0    0         0           0            0
   steptime[ms] runtime[s]
-           0.4      0.234
+           0.2      0.143
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -372,7 +372,7 @@ Iteration # 37
    N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar N_tdeBBHstar
    1044     0         0    0         0           0            0
   steptime[ms] runtime[s]
-           0.4      0.241
+           0.2      0.147
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -382,7 +382,7 @@ Iteration # 38
    N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar N_tdeBBHstar
    1044     0         0    0         0           0            0
   steptime[ms] runtime[s]
-           0.4      0.248
+           0.2      0.151
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -392,7 +392,7 @@ Iteration # 39
    N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar N_tdeBBHstar
    1044     0         0    0         0           0            0
   steptime[ms] runtime[s]
-           0.4      0.254
+           0.2      0.155
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -402,7 +402,7 @@ Iteration # 40
    N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar N_tdeBBHstar
    1044     0         0    0         0           0            0
   steptime[ms] runtime[s]
-           0.4      0.261
+           0.2      0.159
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -412,7 +412,7 @@ Iteration # 41
    N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar N_tdeBBHstar
    1044     0         0    0         0           0            0
   steptime[ms] runtime[s]
-           0.4      0.267
+           0.2      0.162
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -422,7 +422,7 @@ Iteration # 42
    N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar N_tdeBBHstar
    1044     0         0    0         0           0            0
   steptime[ms] runtime[s]
-           0.4      0.274
+           0.3      0.167
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -432,7 +432,7 @@ Iteration # 43
    N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar N_tdeBBHstar
    1044     0         0    0         0           0            0
   steptime[ms] runtime[s]
-           0.4      0.280
+           0.3      0.171
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -442,7 +442,7 @@ Iteration # 44
    N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar N_tdeBBHstar
    1044     0         0    0         0           0            0
   steptime[ms] runtime[s]
-           0.4      0.287
+           0.2      0.175
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -452,7 +452,7 @@ Iteration # 45
    N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar N_tdeBBHstar
    1044     0         0    0         0           0            0
   steptime[ms] runtime[s]
-           0.4      0.293
+           0.2      0.179
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -462,7 +462,7 @@ Iteration # 46
    N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar N_tdeBBHstar
    1044     0         0    0         0           0            0
   steptime[ms] runtime[s]
-           0.4      0.300
+           0.2      0.183
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -472,7 +472,7 @@ Iteration # 47
    N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar N_tdeBBHstar
    1044     0         0    0         0           0            0
   steptime[ms] runtime[s]
-           0.4      0.306
+           0.2      0.187
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -482,7 +482,7 @@ Iteration # 48
    N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar N_tdeBBHstar
    1044     0         0    0         0           0            0
   steptime[ms] runtime[s]
-           0.4      0.313
+           0.2      0.191
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -492,7 +492,7 @@ Iteration # 49
    N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar N_tdeBBHstar
    1044     0         0    0         0           0            0
   steptime[ms] runtime[s]
-           0.5      0.319
+           0.2      0.195
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -502,7 +502,7 @@ Iteration # 50
    N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar N_tdeBBHstar
    1044     0         0    0         0           0            0
   steptime[ms] runtime[s]
-           0.4      0.326
+           0.2      0.199
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -512,7 +512,7 @@ Iteration # 51
    N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar N_tdeBBHstar
    1044     0         0    0         0           0            0
   steptime[ms] runtime[s]
-           0.4      0.333
+           0.3      0.203
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -522,7 +522,7 @@ Iteration # 52
    N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar N_tdeBBHstar
    1044     0         0    0         0           0            0
   steptime[ms] runtime[s]
-           0.4      0.339
+           0.3      0.208
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -532,7 +532,7 @@ Iteration # 53
    N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar N_tdeBBHstar
    1044     0         0    0         0           0            0
   steptime[ms] runtime[s]
-           0.4      0.346
+           0.2      0.212
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -542,7 +542,7 @@ Iteration # 54
    N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar N_tdeBBHstar
    1044     0         0    0         0           0            0
   steptime[ms] runtime[s]
-           0.4      0.352
+           0.2      0.215
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -552,7 +552,7 @@ Iteration # 55
    N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar N_tdeBBHstar
    1044     0         0    0         0           0            0
   steptime[ms] runtime[s]
-           0.4      0.359
+           0.2      0.219
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -562,7 +562,7 @@ Iteration # 56
    N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar N_tdeBBHstar
    1044     1         0    0         0           0            0
   steptime[ms] runtime[s]
-           5.0      0.370
+           4.0      0.227
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -572,7 +572,7 @@ Iteration # 57
    N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar N_tdeBBHstar
    1042     2         0    0         0           0            0
   steptime[ms] runtime[s]
-           2.4      0.379
+           1.5      0.233
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -582,7 +582,7 @@ Iteration # 58
    N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar N_tdeBBHstar
    1040     3         0    0         0           3            0
   steptime[ms] runtime[s]
-          19.9      0.405
+          13.7      0.250
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -592,7 +592,7 @@ Iteration # 59
    N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar N_tdeBBHstar
    1040     2         0    0         0           3            0
   steptime[ms] runtime[s]
-           1.2      0.413
+           0.8      0.255
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -602,7 +602,7 @@ Iteration # 60
    N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar N_tdeBBHstar
    1037     2         0    0         0           6            0
   steptime[ms] runtime[s]
-           8.1      0.427
+           5.1      0.264
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -612,7 +612,7 @@ Iteration # 61
    N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar N_tdeBBHstar
    1035     2         0    0         0           8            0
   steptime[ms] runtime[s]
-           4.5      0.438
+           3.0      0.271
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -622,7 +622,7 @@ Iteration # 62
    N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar N_tdeBBHstar
    1028     2         0    1         0           9            0
   steptime[ms] runtime[s]
-           4.2      0.448
+           2.7      0.278
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -632,7 +632,7 @@ Iteration # 63
    N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar N_tdeBBHstar
    1024     1         0    1         0          12            0
   steptime[ms] runtime[s]
-           3.5      0.458
+           2.2      0.284
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -642,7 +642,7 @@ Iteration # 64
    N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar N_tdeBBHstar
    1024     2         0    1         0          12            0
   steptime[ms] runtime[s]
-           3.6      0.468
+           2.3      0.290
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -652,7 +652,7 @@ Iteration # 65
    N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar N_tdeBBHstar
    1022     3         0    1         0          15            0
   steptime[ms] runtime[s]
-           5.7      0.480
+           3.6      0.298
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -662,7 +662,7 @@ Iteration # 66
    N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar N_tdeBBHstar
    1017     2         0    2         0          18            0
   steptime[ms] runtime[s]
-           5.5      0.492
+           3.3      0.305
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -672,7 +672,7 @@ Iteration # 67
    N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar N_tdeBBHstar
    1017     1         0    2         0          18            0
   steptime[ms] runtime[s]
-           1.1      0.499
+           0.7      0.310
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -682,7 +682,7 @@ Iteration # 68
    N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar N_tdeBBHstar
    1017     1         0    2         0          19            0
   steptime[ms] runtime[s]
-           1.8      0.507
+           1.1      0.315
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -692,7 +692,7 @@ Iteration # 69
    N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar N_tdeBBHstar
    1017     1         0    2         0          19            0
   steptime[ms] runtime[s]
-           0.9      0.514
+           0.6      0.319
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -702,7 +702,7 @@ Iteration # 70
    N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar N_tdeBBHstar
    1009     3         0    2         0          19            0
   steptime[ms] runtime[s]
-           6.4      0.527
+           4.0      0.327
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -712,7 +712,7 @@ Iteration # 71
    N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar N_tdeBBHstar
    1007     2         0    2         0          21            0
   steptime[ms] runtime[s]
-           3.4      0.536
+           2.2      0.333
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -722,7 +722,7 @@ Iteration # 72
    N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar N_tdeBBHstar
    1006     1         0    2         0          24            0
   steptime[ms] runtime[s]
-           2.7      0.545
+           1.7      0.339
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -732,7 +732,7 @@ Iteration # 73
    N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar N_tdeBBHstar
    1006     1         0    2         0          26            0
   steptime[ms] runtime[s]
-           5.7      0.557
+           3.5      0.346
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -742,7 +742,7 @@ Iteration # 74
    N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar N_tdeBBHstar
    1006     1         0    2         0          27            0
   steptime[ms] runtime[s]
-           1.8      0.565
+           1.1      0.351
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -752,7 +752,7 @@ Iteration # 75
    N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar N_tdeBBHstar
    1006     1         0    2         0          27            0
   steptime[ms] runtime[s]
-           0.9      0.573
+           0.6      0.356
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -762,7 +762,7 @@ Iteration # 76
    N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar N_tdeBBHstar
    1003     1         0    2         0          27            0
   steptime[ms] runtime[s]
-           1.9      0.581
+           1.2      0.361
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -772,7 +772,7 @@ Iteration # 77
    N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar N_tdeBBHstar
    1003     1         0    2         0          27            0
   steptime[ms] runtime[s]
-           0.5      0.587
+           0.3      0.365
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -782,7 +782,7 @@ Iteration # 78
    N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar N_tdeBBHstar
    1003     1         0    2         0          27            0
   steptime[ms] runtime[s]
-           1.0      0.594
+           0.6      0.370
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -792,7 +792,7 @@ Iteration # 79
    N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar N_tdeBBHstar
    1002     2         0    3         0          28            0
   steptime[ms] runtime[s]
-           4.4      0.606
+           2.6      0.376
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -802,7 +802,7 @@ Iteration # 80
    N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar N_tdeBBHstar
    1002     0         0    3         0          29            0
   steptime[ms] runtime[s]
-           1.6      0.613
+           1.0      0.381
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -812,7 +812,7 @@ Iteration # 81
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar N_tdeBBHstar
    998     2         0    3         0          30            0
   steptime[ms] runtime[s]
-           6.3      0.626
+           4.1      0.389
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -822,7 +822,7 @@ Iteration # 82
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar N_tdeBBHstar
    998     1         0    3         0          30            0
   steptime[ms] runtime[s]
-           1.2      0.633
+           0.7      0.394
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -832,7 +832,7 @@ Iteration # 83
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar N_tdeBBHstar
    993     2         0    3         0          30            0
   steptime[ms] runtime[s]
-           6.2      0.646
+           4.0      0.402
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -842,7 +842,7 @@ Iteration # 84
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar N_tdeBBHstar
    993     2         0    3         0          30            0
   steptime[ms] runtime[s]
-           1.0      0.653
+           0.6      0.407
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -852,7 +852,7 @@ Iteration # 85
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar N_tdeBBHstar
    984     3         0    4         0          30            0
   steptime[ms] runtime[s]
-           9.5      0.669
+           6.1      0.444
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -862,7 +862,7 @@ Iteration # 86
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar N_tdeBBHstar
    976     1         0    4         0          30            0
   steptime[ms] runtime[s]
-           3.3      0.679
+           2.1      0.483
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -872,7 +872,7 @@ Iteration # 87
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar N_tdeBBHstar
    972     2         0    4         0          32            0
   steptime[ms] runtime[s]
-           7.6      0.693
+           4.7      0.492
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -882,7 +882,7 @@ Iteration # 88
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar N_tdeBBHstar
    972     2         0    4         0          32            0
   steptime[ms] runtime[s]
-           0.6      0.699
+           0.4      0.496
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -892,7 +892,7 @@ Iteration # 89
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar N_tdeBBHstar
    972     2         0    4         0          32            0
   steptime[ms] runtime[s]
-           0.6      0.706
+           0.4      0.500
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -902,7 +902,7 @@ Iteration # 90
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar N_tdeBBHstar
    972     2         0    4         0          32            0
   steptime[ms] runtime[s]
-           1.0      0.714
+           0.6      0.505
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -912,7 +912,7 @@ Iteration # 91
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar N_tdeBBHstar
    961     2         0    4         0          33            0
   steptime[ms] runtime[s]
-           7.0      0.727
+           4.2      0.513
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -922,7 +922,7 @@ Iteration # 92
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar N_tdeBBHstar
    961     2         0    4         0          33            0
   steptime[ms] runtime[s]
-           0.9      0.734
+           0.7      0.518
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -932,7 +932,7 @@ Iteration # 93
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar N_tdeBBHstar
    956     1         0    5         0          35            0
   steptime[ms] runtime[s]
-           2.6      0.743
+           1.6      0.523
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -942,7 +942,7 @@ Iteration # 94
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar N_tdeBBHstar
    955     2         0    5         0          37            0
   steptime[ms] runtime[s]
-           5.3      0.754
+           3.1      0.530
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -952,7 +952,7 @@ Iteration # 95
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar N_tdeBBHstar
    955     2         0    5         0          37            0
   steptime[ms] runtime[s]
-           1.0      0.762
+           0.6      0.534
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -962,7 +962,7 @@ Iteration # 96
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar N_tdeBBHstar
    954     2         0    5         0          39            0
   steptime[ms] runtime[s]
-           3.2      0.771
+           1.9      0.540
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -972,7 +972,7 @@ Iteration # 97
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar N_tdeBBHstar
    948     2         0    5         0          40            0
   steptime[ms] runtime[s]
-           9.2      0.786
+           5.5      0.549
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -982,7 +982,7 @@ Iteration # 98
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar N_tdeBBHstar
    948     1         0    5         0          40            0
   steptime[ms] runtime[s]
-           1.0      0.794
+           0.7      0.554
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -992,7 +992,7 @@ Iteration # 99
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar N_tdeBBHstar
    944     1         0    5         0          41            0
   steptime[ms] runtime[s]
-           2.1      0.802
+           1.3      0.559
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -1002,7 +1002,7 @@ Iteration # 100
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar N_tdeBBHstar
    939     0         0    5         0          42            0
   steptime[ms] runtime[s]
-           2.3      0.811
+           1.4      0.564
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -1012,7 +1012,7 @@ Iteration # 101
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar N_tdeBBHstar
    939     0         0    5         0          42            0
   steptime[ms] runtime[s]
-           0.8      0.818
+           0.5      0.568
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -1022,7 +1022,7 @@ Iteration # 102
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar N_tdeBBHstar
    939     1         0    5         0          44            0
   steptime[ms] runtime[s]
-           2.6      0.827
+           1.5      0.574
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -1032,7 +1032,7 @@ Iteration # 103
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar N_tdeBBHstar
    939     2         0    5         0          45            0
   steptime[ms] runtime[s]
-           4.9      0.838
+           3.0      0.580
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -1042,7 +1042,7 @@ Iteration # 104
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar N_tdeBBHstar
    939     1         0    5         0          47            0
   steptime[ms] runtime[s]
-           3.2      0.847
+           1.9      0.586
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -1052,7 +1052,7 @@ Iteration # 105
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar N_tdeBBHstar
    935     2         0    6         0          48            0
   steptime[ms] runtime[s]
-           7.0      0.861
+           4.3      0.594
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -1062,7 +1062,7 @@ Iteration # 106
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar N_tdeBBHstar
    935     1         0    6         0          50            0
   steptime[ms] runtime[s]
-           4.4      0.891
+           2.7      0.616
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -1072,7 +1072,7 @@ Iteration # 107
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar N_tdeBBHstar
    927     1         0    6         0          51            0
   steptime[ms] runtime[s]
-           6.1      0.904
+           3.6      0.624
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -1082,7 +1082,7 @@ Iteration # 108
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar N_tdeBBHstar
    927     1         0    6         0          51            0
   steptime[ms] runtime[s]
-           0.9      0.911
+           0.7      0.628
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -1092,7 +1092,7 @@ Iteration # 109
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar N_tdeBBHstar
    927     2         0    6         0          51            0
   steptime[ms] runtime[s]
-           4.8      0.922
+           2.9      0.635
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -1102,7 +1102,7 @@ Iteration # 110
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar N_tdeBBHstar
    927     2         0    6         0          51            0
   steptime[ms] runtime[s]
-           0.6      0.929
+           0.4      0.639
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -1112,7 +1112,7 @@ Iteration # 111
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar N_tdeBBHstar
    927     2         0    6         0          51            0
   steptime[ms] runtime[s]
-           1.0      0.936
+           0.5      0.643
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -1122,7 +1122,7 @@ Iteration # 112
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar N_tdeBBHstar
    914     3         0    6         0          55            0
   steptime[ms] runtime[s]
-           7.8      0.950
+           4.6      0.652
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -1132,7 +1132,7 @@ Iteration # 113
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar N_tdeBBHstar
    910     3         0    6         0          55            0
   steptime[ms] runtime[s]
-           6.0      0.962
+           3.6      0.659
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -1142,7 +1142,7 @@ Iteration # 114
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar N_tdeBBHstar
    910     3         0    6         0          55            0
   steptime[ms] runtime[s]
-           0.9      0.970
+           0.7      0.663
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -1152,7 +1152,7 @@ Iteration # 115
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar N_tdeBBHstar
    908     3         0    6         0          55            0
   steptime[ms] runtime[s]
-           1.9      0.978
+           1.1      0.668
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -1162,7 +1162,7 @@ Iteration # 116
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar N_tdeBBHstar
    908     3         0    6         0          55            0
   steptime[ms] runtime[s]
-           0.6      0.985
+           0.4      0.672
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -1172,7 +1172,7 @@ Iteration # 117
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar N_tdeBBHstar
    908     3         0    6         0          55            0
   steptime[ms] runtime[s]
-           1.1      0.992
+           0.6      0.677
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -1182,7 +1182,7 @@ Iteration # 118
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar N_tdeBBHstar
    905     3         0    6         0          55            0
   steptime[ms] runtime[s]
-           4.3      1.002
+           2.5      0.683
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -1192,7 +1192,7 @@ Iteration # 119
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar N_tdeBBHstar
    901     5         0    6         0          56            0
   steptime[ms] runtime[s]
-           4.9      1.013
+           2.9      0.690
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -1202,7 +1202,7 @@ Iteration # 120
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar N_tdeBBHstar
    896     3         0    6         0          57            0
   steptime[ms] runtime[s]
-           5.2      1.025
+           3.1      0.696
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -1212,7 +1212,7 @@ Iteration # 121
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar N_tdeBBHstar
    896     3         0    6         0          57            0
   steptime[ms] runtime[s]
-           1.5      1.033
+           1.0      0.701
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -1222,7 +1222,7 @@ Iteration # 122
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar N_tdeBBHstar
    896     3         0    6         0          57            0
   steptime[ms] runtime[s]
-           1.1      1.040
+           0.6      0.706
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -1232,7 +1232,7 @@ Iteration # 123
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar N_tdeBBHstar
    891     2         0    6         0          58            0
   steptime[ms] runtime[s]
-           4.0      1.050
+           2.4      0.712
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -1242,7 +1242,7 @@ Iteration # 124
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar N_tdeBBHstar
    887     1         0    6         0          58            0
   steptime[ms] runtime[s]
-           5.2      1.062
+           3.0      0.719
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -1252,7 +1252,7 @@ Iteration # 125
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar N_tdeBBHstar
    887     1         0    6         0          58            0
   steptime[ms] runtime[s]
-           0.9      1.069
+           0.5      0.723
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -1262,7 +1262,7 @@ Iteration # 126
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar N_tdeBBHstar
    883     1         0    6         0          58            0
   steptime[ms] runtime[s]
-           1.5      1.077
+           0.9      0.727
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -1272,7 +1272,7 @@ Iteration # 127
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar N_tdeBBHstar
    882     1         0    6         0          60            0
   steptime[ms] runtime[s]
-           2.0      1.085
+           1.2      0.732
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -1282,7 +1282,7 @@ Iteration # 128
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar N_tdeBBHstar
    876     0         0    6         0          60            0
   steptime[ms] runtime[s]
-           1.9      1.094
+           1.2      0.738
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -1292,7 +1292,7 @@ Iteration # 129
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar N_tdeBBHstar
    876     0         0    6         0          60            0
   steptime[ms] runtime[s]
-           0.5      1.100
+           0.3      0.742
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -1302,7 +1302,7 @@ Iteration # 130
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar N_tdeBBHstar
    876     0         0    6         0          60            0
   steptime[ms] runtime[s]
-           0.9      1.107
+           0.5      0.746
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -1312,7 +1312,7 @@ Iteration # 131
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar N_tdeBBHstar
    876     0         0    6         0          60            0
   steptime[ms] runtime[s]
-           1.1      1.115
+           0.7      0.750
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -1322,7 +1322,7 @@ Iteration # 132
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar N_tdeBBHstar
    876     0         0    6         0          60            0
   steptime[ms] runtime[s]
-           0.8      1.122
+           0.5      0.754
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -1332,7 +1332,7 @@ Iteration # 133
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar N_tdeBBHstar
    876     1         0    6         0          60            0
   steptime[ms] runtime[s]
-           6.0      1.134
+           3.5      0.761
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -1342,7 +1342,7 @@ Iteration # 134
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar N_tdeBBHstar
    876     2         0    6         0          61            0
   steptime[ms] runtime[s]
-           4.8      1.145
+           2.9      0.768
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -1352,7 +1352,7 @@ Iteration # 135
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar N_tdeBBHstar
    876     1         0    6         0          62            0
   steptime[ms] runtime[s]
-           3.1      1.154
+           2.0      0.774
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -1362,7 +1362,7 @@ Iteration # 136
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar N_tdeBBHstar
    873     1         0    6         0          63            0
   steptime[ms] runtime[s]
-           2.1      1.163
+           1.2      0.779
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -1372,7 +1372,7 @@ Iteration # 137
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar N_tdeBBHstar
    871     1         0    6         0          63            0
   steptime[ms] runtime[s]
-           1.6      1.170
+           0.9      0.784
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -1382,7 +1382,7 @@ Iteration # 138
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar N_tdeBBHstar
    871     1         0    6         0          63            0
   steptime[ms] runtime[s]
-           1.0      1.178
+           0.6      0.788
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -1392,7 +1392,7 @@ Iteration # 139
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar N_tdeBBHstar
    868     0         0    6         0          63            0
   steptime[ms] runtime[s]
-           0.7      1.185
+           0.4      0.792
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -1402,7 +1402,7 @@ Iteration # 140
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar N_tdeBBHstar
    868     2         0    6         0          63            0
   steptime[ms] runtime[s]
-           5.8      1.197
+           3.5      0.799
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -1412,7 +1412,7 @@ Iteration # 141
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar N_tdeBBHstar
    867     2         0    6         0          63            0
   steptime[ms] runtime[s]
-           3.6      1.207
+           2.1      0.805
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -1422,7 +1422,7 @@ Iteration # 142
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar N_tdeBBHstar
    860     2         0    6         0          63            0
   steptime[ms] runtime[s]
-           2.4      1.215
+           1.5      0.811
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -1432,7 +1432,7 @@ Iteration # 143
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar N_tdeBBHstar
    859     2         0    6         0          63            0
   steptime[ms] runtime[s]
-           1.1      1.223
+           0.6      0.815
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -1442,7 +1442,7 @@ Iteration # 144
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar N_tdeBBHstar
    854     2         0    6         0          63            0
   steptime[ms] runtime[s]
-           1.7      1.230
+           1.0      0.820
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -1452,7 +1452,7 @@ Iteration # 145
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar N_tdeBBHstar
    850     2         0    6         0          63            0
   steptime[ms] runtime[s]
-           3.3      1.240
+           1.9      0.825
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -1462,7 +1462,7 @@ Iteration # 146
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar N_tdeBBHstar
    849     2         0    6         0          63            0
   steptime[ms] runtime[s]
-           2.6      1.249
+           1.6      0.831
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -1472,7 +1472,7 @@ Iteration # 147
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar N_tdeBBHstar
    849     2         0    6         0          64            0
   steptime[ms] runtime[s]
-           2.1      1.257
+           1.3      0.836
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -1482,7 +1482,7 @@ Iteration # 148
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar N_tdeBBHstar
    849     2         0    6         0          64            0
   steptime[ms] runtime[s]
-           1.0      1.264
+           0.6      0.840
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -1492,7 +1492,7 @@ Iteration # 149
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar N_tdeBBHstar
    848     2         0    6         0          65            0
   steptime[ms] runtime[s]
-           3.2      1.274
+           2.0      0.846
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -1502,7 +1502,7 @@ Iteration # 150
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar N_tdeBBHstar
    846     2         0    6         0          65            0
   steptime[ms] runtime[s]
-           1.5      1.282
+           0.9      0.851
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -1512,7 +1512,7 @@ Iteration # 151
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar N_tdeBBHstar
    846     2         0    6         0          66            0
   steptime[ms] runtime[s]
-           1.8      1.290
+           1.0      0.855
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -1522,7 +1522,7 @@ Iteration # 152
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar N_tdeBBHstar
    843     2         0    6         0          66            0
   steptime[ms] runtime[s]
-           2.1      1.298
+           1.2      0.860
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -1532,7 +1532,7 @@ Iteration # 153
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar N_tdeBBHstar
    843     2         0    6         0          66            0
   steptime[ms] runtime[s]
-           1.0      1.305
+           0.6      0.865
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -1542,7 +1542,7 @@ Iteration # 154
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar N_tdeBBHstar
    840     3         0    6         0          67            0
   steptime[ms] runtime[s]
-           5.2      1.317
+           3.0      0.871
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -1552,7 +1552,7 @@ Iteration # 155
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar N_tdeBBHstar
    833     2         0    6         0          68            0
   steptime[ms] runtime[s]
-           2.2      1.325
+           1.3      0.876
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -1562,7 +1562,7 @@ Iteration # 156
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar N_tdeBBHstar
    832     1         0    6         0          68            0
   steptime[ms] runtime[s]
-           2.2      1.334
+           1.4      0.882
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -1572,7 +1572,7 @@ Iteration # 157
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar N_tdeBBHstar
    831     1         0    6         0          68            0
   steptime[ms] runtime[s]
-           1.0      1.341
+           0.6      0.886
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -1582,7 +1582,7 @@ Iteration # 158
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar N_tdeBBHstar
    828     1         0    6         0          68            0
   steptime[ms] runtime[s]
-           1.2      1.348
+           0.8      0.891
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -1592,7 +1592,7 @@ Iteration # 159
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar N_tdeBBHstar
    828     1         0    6         0          68            0
   steptime[ms] runtime[s]
-           0.6      1.355
+           0.3      0.895
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -1602,7 +1602,7 @@ Iteration # 160
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar N_tdeBBHstar
    827     1         0    6         0          68            0
   steptime[ms] runtime[s]
-           0.8      1.362
+           0.5      0.899
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -1612,7 +1612,7 @@ Iteration # 161
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar N_tdeBBHstar
    825     1         0    6         0          68            0
   steptime[ms] runtime[s]
-           1.5      1.370
+           0.9      0.903
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -1622,7 +1622,7 @@ Iteration # 162
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar N_tdeBBHstar
    825     1         0    6         0          68            0
   steptime[ms] runtime[s]
-           0.9      1.377
+           0.5      0.908
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -1632,7 +1632,7 @@ Iteration # 163
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar N_tdeBBHstar
    825     1         0    6         0          68            0
   steptime[ms] runtime[s]
-           0.5      1.383
+           0.3      0.912
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -1642,7 +1642,7 @@ Iteration # 164
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar N_tdeBBHstar
    825     1         0    6         0          68            0
   steptime[ms] runtime[s]
-           0.6      1.390
+           0.4      0.916
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -1652,7 +1652,7 @@ Iteration # 165
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar N_tdeBBHstar
    825     1         0    6         0          68            0
   steptime[ms] runtime[s]
-           0.5      1.397
+           0.3      0.920
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -1662,7 +1662,7 @@ Iteration # 166
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar N_tdeBBHstar
    824     1         0    6         0          68            0
   steptime[ms] runtime[s]
-           0.8      1.404
+           0.5      0.924
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -1672,7 +1672,7 @@ Iteration # 167
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar N_tdeBBHstar
    824     2         0    6         0          68            0
   steptime[ms] runtime[s]
-           4.7      1.415
+           2.8      0.931
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -1682,7 +1682,7 @@ Iteration # 168
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar N_tdeBBHstar
    824     3         0    6         0          68            0
   steptime[ms] runtime[s]
-           1.9      1.423
+           1.1      0.936
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -1692,7 +1692,7 @@ Iteration # 169
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar N_tdeBBHstar
    823     2         0    7         0          68            0
   steptime[ms] runtime[s]
-           2.2      1.431
+           1.3      0.941
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -1702,7 +1702,7 @@ Iteration # 170
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar N_tdeBBHstar
    823     2         0    7         0          68            0
   steptime[ms] runtime[s]
-           1.7      1.439
+           1.0      0.945
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -1712,7 +1712,7 @@ Iteration # 171
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar N_tdeBBHstar
    823     2         0    7         0          68            0
   steptime[ms] runtime[s]
-           3.2      1.449
+           1.9      0.951
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -1722,7 +1722,7 @@ Iteration # 172
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar N_tdeBBHstar
    821     2         0    7         0          68            0
   steptime[ms] runtime[s]
-           1.9      1.457
+           1.1      0.956
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -1732,7 +1732,7 @@ Iteration # 173
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar N_tdeBBHstar
    819     2         0    7         0          68            0
   steptime[ms] runtime[s]
-           1.6      1.465
+           0.9      0.961
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -1742,7 +1742,7 @@ Iteration # 174
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar N_tdeBBHstar
    817     2         0    7         0          68            0
   steptime[ms] runtime[s]
-           1.0      1.472
+           0.6      0.965
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -1752,7 +1752,7 @@ Iteration # 175
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar N_tdeBBHstar
    813     1         0    7         0          68            0
   steptime[ms] runtime[s]
-           3.4      1.481
+           2.0      0.971
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -1762,7 +1762,7 @@ Iteration # 176
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar N_tdeBBHstar
    812     1         0    7         0          68            0
   steptime[ms] runtime[s]
-           0.7      1.488
+           0.4      0.975
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -1772,7 +1772,7 @@ Iteration # 177
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar N_tdeBBHstar
    811     1         0    7         0          68            0
   steptime[ms] runtime[s]
-           0.8      1.495
+           0.5      0.979
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -1782,7 +1782,7 @@ Iteration # 178
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar N_tdeBBHstar
    809     1         0    7         0          68            0
   steptime[ms] runtime[s]
-           1.1      1.503
+           0.6      0.983
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -1792,7 +1792,7 @@ Iteration # 179
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar N_tdeBBHstar
    808     1         0    7         0          68            0
   steptime[ms] runtime[s]
-           0.7      1.509
+           0.5      0.987
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -1802,7 +1802,7 @@ Iteration # 180
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar N_tdeBBHstar
    808     2         0    7         0          68            0
   steptime[ms] runtime[s]
-           2.1      1.518
+           1.3      0.993
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -1812,7 +1812,7 @@ Iteration # 181
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar N_tdeBBHstar
    806     2         0    7         0          68            0
   steptime[ms] runtime[s]
-           1.1      1.525
+           0.7      0.997
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -1822,7 +1822,7 @@ Iteration # 182
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar N_tdeBBHstar
    805     2         0    7         0          68            0
   steptime[ms] runtime[s]
-           1.4      1.532
+           0.9      1.002
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -1832,7 +1832,7 @@ Iteration # 183
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar N_tdeBBHstar
    805     2         0    7         0          68            0
   steptime[ms] runtime[s]
-           1.0      1.540
+           0.6      1.006
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -1842,7 +1842,7 @@ Iteration # 184
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar N_tdeBBHstar
    804     2         0    7         0          68            0
   steptime[ms] runtime[s]
-           0.8      1.547
+           0.5      1.010
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -1852,7 +1852,7 @@ Iteration # 185
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar N_tdeBBHstar
    801     2         0    7         0          68            0
   steptime[ms] runtime[s]
-           1.2      1.554
+           0.7      1.014
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -1862,7 +1862,7 @@ Iteration # 186
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar N_tdeBBHstar
    801     2         0    7         0          68            0
   steptime[ms] runtime[s]
-           0.6      1.561
+           0.4      1.018
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -1872,7 +1872,7 @@ Iteration # 187
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar N_tdeBBHstar
    801     2         0    7         0          68            0
   steptime[ms] runtime[s]
-           0.6      1.567
+           0.3      1.022
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -1882,7 +1882,7 @@ Iteration # 188
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar N_tdeBBHstar
    797     1         0    7         0          68            0
   steptime[ms] runtime[s]
-           1.0      1.574
+           0.6      1.027
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -1892,7 +1892,7 @@ Iteration # 189
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar N_tdeBBHstar
    797     1         0    7         0          68            0
   steptime[ms] runtime[s]
-           1.1      1.582
+           0.7      1.031
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -1902,7 +1902,7 @@ Iteration # 190
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar N_tdeBBHstar
    797     1         0    7         0          68            0
   steptime[ms] runtime[s]
-           0.9      1.589
+           0.5      1.035
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -1912,7 +1912,7 @@ Iteration # 191
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar N_tdeBBHstar
    797     1         0    7         0          68            0
   steptime[ms] runtime[s]
-           0.5      1.595
+           0.3      1.039
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -1922,7 +1922,7 @@ Iteration # 192
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar N_tdeBBHstar
    797     1         0    7         0          68            0
   steptime[ms] runtime[s]
-           0.5      1.602
+           0.3      1.044
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -1932,7 +1932,7 @@ Iteration # 193
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar N_tdeBBHstar
    794     0         0    7         0          68            0
   steptime[ms] runtime[s]
-           1.4      1.610
+           0.8      1.048
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -1942,7 +1942,7 @@ Iteration # 194
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar N_tdeBBHstar
    794     0         0    7         0          68            0
   steptime[ms] runtime[s]
-           0.5      1.616
+           0.3      1.052
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -1952,7 +1952,7 @@ Iteration # 195
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar N_tdeBBHstar
    794     0         0    7         0          68            0
   steptime[ms] runtime[s]
-           0.9      1.623
+           0.5      1.056
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -1962,7 +1962,7 @@ Iteration # 196
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar N_tdeBBHstar
    794     0         0    7         0          68            0
   steptime[ms] runtime[s]
-           1.1      1.631
+           0.8      1.061
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -1972,7 +1972,7 @@ Iteration # 197
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar N_tdeBBHstar
    794     0         0    7         0          68            0
   steptime[ms] runtime[s]
-           0.4      1.637
+           0.3      1.065
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -1982,7 +1982,7 @@ Iteration # 198
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar N_tdeBBHstar
    794     0         0    7         0          68            0
   steptime[ms] runtime[s]
-           0.5      1.644
+           0.3      1.069
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -1992,7 +1992,7 @@ Iteration # 199
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar N_tdeBBHstar
    794     0         0    7         0          68            0
   steptime[ms] runtime[s]
-           0.9      1.651
+           0.5      1.073
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -2002,7 +2002,7 @@ Iteration # 200
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar N_tdeBBHstar
    794     0         0    7         0          68            0
   steptime[ms] runtime[s]
-           0.4      1.657
+           0.3      1.077
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -2012,7 +2012,7 @@ Iteration # 201
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar N_tdeBBHstar
    794     0         0    7         0          68            0
   steptime[ms] runtime[s]
-           0.4      1.664
+           0.3      1.081
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -2022,7 +2022,7 @@ Iteration # 202
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar N_tdeBBHstar
    794     2         0    7         0          68            0
   steptime[ms] runtime[s]
-           4.0      1.674
+           2.3      1.087
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -2032,7 +2032,7 @@ Iteration # 203
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar N_tdeBBHstar
    794     2         0    7         0          68            0
   steptime[ms] runtime[s]
-           1.2      1.681
+           0.7      1.091
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -2042,7 +2042,7 @@ Iteration # 204
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar N_tdeBBHstar
    794     2         0    7         0          68            0
   steptime[ms] runtime[s]
-           1.2      1.689
+           0.7      1.096
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -2052,7 +2052,7 @@ Iteration # 205
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar N_tdeBBHstar
    794     2         0    7         0          68            0
   steptime[ms] runtime[s]
-           1.5      1.696
+           0.9      1.100
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -2062,7 +2062,7 @@ Iteration # 206
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar N_tdeBBHstar
    793     2         0    7         0          68            0
   steptime[ms] runtime[s]
-           1.5      1.704
+           0.9      1.105
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -2072,7 +2072,7 @@ Iteration # 207
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar N_tdeBBHstar
    793     2         0    7         0          68            0
   steptime[ms] runtime[s]
-           1.3      1.711
+           0.7      1.109
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -2082,7 +2082,7 @@ Iteration # 208
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar N_tdeBBHstar
    792     2         0    7         0          68            0
   steptime[ms] runtime[s]
-           1.0      1.719
+           0.6      1.114
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -2092,7 +2092,7 @@ Iteration # 209
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar N_tdeBBHstar
    792     2         0    7         0          69            0
   steptime[ms] runtime[s]
-           1.3      1.726
+           0.8      1.118
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -2102,7 +2102,7 @@ Iteration # 210
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar N_tdeBBHstar
    791     2         0    7         0          69            0
   steptime[ms] runtime[s]
-           0.8      1.733
+           0.5      1.122
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -2112,7 +2112,7 @@ Iteration # 211
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar N_tdeBBHstar
    790     2         0    7         0          69            0
   steptime[ms] runtime[s]
-           0.8      1.740
+           0.5      1.127
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -2122,7 +2122,7 @@ Iteration # 212
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar N_tdeBBHstar
    790     2         0    7         0          69            0
   steptime[ms] runtime[s]
-           1.2      1.747
+           0.7      1.131
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -2132,7 +2132,7 @@ Iteration # 213
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar N_tdeBBHstar
    790     2         0    7         0          69            0
   steptime[ms] runtime[s]
-           0.6      1.754
+           0.4      1.135
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -2142,7 +2142,7 @@ Iteration # 214
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar N_tdeBBHstar
    790     2         0    7         0          69            0
   steptime[ms] runtime[s]
-           1.0      1.761
+           0.6      1.140
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -2152,7 +2152,7 @@ Iteration # 215
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar N_tdeBBHstar
    789     2         0    7         0          69            0
   steptime[ms] runtime[s]
-           0.8      1.768
+           0.5      1.144
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -2162,7 +2162,7 @@ Iteration # 216
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar N_tdeBBHstar
    788     2         0    8         0          69            0
   steptime[ms] runtime[s]
-           1.1      1.775
+           0.7      1.148
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -2172,7 +2172,7 @@ Iteration # 217
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar N_tdeBBHstar
    787     2         0    8         0          69            0
   steptime[ms] runtime[s]
-           0.8      1.782
+           0.5      1.152
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -2182,7 +2182,7 @@ Iteration # 218
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar N_tdeBBHstar
    787     2         0    8         0          69            0
   steptime[ms] runtime[s]
-           0.6      1.789
+           0.3      1.156
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -2192,7 +2192,7 @@ Iteration # 219
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar N_tdeBBHstar
    787     2         0    8         0          69            0
   steptime[ms] runtime[s]
-           0.6      1.795
+           0.4      1.160
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -2202,7 +2202,7 @@ Iteration # 220
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar N_tdeBBHstar
    786     2         0    8         0          69            0
   steptime[ms] runtime[s]
-           0.9      1.803
+           0.5      1.164
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -2212,7 +2212,7 @@ Iteration # 221
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar N_tdeBBHstar
    786     2         0    8         0          69            0
   steptime[ms] runtime[s]
-           0.6      1.809
+           0.4      1.168
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -2222,7 +2222,7 @@ Iteration # 222
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar N_tdeBBHstar
    786     2         0    8         0          69            0
   steptime[ms] runtime[s]
-           0.6      1.816
+           0.4      1.173
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -2232,7 +2232,7 @@ Iteration # 223
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar N_tdeBBHstar
    786     2         0    8         0          69            0
   steptime[ms] runtime[s]
-           0.6      1.822
+           0.4      1.177
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -2242,7 +2242,7 @@ Iteration # 224
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar N_tdeBBHstar
    785     2         0    8         0          69            0
   steptime[ms] runtime[s]
-           0.8      1.829
+           0.5      1.181
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -2252,7 +2252,7 @@ Iteration # 225
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar N_tdeBBHstar
    785     2         0    8         0          69            0
   steptime[ms] runtime[s]
-           0.6      1.836
+           0.3      1.185
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -2262,7 +2262,7 @@ Iteration # 226
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar N_tdeBBHstar
    784     2         0    8         0          69            0
   steptime[ms] runtime[s]
-           0.8      1.843
+           0.5      1.189
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -2272,7 +2272,7 @@ Iteration # 227
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar N_tdeBBHstar
    784     2         0    8         0          69            0
   steptime[ms] runtime[s]
-           0.6      1.850
+           0.3      1.193
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -2282,7 +2282,7 @@ Iteration # 228
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar N_tdeBBHstar
    784     2         0    8         0          69            0
   steptime[ms] runtime[s]
-           3.3      1.859
+           2.0      1.199
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -2292,7 +2292,7 @@ Iteration # 229
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar N_tdeBBHstar
    783     2         0    8         0          69            0
   steptime[ms] runtime[s]
-           0.8      1.866
+           0.5      1.203
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -2302,7 +2302,7 @@ Iteration # 230
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar N_tdeBBHstar
    783     2         0    8         0          69            0
   steptime[ms] runtime[s]
-           0.6      1.873
+           0.4      1.207
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -2312,7 +2312,7 @@ Iteration # 231
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar N_tdeBBHstar
    783     2         0    8         0          69            0
   steptime[ms] runtime[s]
-           0.6      1.880
+           0.4      1.211
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -2322,7 +2322,7 @@ Iteration # 232
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar N_tdeBBHstar
    780     1         0    8         0          69            0
   steptime[ms] runtime[s]
-           0.8      1.886
+           0.5      1.216
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -2332,7 +2332,7 @@ Iteration # 233
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar N_tdeBBHstar
    780     1         0    8         0          69            0
   steptime[ms] runtime[s]
-           1.1      1.894
+           0.7      1.220
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -2342,7 +2342,7 @@ Iteration # 234
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar N_tdeBBHstar
    780     2         0    8         0          69            0
   steptime[ms] runtime[s]
-           0.8      1.900
+           0.4      1.224
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -2352,7 +2352,7 @@ Iteration # 235
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar N_tdeBBHstar
    780     2         0    8         0          69            0
   steptime[ms] runtime[s]
-           4.3      1.911
+           2.6      1.230
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -2362,7 +2362,7 @@ Iteration # 236
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar N_tdeBBHstar
    779     2         0    8         0          69            0
   steptime[ms] runtime[s]
-           2.5      1.920
+           1.5      1.235
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -2372,7 +2372,7 @@ Iteration # 237
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar N_tdeBBHstar
    777     2         0    8         0          69            0
   steptime[ms] runtime[s]
-           1.5      1.927
+           0.9      1.240
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -2382,7 +2382,7 @@ Iteration # 238
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar N_tdeBBHstar
    777     3         0    8         0          69            0
   steptime[ms] runtime[s]
-           1.8      1.935
+           1.1      1.245
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -2392,7 +2392,7 @@ Iteration # 239
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar N_tdeBBHstar
    777     3         0    8         0          69            0
   steptime[ms] runtime[s]
-           1.3      1.943
+           0.8      1.250
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -2402,7 +2402,7 @@ Iteration # 240
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar N_tdeBBHstar
    776     3         0    8         0          69            0
   steptime[ms] runtime[s]
-           0.9      1.950
+           0.5      1.254
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -2412,7 +2412,7 @@ Iteration # 241
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar N_tdeBBHstar
    776     3         0    8         0          69            0
   steptime[ms] runtime[s]
-           2.0      1.958
+           1.2      1.259
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -2422,7 +2422,7 @@ Iteration # 242
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar N_tdeBBHstar
    776     3         0    8         0          69            0
   steptime[ms] runtime[s]
-           1.3      1.965
+           0.8      1.263
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -2432,7 +2432,7 @@ Iteration # 243
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar N_tdeBBHstar
    774     3         0    8         0          69            0
   steptime[ms] runtime[s]
-           1.8      1.973
+           1.1      1.268
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -2442,7 +2442,7 @@ Iteration # 244
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar N_tdeBBHstar
    771     3         0    8         0          69            0
   steptime[ms] runtime[s]
-           1.2      1.980
+           0.7      1.272
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -2452,7 +2452,7 @@ Iteration # 245
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar N_tdeBBHstar
    771     3         0    8         0          69            0
   steptime[ms] runtime[s]
-           0.7      1.987
+           0.4      1.276
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -2462,7 +2462,7 @@ Iteration # 246
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar N_tdeBBHstar
    767     3         0    8         0          69            0
   steptime[ms] runtime[s]
-           1.4      1.995
+           0.9      1.281
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -2472,7 +2472,7 @@ Iteration # 247
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar N_tdeBBHstar
    766     3         0    8         0          69            0
   steptime[ms] runtime[s]
-           0.9      2.002
+           0.5      1.286
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -2482,7 +2482,7 @@ Iteration # 248
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar N_tdeBBHstar
    763     2         0    8         0          69            0
   steptime[ms] runtime[s]
-           0.9      2.009
+           0.5      1.290
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -2492,7 +2492,7 @@ Iteration # 249
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar N_tdeBBHstar
    763     2         0    8         0          69            0
   steptime[ms] runtime[s]
-           1.2      2.016
+           0.7      1.294
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -2502,7 +2502,7 @@ Iteration # 250
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar N_tdeBBHstar
    763     2         0    8         0          69            0
   steptime[ms] runtime[s]
-           0.6      2.023
+           0.4      1.298
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -2512,7 +2512,7 @@ Iteration # 251
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar N_tdeBBHstar
    763     2         0    8         0          69            0
   steptime[ms] runtime[s]
-           1.9      2.031
+           1.1      1.303
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -2522,7 +2522,7 @@ Iteration # 252
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar N_tdeBBHstar
    762     2         0    8         0          69            0
   steptime[ms] runtime[s]
-           0.8      2.038
+           0.5      1.307
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -2532,9 +2532,9 @@ Iteration # 253
   N_BH N_BBH N_Triples N_me N_tdeBHWD N_tdeBHstar N_tdeBBHstar
    762     2         0    8         0          69            0
   steptime[ms] runtime[s]
-           0.6      2.044
+           0.4      1.311
 
 
-END OF SIMULATION. RUNTIME: 2.09 s
+END OF SIMULATION. RUNTIME: 1.34 s
 
 
