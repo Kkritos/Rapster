@@ -1,4 +1,14 @@
 # Rapster
+
+<p align="center">
+  <a href="https://github.com/Kkritos/Rapster/releases"><img src="https://img.shields.io/badge/version-2.11.4-blue" alt="version"></a>
+  <a href="https://arxiv.org/abs/2210.10055"><img src="https://img.shields.io/badge/arXiv-2210.10055-b31b1b.svg" alt="arXiv"></a>
+  <a href="https://github.com/Kkritos/Rapster/blob/main/LICENSE"><img src="https://img.shields.io/github/license/Kkritos/Rapster" alt="license"></a>
+  <img src="https://img.shields.io/badge/python-3.10+-blue.svg" alt="python">
+  <a href="https://github.com/Kkritos/Rapster"><img src="https://img.shields.io/badge/created-September%202022-blue" alt="created"></a>
+  <a href="https://github.com/Kkritos/Rapster/commits/main"><img src="https://img.shields.io/github/last-commit/Kkritos/Rapster?label=last%20updated" alt="last updated"></a>
+</p>
+
 Rapid population synthesis code for compact binary coalescences in dense stellar clusters.
 
 $\tt Rapster$ stands for $\rm RAPid\ cluSTER$ evolution.
@@ -71,7 +81,7 @@ The code is tested with the package versions shown in parentheses above; however
 
 We recommend creating and working in a local Python environment with Python >= 3.10 and installing all the dependencies listed above.
 
-The following packages are recommended for running the tutorial notebook in ``Examples/``, but are not necessary to run cluster simulations:
+The following packages are recommended for running the tutorial notebook in ``Example/``, but are not necessary to run cluster simulations:
 
 - $\tt matplotlib$
 - $\tt jupyterlab$
@@ -79,29 +89,41 @@ The following packages are recommended for running the tutorial notebook in ``Ex
 
 First, create an environment called ``.rapsterenv`` in the root directory of the repository Rapster/, and hidden from view:
 
-> python3 -m venv .rapsterenv
+```bash
+python3 -m venv .rapsterenv
+```
 
 If you use a different name, please add the environment name as a new row in .gitignore, since the environment folder should never be pushed to the repository.
 
 To activate this environment:
 
-> source .rapsterenv/bin/activate
+```bash
+source .rapsterenv/bin/activate
+```
 
 To install ``rapster`` and all requirements, run:
 
-> pip install -e .
+```bash
+pip install -e .
+```
 
 Verify the installation (along with dependencies) and package version:
 
-> pip list
+```bash
+pip list
+```
 
 Finally, include the virtual environment in the kernel:
 
-> python -m ipykernel install --user --name=rapsterenv --display-name "Python (.rapsterenv)"
+```bash
+python -m ipykernel install --user --name=rapsterenv --display-name "Python (.rapsterenv)"
+```
 
 To use the ``gwModel_kick_prec_flow`` recoil kick model (``-RK 1``), install [gwModels](https://github.com/tousifislam/gwModels):
 
-> pip install gwModels[kicks]
+```bash
+pip install gwModels[kicks]
+```
 
 <a name="units"></a>
 ### 3. Units
@@ -122,7 +144,9 @@ The code accepts parameters with flag options.
 
 For a description of all input parameters, run the following command in the command line interface:
 
-> python -m rapster.run_cluster --help
+```bash
+python -m rapster.run_cluster --help
+```
 
 For the user’s convenience, we paste the list of optional arguments in the form of a Table here as well:
 
@@ -189,43 +213,58 @@ The initial value of the central stellar density is set by default to 5.3e5 (pc^
 
 usage: -m [-h] [-N] [-r] [-mm] [-mM] [-Z] [-z] [-n] [-fb] [-S] [-dtm] [-dtM] [-tM] [-wK] [-K] [-R] [-vg] [-s] [-SD] [-P] [-Mi] [-MF] [-Ei] [-EF] [-Hi] [-HF] [-BIi] [-BIF] [-BOi] [-BOF] [-RP] [-NS] [-WT] [-Ti] [-TF] [-MBH] [-sBH] [-RF] [-BMD] [-mBH1gMin] [-mBH1gMax] [-RMP] [-plot] [-analyze] [-fA] [-mb] [-EoS] [-RK]
 
+
 ##### Examples:
 
 Run with default parameters:
 
-> python -m rapster.run_cluster
+```bash
+python -m rapster.run_cluster
+```
 
 Run with analysis summary printed at the end:
 
-> python -m rapster.run_cluster -analyze 1
+```bash
+python -m rapster.run_cluster -analyze 1
+```
 
 Run with both analysis summary and diagnostic plots:
 
-> python -m rapster.run_cluster -analyze 1 -plot 1
+```bash
+python -m rapster.run_cluster -analyze 1 -plot 1
+```
 
 Run silently (no screen output, all output saved to ``Results/log.txt``):
 
-> python -m rapster.run_cluster -P 0
+```bash
+python -m rapster.run_cluster -P 0
+```
 
 Run with beta spin distribution and random mass pairing:
 
-> python -m rapster.run_cluster -SD 2 -s 1.0 -RMP 1
+```bash
+python -m rapster.run_cluster -SD 2 -s 1.0 -RMP 1
+```
 
 ##### Testing:
 
 To test the code, execute the program with all defaults:
 
-> python -m rapster.run_cluster
+```bash
+python -m rapster.run_cluster
+```
 
 from any directory, with the virtual environment (.rapsterenv) enabled.
 
-This should create five files: ``Results/mergers.txt``, ``Results/evolution.txt``, ``Results/hardening.txt``, ``Results/tdes.txt``, ``Results/outputBHs.pkl``, and ``Results/log.txt`` inside the newly created folder Results/ within your current directory. All output files include column headers prefixed with ``#``. If ``-plot 1`` is passed, diagnostic plots are saved to ``Results/plots/``. To check and verify whether you have produced these files correctly, we include the corresponding files ``/Rapster/Example/Results_Test/mergers.txt``, ``/Rapster/Example/Results_Test/evolution.txt``, ``/Rapster/Example/Results_Test/hardening.txt``, ``/Rapster/Example/Results_Test/tdes.txt``, and ``/Rapster/Example/Results_Test/outputBHs.npz``, where /Rapster/ is the root directory of the repository, with data that should match your output.
+This should create six files: ``Results/mergers.txt``, ``Results/evolution.txt``, ``Results/hardening.txt``, ``Results/tdes.txt``, ``Results/outputBHs.pkl``, and ``Results/log.txt`` inside the newly created folder Results/ within your current directory. All output files include column headers prefixed with ``#``. If ``-plot 1`` is passed, diagnostic plots are saved to ``Results/plots/``. To check and verify whether you have produced these files correctly, we include the corresponding files ``/Rapster/Example/Results_Test/mergers.txt``, ``/Rapster/Example/Results_Test/evolution.txt``, ``/Rapster/Example/Results_Test/hardening.txt``, ``/Rapster/Example/Results_Test/tdes.txt``, and ``/Rapster/Example/Results_Test/outputBHs.npz``, where /Rapster/ is the root directory of the repository, with data that should match your output.
 
 We also include a Python notebook ``/Rapster/Example/example.ipynb`` that loads the data results from ``/Rapster/Example/Results_Test/`` and generates some plots. As a check, the user is encouraged to load their simulated results and redo the plots in the provided example notebook.
 
 To run the notebook, open JupyterLab:
 
-> jupyter-lab &
+```bash
+jupyter-lab &
+```
 
 ##### Suggestion:
 Different seed values yield different system realizations under the same initial conditions. Passing the argument ``$RANDOM`` in the -S flag (capitalized ``S`` for the seed flag, lowercase ``s`` for the spin flag) simulates the star cluster with a pseudo-randomly generated number. This syntax works only in the bash environment.
@@ -288,7 +327,7 @@ CBC assembly channel (first column of mergers file), the ``-`` sign means BBH wa
 
 b) Column description of evolution .txt file:
 
-| Columnn | Variable | Description |
+| Column | Variable | Description |
 |:--- |:--- |:--- |
 | 1 | $\rm seed$ | seed of the simulation |
 | 2 | $t$ | Simulation time ($\rm Myr$) |
@@ -362,7 +401,7 @@ b) Column description of evolution .txt file:
 
 c) Column description of hardening .txt file:
 
-| Columnn | Variable | Description |
+| Column | Variable | Description |
 |:--- |:--- |:--- |
 | 1 | $t$ | Global time ($\rm Myr$) |
 | 2 | $dt$ | Global timestep ($\rm Myr$) |
@@ -391,12 +430,12 @@ The local simulation is terminated unless ${\rm condition}=0$.
 
 d) Column description of tdes .txt file:
 
-| Columnn | Variable | Description |
+| Column | Variable | Description |
 |:--- |:--- |:--- |
 | 1 | $\rm seed$ | Simulation seed number |
 | 2 | $t$ | Simulation time of TDE event ($\rm Myr$) |
 | 3 | $z$ | Redshift of TDE event |
-| 4 | $\rm type$ | Type of TDE (1, 2, 3, or 11), see Note below this table |
+| 4 | $\rm type$ | Type of TDE (1, 2, 3, 4, 11, 21, or 22), see Note below this table |
 | 5 | $m_{\rm star}$ | Mass of the star disrupted ($M_\odot$) |
 | 6 | $R_{\rm star}$ | Radius of the star disrupted ($\rm pc$) |
 | 7 | $m_{\rm BH}$ | Mass of the compact object ($M_\odot$) |
@@ -481,5 +520,3 @@ Feel free to contribute. Suggestions and pull requests are welcome :)
 ### 10. Thank you
 
 Andrea Antonelli, Fabio Antonini, Dany Atallah, Muhsin Aljaf, Vishal Baibhav, Emanuele Berti, Mario Cadelano, Mark Cheung, Roberto Cotesta, Hector Cruz, Elena Di Biagio, Giacomo Fragione, Gabriele Franciolini, Logan Good, Rosanna Hagen, Thomas Helfer, Tousif Islam, Veome Kapil, Xiao-Xiao Kou, Kyle Kremer, Iason Krommydas, Miguel Martinez, Akshita Mittal, Rosalba Perna, Luca Reali, Carl Rodriguez, Sanika Khadkikar, Giada Caneva Santoro, Vladimir Strokov, Newlin Weatherford, Ilaria Usai.
-
-
