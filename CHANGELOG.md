@@ -11,6 +11,7 @@ All notable changes to Rapster will be documented in this file.
 - Automatic diagnostic plots (`-plot 1`). Generates 10 PNG plots (cluster evolution, radii, cluster mass, BH mass function, merger masses, merger channels, merger spins, eccentricity by channel, TDEs, hardening) in `Results/plots/`. New `plot_cluster.py` module.
 - Post-simulation analysis summary via `analyze_cluster()` (`-analyze 1`). Prints merger statistics (total, in-cluster, ejected, per channel, retained), maximum dynamically-formed BH mass, BH generation counts, TDE summary, and final cluster state. New `analyze_cluster.py` module.
 - All output is now saved to `Results/log.txt`. With `-P 1` output goes to both screen and log; with `-P 0` output goes only to the log file.
+- Escape-velocity prefactor (`-fesc` / `--escape_velocity_factor`, default `2.0`). The escape velocity is v_esc = f*sqrt(<v_star^2> + <v_BH^2>), with <v^2> = 0.4 G M / r. It applies to natal-kick retention of BHs and NSs, merger-remnant retention, and dynamical ejection of single BHs and BBHs after BBH-BH encounters. `f = 2` (default) is the mass-weighted rms escape speed and reproduces previous results exactly. `f = sqrt(10)` gives v_esc = sqrt(4 G M_cl / r_h), the estimate used by Mai, Kremer & Kiroglu (2025) for the CMC colossus model. The value used is printed to `log.txt`. Usage: `python -m rapster.run_cluster -fesc 3.16227766`.
 
 ### Changed
 - Refactored `run_cluster.py` from a monolithic script into modular functions: `parse_args()`, `initialize_cluster()`, `compute_cluster_properties()`, `compute_timescales()`, `form_binaries()`, `evolve_interactions()`, `compute_external_params()`, `evolve_tdes()`, `record_evolution()`, `update_cluster()`, `print_status()`, and `write_output()`. All simulation state is bundled in a `state` dictionary. No logic changes.
@@ -27,6 +28,8 @@ All notable changes to Rapster will be documented in this file.
 - Regenerated `Example/Results_Test/` with current code (includes column headers and log.txt).
 
 - Initial BH mass distribution options (`-BMD`): `0` for Kroupa+collapse (default), `1` for uniform, `2` for Salpeter power law (m^-2.35), `3` for log-uniform. BH count is always determined from the Kroupa IMF; for BMD>0 only the masses are resampled in [`-mBH1gMin`, `-mBH1gMax`] (default [3, 60] Msun). Momentum-conservation SN kicks are applied for BMD>0 (fallback kicks are unavailable since there is no stellar progenitor).
+- Escape velocity is now computed in one place: `v_esc_cl(v_star, vBH)` for retention and ejection, and `v_esc(Mcl, rh)` for natal kicks, both in `functions.py` and both scaled by the module-level prefactor `F_ESC` (set once via `set_escape_factor()`). This replaces seven hard-coded `2 * np.sqrt(v_star**2 + vBH**2)` expressions in `binary_evolution.py`, `triples.py`, and `two_body_capture.py`.
+- The `v_esc` column of the mergers file (column 25) and of the evolution file (column 56) now records the threshold actually used, f*sqrt(<v_star^2> + <v_BH^2>). It previously recorded `2*v_star`, omitting the BH term, so values differ slightly from older outputs even at `f = 2`. The `v_escBH` column (escape velocity from the BH subsystem) is unchanged.
 
 ### Fixed
 - Renamed `type` variable to `tde_type` in `tidal_disruptions.py` and `cluster_evolution.py` to avoid shadowing Python's builtin `type()`.
