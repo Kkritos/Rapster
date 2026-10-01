@@ -36,6 +36,7 @@ from .plot_cluster import generate_all_plots
 from .analyze_cluster import analyze_cluster
 from .stellar_evolution import init_stellar_mass_sampler
 from .compact_accretion import EOS_TABLES, accrete_gas
+from .functions import set_escape_factor
 
 class TeeStream:
     """Write to both a file and optionally to stdout.
@@ -127,11 +128,15 @@ def parse_args():
     parser.add_argument('-fge', '--gas_expulsion_tcross', type=float, metavar=' ', default=5.0, help='Gas expulsion timescale in units of the initial crossing time')
     parser.add_argument('-fEdd', '--eddington_ratio_cap', type=float, metavar=' ', default=1.0, help='Eddington ratio ceiling for gas accretion onto compact objects (1.0 = hard Eddington cap)')
     parser.add_argument('-cs', '--gas_sound_speed', type=float, metavar=' ', default=10.0, help='Gas sound speed [km/s]')
+    parser.add_argument('-fesc', '--escape_velocity_factor', type=float, metavar=' ', default=2.0, help='Escape-velocity prefactor f in v_esc = f*sqrt(<v_star^2>+<v_BH^2>); 2 = rms escape speed (default)')
 
     args = parser.parse_args()
 
     if not (0 < args.star_formation_efficiency <= 1):
         parser.error('star_formation_efficiency (-sfe) must be in (0, 1]')
+
+    if args.escape_velocity_factor <= 0:
+        parser.error('escape_velocity_factor (-fesc) must be positive')
 
     config = {
         'N': args.number,
@@ -185,6 +190,7 @@ def parse_args():
         'f_ge': args.gas_expulsion_tcross,
         'f_Edd': args.eddington_ratio_cap,
         'c_s': args.gas_sound_speed,
+        'f_esc': args.escape_velocity_factor,
     }
 
     return config
@@ -207,6 +213,7 @@ def main():
     print('INITIALIZING...')
 
     init_stellar_mass_sampler(config['mass_bias_power'])
+    set_escape_factor(config['f_esc'])
     state = initialize_cluster(config)
 
     print('END OF INITIALIZATION. RUNTIME:', "{:.3g}".format(np.abs(time.time() - initialization_time_initial)), 's')
