@@ -6,7 +6,7 @@ $\tt Rapster$ stands for $\rm RAPid\ cluSTER$ evolution.
 
 Author: Konstantinos Kritos <konstantinos.kritos@stonybrook.edu>
 
-Version: 2.11.4, September 15, 2026.
+Version: 2.12.0, October 1, 2026.
 (Thanks to Tousif Islam for helping modularize this repository!)
 
 ![LOGO](.assets/LOGO.png)
@@ -179,6 +179,8 @@ For the user’s convenience, we paste the list of optional arguments in the for
 | -fge, --gas_expulsion_tcross | Gas expulsion timescale in units of the initial crossing time | float | ``5.0`` |
 | -fEdd, --eddington_ratio_cap | Eddington ratio ceiling for gas accretion onto compact objects (1.0 = hard Eddington cap) | float | ``1.0`` |
 | -cs, --gas_sound_speed | Gas sound speed [km/s] | float | ``10.0`` |
+| -fesc, --escape_velocity_factor | Escape-velocity prefactor $f$ in $v_{\rm esc}=f\sqrt{\langle v_\star^2\rangle+\langle v_{\rm BH}^2\rangle}$; $f=2$ is the rms escape speed, $f=\sqrt{10}$ gives $\sqrt{4GM_{\rm cl}/r_{\rm h}}$ (Mai et al. 2025) | float | ``2.0`` |
+
 
 ##### Note:
 
