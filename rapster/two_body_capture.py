@@ -186,7 +186,7 @@ def two_body_capture(seed, t, dt, z, zCl_form, k_2cap, mBH_avg, binaries, mBH, s
             # check if binary merges within the current step:
             if T_GW(m1, m2, sma, eccen) < np.min([dt, lookback_interp(zCl_form) - t]):
                 
-                if vGW_kick < 2 * np.sqrt(v_star**2 + vBH**2): # merger remnant retained in cluster
+                if vGW_kick < v_esc_cl(v_star, vBH): # merger remnant retained in cluster
                     
                     mBH_temp.append(m_rem)
                     sBH_temp.append(s_rem)

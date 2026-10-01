@@ -178,7 +178,7 @@ def evolve_BBHs(seed, t, z, dt, zCl_form, binaries, hardening, mergers, mBH, sBH
                     g_rem = np.max([g1, g2]) + 1
                     h_rem = h1 + h2
 
-                    if vGW_kick < 2 * np.sqrt(v_star**2 + vBH**2): # merger remnant retained in cluster
+                    if vGW_kick < v_esc_cl(v_star, vBH): # merger remnant retained in cluster
                         
                         mBH = np.append(mBH, m_rem)
                         sBH = np.append(sBH, s_rem)
@@ -523,7 +523,7 @@ def evolve_BBHs(seed, t, z, dt, zCl_form, binaries, hardening, mergers, mBH, sBH
                         sma = a_3bm[j_3bm]
                         eccen = e_3bm[j_3bm]
                         
-                        if vGW_kick < 2 * np.sqrt(v_star**2 + vBH**2): # merger remnant retained in cluster
+                        if vGW_kick < v_esc_cl(v_star, vBH): # merger remnant retained in cluster
                             
                             mBH = np.append(mBH, m_rem)
                             sBH = np.append(sBH, s_rem)
@@ -657,7 +657,7 @@ def evolve_BBHs(seed, t, z, dt, zCl_form, binaries, hardening, mergers, mBH, sBH
                 v12_after = m3 / (m1 + m2 + m3) * v_rel_after
                 
                 # check if single is ejected:
-                if v3_after > 2 * np.sqrt(v_star**2 + vBH**2) and type_int==2:
+                if v3_after > v_esc_cl(v_star, vBH) and type_int==2:
                     
                     mBH = np.delete(mBH, k3)
                     sBH = np.delete(sBH, k3)
@@ -669,12 +669,12 @@ def evolve_BBHs(seed, t, z, dt, zCl_form, binaries, hardening, mergers, mBH, sBH
                     N_BHej+=1
                     
                 if v12_after > 2 * vBH \
-                   and v12_after < 2 * np.sqrt(v_star**2 + vBH**2): # binary convection
+                   and v12_after < v_esc_cl(v_star, vBH): # binary convection
                     
                     t_conv = m_avg / (m1 + m2) * t_rlx
                     
                 # check if binary is ejected:
-                if v12_after > 2 * np.sqrt(v_star**2 + vBH**2):
+                if v12_after > v_esc_cl(v_star, vBH):
                     
                     # check if BBH mergers in the field:
                     if t + t_local + T_GW(m1, m2, a, e) < lookback_interp(zCl_form): # BBH merges
