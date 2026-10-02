@@ -1111,9 +1111,10 @@ def compute_external_params(state, config):
     Mcl = state['Mcl']; rh = state['rh']; R_gal = state['R_gal']
     v_gal = state['v_gal']
 
-    # Jacobi radius:
-    rJ = (G_Newton * Mcl * R_gal**2 / 3 / v_gal**2)**(1/3)
-
+    # Jacobi radius for an isothermal (flat rotation curve) galaxy:
+    # r_J^3 = G M / (Omega^2 - Phi'') = G M / (2 Omega^2), with Omega = v_gal / R_gal
+    rJ = (G_Newton * Mcl * R_gal**2 / 2 / v_gal**2)**(1/3)
+    
     # dimensionless escape rate:
     xi_e = xi_e0 * np.exp(10 * rh / rJ)
     state['xi_e'] = xi_e
