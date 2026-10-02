@@ -1119,7 +1119,8 @@ def compute_external_params(state, config):
     xi_e = xi_e0 * np.exp(10 * rh / rJ)
     state['xi_e'] = xi_e
 
-    # dynamical friction timescale:
+    # dynamical friction timescale 
+    # (Gnedin et al. 2014, Eq. 8; lnL = 5.8, eccentricity factor f_eps = 0.5):
     t_df = 0.45e3 * (R_gal / 1e3)**2 * v_gal / (Mcl / 1e5) / 2
     state['t_df'] = t_df
 
@@ -1192,8 +1193,9 @@ def update_cluster(state, config):
     # total expansion:
     drh = drh_sev + drh_rlx + drh_gas
 
-    # galactocentric radius step:
-    dR_gal = - R_gal * dt / t_df
+    # galactocentric radius step 
+    # (Gnedin et al. 2014, Eq. 7: dR^2/dt = -R^2/t_df  =>  dR/dt = -R/(2 t_df)):
+    dR_gal = - R_gal * dt / (2 * t_df)
 
     # cluster mass update:
     Mcl = Mcl + dMcl
