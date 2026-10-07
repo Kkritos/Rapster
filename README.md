@@ -6,7 +6,7 @@ $\tt Rapster$ stands for $\rm RAPid\ cluSTER$ evolution.
 
 Author: Konstantinos Kritos <konstantinos.kritos@stonybrook.edu>
 
-Version: 2.12.0, October 1, 2026.
+Version: 2.12.0, October 7, 2026.
 (Thanks to Tousif Islam for helping modularize this repository!)
 
 ![LOGO](.assets/LOGO.png)
@@ -465,7 +465,7 @@ $\tt Rapster$ has been used at least in the following works:
 
 - [R. O'Shaughnessy, R. Mechum, M. Qazalbash, Z. Rosenberg, M. Zeeshan (2026)](https://arxiv.org/abs/2609.05996)
 
-- [K. Kritos, F. Iacovelli, R. Perna, E. Berti (2026, to appear)]
+- [K. Kritos, F. Iacovelli, R. Perna, E. Berti (2026)](https://arxiv.org/abs/2609.26878)
 
 <a name="reportingbugs"></a>
 ### 9. Reporting bugs
