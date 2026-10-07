@@ -176,19 +176,19 @@ def initialize_cluster(config):
         # compute supernova kicks:
         if NKP==0:
             if   RP==0:
-                vSN_kick = (1 - np.vectorize(f_fb_delayed)(m_massive[m_rem > mBH_min], np.vectorize(M_CO_SEVN)(m_massive[m_rem > mBH_min], Z))) * \
-                           np.vectorize(get_SN_kick)(1.4 * np.ones(mBH.size), wSN_kick)
+                fallback = np.vectorize(f_fb_delayed, otypes=[float])(m_massive[m_rem > mBH_min], np.vectorize(M_CO_SEVN, otypes=[float])(m_massive[m_rem > mBH_min], Z))
+                vSN_kick = (1 - fallback) * np.vectorize(get_SN_kick, otypes=[float])(1.4 * np.ones(mBH.size), wSN_kick)
             elif RP==1:
-                vSN_kick = (1 - np.vectorize(f_fb_delayed)(m_massive[m_rem > mBH_min], np.vectorize(M_CO_SSE)(m_massive[m_rem > mBH_min], Z))) * \
-                           np.vectorize(get_SN_kick)(1.4 * np.ones(mBH.size), wSN_kick)
+                fallback = np.vectorize(f_fb_delayed, otypes=[float])(m_massive[m_rem > mBH_min], np.vectorize(M_CO_SSE, otypes=[float])(m_massive[m_rem > mBH_min], Z))
+                vSN_kick = (1 - fallback) * np.vectorize(get_SN_kick, otypes=[float])(1.4 * np.ones(mBH.size), wSN_kick)
             elif RP==2:
-                vSN_kick = (1 - np.vectorize(f_fb_rapid)(m_massive[m_rem > mBH_min], np.vectorize(M_CO_SEVN)(m_massive[m_rem > mBH_min], Z))) * \
-                           np.vectorize(get_SN_kick)(1.4 * np.ones(mBH.size), wSN_kick)
+                fallback = np.vectorize(f_fb_rapid, otypes=[float])(m_massive[m_rem > mBH_min], np.vectorize(M_CO_SEVN, otypes=[float])(m_massive[m_rem > mBH_min], Z))
+                vSN_kick = (1 - fallback) * np.vectorize(get_SN_kick, otypes=[float])(1.4 * np.ones(mBH.size), wSN_kick)
             elif RP==3:
-                vSN_kick = (1 - np.vectorize(f_fb_rapid)(m_massive[m_rem > mBH_min], np.vectorize(M_CO_SSE)(m_massive[m_rem > mBH_min], Z))) * \
-                           np.vectorize(get_SN_kick)(1.4 * np.ones(mBH.size), wSN_kick)
+                fallback = np.vectorize(f_fb_rapid, otypes=[float])(m_massive[m_rem > mBH_min], np.vectorize(M_CO_SSE, otypes=[float])(m_massive[m_rem > mBH_min], Z))
+                vSN_kick = (1 - fallback) * np.vectorize(get_SN_kick, otypes=[float])(1.4 * np.ones(mBH.size), wSN_kick)
         elif NKP==1:
-            vSN_kick = np.vectorize(get_SN_kick)(mBH, wSN_kick)
+            vSN_kick = np.vectorize(get_SN_kick, otypes=[float])(mBH, wSN_kick)
 
         # retain BHs with SN kick < escape velocity:
         mBH = mBH[vSN_kick < v_esc(Mcl + M_gas_BHform, rh)]
@@ -227,7 +227,7 @@ def initialize_cluster(config):
         # Fallback kicks (NKP==0) are not available for BMD>0 because there is no
         # stellar progenitor or CO core mass to compute the fallback fraction from.
         # Momentum-conservation kicks only depend on the BH mass, so they apply regardless.
-        vSN_kick = np.vectorize(get_SN_kick)(mBH, wSN_kick)
+        vSN_kick = np.vectorize(get_SN_kick, otypes=[float])(mBH, wSN_kick)
         mBH = mBH[vSN_kick < v_esc(Mcl + M_gas_BHform, rh)]
 
     # optionally override BH masses from external file:
