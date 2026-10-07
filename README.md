@@ -1,4 +1,14 @@
 # Rapster
+
+<p align="center">
+	<a href="https://github.com/Kkritos/Rapster/releases"><img src="https://img.shields.io/badge/version-2.11.4-blue" alt="version"></a>
+	<a href="https://arxiv.org/abs/2210.10055"><img src="https://img.shields.io/badge/arXiv-2210.10055-b31b1b.svg" alt="arXiv"></a>
+	<a href="https://github.com/Kkritos/Rapster/blob/main/LICENSE"><img src="https://img.shields.io/github/license/Kkritos/Rapster" alt="license"></a>
+	<img src="https://img.shields.io/badge/python-3.10+-blue.svg" alt="python">
+	<a href="https://github.com/Kkritos/Rapster"><img src="https://img.shields.io/badge/created-September%202022-blue" alt="created"></a>
+	<a href="https://github.com/Kkritos/Rapster/commits/main"><img src="https://img.shields.io/github/last-commit/Kkritos/Rapster?label=last%20updated" alt="last updated"></a>
+</p>
+
 Rapid population synthesis code for compact binary coalescences in dense stellar clusters.
 
 $\tt Rapster$ stands for $\rm RAPid\ cluSTER$ evolution.
