@@ -5,6 +5,8 @@ All notable changes to Rapster will be documented in this file.
 ## [Unreleased]
 
 ### Added
+- Validate external BH input archives: require an existing `.npz` file with a one-dimensional `mBH_ini` array of finite, positive real masses in solar masses. Empty arrays remain supported.
+- Validate CLI numeric ranges and categorical options before simulation setup.
 - Beta spin distribution option (`-SD 2`). Draws natal BH spins from a Beta(1.4, 3.6) distribution scaled by `s1g_max`. Usage: `python -m rapster.run_cluster -SD 2 -s <max_spin>`.
 - This CHANGELOG file to track changes to the project.
 - Random mass pairing option (`-RMP 1` / `--random_mass_pairing_2body_3body 1`). When enabled, 3-body binary formation and 2-body capture use uniform random pairing instead of mass-weighted (m^5 and m^2 respectively). Default is mass-weighted (`-RMP 0`).
@@ -14,6 +16,7 @@ All notable changes to Rapster will be documented in this file.
 - Escape-velocity prefactor (`-fesc` / `--escape_velocity_factor`, default `2.0`). The escape velocity is v_esc = f*sqrt(<v_star^2> + <v_BH^2>), with <v^2> = 0.4 G M / r. It applies to natal-kick retention of BHs and NSs, merger-remnant retention, and dynamical ejection of single BHs and BBHs after BBH-BH encounters. `f = 2` (default) is the mass-weighted rms escape speed and reproduces previous results exactly. `f = sqrt(10)` gives v_esc = sqrt(4 G M_cl / r_h), the estimate used by Mai, Kremer & Kiroglu (2025) for the CMC colossus model. The value used is printed to `log.txt`. Usage: `python -m rapster.run_cluster -fesc 3.16227766`.
 
 ### Changed
+- Align the external BH input default filename with the README (`input_BHs.npz`) and update README dependency versions, CLI defaults, example paths, output formats, and units.
 - Refactored `run_cluster.py` from a monolithic script into modular functions: `parse_args()`, `initialize_cluster()`, `compute_cluster_properties()`, `compute_timescales()`, `form_binaries()`, `evolve_interactions()`, `compute_external_params()`, `evolve_tdes()`, `record_evolution()`, `update_cluster()`, `print_status()`, and `write_output()`. All simulation state is bundled in a `state` dictionary. No logic changes.
 - Added docstrings to all 12 functions in `run_cluster.py` describing their purpose, arguments, and return values.
 - Resolved TODO comments in `run_cluster.py`: added visual delimiter before `__main__` block and inline docstring.
@@ -34,6 +37,7 @@ All notable changes to Rapster will be documented in this file.
 - Dynamical friction now integrates Eq. (7) of Gnedin, Ostriker & Tremaine (2014), dR_g^2/dt = -R_g^2/t_df, i.e. dR_g/dt = -R_g/(2 t_df). It previously used dR_g/dt = -R_g/t_df, which made the orbital decay a factor of 2 faster than the cited prescription. The dynamical-friction timescale itself is unchanged and follows their Eq. (8), t_df = 0.45 Gyr (R_g/kpc)^2 (v_g/km s^-1) (M_cl/1e5 Msun)^-1 f_eps, with ln Lambda = 5.8 and eccentricity factor f_eps = 0.5. Example: a 1e6 Msun cluster at R_g = 1 kpc moves inward by ~70 pc in 1 Gyr instead of ~130 pc. Runs made with earlier versions used the faster decay.
 
 ### Fixed
+- Correct the evolution output header to label `k_tdeBHstar`; evolution files contain 71 columns, including BBH-star TDE counts and residual gas mass.
 - Fixed a runtime crash when the BH initialization produced zero black holes: `np.vectorize` calls on empty arrays now specify `otypes=[float]` in `cluster_evolution.py`, preventing `ValueError` during empty-array natal-kick processing.
 - Renamed `type` variable to `tde_type` in `tidal_disruptions.py` and `cluster_evolution.py` to avoid shadowing Python's builtin `type()`.
 - Populated `__init__.py` with public API exports. Users can now do `from rapster import initialize_cluster, analyze_cluster, generate_all_plots` etc. CLI-specific functions (`parse_args`, `main`) remain in `run_cluster.py`.

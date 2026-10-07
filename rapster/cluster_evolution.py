@@ -27,6 +27,36 @@ from .exchanges import StarStar_to_BHstar, BHstar_to_BBH
 from .tidal_disruptions import BH_TidalDisruptions
 from .compact_accretion import *
 from .remnant import configure_kick_model
+from zipfile import BadZipFile
+
+
+def _load_initial_bh_masses(input_file):
+    """Load and validate initial BH masses from a NumPy .npz archive."""
+    try:
+        archive = np.load(input_file, allow_pickle=False)
+    except (BadZipFile, EOFError, OSError, ValueError) as error:
+        raise ValueError(f'could not read initial black-hole input file {input_file!r}') from error
+
+    if not isinstance(archive, np.lib.npyio.NpzFile):
+        raise ValueError(f'initial black-hole input file {input_file!r} must be a .npz archive')
+
+    try:
+        if 'mBH_ini' not in archive.files:
+            raise ValueError(f'initial black-hole input file {input_file!r} must contain an mBH_ini array')
+        masses = np.asarray(archive['mBH_ini'])
+    finally:
+        archive.close()
+
+    if masses.ndim != 1:
+        raise ValueError('mBH_ini must be a one-dimensional array of initial BH masses in Msun')
+    if not np.issubdtype(masses.dtype, np.number) or np.iscomplexobj(masses):
+        raise ValueError('mBH_ini must contain real numeric masses in Msun')
+
+    masses = masses.astype(float, copy=False)
+    if not np.all(np.isfinite(masses)) or np.any(masses <= 0):
+        raise ValueError('mBH_ini must contain only finite, positive masses in Msun')
+
+    return masses
 
 
 def initialize_cluster(config):
@@ -232,7 +262,7 @@ def initialize_cluster(config):
 
     # optionally override BH masses from external file:
     if Bi==1:
-        mBH = np.load(input_BH_file)['mBH_ini']
+        mBH = _load_initial_bh_masses(input_BH_file)
         mBH = mBH + 0.01 * np.random.rand(mBH.size)
 
     # BH spins:
@@ -1037,7 +1067,7 @@ def evolve_tdes(state, config):
 
 
 def record_evolution(state):
-    """Append a row of 69 time-dependent quantities to the evolution array.
+    """Append a row of 71 time-dependent quantities to the evolution array.
 
     Records the current cluster and BH subsystem state (masses, radii, densities,
     velocities, timescales, event counts, TDE statistics) as a single row in
@@ -1086,7 +1116,7 @@ def record_evolution(state):
     N_tdeBHstar = state['N_tdeBHstar']
     N_tdeBBHstar = state['N_tdeBBHstar']
 
-    # append a row of 70 time-dependent quantities to the evolution array:
+    # append a row of 71 time-dependent quantities to the evolution array:
     state['evolution'].append([seed, t, z, dt, m_avg, Mcl, rh, R_gal, v_gal, t_rlx, tBH_rlx, n_star, N_BH, mBH_avg, mBH_max, rh_BH, rc_BH, S,
                                        xi, psi, psi_BH, t_3bb, t_2cap, k_3bb, k_2cap, N_me, N_BBH, N_meRe, N_meEj, v_star, vBH,
                                        nh_BH, nc_BH, na_BH, N_3bb, N_2cap, N_3cap, N_BHej, N_BBHej, N_dis, N_ex, t_bb, N_bb,
@@ -1292,7 +1322,7 @@ def write_output(state, config):
       - outputBHs.pkl: BH masses, spins, and generations at every timestep.
       - tdes.txt: Tidal disruption event parameters.
       - mergers.txt: BBH merger source parameters (plus initial/final cluster state).
-      - evolution.txt: Time-dependent cluster and BH subsystem quantities (69 columns).
+            - evolution.txt: Time-dependent cluster and BH subsystem quantities (71 columns).
       - hardening.txt: BBH hardening track details (12 columns).
 
     Args:

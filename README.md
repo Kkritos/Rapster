@@ -61,21 +61,16 @@ The available equations of state are in the ``EOS_TABLES`` registry in ``rapster
 <a name="requirements"></a>
 ### 2. Requirements
 
-The following Python packages are required to run the code:
+Rapster supports Python >= 3.10. Its declared dependencies are:
 
-- $\tt numpy$ (=2.2.4)
-- $\tt scipy$ (=1.15.2)
-- $\tt pandas$ (=2.2.3)
-
-The code is tested with the package versions shown in parentheses above; however, other versions likely work as well.
-
-We recommend creating and working in a local Python environment with Python >= 3.10 and installing all the dependencies listed above.
-
-The following packages are recommended for running the tutorial notebook in ``Examples/``, but are not necessary to run cluster simulations:
-
+- $\tt numpy$ (=1.26.4)
+- $\tt scipy$ (=1.11.4)
+- $\tt pandas$ (=2.1.3)
 - $\tt matplotlib$
-- $\tt jupyterlab$
-- $\tt ipykernel$
+- $\tt astropy$
+- $\tt jupyterlab$ and $\tt ipykernel$ (for the tutorial notebook)
+
+The NumPy, SciPy, and pandas versions are pinned in ``pyproject.toml``; the other listed dependencies are unpinned. The CLI imports Matplotlib even when plotting is disabled. JupyterLab and ipykernel are only needed to run the tutorial notebook in ``Example/``.
 
 First, create an environment called ``.rapsterenv`` in the root directory of the repository Rapster/, and hidden from view:
 
@@ -99,9 +94,9 @@ Finally, include the virtual environment in the kernel:
 
 > python -m ipykernel install --user --name=rapsterenv --display-name "Python (.rapsterenv)"
 
-To use the ``gwModel_kick_prec_flow`` recoil kick model (``-RK 1``), install [gwModels](https://github.com/tousifislam/gwModels):
+To install Rapster with the optional ``gwModel_kick_prec_flow`` recoil kick dependency (``-RK 1``), run this from the repository root:
 
-> pip install gwModels[kicks]
+> pip install -e '.[gwkick]'
 
 <a name="units"></a>
 ### 3. Units
@@ -128,7 +123,7 @@ For the user’s convenience, we paste the list of optional arguments in the for
 
 | Flag | Description | Type | Default |
 |:--- |:--- |:--- |:--- |
-| -N, --number | Initial number of stars | int | ``1000000`` |
+| -N, --number | Initial number of stars | float | ``1000000`` |
 | -r, --half_mass_radius | Initial half-mass radius [pc] | float | ``1`` |
 | -mm, --minimum_star_mass | Smallest ZAMS mass [Msun] (not below 0.08 suns) | float | ``0.08`` |
 | -mM, --maximum_star_mass | Largest ZAMS mass [Msun] (not above 340 suns) | float | ``150`` |
@@ -139,9 +134,9 @@ For the user’s convenience, we paste the list of optional arguments in the for
 | -S, --seed | Seed number | int | ``1234567890`` |
 | -dtm, --minimum_time_step | Minimum simulation time-step [Myr] | float | ``0.1`` |
 | -dtM, --maximum_time_step | Maximum simulation time-step [Myr] | float | ``50.0`` |
-| -tM, --maximum_time | Maximum simulation time [Myr] | float | ``140000.0`` |
+| -tM, --maximum_time | Maximum simulation time [Myr] | float | ``14000.0`` |
 | -wK, --supernova_kick_parameter | One-dimensional supernova kick parameter [km/s] | float | ``265.0`` |
-| -K, --natal_kick_prescription | Natal kick prescription (0 for fallback, 1 for momentum conservation) | int | ``0`` |
+| -K, --natal_kick_prescription | Natal kick prescription (0 for fallback, 1 for momentum conservation) | int | ``1`` |
 | -R, --galactocentric_radius | Initial galactocentric radius [pc] | float | ``8000.0`` |
 | -vg, --galactocentric_velocity | Galactocentric circular velocity [km/s] | float | ``220.0`` |
 | -s, --spin_parameter | Natal spin parameter of first generation (1g) BHs | float | ``0.0`` |
@@ -154,13 +149,13 @@ For the user’s convenience, we paste the list of optional arguments in the for
 | -Hi, --hardening_file_indicator | Export hardening file (0 for no, 1 for yes) | int | ``1`` |
 | -HF, --hardening_file_name | Name of .txt output file with BBH time evolution information | str | ``hardening`` |
 | -BIi, --blackholes_in_file_indicator | Use external BH file (0 for no, 1 for yes) | int | ``0`` |
-| -BIF, --blackholes_in_file_name | Name of .npz input file with initial BH masses | str | ``input_BHs.npz`` |
+| -BIF, --blackholes_in_file_name | .npz archive containing a one-dimensional ``mBH_ini`` array of initial BH masses [Msun] | str | ``input_BHs.npz`` |
 | -BOi, --blackholes_out_file_indicator | Export BH masses file (0 for no, 1 for yes) | int | ``1`` |
-| -BOF, --blackholes_out_file_name | Name of .npz file with the masses of all BHs in solar masses | str | ``output_BHs.npz`` |
+| -BOF, --blackholes_out_file_name | Name of the .pkl file containing all BH masses in solar masses | str | ``outputBHs`` |
 | -RP, --remnant_mass_prescription | Remnant mass prescription (0 for SEVN delayed, 1 for Fryer+2012 delayed, 2 for SEVN rapid, 3 for Fryer+2012 rapid) | int | ``1`` |
 | -NS, --with_neutron_stars | Include neutron stars (if =1 with monochromatic at 1.4 suns by default, =2 with bimodal NS mass distribution from Rocha et al. 2023, or =3 with uniform NS mass distribution between the minimum NS mass and the TOV mass of the chosen EoS) else no (if =0) | int | ``2`` |
 | -WT, --with_tdes | Include tdes (if =1) else no (if =0) | int | ``1`` |
-| -Ti, --tdes_file_indicator | Export tdes file (0 for no, 1 for yes) | 1 | ``1`` |
+| -Ti, --tdes_file_indicator | Export tdes file (0 for no, 1 for yes) | int | ``1`` |
 | -TF, --tdes_file_name | Name of .txt file containing tde parameters | str | ``tdes`` |
 | -MBH, --massive_black_hole_mass | Mass of the seed massive BH (if >0) | float | ``0`` |
 | -sBH, --massive_black_hole_spin | Spin of the seed massive BH (from 0 to 1) | float | ``0`` |
@@ -189,8 +184,6 @@ The initial value of the central stellar density is set by default to 5.3e5 (pc^
 <a name="runningasimulation"></a>
 ### 5. Running a simulation
 
-usage: -m [-h] [-N] [-r] [-mm] [-mM] [-Z] [-z] [-n] [-fb] [-S] [-dtm] [-dtM] [-tM] [-wK] [-K] [-R] [-vg] [-s] [-SD] [-P] [-Mi] [-MF] [-Ei] [-EF] [-Hi] [-HF] [-BIi] [-BIF] [-BOi] [-BOF] [-RP] [-NS] [-WT] [-Ti] [-TF] [-MBH] [-sBH] [-RF] [-BMD] [-mBH1gMin] [-mBH1gMax] [-RMP] [-plot] [-analyze] [-fA] [-mb] [-EoS] [-RK]
-
 ##### Examples:
 
 Run with default parameters:
@@ -215,15 +208,15 @@ Run with beta spin distribution and random mass pairing:
 
 ##### Testing:
 
-To test the code, execute the program with all defaults:
+For a lightweight smoke test, run:
 
-> python -m rapster.run_cluster
+> python -m rapster.run_cluster -N 100 -tM 1 -dtM 1 -P 0 -Mi 0 -Ei 0 -Hi 0 -BOi 0 -Ti 0 -plot 0 -analyze 0 -RF Results_smoke
 
-from any directory, with the virtual environment (.rapsterenv) enabled.
+This creates ``Results_smoke/log.txt``. To reproduce the bundled reference outputs, run the default configuration; the full default simulation is substantially larger than the smoke test.
 
-This should create five files: ``Results/mergers.txt``, ``Results/evolution.txt``, ``Results/hardening.txt``, ``Results/tdes.txt``, ``Results/outputBHs.pkl``, and ``Results/log.txt`` inside the newly created folder Results/ within your current directory. All output files include column headers prefixed with ``#``. If ``-plot 1`` is passed, diagnostic plots are saved to ``Results/plots/``. To check and verify whether you have produced these files correctly, we include the corresponding files ``/Rapster/Example/Results_Test/mergers.txt``, ``/Rapster/Example/Results_Test/evolution.txt``, ``/Rapster/Example/Results_Test/hardening.txt``, ``/Rapster/Example/Results_Test/tdes.txt``, and ``/Rapster/Example/Results_Test/outputBHs.npz``, where /Rapster/ is the root directory of the repository, with data that should match your output.
+The default run writes four text tables (``mergers.txt``, ``evolution.txt``, ``hardening.txt``, and ``tdes.txt``), one BH snapshot file (``outputBHs.pkl``), and ``log.txt`` in ``Results/`` under the current working directory. The text tables have column headers prefixed with ``#``; ``outputBHs.pkl`` is a pickle containing BH masses, spins, generations, TDE counts, and simulation times. If ``-plot 1`` is passed, diagnostic plots are saved to ``Results/plots/``. Reference outputs are included in ``Example/Results_Test/``.
 
-We also include a Python notebook ``/Rapster/Example/example.ipynb`` that loads the data results from ``/Rapster/Example/Results_Test/`` and generates some plots. As a check, the user is encouraged to load their simulated results and redo the plots in the provided example notebook.
+We also include ``Example/tutorial.ipynb``, which loads the reference results and generates plots. You can use it to inspect your own simulation results as well.
 
 To run the notebook, open JupyterLab:
 
@@ -235,9 +228,9 @@ Different seed values yield different system realizations under the same initial
 <a name="outputfiles"></a>
 ### 6. Output files:
 
-At the end of each simulation, the code generates by default four .txt and one .pkl file: one with information about all dynamical mergers that took place during the simulation; a second file that keeps track of time-dependent quantities during the evolution; a third file that stores information about the hardening evolution of each BBH; a fourth file that includes properties of all TDEs that occurred during the simulation; and finally, a file with the properties of all BHs in the cluster at each timestep.
+At the end of each simulation, the code generates by default four ``.txt`` tables and one ``.pkl`` file: dynamical mergers, time-dependent cluster evolution, BBH hardening, TDEs, and BH properties at each timestep. It also writes ``log.txt``.
 
-All output files are exported in a ``<Results>/`` folder in the current directory where the code has been run.
+The files are exported in the configured results folder (``Results/`` by default) under the current working directory.
 
 a) Column description of mergers .txt file:
 
@@ -280,7 +273,7 @@ a) Column description of mergers .txt file:
 | 35 | $R_{\rm gal}$ | Final cluster galactocentric radius ($\rm pc$)|
 
 ##### Note:
-CBC assembly channel (first column of mergers file), the ``-`` sign means BBH was ejected and merged outside the cluster:
+CBC assembly channel (third column of mergers file), the ``-`` sign means BBH was ejected and merged outside the cluster:
 - ``(-)1``: exchange processes
 -    ``2``: two-body capture
 - ``(-)3``: three-BH binary induced
@@ -290,7 +283,7 @@ CBC assembly channel (first column of mergers file), the ``-`` sign means BBH wa
 
 b) Column description of evolution .txt file:
 
-| Columnn | Variable | Description |
+| Column | Variable | Description |
 |:--- |:--- |:--- |
 | 1 | $\rm seed$ | seed of the simulation |
 | 2 | $t$ | Simulation time ($\rm Myr$) |
@@ -299,7 +292,7 @@ b) Column description of evolution .txt file:
 | 5 | $\overline{m}$ | Average mass ($M_\odot$) |
 | 6 | $M_{\rm cl}$ | Cluster mass ($M_\odot$) |
 | 7 | $r_{\rm h}$ | Half-mass radius ($\rm pc$) |
-| 8 | $R_{\rm gal}$ | Galactocentric radius ($\rm kpc$) |
+| 8 | $R_{\rm gal}$ | Galactocentric radius ($\rm pc$) |
 | 9 | $v_{\rm gal}$ | Galactocentric velocity ($\rm km\ s^{-1}$) |
 | 10 | $\tau_{\rm rlx}$ | Half-mass relaxation timescale ($\rm Myr$) |
 | 11 | $\tau_{\rm rlx,BH}$ | BH half-mass relaxation time ($\rm Myr$) |
@@ -361,10 +354,12 @@ b) Column description of evolution .txt file:
 | 67 | $k_{\rm tde,BHstar}$ | Number of BH-star TDEs in the current timestep |
 | 68 | $\Gamma_{\rm tde,BHstar}$ | BH-star TDE rate ($\rm Myr^{-1}$) |
 | 69 | $N_{\rm tde,BHstar}$ | Cumulative number of BH-star TDEs |
+| 70 | $N_{\rm tde,BBHstar}$ | Cumulative number of BBH-star TDEs |
+| 71 | $M_{\rm gas}$ | Residual gas mass ($M_\odot$) |
 
 c) Column description of hardening .txt file:
 
-| Columnn | Variable | Description |
+| Column | Variable | Description |
 |:--- |:--- |:--- |
 | 1 | $t$ | Global time ($\rm Myr$) |
 | 2 | $dt$ | Global timestep ($\rm Myr$) |
@@ -393,12 +388,12 @@ The local simulation is terminated unless ${\rm condition}=0$.
 
 d) Column description of tdes .txt file:
 
-| Columnn | Variable | Description |
+| Column | Variable | Description |
 |:--- |:--- |:--- |
 | 1 | $\rm seed$ | Simulation seed number |
 | 2 | $t$ | Simulation time of TDE event ($\rm Myr$) |
 | 3 | $z$ | Redshift of TDE event |
-| 4 | $\rm type$ | Type of TDE (1, 2, 3, or 11), see Note below this table |
+| 4 | $\rm type$ | Type of TDE (1, 2, 3, 4, 11, 21, or 22), see Note below this table |
 | 5 | $m_{\rm star}$ | Mass of the star disrupted ($M_\odot$) |
 | 6 | $R_{\rm star}$ | Radius of the star disrupted ($\rm pc$) |
 | 7 | $m_{\rm BH}$ | Mass of the compact object ($M_\odot$) |
