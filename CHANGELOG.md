@@ -34,6 +34,7 @@ All notable changes to Rapster will be documented in this file.
 - Dynamical friction now integrates Eq. (7) of Gnedin, Ostriker & Tremaine (2014), dR_g^2/dt = -R_g^2/t_df, i.e. dR_g/dt = -R_g/(2 t_df). It previously used dR_g/dt = -R_g/t_df, which made the orbital decay a factor of 2 faster than the cited prescription. The dynamical-friction timescale itself is unchanged and follows their Eq. (8), t_df = 0.45 Gyr (R_g/kpc)^2 (v_g/km s^-1) (M_cl/1e5 Msun)^-1 f_eps, with ln Lambda = 5.8 and eccentricity factor f_eps = 0.5. Example: a 1e6 Msun cluster at R_g = 1 kpc moves inward by ~70 pc in 1 Gyr instead of ~130 pc. Runs made with earlier versions used the faster decay.
 
 ### Fixed
+- Fixed a runtime crash when the BH initialization produced zero black holes: `np.vectorize` calls on empty arrays now specify `otypes=[float]` in `cluster_evolution.py`, preventing `ValueError` during empty-array natal-kick processing.
 - Renamed `type` variable to `tde_type` in `tidal_disruptions.py` and `cluster_evolution.py` to avoid shadowing Python's builtin `type()`.
 - Populated `__init__.py` with public API exports. Users can now do `from rapster import initialize_cluster, analyze_cluster, generate_all_plots` etc. CLI-specific functions (`parse_args`, `main`) remain in `run_cluster.py`.
 - Replaced `np.transpose(array)[:][i]` with `array[:, i]` across `cluster_evolution.py` (15 instances), `binary_evolution.py` (4 instances), and `exchanges.py` (3 instances). Standard NumPy column indexing idiom — more readable and avoids unnecessary transpose.
