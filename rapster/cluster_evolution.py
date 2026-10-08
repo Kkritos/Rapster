@@ -265,6 +265,14 @@ def initialize_cluster(config):
         mBH = _load_initial_bh_masses(input_BH_file)
         mBH = mBH + 0.01 * np.random.rand(mBH.size)
 
+    # core collapse of the BH subsystem (onset of balanced evolution): BHs mass-segregate on
+    # t_seg ~ (<m>/<m_BH>) t_rh (Spitzer 1969), with t_rh the initial single-mass (psi = 1)
+    # relaxation time and k_cc an order-unity constant. If no BHs are retained, keep the
+    # IMF-based estimate computed above.
+    if mBH.size > 0:
+        t_rlx0_single = t_relax(Mcl0 + M_gas0, rh0, m_avg, 1.0, np.log(np.e + lc * N))
+        t_cc = k_cc * m_avg / np.mean(mBH) * t_rlx0_single
+
     # BH spins:
     if SD==0:
         sBH = np.random.uniform(0, s1g_max, mBH.size)
