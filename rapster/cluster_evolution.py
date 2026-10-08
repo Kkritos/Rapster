@@ -458,9 +458,11 @@ def compute_cluster_properties(state, config):
     # Cluster Coulomb logarithm:
     logLcl = 10.0
 
-    # BH Coulomb logarithm:
+    # BH Coulomb logarithm, Lambda_BH = 0.02 N_BH (Breen & Heggie 2013), smoothly
+    # floored at 1 (their small-N_BH limit): ln(e + 0.02 N_BH) -> 1 as N_BH -> 0
+    # and -> ln(0.02 N_BH) for N_BH >> 136:
     if i_aux1==1 and N_BH>0:
-        logLBH = 1.0
+        logLBH = np.log(np.e + lc * N_BH)
     else:
         logLBH = 0.0
 
