@@ -476,7 +476,8 @@ def compute_cluster_properties(state, config):
         xi = 1
     else:
         if i_aux1==1:
-            xi = c_xi * q_BH**(3/5) * Q_BH**(2/5) * (logLBH / logLcl)**(-2/5)
+            # c_xi: order-unity prefactor (Breen & Heggie 2013 give only the scaling); set by -cxi
+            xi = config['c_xi'] * q_BH**(3/5) * Q_BH**(2/5) * (logLBH / logLcl)**(-2/5)
         else:
             xi = 0.0
 

@@ -109,13 +109,6 @@ zeta = 0.08
 # (Antonini & Gieles 2020, Eq. 12):
 a1_psi = 1.47
 
-
-# Order-unity prefactor in the BH-to-star temperature ratio,
-# xi = c_xi q^(3/5) Q^(2/5) (lnL_BH/lnL)^(-2/5) (Breen & Heggie 2013, Sec. 2.3; their
-# relation holds only up to a constant). Since r_h,BH = Q q r_h / xi, r_h,BH scales as 1/c_xi.
-# Default 1 (no change); to be calibrated against the CMC Cluster Catalog:
-c_xi = 1.0
-
 # BH burning coefficient:
 zeta_BH = zeta
 

@@ -130,6 +130,7 @@ def parse_args():
     parser.add_argument('-fEdd', '--eddington_ratio_cap', type=float, metavar=' ', default=1.0, help='Eddington ratio ceiling for gas accretion onto compact objects (1.0 = hard Eddington cap)')
     parser.add_argument('-cs', '--gas_sound_speed', type=float, metavar=' ', default=10.0, help='Gas sound speed [km/s]')
     parser.add_argument('-fesc', '--escape_velocity_factor', type=float, metavar=' ', default=2.0, help='Escape-velocity prefactor f in v_esc = f*sqrt(<v_star^2>+<v_BH^2>); 2 = rms escape speed (default)')
+    parser.add_argument('-cxi', '--bh_temperature_prefactor', type=float, metavar=' ', default=1.0, help='Prefactor c_xi of the BH-to-star temperature ratio xi = c_xi q^(3/5) Q^(2/5) (lnL_BH/lnL)^(-2/5) (Breen & Heggie 2013); r_h,BH scales as 1/c_xi')
 
     args = parser.parse_args()
 
@@ -144,7 +145,7 @@ def parse_args():
         'spin_parameter', 'massive_black_hole_mass', 'massive_black_hole_spin',
         'min_1g_bh_mass', 'max_1g_bh_mass', 'accreted_fraction', 'mass_bias_power',
         'star_formation_efficiency', 'gas_expulsion_tcross', 'eddington_ratio_cap',
-        'gas_sound_speed', 'escape_velocity_factor',
+        'gas_sound_speed', 'escape_velocity_factor', 'bh_temperature_prefactor',
     )
     for name in float_parameters:
         if not np.isfinite(getattr(args, name)):
@@ -189,6 +190,9 @@ def parse_args():
 
     if args.escape_velocity_factor <= 0:
         parser.error('escape_velocity_factor (-fesc) must be positive')
+
+    if args.bh_temperature_prefactor <= 0:
+        parser.error('bh_temperature_prefactor (-cxi) must be positive')
 
     config = {
         'N': args.number,
@@ -243,6 +247,7 @@ def parse_args():
         'f_Edd': args.eddington_ratio_cap,
         'c_s': args.gas_sound_speed,
         'f_esc': args.escape_velocity_factor,
+        'c_xi': args.bh_temperature_prefactor,
     }
 
     return config
