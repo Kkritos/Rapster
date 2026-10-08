@@ -147,7 +147,7 @@ def initialize_cluster(config):
         / integrate.quad(IMF_kroupa, m_min, m_max)[0] / m_avg**(5/2)
 
     # initial relaxation timescale:
-    t_rlx0 = t_relax(Mcl0 + M_gas0, rh0, m_avg, psi0, np.log(lc * N))
+    t_rlx0 = t_relax(Mcl0 + M_gas0, rh0, m_avg, psi0, np.log(np.e + lc * N))
 
     # core collapse timescale:
     t_cc = k_cc * t_rlx0
@@ -455,8 +455,9 @@ def compute_cluster_properties(state, config):
     # individual BH mass ratio:
     q_BH = mBH_avg / m_avg
 
-    # Cluster Coulomb logarithm:
-    logLcl = 10.0
+    # Cluster Coulomb logarithm, Lambda = 0.02 N (Breen & Heggie 2013), smoothly floored at 1;
+    # N = M_cl / <m> is the current number of stars:
+    logLcl = np.log(np.e + lc * Mcl / m_avg)
 
     # BH Coulomb logarithm, Lambda_BH = 0.02 N_BH (Breen & Heggie 2013), smoothly
     # floored at 1 (their small-N_BH limit): ln(e + 0.02 N_BH) -> 1 as N_BH -> 0
