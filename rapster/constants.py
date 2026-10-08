@@ -105,6 +105,10 @@ nu_sev = 0.07
 # Burning coefficient:
 zeta = 0.08
 
+# Multimass relaxation factor coefficient, psi = 1 + a1_psi * f_BH / 0.01
+# (Antonini & Gieles 2020, Eq. 12):
+a1_psi = 1.47
+
 # BH burning coefficient:
 zeta_BH = zeta
 
