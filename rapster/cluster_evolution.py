@@ -464,21 +464,24 @@ def compute_cluster_properties(state, config):
     else:
         logLBH = 0.0
 
-    # Spitzer parameter:
+    # Spitzer parameter (Spitzer 1969); stars and BHs can reach
+    # energy equipartition only if S < 0.16:
     S = Q_BH * q_BH**(3/2)
 
-    # Spitzer instability condition:
+    # BH-to-star temperature ratio (xi = 1: equipartition; Breen & Heggie 2013):
     if S < 0.16 and S > 0:
         xi = 1
-        S = Q_BH * q_BH
     else:
         if i_aux1==1:
             xi = q_BH**(3/5) * Q_BH**(2/5) * (logLBH / logLcl)**(-2/5)
         else:
             xi = 0.0
 
-    # multimass relaxation factor:
-    psi = 1 + S
+    # multimass relaxation factor, N-body calibration of Antonini & Gieles (2020, Eq. 12):
+    # psi = 1 + a1 f_BH / 0.01, with f_BH = M_BH / M_cl = Q_BH.
+    # (Replaces psi = 1 + S, which assumes equipartition and overestimates psi
+    # by a factor ~3 once S > 0.16 and the BHs decouple from the stars.)
+    psi = 1 + a1_psi * Q_BH / 0.01
 
     # BH relaxation factor:
     if i_aux1==1 and N_BH>0:
