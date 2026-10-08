@@ -14,6 +14,8 @@ All notable changes to Rapster will be documented in this file.
 - Post-simulation analysis summary via `analyze_cluster()` (`-analyze 1`). Prints merger statistics (total, in-cluster, ejected, per channel, retained), maximum dynamically-formed BH mass, BH generation counts, TDE summary, and final cluster state. New `analyze_cluster.py` module.
 - All output is now saved to `Results/log.txt`. With `-P 1` output goes to both screen and log; with `-P 0` output goes only to the log file.
 - Escape-velocity prefactor (`-fesc` / `--escape_velocity_factor`, default `2.0`). The escape velocity is v_esc = f*sqrt(<v_star^2> + <v_BH^2>), with <v^2> = 0.4 G M / r. It applies to natal-kick retention of BHs and NSs, merger-remnant retention, and dynamical ejection of single BHs and BBHs after BBH-BH encounters. `f = 2` (default) is the mass-weighted rms escape speed and reproduces previous results exactly. `f = sqrt(10)` gives v_esc = sqrt(4 G M_cl / r_h), the estimate used by Mai, Kremer & Kiroglu (2025) for the CMC colossus model. The value used is printed to `log.txt`. Usage: `python -m rapster.run_cluster -fesc 3.16227766`.
+- Constants a1_psi and c_xi (prefactor of the BH-to-star temperature ratio, default 1;
+  to be calibrated against the CMC Cluster Catalog).
 
 ### Changed
 - Regenerated `Example/Results_Test/` from the current default run and made `Example/tutorial.ipynb` discover results relative to the repository with snapshot indices adapted to the available BH snapshots.
@@ -36,7 +38,13 @@ All notable changes to Rapster will be documented in this file.
 - The `v_esc` column of the mergers file (column 25) and of the evolution file (column 56) now records the threshold actually used, f*sqrt(<v_star^2> + <v_BH^2>). It previously recorded `2*v_star`, omitting the BH term, so values differ slightly from older outputs even at `f = 2`. The `v_escBH` column (escape velocity from the BH subsystem) is unchanged.
 - Jacobi radius now uses the isothermal-potential (flat rotation curve) value, r_J = (G M_cl R_g^2 / 2 v_g^2)^(1/3), consistent with the isothermal galaxy assumed elsewhere (circular velocity v_g, dynamical-friction timescale). It previously used the point-mass value with factor 3, which underestimated r_J by a factor (3/2)^(1/3) = 1.14. A larger r_J lowers the escape rate xi_e = xi_e0 exp(10 r_h/r_J) and hence tidal mass loss; the effect compounds over time for tidally limited clusters (e.g. a 1.8e5 Msun cluster at R_g = 2 kpc retains ~15% more mass at 2 Gyr and ~2x more at 4 Gyr). Results for clusters at large R_g, or with r_h << r_J, are essentially unchanged. Runs made with earlier versions used the factor 3.
 - Dynamical friction now integrates Eq. (7) of Gnedin, Ostriker & Tremaine (2014), dR_g^2/dt = -R_g^2/t_df, i.e. dR_g/dt = -R_g/(2 t_df). It previously used dR_g/dt = -R_g/t_df, which made the orbital decay a factor of 2 faster than the cited prescription. The dynamical-friction timescale itself is unchanged and follows their Eq. (8), t_df = 0.45 Gyr (R_g/kpc)^2 (v_g/km s^-1) (M_cl/1e5 Msun)^-1 f_eps, with ln Lambda = 5.8 and eccentricity factor f_eps = 0.5. Example: a 1e6 Msun cluster at R_g = 1 kpc moves inward by ~70 pc in 1 Gyr instead of ~130 pc. Runs made with earlier versions used the faster decay.
-
+- Multimass relaxation factor: psi = 1 + a1 f_BH/0.01 with a1 = 1.47 (Antonini & Gieles 2020,
+  Eq. 12), replacing the equipartition form psi = 1 + S, which overestimates psi by ~3x for
+  Spitzer-unstable BH populations and made clusters over-expand.
+- Coulomb logarithms: ln(e + 0.02 N) for the cluster (was fixed at 10) and ln(e + 0.02 N_BH)
+  for the BH subsystem (was 1), following Breen & Heggie (2013); also used in the initial
+  relaxation time.
+  
 ### Fixed
 - Correct the evolution output header to label `k_tdeBHstar`; evolution files contain 71 columns, including BBH-star TDE counts and residual gas mass.
 - Fixed a runtime crash when the BH initialization produced zero black holes: `np.vectorize` calls on empty arrays now specify `otypes=[float]` in `cluster_evolution.py`, preventing `ValueError` during empty-array natal-kick processing.
