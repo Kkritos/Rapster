@@ -135,7 +135,7 @@ def evolve_triples(seed, t, z, zCl_form, triples, binaries, mBH, sBH, gBH, hBH, 
 
                     # append merger:
                     mergers = np.append(mergers, [[seed, ind_in, 4, a_in, eMAX, m0, m1, s0, s1, g0, g1, theta0, theta1, dPhi, t_form_in, z_form_in, t_merge,
-                                                   z_merge, m_rem, s_rem, g_rem, vGW_kick, s_eff, q, 2*v_star, h0, h1]], axis=0)
+                                                   z_merge, m_rem, s_rem, g_rem, vGW_kick, s_eff, q, v_esc_cl(v_star, vBH), h0, h1]], axis=0)
                 
                 triples = np.delete(triples, i, axis=0)
 
@@ -152,7 +152,7 @@ def evolve_triples(seed, t, z, zCl_form, triples, binaries, mBH, sBH, gBH, hBH, 
                     gBH = np.append(gBH, g2)
                     hBH = np.append(hBH, h2)
 
-                    if vGW_kick > 2 * np.sqrt(v_star**2 + vBH**2): # merger remnant is ejected
+                    if vGW_kick > v_esc_cl(v_star, vBH): # merger remnant is ejected
 
                         N_BH = N_BH - 1
 

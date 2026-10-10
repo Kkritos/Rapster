@@ -168,15 +168,41 @@ def t_relax(Mcl, rh, m_avg, psi, logL):
     
     return 0.138 * np.sqrt(Mcl * rh**3 / G_Newton) / m_avg / psi / logL
 
+# Escape-velocity prefactor f, set by the user at runtime (see set_escape_factor):
+#   v_esc = f * sqrt(<v_star^2> + <v_BH^2>),  with <v^2> = 0.4 G M / r.
+# f = 2 (default): mass-weighted rms escape speed, v_esc^2 = 1.6 G M_cl / r_h.
+# f = sqrt(10):    v_esc^2 = 4 G M_cl / r_h (Mai et al. 2025, Eq. 1).
+
+F_ESC = None   # set at runtime by set_escape_factor(); run_cluster.py passes the user's -fesc value
+
+def set_escape_factor(f):
+    """
+    @in f: escape-velocity prefactor (> 0)
+    """
+    global F_ESC
+    if f <= 0:
+        raise ValueError('escape-velocity prefactor must be positive')
+    F_ESC = float(f)
+
+def v_esc_cl(v_star, vBH):
+    """
+    @in v_star: 3D rms velocity of stars [km/s]
+    @in vBH: 3D rms velocity of BHs [km/s]
+    
+    @out: escape velocity used for retention/ejection of BHs and BBHs [km/s]
+    """
+    
+    return F_ESC * np.sqrt(v_star**2 + vBH**2)
+
 def v_esc(Mcl, rh):
     """
     @in Mcl: cluster mass [Msun]
     @in rh: half-mass radius [pc]
     
-    @out: escape velocity [km/s]
+    @out: escape velocity used for natal-kick retention [km/s]
     """
     
-    return 2 * np.sqrt(0.4 * G_Newton * Mcl / rh)
+    return F_ESC * np.sqrt(0.4 * G_Newton * Mcl / rh)
 
 def sample_angles():
     """

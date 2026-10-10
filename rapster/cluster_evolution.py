@@ -27,6 +27,36 @@ from .exchanges import StarStar_to_BHstar, BHstar_to_BBH
 from .tidal_disruptions import BH_TidalDisruptions
 from .compact_accretion import *
 from .remnant import configure_kick_model
+from zipfile import BadZipFile
+
+
+def _load_initial_bh_masses(input_file):
+    """Load and validate initial BH masses from a NumPy .npz archive."""
+    try:
+        archive = np.load(input_file, allow_pickle=False)
+    except (BadZipFile, EOFError, OSError, ValueError) as error:
+        raise ValueError(f'could not read initial black-hole input file {input_file!r}') from error
+
+    if not isinstance(archive, np.lib.npyio.NpzFile):
+        raise ValueError(f'initial black-hole input file {input_file!r} must be a .npz archive')
+
+    try:
+        if 'mBH_ini' not in archive.files:
+            raise ValueError(f'initial black-hole input file {input_file!r} must contain an mBH_ini array')
+        masses = np.asarray(archive['mBH_ini'])
+    finally:
+        archive.close()
+
+    if masses.ndim != 1:
+        raise ValueError('mBH_ini must be a one-dimensional array of initial BH masses in Msun')
+    if not np.issubdtype(masses.dtype, np.number) or np.iscomplexobj(masses):
+        raise ValueError('mBH_ini must contain real numeric masses in Msun')
+
+    masses = masses.astype(float, copy=False)
+    if not np.all(np.isfinite(masses)) or np.any(masses <= 0):
+        raise ValueError('mBH_ini must contain only finite, positive masses in Msun')
+
+    return masses
 
 
 def initialize_cluster(config):
@@ -117,7 +147,7 @@ def initialize_cluster(config):
         / integrate.quad(IMF_kroupa, m_min, m_max)[0] / m_avg**(5/2)
 
     # initial relaxation timescale:
-    t_rlx0 = t_relax(Mcl0 + M_gas0, rh0, m_avg, psi0, np.log(lc * N))
+    t_rlx0 = t_relax(Mcl0 + M_gas0, rh0, m_avg, psi0, np.log(np.e + lc * N))
 
     # core collapse timescale:
     t_cc = k_cc * t_rlx0
@@ -176,19 +206,19 @@ def initialize_cluster(config):
         # compute supernova kicks:
         if NKP==0:
             if   RP==0:
-                vSN_kick = (1 - np.vectorize(f_fb_delayed)(m_massive[m_rem > mBH_min], np.vectorize(M_CO_SEVN)(m_massive[m_rem > mBH_min], Z))) * \
-                           np.vectorize(get_SN_kick)(1.4 * np.ones(mBH.size), wSN_kick)
+                fallback = np.vectorize(f_fb_delayed, otypes=[float])(m_massive[m_rem > mBH_min], np.vectorize(M_CO_SEVN, otypes=[float])(m_massive[m_rem > mBH_min], Z))
+                vSN_kick = (1 - fallback) * np.vectorize(get_SN_kick, otypes=[float])(1.4 * np.ones(mBH.size), wSN_kick)
             elif RP==1:
-                vSN_kick = (1 - np.vectorize(f_fb_delayed)(m_massive[m_rem > mBH_min], np.vectorize(M_CO_SSE)(m_massive[m_rem > mBH_min], Z))) * \
-                           np.vectorize(get_SN_kick)(1.4 * np.ones(mBH.size), wSN_kick)
+                fallback = np.vectorize(f_fb_delayed, otypes=[float])(m_massive[m_rem > mBH_min], np.vectorize(M_CO_SSE, otypes=[float])(m_massive[m_rem > mBH_min], Z))
+                vSN_kick = (1 - fallback) * np.vectorize(get_SN_kick, otypes=[float])(1.4 * np.ones(mBH.size), wSN_kick)
             elif RP==2:
-                vSN_kick = (1 - np.vectorize(f_fb_rapid)(m_massive[m_rem > mBH_min], np.vectorize(M_CO_SEVN)(m_massive[m_rem > mBH_min], Z))) * \
-                           np.vectorize(get_SN_kick)(1.4 * np.ones(mBH.size), wSN_kick)
+                fallback = np.vectorize(f_fb_rapid, otypes=[float])(m_massive[m_rem > mBH_min], np.vectorize(M_CO_SEVN, otypes=[float])(m_massive[m_rem > mBH_min], Z))
+                vSN_kick = (1 - fallback) * np.vectorize(get_SN_kick, otypes=[float])(1.4 * np.ones(mBH.size), wSN_kick)
             elif RP==3:
-                vSN_kick = (1 - np.vectorize(f_fb_rapid)(m_massive[m_rem > mBH_min], np.vectorize(M_CO_SSE)(m_massive[m_rem > mBH_min], Z))) * \
-                           np.vectorize(get_SN_kick)(1.4 * np.ones(mBH.size), wSN_kick)
+                fallback = np.vectorize(f_fb_rapid, otypes=[float])(m_massive[m_rem > mBH_min], np.vectorize(M_CO_SSE, otypes=[float])(m_massive[m_rem > mBH_min], Z))
+                vSN_kick = (1 - fallback) * np.vectorize(get_SN_kick, otypes=[float])(1.4 * np.ones(mBH.size), wSN_kick)
         elif NKP==1:
-            vSN_kick = np.vectorize(get_SN_kick)(mBH, wSN_kick)
+            vSN_kick = np.vectorize(get_SN_kick, otypes=[float])(mBH, wSN_kick)
 
         # retain BHs with SN kick < escape velocity:
         mBH = mBH[vSN_kick < v_esc(Mcl + M_gas_BHform, rh)]
@@ -227,13 +257,21 @@ def initialize_cluster(config):
         # Fallback kicks (NKP==0) are not available for BMD>0 because there is no
         # stellar progenitor or CO core mass to compute the fallback fraction from.
         # Momentum-conservation kicks only depend on the BH mass, so they apply regardless.
-        vSN_kick = np.vectorize(get_SN_kick)(mBH, wSN_kick)
+        vSN_kick = np.vectorize(get_SN_kick, otypes=[float])(mBH, wSN_kick)
         mBH = mBH[vSN_kick < v_esc(Mcl + M_gas_BHform, rh)]
 
     # optionally override BH masses from external file:
     if Bi==1:
-        mBH = np.load(input_BH_file)['mBH_ini']
+        mBH = _load_initial_bh_masses(input_BH_file)
         mBH = mBH + 0.01 * np.random.rand(mBH.size)
+
+    # core collapse of the BH subsystem (onset of balanced evolution): BHs mass-segregate on
+    # t_seg ~ (<m>/<m_BH>) t_rh (Spitzer 1969), with t_rh the initial single-mass (psi = 1)
+    # relaxation time and k_cc an order-unity constant. If no BHs are retained, keep the
+    # IMF-based estimate computed above.
+    if mBH.size > 0:
+        t_rlx0_single = t_relax(Mcl0 + M_gas0, rh0, m_avg, 1.0, np.log(np.e + lc * N))
+        t_cc = k_cc * m_avg / np.mean(mBH) * t_rlx0_single
 
     # BH spins:
     if SD==0:
@@ -425,30 +463,37 @@ def compute_cluster_properties(state, config):
     # individual BH mass ratio:
     q_BH = mBH_avg / m_avg
 
-    # Cluster Coulomb logarithm:
-    logLcl = 10.0
+    # Cluster Coulomb logarithm, Lambda = 0.02 N (Breen & Heggie 2013), smoothly floored at 1;
+    # N = M_cl / <m> is the current number of stars:
+    logLcl = np.log(np.e + lc * Mcl / m_avg)
 
-    # BH Coulomb logarithm:
+    # BH Coulomb logarithm, Lambda_BH = 0.02 N_BH (Breen & Heggie 2013), smoothly
+    # floored at 1 (their small-N_BH limit): ln(e + 0.02 N_BH) -> 1 as N_BH -> 0
+    # and -> ln(0.02 N_BH) for N_BH >> 136:
     if i_aux1==1 and N_BH>0:
-        logLBH = 1.0
+        logLBH = np.log(np.e + lc * N_BH)
     else:
         logLBH = 0.0
 
-    # Spitzer parameter:
+    # Spitzer parameter (Spitzer 1969); stars and BHs can reach
+    # energy equipartition only if S < 0.16:
     S = Q_BH * q_BH**(3/2)
 
-    # Spitzer instability condition:
+    # BH-to-star temperature ratio (xi = 1: equipartition; Breen & Heggie 2013):
     if S < 0.16 and S > 0:
         xi = 1
-        S = Q_BH * q_BH
     else:
         if i_aux1==1:
-            xi = q_BH**(3/5) * Q_BH**(2/5) * (logLBH / logLcl)**(-2/5)
+            # c_xi: order-unity prefactor (Breen & Heggie 2013 give only the scaling); set by -cxi
+            xi = config['c_xi'] * q_BH**(3/5) * Q_BH**(2/5) * (logLBH / logLcl)**(-2/5)
         else:
             xi = 0.0
 
-    # multimass relaxation factor:
-    psi = 1 + S
+    # multimass relaxation factor, N-body calibration of Antonini & Gieles (2020, Eq. 12):
+    # psi = 1 + a1 f_BH / 0.01, with f_BH = M_BH / M_cl = Q_BH.
+    # (Replaces psi = 1 + S, which assumes equipartition and overestimates psi
+    # by a factor ~3 once S > 0.16 and the BHs decouple from the stars.)
+    psi = 1 + a1_psi * Q_BH / 0.01
 
     # BH relaxation factor:
     if i_aux1==1 and N_BH>0:
@@ -1037,7 +1082,7 @@ def evolve_tdes(state, config):
 
 
 def record_evolution(state):
-    """Append a row of 69 time-dependent quantities to the evolution array.
+    """Append a row of 71 time-dependent quantities to the evolution array.
 
     Records the current cluster and BH subsystem state (masses, radii, densities,
     velocities, timescales, event counts, TDE statistics) as a single row in
@@ -1086,11 +1131,11 @@ def record_evolution(state):
     N_tdeBHstar = state['N_tdeBHstar']
     N_tdeBBHstar = state['N_tdeBBHstar']
 
-    # append a row of 70 time-dependent quantities to the evolution array:
+    # append a row of 71 time-dependent quantities to the evolution array:
     state['evolution'].append([seed, t, z, dt, m_avg, Mcl, rh, R_gal, v_gal, t_rlx, tBH_rlx, n_star, N_BH, mBH_avg, mBH_max, rh_BH, rc_BH, S,
                                        xi, psi, psi_BH, t_3bb, t_2cap, k_3bb, k_2cap, N_me, N_BBH, N_meRe, N_meEj, v_star, vBH,
                                        nh_BH, nc_BH, na_BH, N_3bb, N_2cap, N_3cap, N_BHej, N_BBHej, N_dis, N_ex, t_bb, N_bb,
-                                       N_meFi, N_me2b, t_ex1, t_ex2, k_ex1, k_ex2, N_ex1, N_ex2, N_BHstar, t_pp, k_pp, N_pp, 2*v_star,
+                                       N_meFi, N_me2b, t_ex1, t_ex2, k_ex1, k_ex2, N_ex1, N_ex2, N_BHstar, t_pp, k_pp, N_pp, v_esc_cl(v_star, vBH),
                                        2*vBH, N_Triples, N_ZLK, N_WD, v_WD, k_tdeBHWD, N_tdeBHWD, dN_WDformdt, dN_WDevdt, dN_tdeBHWDdt, k_tdeBHstar,
                                        dN_tdeBHstardt, N_tdeBHstar, N_tdeBBHstar, M_gas])
 
@@ -1111,14 +1156,16 @@ def compute_external_params(state, config):
     Mcl = state['Mcl']; rh = state['rh']; R_gal = state['R_gal']
     v_gal = state['v_gal']
 
-    # Jacobi radius:
-    rJ = (G_Newton * Mcl * R_gal**2 / 3 / v_gal**2)**(1/3)
-
+    # Jacobi radius for an isothermal (flat rotation curve) galaxy:
+    # r_J^3 = G M / (Omega^2 - Phi'') = G M / (2 Omega^2), with Omega = v_gal / R_gal
+    rJ = (G_Newton * Mcl * R_gal**2 / 2 / v_gal**2)**(1/3)
+    
     # dimensionless escape rate:
     xi_e = xi_e0 * np.exp(10 * rh / rJ)
     state['xi_e'] = xi_e
 
-    # dynamical friction timescale:
+    # dynamical friction timescale 
+    # (Gnedin et al. 2014, Eq. 8; lnL = 5.8, eccentricity factor f_eps = 0.5):
     t_df = 0.45e3 * (R_gal / 1e3)**2 * v_gal / (Mcl / 1e5) / 2
     state['t_df'] = t_df
 
@@ -1191,8 +1238,9 @@ def update_cluster(state, config):
     # total expansion:
     drh = drh_sev + drh_rlx + drh_gas
 
-    # galactocentric radius step:
-    dR_gal = - R_gal * dt / t_df
+    # galactocentric radius step 
+    # (Gnedin et al. 2014, Eq. 7: dR^2/dt = -R^2/t_df  =>  dR/dt = -R/(2 t_df)):
+    dR_gal = - R_gal * dt / (2 * t_df)
 
     # cluster mass update:
     Mcl = Mcl + dMcl
@@ -1289,7 +1337,7 @@ def write_output(state, config):
       - outputBHs.pkl: BH masses, spins, and generations at every timestep.
       - tdes.txt: Tidal disruption event parameters.
       - mergers.txt: BBH merger source parameters (plus initial/final cluster state).
-      - evolution.txt: Time-dependent cluster and BH subsystem quantities (69 columns).
+            - evolution.txt: Time-dependent cluster and BH subsystem quantities (71 columns).
       - hardening.txt: BBH hardening track details (12 columns).
 
     Args:
