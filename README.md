@@ -1,21 +1,12 @@
 # Rapster
 
 <p align="center">
-<<<<<<< HEAD
-	<a href="https://github.com/Kkritos/Rapster/releases"><img src="https://img.shields.io/badge/version-2.11.4-blue" alt="version"></a>
+	<a href="https://github.com/Kkritos/Rapster/releases"><img src="https://img.shields.io/badge/version-2.12.0-blue" alt="version"></a>
 	<a href="https://arxiv.org/abs/2210.10055"><img src="https://img.shields.io/badge/arXiv-2210.10055-b31b1b.svg" alt="arXiv"></a>
 	<a href="https://github.com/Kkritos/Rapster/blob/main/LICENSE"><img src="https://img.shields.io/github/license/Kkritos/Rapster" alt="license"></a>
 	<img src="https://img.shields.io/badge/python-3.10+-blue.svg" alt="python">
 	<a href="https://github.com/Kkritos/Rapster"><img src="https://img.shields.io/badge/created-September%202022-blue" alt="created"></a>
 	<a href="https://github.com/Kkritos/Rapster/commits/main"><img src="https://img.shields.io/github/last-commit/Kkritos/Rapster?label=last%20updated" alt="last updated"></a>
-=======
-  <a href="https://github.com/Kkritos/Rapster/releases"><img src="https://img.shields.io/badge/version-2.11.4-blue" alt="version"></a>
-  <a href="https://arxiv.org/abs/2210.10055"><img src="https://img.shields.io/badge/arXiv-2210.10055-b31b1b.svg" alt="arXiv"></a>
-  <a href="https://github.com/Kkritos/Rapster/blob/main/LICENSE"><img src="https://img.shields.io/github/license/Kkritos/Rapster" alt="license"></a>
-  <img src="https://img.shields.io/badge/python-3.10+-blue.svg" alt="python">
-  <a href="https://github.com/Kkritos/Rapster"><img src="https://img.shields.io/badge/created-September%202022-blue" alt="created"></a>
-  <a href="https://github.com/Kkritos/Rapster/commits/main"><img src="https://img.shields.io/github/last-commit/Kkritos/Rapster?label=last%20updated" alt="last updated"></a>
->>>>>>> origin/main
 </p>
 
 Rapid population synthesis code for compact binary coalescences in dense stellar clusters.
@@ -25,7 +16,7 @@ $\tt Rapster$ stands for $\rm RAPid\ cluSTER$ evolution.
 
 Author: Konstantinos Kritos <konstantinos.kritos@stonybrook.edu>
 
-Version: 2.12.0, October 7, 2026.
+Version: 2.12.0, October 10, 2026.
 (Thanks to Tousif Islam for helping modularize this repository!)
 
 ![LOGO](.assets/LOGO.png)
@@ -80,21 +71,7 @@ The available equations of state are in the ``EOS_TABLES`` registry in ``rapster
 <a name="requirements"></a>
 ### 2. Requirements
 
-<<<<<<< HEAD
 Rapster supports Python >= 3.10. Its declared dependencies are:
-=======
-The following Python packages are required to run the code:
-
-- $\tt numpy$ (=2.2.4)
-- $\tt scipy$ (=1.15.2)
-- $\tt pandas$ (=2.2.3)
-
-The code is tested with the package versions shown in parentheses above; however, other versions likely work as well.
-
-We recommend creating and working in a local Python environment with Python >= 3.10 and installing all the dependencies listed above.
-
-The following packages are recommended for running the tutorial notebook in ``Example/``, but are not necessary to run cluster simulations:
->>>>>>> origin/main
 
 - $\tt numpy$ (=1.26.4)
 - $\tt scipy$ (=1.11.4)
@@ -139,13 +116,9 @@ python -m ipykernel install --user --name=rapsterenv --display-name "Python (.ra
 
 To install Rapster with the optional ``gwModel_kick_prec_flow`` recoil kick dependency (``-RK 1``), run this from the repository root:
 
-<<<<<<< HEAD
-> pip install -e '.[gwkick]'
-=======
 ```bash
-pip install gwModels[kicks]
+pip install -e '.[gwkick]'
 ```
->>>>>>> origin/main
 
 <a name="units"></a>
 ### 3. Units
@@ -235,12 +208,6 @@ The initial value of the central stellar density is set by default to 5.3e5 (pc^
 <a name="runningasimulation"></a>
 ### 5. Running a simulation
 
-<<<<<<< HEAD
-=======
-usage: -m [-h] [-N] [-r] [-mm] [-mM] [-Z] [-z] [-n] [-fb] [-S] [-dtm] [-dtM] [-tM] [-wK] [-K] [-R] [-vg] [-s] [-SD] [-P] [-Mi] [-MF] [-Ei] [-EF] [-Hi] [-HF] [-BIi] [-BIF] [-BOi] [-BOF] [-RP] [-NS] [-WT] [-Ti] [-TF] [-MBH] [-sBH] [-RF] [-BMD] [-mBH1gMin] [-mBH1gMax] [-RMP] [-plot] [-analyze] [-fA] [-mb] [-EoS] [-RK]
-
-
->>>>>>> origin/main
 ##### Examples:
 
 Run with default parameters:
@@ -277,21 +244,13 @@ python -m rapster.run_cluster -SD 2 -s 1.0 -RMP 1
 
 For a lightweight smoke test, run:
 
-<<<<<<< HEAD
-> python -m rapster.run_cluster -N 100 -tM 1 -dtM 1 -P 0 -Mi 0 -Ei 0 -Hi 0 -BOi 0 -Ti 0 -plot 0 -analyze 0 -RF Results_smoke
-=======
 ```bash
-python -m rapster.run_cluster
+python -m rapster.run_cluster -N 100 -tM 1 -dtM 1 -P 0 -Mi 0 -Ei 0 -Hi 0 -BOi 0 -Ti 0 -plot 0 -analyze 0 -RF Results_smoke
 ```
->>>>>>> origin/main
 
 This creates ``Results_smoke/log.txt``. To reproduce the bundled reference outputs, run the default configuration; the full default simulation is substantially larger than the smoke test.
 
-<<<<<<< HEAD
 The default run writes four text tables (``mergers.txt``, ``evolution.txt``, ``hardening.txt``, and ``tdes.txt``), one BH snapshot file (``outputBHs.pkl``), and ``log.txt`` in ``Results/`` under the current working directory. The text tables have column headers prefixed with ``#``; ``outputBHs.pkl`` is a pickle containing BH masses, spins, generations, TDE counts, and simulation times. If ``-plot 1`` is passed, diagnostic plots are saved to ``Results/plots/``. Reference outputs are included in ``Example/Results_Test/``.
-=======
-This should create six files: ``Results/mergers.txt``, ``Results/evolution.txt``, ``Results/hardening.txt``, ``Results/tdes.txt``, ``Results/outputBHs.pkl``, and ``Results/log.txt`` inside the newly created folder Results/ within your current directory. All output files include column headers prefixed with ``#``. If ``-plot 1`` is passed, diagnostic plots are saved to ``Results/plots/``. To check and verify whether you have produced these files correctly, we include the corresponding files ``/Rapster/Example/Results_Test/mergers.txt``, ``/Rapster/Example/Results_Test/evolution.txt``, ``/Rapster/Example/Results_Test/hardening.txt``, ``/Rapster/Example/Results_Test/tdes.txt``, and ``/Rapster/Example/Results_Test/outputBHs.npz``, where /Rapster/ is the root directory of the repository, with data that should match your output.
->>>>>>> origin/main
 
 We also include ``Example/tutorial.ipynb``, which loads the reference results and generates plots. You can use it to inspect your own simulation results as well.
 
