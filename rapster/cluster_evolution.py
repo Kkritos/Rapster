@@ -411,11 +411,13 @@ def compute_cluster_properties(state, config):
     rh0 = state['rh0']
     Mcl0 = state['Mcl0']
 
-    # save current BH properties:
-    state['simulation_times'].append(t)
-    state['black_hole_masses'].append(np.concatenate((mBH, binaries[:, 4], binaries[:, 5], pairs[:, 1])))
-    state['black_hole_spins'].append(np.concatenate((state['sBH'], binaries[:, 6], binaries[:, 7], pairs[:, 2])))
-    state['black_hole_generations'].append(np.concatenate((state['gBH'], binaries[:, 8], binaries[:, 9], pairs[:, 3])))
+    # save current BH properties (only needed for the BH-masses output file, -BOi 1;
+    # for clusters with millions of BHs these snapshots otherwise grow to tens of GB):
+    if config['BOi']==1:
+        state['simulation_times'].append(t)
+        state['black_hole_masses'].append(np.concatenate((mBH, binaries[:, 4], binaries[:, 5], pairs[:, 1])))
+        state['black_hole_spins'].append(np.concatenate((state['sBH'], binaries[:, 6], binaries[:, 7], pairs[:, 2])))
+        state['black_hole_generations'].append(np.concatenate((state['gBH'], binaries[:, 8], binaries[:, 9], pairs[:, 3])))
 
     # activate BH subsystem once BH formation time is reached:
     if t>tBH_form and i_aux1==0:

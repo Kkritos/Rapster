@@ -2,6 +2,11 @@
 
 All notable changes to Rapster will be documented in this file.
 
+## [2.12.2] - 2026-10-12
+
+### Fixed
+- BH mass, spin and generation snapshots are stored at every step only when the BH-masses file is requested (`-BOi 1`). They were previously stored for every run; for clusters with millions of BHs they grew to tens of GB and runs were killed for lack of memory. Results are unchanged (evolution files are byte-identical).
+
 ## [2.12.1] - 2026-10-12
 
 ### Fixed
