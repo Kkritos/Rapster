@@ -2,7 +2,7 @@
 
 All notable changes to Rapster will be documented in this file.
 
-## [Unreleased]
+## [2.12.1] - 2026-10-12
 
 ### Fixed
 - BH-white dwarf tidal disruptions no longer overwrite the stellar velocity dispersion: the call in `evolve_tdes` assigned the returned white-dwarf velocity dispersion `v_WD` to `v_star`, which lowered `v_star` by a factor sqrt(<m>/m_WD) ~ 0.75 for the rest of any step with a BH-WD TDE. This affected only the `v_star` and `v_esc` columns of the evolution file and the micro-TDE rate in those steps; BH dynamics and mergers were unaffected, because `v_star` is recomputed at the start of every step and the retention checks occur before the TDE stage. Runs with `-WT 0` were not affected.
