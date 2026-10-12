@@ -1,7 +1,7 @@
 # Rapster
 
 <p align="center">
-	<a href="https://github.com/Kkritos/Rapster/releases"><img src="https://img.shields.io/badge/version-2.12.1-blue" alt="version"></a>
+	<a href="https://github.com/Kkritos/Rapster/releases"><img src="https://img.shields.io/badge/version-2.12.2-blue" alt="version"></a>
 	<a href="https://arxiv.org/abs/2210.10055"><img src="https://img.shields.io/badge/arXiv-2210.10055-b31b1b.svg" alt="arXiv"></a>
 	<a href="https://arxiv.org/abs/2605.21593"><img src="https://img.shields.io/badge/arXiv-2605.21593-b31b1b.svg" alt="arXiv"></a>
 	<a href="https://arxiv.org/abs/2609.26878"><img src="https://img.shields.io/badge/arXiv-2609.26878-b31b1b.svg" alt="arXiv"></a>
