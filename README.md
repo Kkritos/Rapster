@@ -274,7 +274,10 @@ To run the tests (from the repository root):
 python3 tests/test_ns_formation.py
 python3 tests/test_ns_initialization.py
 python3 tests/test_ns_main_loop.py
+python3 tests/test_ns_physics.py
 ```
+
+``tests/test_ns_physics.py`` compares the number of retained NSs in a full run with the analytic expectation from the natal-kick distribution and the escape velocity of the evolving cluster. Diagnostic figures of the NS formation times are produced by ``python3 tools/plot_ns_formation_check.py``.
 
 or ``python3 -m pytest tests/`` if ``pytest`` is installed.
 
