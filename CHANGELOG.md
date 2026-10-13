@@ -2,6 +2,30 @@
 
 All notable changes to Rapster will be documented in this file.
 
+## [2.13.0] - 2026-10-13
+
+### Added
+- Extended neutron-star formation times (`-NSt` / `--ns_formation_time_model`, default `0`). NS masses are still set by `-NS 1/2/3`; `-NSt` sets when each NS forms:
+  - `0`: all NSs form at the BH formation time `tBH_form` (previous behaviour).
+  - `1`: formation times drawn from the COMPAS distribution p(t_form), independent of NS mass.
+  - `2`: formation times drawn from p(t_form | m_NS), in the 0.05 Msun NS-mass bin nearest to each NS mass; heavier NSs form earlier (median t_form = 30 Myr at 1.28 Msun, 19 Myr at 1.4 Msun, 13 Myr above 1.8 Msun).
+  For `-NSt 1/2`, NS masses, natal kicks and formation times are drawn at initialization; each NS is formed in the main loop once t >= t_form (`form_neutron_stars` in `cluster_evolution.py`) and is retained if its kick is below the escape velocity at that time, v_esc(M_cl + M_gas, r_h). Since the cluster loses mass and expands before most NSs form, fewer NSs are retained than with `-NSt 0` (e.g. N = 2e5, `-wK 20`: 112 NSs with `-NSt 0`, 59 with `-NSt 1`, 64 with `-NSt 2`). An NS joins the cluster at the end of the step in which t_form is reached, i.e. at most one time-step late. The numbers of NSs formed and retained are printed to `log.txt` at the end of the run. Usage: `python -m rapster.run_cluster -NS 2 -NSt 2`.
+- NS formation-time table `Data/NS_formation.npz`: quantiles of log10(t_form) for all NSs and in each NS-mass bin, built from 27,454,686 NSs of a COMPAS (v03.29.03) population of 1e8 binaries at Z = 0.0142 (Kroupa primary masses in 5-150 Msun, flat mass ratios, log-flat separations, Fryer et al. 2012 delayed remnants, maximum NS mass 2.5 Msun). NS masses span 1.26-2.50 Msun; 5%, 50% and 95% of NSs form by 11, 25 and 52 Myr, and 0.06% after 1 Gyr. The table sets only the shape of the formation-time distribution; the number of NSs is still set by the Kroupa IMF between 8 and 18 Msun.
+- `rapster/ns_formation.py`: loader and sampler for the NS formation-time table.
+- `tools/make_ns_formation_table.py`: builds `Data/NS_formation.npz` from a population-synthesis sample of NS masses and formation times. Not part of the installed package.
+- `tests/`: tests for the NS formation-time sampler, the NS initialization and NS formation in the main loop. Run from the repository root with `python3 tests/test_ns_formation.py`, `python3 tests/test_ns_initialization.py` and `python3 tests/test_ns_main_loop.py`. `tests/test_ns_physics.py` checks that the number of retained NSs in a full run agrees with the analytic expectation sum_i P_Maxwell(v < v_esc(t_i)), and that with `-NSt 2` the sampled formation times follow the COMPAS distribution in each mass bin. `tools/plot_ns_formation_check.py` produces diagnostic figures of the sampled NS masses and formation times and of NS retention.
+
+### Changed
+- BH formation time `tBH_form` (in `constants.py`) is now 10 Myr (was 3.5 Myr): all stellar-mass BHs are assumed to have formed by 10 Myr after cluster formation, when the BH subsystem is activated. This changes all runs with respect to earlier versions. For gas-free runs (`-sfe 1`, default) the only effect is the later activation of the BH subsystem. For runs with residual gas (`-sfe < 1`), less gas remains at BH formation, M_gas = M_gas0 exp(-tBH_form/t_ge), which lowers the escape velocity used for natal-kick retention of BHs (and of NSs with `-NSt 0`).
+- If no compact objects are present when the BH subsystem would activate, or if they have all been lost, the run no longer stops with `BH SUBSYSTEM EVAPORATED` while NSs are still to form (`-NSt 1/2`); the subsystem activates once they form.
+- Regenerated `Example/Results_Test/` with this version. The previous reference outputs predated the 2.12.0 physics changes (multimass relaxation factor, Coulomb logarithms, core-collapse time, Jacobi radius) and no longer matched 2.12.x; with tBH_form = 3.5 Myr the default run of this version is byte-identical to 2.12.2.
+- NS mass sampling moved to the helper `_draw_ns_masses` in `cluster_evolution.py`. With `-NSt 0`, random numbers are drawn in the same order as before, so for a fixed `tBH_form` results are byte-identical to version 2.12.2.
+
+### Known limitations
+- The COMPAS sample does not include NSs from the companions of binaries disrupted by the first supernova, which are less massive and form NSs later; the table therefore under-represents late-forming NSs.
+- NS natal kicks are drawn from a single Maxwellian for all NSs; the lower kicks of electron-capture and ultra-stripped supernovae (30 km/s in the COMPAS model), which dominate the late (~Gyr) NSs, are not modelled.
+- The NS formation-time table is for solar metallicity only and is used for any `-Z`.
+
 ## [2.12.2] - 2026-10-12
 
 ### Fixed

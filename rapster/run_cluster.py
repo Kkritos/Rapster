@@ -22,6 +22,7 @@ import sys
 from .constants import *
 from .cluster_evolution import (
     initialize_cluster,
+    form_neutron_stars,
     compute_cluster_properties,
     compute_timescales,
     form_binaries,
@@ -38,6 +39,7 @@ from .analyze_cluster import analyze_cluster
 from .stellar_evolution import init_stellar_mass_sampler
 from .compact_accretion import EOS_TABLES, accrete_gas
 from .functions import set_escape_factor
+from .ns_formation import DEFAULT_NS_FORMATION_TABLE
 
 class TeeStream:
     """Write to both a file and optionally to stdout.
@@ -109,6 +111,7 @@ def parse_args():
     parser.add_argument('-BOF', '--blackholes_out_file_name', type=str, metavar=' ', default='outputBHs', help='Name of .pkl file with the masses of all BHs in solar masses')
     parser.add_argument('-RP', '--remnant_mass_prescription', type=int, metavar=' ', choices=[0, 1, 2, 3], default=1, help='Remnant mass prescription (0 for SEVN delayed, 1 for Fryer+2012 delayed, 2 for SEVN rapid, 3 for Fryer+2012 rapid)')
     parser.add_argument('-NS', '--with_neutron_stars', type=int, metavar=' ', default=2, choices=[0, 1, 2, 3], help='include neutron stars (if =1 with monochromatic, =2 with bimodal or =3 with uniform mass distribution) else no (if =0)')
+    parser.add_argument('-NSt', '--ns_formation_time_model', type=int, metavar=' ', default=0, choices=[0, 1, 2], help='NS formation-time model: 0 for all NSs at the BH formation time (default), 1 for times drawn from the COMPAS distribution p(t), 2 for times drawn from p(t | m_NS); the NS mass distribution is set by -NS')
     parser.add_argument('-WT', '--with_tdes', type=int, metavar=' ', choices=[0, 1], default=1, help='include tdes (if =1) else no (if =0)')
     parser.add_argument('-Ti', '--tdes_file_indicator', type=int, metavar=' ', choices=[0, 1], default=1, help='Export tdes file (0 for no, 1 for yes)')
     parser.add_argument('-TF', '--tdes_file_name', type=str, metavar=' ', default='tdes', help='Name of .txt file containing tde parameters')
@@ -188,6 +191,12 @@ def parse_args():
     if not (0 < args.star_formation_efficiency <= 1):
         parser.error('star_formation_efficiency (-sfe) must be in (0, 1]')
 
+    if args.ns_formation_time_model > 0:
+        if args.with_neutron_stars == 0:
+            parser.error('ns_formation_time_model (-NSt) > 0 requires neutron stars (-NS 1, 2 or 3)')
+        if not os.path.isfile(DEFAULT_NS_FORMATION_TABLE):
+            parser.error(f'NS formation-time table not found: {DEFAULT_NS_FORMATION_TABLE}')
+
     if args.escape_velocity_factor <= 0:
         parser.error('escape_velocity_factor (-fesc) must be positive')
 
@@ -226,6 +235,7 @@ def parse_args():
         'BOF': args.blackholes_out_file_name,
         'RP': args.remnant_mass_prescription,
         'with_NSs': args.with_neutron_stars,
+        'NSt': args.ns_formation_time_model,
         'with_tdes': args.with_tdes,
         'Ti': args.tdes_file_indicator,
         'tdes_file': args.tdes_file_name,
@@ -288,6 +298,9 @@ def main():
         # start local clock:
         local_time_initial = time.time()
 
+        # form NSs whose formation time has been reached (NSt > 0):
+        form_neutron_stars(state, config)
+
         # compute cluster and BH subsystem properties:
         keep_going = compute_cluster_properties(state, config)
         if not keep_going:
@@ -323,6 +336,10 @@ def main():
         print_status(state, config, local_time_initial, simulation_time_initial)
 
     write_output(state, config)
+
+    if config['NSt']>0:
+        print('NEUTRON STARS: formed', state['N_NS_formed'], '| retained', state['N_NS_retained'],
+              '| still to form at end of run', state['tNS_pending'].size)
 
     print('END OF SIMULATION. RUNTIME:', "{:.3g}".format(np.abs(time.time() - simulation_time_initial)), 's')
     print('\n')
