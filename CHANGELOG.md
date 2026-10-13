@@ -18,6 +18,7 @@ All notable changes to Rapster will be documented in this file.
 ### Changed
 - BH formation time `tBH_form` (in `constants.py`) is now 10 Myr (was 3.5 Myr): all stellar-mass BHs are assumed to have formed by 10 Myr after cluster formation, when the BH subsystem is activated. This changes all runs with respect to earlier versions. For gas-free runs (`-sfe 1`, default) the only effect is the later activation of the BH subsystem. For runs with residual gas (`-sfe < 1`), less gas remains at BH formation, M_gas = M_gas0 exp(-tBH_form/t_ge), which lowers the escape velocity used for natal-kick retention of BHs (and of NSs with `-NSt 0`).
 - If no compact objects are present when the BH subsystem would activate, or if they have all been lost, the run no longer stops with `BH SUBSYSTEM EVAPORATED` while NSs are still to form (`-NSt 1/2`); the subsystem activates once they form.
+- Regenerated `Example/Results_Test/` with this version. The previous reference outputs predated the 2.12.0 physics changes (multimass relaxation factor, Coulomb logarithms, core-collapse time, Jacobi radius) and no longer matched 2.12.x; with tBH_form = 3.5 Myr the default run of this version is byte-identical to 2.12.2.
 - NS mass sampling moved to the helper `_draw_ns_masses` in `cluster_evolution.py`. With `-NSt 0`, random numbers are drawn in the same order as before, so for a fixed `tBH_form` results are byte-identical to version 2.12.2.
 
 ### Known limitations
