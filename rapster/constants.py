@@ -93,8 +93,9 @@ xi_e0 = 0.0074
 # Stellar evolution start time:
 t_sev = 2.0
 
-# Black hole formation time:
-tBH_form = 3.5
+# Black hole formation time [Myr] (all stellar-mass BHs are assumed to have
+# formed by then; the BH subsystem is activated at t > tBH_form):
+tBH_form = 10.0
 
 # Maximum fraction of cluster's mass locked in BHs:
 fBH_max = 0.20

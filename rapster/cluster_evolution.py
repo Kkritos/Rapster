@@ -27,6 +27,7 @@ from .exchanges import StarStar_to_BHstar, BHstar_to_BBH
 from .tidal_disruptions import BH_TidalDisruptions
 from .compact_accretion import *
 from .remnant import configure_kick_model
+from .ns_formation import NSFormationTable, sample_ns_formation_times
 from zipfile import BadZipFile
 
 
@@ -57,6 +58,36 @@ def _load_initial_bh_masses(input_file):
         raise ValueError('mBH_ini must contain only finite, positive masses in Msun')
 
     return masses
+
+
+def _draw_ns_masses(n, with_NSs, EoS):
+    """Draw n NS masses [Msun] from the distribution selected by -NS.
+
+    with_NSs = 1: monochromatic (neutron_star_mass)
+    with_NSs = 2: bimodal, Rocha et al. (2023), truncated to the EoS range
+    with_NSs = 3: uniform over the EoS range [M_min, M_TOV]
+    """
+    if with_NSs==1:
+        # monochromatic NS mass distribution:
+        return neutron_star_mass * np.ones(n)
+
+    # define NS range (min/max masses):
+    eos = get_eos(EoS)
+    M_NS_min = eos.M_min
+    M_NS_max = eos.M_TOV
+
+    if with_NSs==2:
+        # bimodal mass distribution from Rocha et al. 2023:
+        mNS = []
+        while len(mNS) < n:
+            # generate a single NS mass:
+            m_NS = np.random.normal(loc=1.351, scale=0.084) if np.random.rand() < 0.539 else np.random.normal(loc=1.816, scale=0.260)
+            if M_NS_min < m_NS < M_NS_max:
+                mNS.append(m_NS)
+        return np.array(mNS)
+
+    # uniform mass distribution over the EoS-allowed NS range:
+    return np.random.uniform(M_NS_min, M_NS_max, n)
 
 
 def initialize_cluster(config):
@@ -95,6 +126,7 @@ def initialize_cluster(config):
     SD = config['SD']
     RP = config['RP']
     with_NSs = config['with_NSs']
+    NSt = config.get('NSt', 0)
     M_BH0 = config['M_BH0']
     s_BH0 = config['s_BH0']
     dt_min = config['dt_min']
@@ -282,42 +314,44 @@ def initialize_cluster(config):
         rng = np.random.default_rng()
         sBH = rng.beta(1.4, 3.6, mBH.size) * s1g_max
 
+    # NSs that have not formed yet (used only when NSt > 0); filled below:
+    mNS_pending = np.array([])
+    tNS_pending = np.array([])
+    vNS_pending = np.array([])
+
     # optionally form and retain neutron stars based on natal kicks:
     if with_NSs>0:
         f_NS_form = Kroupa_norm*integrate.quad(IMF_kroupa, 8, 18)[0]
         N_NS_form = int(f_NS_form*N)
         v_NS_natal = maxwell.rvs(loc=0, scale=np.sqrt(3)*wSN_kick, size=N_NS_form)
-        
-        # using tBH_form as a lower bound on NS formation time (=> gas upper bound);
-        # add a tNS_form (~15-25 Myr) for adiabatic (large f_ge) runs where it matters
-        N_NS_ret = v_NS_natal[v_NS_natal < v_esc(Mcl + M_gas_BHform, rh)].size
 
-        if N_NS_ret > 0:
-            if with_NSs==1:
-                # monochromatic NS mass distribution:
-                mBH = np.concatenate((mBH, neutron_star_mass * np.ones(N_NS_ret)))
-            else:
-                # define NS range (min/max masses):
-                eos = get_eos(EoS)
-                M_NS_min = eos.M_min
-                M_NS_max = eos.M_TOV
+        if NSt==0:
+            # legacy: all NSs form at tBH_form; tBH_form is a lower bound on the
+            # NS formation time (=> gas upper bound). Random draws are kept in the
+            # same order as in earlier versions, so results are bit-identical.
+            N_NS_ret = v_NS_natal[v_NS_natal < v_esc(Mcl + M_gas_BHform, rh)].size
 
-                if with_NSs==2:
-                    # bimodal mass distribution from Rocha et al. 2023:
-                    mNS = []
-                    while len(mNS) < N_NS_ret:
-                        # generate a single NS mass:
-                        m_NS = np.random.normal(loc=1.351, scale=0.084) if np.random.rand() < 0.539 else np.random.normal(loc=1.816, scale=0.260)
-                        if M_NS_min < m_NS < M_NS_max:
-                            mNS.append(m_NS)
-                    mNS = np.array(mNS)
-                else:
-                    # uniform mass distribution over the EoS-allowed NS range:
-                    mNS = np.random.uniform(M_NS_min, M_NS_max, N_NS_ret)
-
+            if N_NS_ret > 0:
+                mNS = _draw_ns_masses(N_NS_ret, with_NSs, EoS)
                 mBH = np.concatenate((mBH, mNS))
-            # initialize NS spins to zero:
-            sBH = np.concatenate((sBH, np.zeros(N_NS_ret)))
+                # initialize NS spins to zero:
+                sBH = np.concatenate((sBH, np.zeros(N_NS_ret)))
+
+        else:
+            # extended NS formation: draw masses and natal kicks for every NS that
+            # forms, and formation times from the COMPAS table (marginal p(t) for
+            # NSt=1, p(t | m_NS) for NSt=2). Retention is decided at formation, with
+            # the escape velocity at that time (form_neutron_stars, main loop).
+            if N_NS_form > 0:
+                mNS_pending = _draw_ns_masses(N_NS_form, with_NSs, EoS)
+                tNS_pending = sample_ns_formation_times(mNS_pending, NSt, tBH_form, table=NSFormationTable())
+                vNS_pending = v_NS_natal
+
+                # sort by formation time, so the main loop takes NSs from the front:
+                order = np.argsort(tNS_pending, kind='stable')
+                mNS_pending = mNS_pending[order]
+                tNS_pending = tNS_pending[order]
+                vNS_pending = vNS_pending[order]
 
     # optionally add a massive BH seed to the initial conditions:
     if M_BH0>0:
@@ -352,6 +386,9 @@ def initialize_cluster(config):
         # BH properties:
         'mBH': mBH, 'sBH': sBH, 'gBH': gBH, 'hBH': hBH, 
         'mBH_avg': 0.0, 'vBH': 0.0,
+        # NSs not yet formed (NSt > 0), sorted by formation time [Msun, Myr, km/s]:
+        'mNS_pending': mNS_pending, 'tNS_pending': tNS_pending, 'vNS_pending': vNS_pending,
+        'N_NS_formed': 0, 'N_NS_retained': 0,
         # data arrays:
         'binaries': binaries, 'pairs': pairs, 'triples': triples,
         'mergers': mergers, 'evolution': evolution, 'hardening': hardening, 'tdes': tdes,
@@ -371,6 +408,54 @@ def initialize_cluster(config):
     }
 
     return state
+
+
+def form_neutron_stars(state, config):
+    """Form the NSs whose formation time has been reached (NSt > 0 only).
+
+    NSs with t_form <= t are taken from the front of the time-sorted pending
+    arrays. Each is retained if its natal kick is below the escape velocity at
+    the current time, and retained NSs join the compact-object arrays with zero
+    spin, generation 1 and no TDEs. If the BH subsystem is already active, they
+    are also added to N_BH; otherwise they are counted when it activates.
+    Updates state in-place.
+
+    Args:
+        state (dict): Mutable simulation state.
+        config (dict): Configuration dictionary.
+    """
+    tNS_pending = state['tNS_pending']
+    if tNS_pending.size == 0:
+        return
+
+    # number of pending NSs that have formed by now (arrays sorted by t_form):
+    k = np.searchsorted(tNS_pending, state['t'], side='right')
+    if k == 0:
+        return
+
+    mNS_new = state['mNS_pending'][:k]
+    vNS_new = state['vNS_pending'][:k]
+
+    # retain NSs with natal kick below the current escape velocity:
+    retained = vNS_new < v_esc(state['Mcl'] + state['M_gas'], state['rh'])
+    mNS_ret = mNS_new[retained]
+    N_ret = mNS_ret.size
+
+    if N_ret > 0:
+        state['mBH'] = np.concatenate((state['mBH'], mNS_ret))
+        state['sBH'] = np.concatenate((state['sBH'], np.zeros(N_ret)))
+        state['gBH'] = np.concatenate((state['gBH'], np.ones(N_ret)))
+        state['hBH'] = np.concatenate((state['hBH'], np.zeros(N_ret)))
+        if state['i_aux1'] == 1:
+            state['N_BH'] = state['N_BH'] + N_ret
+
+    # remove the formed NSs from the pending arrays:
+    state['mNS_pending'] = state['mNS_pending'][k:]
+    state['tNS_pending'] = tNS_pending[k:]
+    state['vNS_pending'] = state['vNS_pending'][k:]
+
+    state['N_NS_formed'] = state['N_NS_formed'] + k
+    state['N_NS_retained'] = state['N_NS_retained'] + N_ret
 
 
 def compute_cluster_properties(state, config):
@@ -419,17 +504,25 @@ def compute_cluster_properties(state, config):
         state['black_hole_spins'].append(np.concatenate((state['sBH'], binaries[:, 6], binaries[:, 7], pairs[:, 2])))
         state['black_hole_generations'].append(np.concatenate((state['gBH'], binaries[:, 8], binaries[:, 9], pairs[:, 3])))
 
-    # activate BH subsystem once BH formation time is reached:
-    if t>tBH_form and i_aux1==0:
+    # NSs still to form (only for NSt > 0):
+    NSs_pending = state['tNS_pending'].size > 0
+
+    # activate BH subsystem once BH formation time is reached (if it would be
+    # empty and NSs are still to form, wait for them):
+    if t>tBH_form and i_aux1==0 and (mBH.size>0 or not NSs_pending):
         N_BH = mBH.size
         i_aux1 = 1
 
     # check if BH subsystem has fully evaporated:
     if i_aux1==1 and N_BH<=0:
-        print('BH SUBSYSTEM EVAPORATED')
-        state['i_aux1'] = i_aux1
-        state['N_BH'] = N_BH
-        return False
+        if NSs_pending:
+            # deactivate until the next NSs form:
+            i_aux1 = 0
+        else:
+            print('BH SUBSYSTEM EVAPORATED')
+            state['i_aux1'] = i_aux1
+            state['N_BH'] = N_BH
+            return False
 
     # average BH mass:
     if i_aux1==1:
