@@ -2,6 +2,15 @@
 
 All notable changes to Rapster will be documented in this file.
 
+## [Unreleased]
+
+### Changed
+- Relaxed dependency pins in `pyproject.toml` (`numpy>=1.26`, `scipy>=1.11`, `pandas>=2.1` instead of exact versions). Rapster now installs on Python 3.13; the test suite passes with NumPy 2.x and SciPy 1.18.
+- `.gitignore` now ignores all `Results*/` output folders and the `build/` and `dist/` directories; the stale `build/` copy of the package is no longer tracked.
+
+### Added
+- Community files: `CODE_OF_CONDUCT.md`, `CONTRIBUTING.md`, `SECURITY.md`, `CITATION.cff`, issue forms and a pull-request template.
+
 ## [2.13.0] - 2026-10-13
 
 ### Added
