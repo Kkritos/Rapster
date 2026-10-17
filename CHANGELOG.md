@@ -10,6 +10,7 @@ All notable changes to Rapster will be documented in this file.
 
 ### Added
 - Community files: `CODE_OF_CONDUCT.md`, `CONTRIBUTING.md`, `SECURITY.md`, `CITATION.cff`, issue forms and a pull-request template.
+- Continuous integration (`.github/workflows/tests.yml`): GitHub Actions runs the test suite and a default simulation on Python 3.10-3.13 for every push to `main` or `refactor` and every pull request; a tests badge was added to the README.
 
 ## [2.13.0] - 2026-10-13
 
