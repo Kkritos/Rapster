@@ -36,3 +36,30 @@ preferred-citation:
   identifiers:
     - type: other
       value: "arXiv:2210.10055"
+references:
+  - type: article
+    title: "Predicting intermediate-mass black hole formation in star clusters with machine learning"
+    authors:
+      - family-names: Kritos
+        given-names: Konstantinos
+      - family-names: Wadekar
+        given-names: Digvijay
+      - family-names: Berti
+        given-names: Emanuele
+    year: 2026
+    doi: "10.48550/arXiv.2605.21593"
+    url: "https://arxiv.org/abs/2605.21593"
+  - type: article
+    title: "Compact Object Mergers and Micro-Tidal Disruption Events: A Multi-Messenger Probe of Dense Stellar Environments"
+    authors:
+      - family-names: Kritos
+        given-names: Konstantinos
+      - family-names: Iacovelli
+        given-names: Francesco
+      - family-names: Perna
+        given-names: Rosalba
+      - family-names: Berti
+        given-names: Emanuele
+    year: 2026
+    doi: "10.48550/arXiv.2609.26878"
+    url: "https://arxiv.org/abs/2609.26878"
