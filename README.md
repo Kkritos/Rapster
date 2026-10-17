@@ -5,6 +5,7 @@
 	<a href="https://arxiv.org/abs/2210.10055"><img src="https://img.shields.io/badge/arXiv-2210.10055-b31b1b.svg" alt="arXiv"></a>
 	<a href="https://arxiv.org/abs/2605.21593"><img src="https://img.shields.io/badge/arXiv-2605.21593-b31b1b.svg" alt="arXiv"></a>
 	<a href="https://arxiv.org/abs/2609.26878"><img src="https://img.shields.io/badge/arXiv-2609.26878-b31b1b.svg" alt="arXiv"></a>
+	<a href="https://doi.org/10.5281/zenodo.23429404"><img src="https://zenodo.org/badge/DOI/10.5281/zenodo.23429404.svg" alt="DOI"></a>
 	<a href="https://github.com/Kkritos/Rapster/blob/main/LICENSE"><img src="https://img.shields.io/badge/license-GPL--3.0-blue" alt="license"></a>
 	<img src="https://img.shields.io/badge/python-3.10+-blue.svg" alt="python">
 	<a href="https://github.com/Kkritos/Rapster/actions/workflows/tests.yml"><img src="https://github.com/Kkritos/Rapster/actions/workflows/tests.yml/badge.svg" alt="tests"></a>
