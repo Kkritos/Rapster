@@ -1,0 +1,21 @@
+name: Feature request
+description: Suggest a new feature, channel, or physics prescription
+labels: [enhancement]
+body:
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposal
+      description: What would you like Rapster to do?
+    validations:
+      required: true
+  - type: textarea
+    id: motivation
+    attributes:
+      label: Scientific motivation
+      description: Why is this needed? Which environments or regimes does it affect?
+  - type: textarea
+    id: references
+    attributes:
+      label: References
+      description: Papers describing the relevant physics or prescriptions.
