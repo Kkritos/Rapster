@@ -2,7 +2,9 @@
 
 All notable changes to Rapster will be documented in this file.
 
-## [Unreleased]
+## [2.13.1] - 2026-10-16
+
+No changes to the physics: simulation results are identical to 2.13.0 (verified by the new regression test); `log.txt` now starts with the Rapster version.
 
 ### Changed
 - Documentation: README sections on running the tests, reporting bugs (GitHub issue forms) and citing (journal reference for the code paper; IMBH and micro-TDE papers), `CONTRIBUTING.md` (tests and regression-reference workflow), the pull-request checklist and the `CITATION.cff` message.

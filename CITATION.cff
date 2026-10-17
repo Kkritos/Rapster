@@ -5,8 +5,8 @@ type: software
 authors:
   - family-names: Kritos
     given-names: Konstantinos
-version: 2.13.0
-date-released: 2026-10-13
+version: 2.13.1
+date-released: 2026-10-16
 license: GPL-3.0-or-later
 repository-code: "https://github.com/Kkritos/Rapster"
 keywords:

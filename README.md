@@ -1,7 +1,7 @@
 # Rapster
 
 <p align="center">
-	<a href="https://github.com/Kkritos/Rapster/releases"><img src="https://img.shields.io/badge/version-2.13.0-blue" alt="version"></a>
+	<a href="https://github.com/Kkritos/Rapster/releases"><img src="https://img.shields.io/badge/version-2.13.1-blue" alt="version"></a>
 	<a href="https://arxiv.org/abs/2210.10055"><img src="https://img.shields.io/badge/arXiv-2210.10055-b31b1b.svg" alt="arXiv"></a>
 	<a href="https://arxiv.org/abs/2605.21593"><img src="https://img.shields.io/badge/arXiv-2605.21593-b31b1b.svg" alt="arXiv"></a>
 	<a href="https://arxiv.org/abs/2609.26878"><img src="https://img.shields.io/badge/arXiv-2609.26878-b31b1b.svg" alt="arXiv"></a>
@@ -19,7 +19,7 @@ $\tt Rapster$ stands for $\rm RAPid\ cluSTER$ evolution.
 
 Author: Konstantinos Kritos <konstantinos.kritos@stonybrook.edu>
 
-Version: 2.13.0, October 13, 2026.
+Version: 2.13.1, October 16, 2026.
 (Thanks to Tousif Islam for helping modularize this repository!)
 
 ![LOGO](.assets/LOGO.png)
