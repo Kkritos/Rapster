@@ -5,10 +5,12 @@ All notable changes to Rapster will be documented in this file.
 ## [Unreleased]
 
 ### Changed
+- Removed the redundant `setup.py`; packaging is defined entirely in `pyproject.toml` (`pip install -e .` works as before).
 - Relaxed dependency pins in `pyproject.toml` (`numpy>=1.26`, `scipy>=1.11`, `pandas>=2.1` instead of exact versions). Rapster now installs on Python 3.13; the test suite passes with NumPy 2.x and SciPy 1.18.
 - `.gitignore` now ignores all `Results*/` output folders and the `build/` and `dist/` directories; the stale `build/` copy of the package is no longer tracked.
 
 ### Added
+- `rapster.__version__` (read from the installed package metadata), and the Rapster version is now printed as the first line of `log.txt`, so every run records which code version produced it.
 - Community files: `CODE_OF_CONDUCT.md`, `CONTRIBUTING.md`, `SECURITY.md`, `CITATION.cff`, issue forms and a pull-request template.
 - Continuous integration (`.github/workflows/tests.yml`): GitHub Actions runs the test suite and a default simulation on Python 3.10-3.13 for every push to `main` or `refactor` and every pull request; a tests badge was added to the README.
 

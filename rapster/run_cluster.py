@@ -19,6 +19,7 @@
 import os
 import sys
 
+from . import __version__
 from .constants import *
 from .cluster_evolution import (
     initialize_cluster,
@@ -277,6 +278,7 @@ def main():
 
     # start initialization clock:
     initialization_time_initial = time.time()
+    print('RAPSTER VERSION:', __version__)
     print('INITIALIZING...')
 
     init_stellar_mass_sampler(config['mass_bias_power'])
