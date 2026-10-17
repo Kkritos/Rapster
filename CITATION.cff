@@ -1,0 +1,38 @@
+cff-version: 1.2.0
+message: "If you use Rapster in your research, please cite the paper below."
+title: "Rapster: Rapid cluster evolution code"
+type: software
+authors:
+  - family-names: Kritos
+    given-names: Konstantinos
+version: 2.13.0
+date-released: 2026-10-13
+license: GPL-3.0-or-later
+repository-code: "https://github.com/Kkritos/Rapster"
+keywords:
+  - population synthesis
+  - star clusters
+  - gravitational waves
+  - black holes
+  - compact binaries
+preferred-citation:
+  type: article
+  title: "Dynamical formation of black hole binaries in dense star clusters: Rapid cluster evolution code"
+  authors:
+    - family-names: Kritos
+      given-names: Konstantinos
+    - family-names: Strokov
+      given-names: Vladimir
+    - family-names: Baibhav
+      given-names: Vishal
+    - family-names: Berti
+      given-names: Emanuele
+  journal: "Physical Review D"
+  volume: 110
+  issue: 4
+  start: "043023"
+  year: 2024
+  doi: "10.1103/PhysRevD.110.043023"
+  identifiers:
+    - type: other
+      value: "arXiv:2210.10055"
