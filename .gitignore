@@ -1,6 +1,6 @@
 .rapsterenv/
 __pycache__/
-Results/
+Results*/
 *.egg-info/
 .ipynb_checkpoints/
 build/
