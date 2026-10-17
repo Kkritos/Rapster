@@ -11,6 +11,8 @@
 <!-- How was this tested? e.g. standard run completes; output compared with main -->
 
 ## Checklist
+- [ ] Tests pass locally (`python3 -m pytest tests/`)
+- [ ] If results change on purpose, the regression reference values in `tests/test_regression.py` were updated
 - [ ] New or changed arguments are documented in the README and help text
 - [ ] Physics changes include references in comments or docstrings
 - [ ] Changes that alter results are noted for the CHANGELOG

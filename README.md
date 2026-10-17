@@ -269,18 +269,19 @@ python -m rapster.run_cluster -N 100 -tM 1 -dtM 1 -P 0 -Mi 0 -Ei 0 -Hi 0 -BOi 0 
 
 This creates ``Results_smoke/log.txt``. To reproduce the bundled reference outputs, run the default configuration; the full default simulation is substantially larger than the smoke test.
 
-To run the tests (from the repository root):
+To run the tests (from the repository root, with ``pytest`` installed via ``pip install pytest``):
 
 ```bash
-python3 tests/test_ns_formation.py
-python3 tests/test_ns_initialization.py
-python3 tests/test_ns_main_loop.py
-python3 tests/test_ns_physics.py
+python3 -m pytest tests/
 ```
 
-``tests/test_ns_physics.py`` compares the number of retained NSs in a full run with the analytic expectation from the natal-kick distribution and the escape velocity of the evolving cluster. Diagnostic figures of the NS formation times are produced by ``python3 tools/plot_ns_formation_check.py``.
+Each test file can also be run on its own, e.g. ``python3 tests/test_regression.py``. The tests are also run automatically by GitHub Actions on Python 3.10-3.13 for every push and pull request.
 
-or ``python3 -m pytest tests/`` if ``pytest`` is installed.
+- ``tests/test_regression.py`` runs the default configuration with a fixed seed and checks that key results (numbers of mergers, TDEs, retained and ejected BHs; final cluster mass, half-mass radius and maximum BH mass) match stored reference values. If a change is meant to alter results, regenerate the reference values with ``python3 tests/test_regression.py --update`` and note the change in ``CHANGELOG.md``.
+- ``tests/test_ns_formation.py``, ``tests/test_ns_initialization.py`` and ``tests/test_ns_main_loop.py`` test the NS formation-time sampler, the NS initialization and NS formation in the main loop.
+- ``tests/test_ns_physics.py`` compares the number of retained NSs in a full run with the analytic expectation from the natal-kick distribution and the escape velocity of the evolving cluster.
+
+Diagnostic figures of the NS formation times are produced by ``python3 tools/plot_ns_formation_check.py``.
 
 The default run writes four text tables (``mergers.txt``, ``evolution.txt``, ``hardening.txt``, and ``tdes.txt``), one BH snapshot file (``outputBHs.pkl``), and ``log.txt`` in ``Results/`` under the current working directory. The text tables have column headers prefixed with ``#``; ``outputBHs.pkl`` is a pickle containing BH masses, spins, generations, TDE counts, and simulation times. If ``-plot 1`` is passed, diagnostic plots are saved to ``Results/plots/``. Reference outputs are included in ``Example/Results_Test/``.
 
@@ -505,7 +506,12 @@ The code uses the theory of Breen & Heggie to evolve the cluster. This theory is
 
 If you utilize this code in your research, please cite the following reference:
 
-[K. Kritos, V. Strokov, V. Baibhav & E. Berti (2022)](https://arxiv.org/abs/2210.10055).
+[K. Kritos, V. Strokov, V. Baibhav & E. Berti, Phys. Rev. D 110, 043023 (2024)](https://arxiv.org/abs/2210.10055).
+
+If you use the intermediate-mass black hole formation or micro-tidal disruption event features, please also cite:
+
+- [K. Kritos, D. Wadekar & E. Berti (2026)](https://arxiv.org/abs/2605.21593)
+- [K. Kritos, F. Iacovelli, R. Perna & E. Berti (2026)](https://arxiv.org/abs/2609.26878)
 
 $\tt Rapster$ has been used at least in the following works:
 
@@ -540,9 +546,9 @@ $\tt Rapster$ has been used at least in the following works:
 <a name="reportingbugs"></a>
 ### 9. Reporting bugs
 
-If you find a bug in the code, email us at konstantinos.kritos@stonybrook.edu with a description.
+If you find a bug in the code, please [open an issue](https://github.com/Kkritos/Rapster/issues/new/choose) using the bug-report form, including the full command line, the Rapster version (printed at the top of ``log.txt``) and the traceback. Alternatively, email konstantinos.kritos@stonybrook.edu with a description.
 
-Feel free to contribute. Suggestions and pull requests are welcome :)
+Feel free to contribute. Suggestions and pull requests are welcome :) See [CONTRIBUTING.md](CONTRIBUTING.md) for the development workflow.
 
 <a name="thanks"></a>
 ### 10. Thank you

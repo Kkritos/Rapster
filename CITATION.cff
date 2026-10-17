@@ -1,5 +1,5 @@
 cff-version: 1.2.0
-message: "If you use Rapster in your research, please cite the paper below."
+message: "If you use Rapster in your research, please cite the paper below. If you use the IMBH-formation or micro-TDE features, please also cite arXiv:2605.21593 and arXiv:2609.26878 (listed under references)."
 title: "Rapster: Rapid cluster evolution code"
 type: software
 authors:

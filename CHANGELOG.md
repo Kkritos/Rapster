@@ -5,11 +5,13 @@ All notable changes to Rapster will be documented in this file.
 ## [Unreleased]
 
 ### Changed
+- Documentation: README sections on running the tests, reporting bugs (GitHub issue forms) and citing (journal reference for the code paper; IMBH and micro-TDE papers), `CONTRIBUTING.md` (tests and regression-reference workflow), the pull-request checklist and the `CITATION.cff` message.
 - Removed the redundant `setup.py`; packaging is defined entirely in `pyproject.toml` (`pip install -e .` works as before).
 - Relaxed dependency pins in `pyproject.toml` (`numpy>=1.26`, `scipy>=1.11`, `pandas>=2.1` instead of exact versions). Rapster now installs on Python 3.13; the test suite passes with NumPy 2.x and SciPy 1.18.
 - `.gitignore` now ignores all `Results*/` output folders and the `build/` and `dist/` directories; the stale `build/` copy of the package is no longer tracked.
 
 ### Added
+- Dependabot configuration (`.github/dependabot.yml`): monthly pull requests when the GitHub Actions used by CI have new versions.
 - Regression test (`tests/test_regression.py`): a default run with a fixed seed must reproduce stored key results (numbers of mergers, TDEs, retained and ejected BHs; final cluster mass, half-mass radius and maximum BH mass), so any change to the results is caught by CI. Regenerate the reference values with `python3 tests/test_regression.py --update` when a change is meant to alter results.
 - `rapster.__version__` (read from the installed package metadata), and the Rapster version is now printed as the first line of `log.txt`, so every run records which code version produced it.
 - Community files: `CODE_OF_CONDUCT.md`, `CONTRIBUTING.md`, `SECURITY.md`, `CITATION.cff`, issue forms and a pull-request template.

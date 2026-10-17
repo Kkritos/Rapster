@@ -11,7 +11,8 @@ Open an issue using the **Feature request** template before writing code. For ch
 ## Development workflow
 1. Fork the repository and create a branch from `main`.
 2. Make your changes. Keep each pull request focused on a single change.
-3. Check that a standard run still completes, and compare its output against `main` if your change should not affect results.
+3. Run the tests with `python3 -m pytest tests/` (install with `pip install pytest`). The same tests run automatically on GitHub for every pull request and must pass before merging.
+   - If your change is *meant* to alter results (new physics, a bug fix), `tests/test_regression.py` will fail. Regenerate its reference values with `python3 tests/test_regression.py --update`, paste them into the test, and explain the change in the pull request.
 4. Update the README and docstrings if you add or change user-facing arguments.
 5. Open a pull request and fill in the template.
 
