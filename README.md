@@ -11,7 +11,7 @@
 	<a href="https://github.com/Kkritos/Rapster/commits/main"><img src="https://img.shields.io/github/last-commit/Kkritos/Rapster?label=last%20updated" alt="last updated"></a>
 </p>
 
-Rapid population synthesis code for compact binary coalescences in dense stellar clusters.
+Rapid population synthesis code for compact object coalescences and tidal disruptions in dynamical environments.
 
 $\tt Rapster$ stands for $\rm RAPid\ cluSTER$ evolution.
 (Thanks to Mark Cheung for coming up with the shorthand version!)
