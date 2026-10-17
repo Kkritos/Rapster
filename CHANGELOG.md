@@ -10,6 +10,7 @@ All notable changes to Rapster will be documented in this file.
 - `.gitignore` now ignores all `Results*/` output folders and the `build/` and `dist/` directories; the stale `build/` copy of the package is no longer tracked.
 
 ### Added
+- Regression test (`tests/test_regression.py`): a default run with a fixed seed must reproduce stored key results (numbers of mergers, TDEs, retained and ejected BHs; final cluster mass, half-mass radius and maximum BH mass), so any change to the results is caught by CI. Regenerate the reference values with `python3 tests/test_regression.py --update` when a change is meant to alter results.
 - `rapster.__version__` (read from the installed package metadata), and the Rapster version is now printed as the first line of `log.txt`, so every run records which code version produced it.
 - Community files: `CODE_OF_CONDUCT.md`, `CONTRIBUTING.md`, `SECURITY.md`, `CITATION.cff`, issue forms and a pull-request template.
 - Continuous integration (`.github/workflows/tests.yml`): GitHub Actions runs the test suite and a default simulation on Python 3.10-3.13 for every push to `main` or `refactor` and every pull request; a tests badge was added to the README.
