@@ -190,8 +190,8 @@ class ElementwiseCache:
 class RowLog:
     """
     Append-only table of float rows, stored compactly (8 bytes per value instead of
-    a Python list of Python floats, ~40 bytes per value). Used for the hardening and
-    merger records, which reach millions of rows in compact clusters.
+    a Python list of Python floats, ~40 bytes per value). Used for the hardening,
+    merger, TDE and evolution records, which reach millions of rows in compact clusters.
     np.array(log, dtype=float) gives the same array as np.array(list_of_rows, dtype=float).
     """
 

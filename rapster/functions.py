@@ -30,18 +30,10 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
 # Go up one level to the root, then into the Data folder:
 DATA_PATH_Planck18 = os.path.join(BASE_DIR, '..', 'Data', 'Planck18_lookup_table.npz')
-DATA_PATH_xMB = os.path.join(BASE_DIR, '..', 'Data', 'x_mb_vec.pkl')
 
 # load Planck18 lookup tables:
 Planck18_lookup_table = np.load(DATA_PATH_Planck18)
 
-# load xMB lookup tables:
-with open(DATA_PATH_xMB, 'rb') as f:
-    loaded_data_xMB = pickle.load(f)
-# Access variables from the dictionary:
-x_mb_vec = loaded_data_xMB['x_mb_vec']
-a_BH_vec = loaded_data_xMB['a_BH_vec']
-iota_vec = loaded_data_xMB['iota_vec']
 
 # interpolate redshift-lookback and lookback-redshift relations:
 # Build the interpolators once over the Planck18 lookup table; the public
@@ -100,18 +92,90 @@ def redshift_interp(t):
         )
     return _redshift_interp(t)
 
-# interpolate auxiliary function:
-x_mb_interp = CloughTocher2DInterpolator(np.c_[a_BH_vec, iota_vec], x_mb_vec)
+# Marginally bound (parabolic, E = 1) spherical orbits around a Kerr BH:
+#
+# With G = c = M = 1, E = 1 and x = L - a (L: axial angular momentum, Q: Carter
+# constant), the radial potential is R(r) = (r^2 - a x)^2 - Delta (r^2 + x^2 + Q),
+# Delta = r^2 - 2r + a^2. The conditions R = R' = 0 of a marginally bound spherical
+# orbit give, for each r,
+#     u = r^2 - a x = Delta sqrt(r) / (sqrt(r) - 1),
+#     x = (r^2 - u) / a,   L = x + a,   Q = u^2 / Delta - r^2 - x^2,
+# and the orbital inclination cos(iota) = L / sqrt(L^2 + Q) (iota = 0: prograde
+# equatorial, iota = pi: retrograde equatorial). cos(iota) decreases monotonically
+# from 1 at the prograde equatorial radius 2 - a + 2 sqrt(1 - a) to -1 at the
+# retrograde one 2 + a + 2 sqrt(1 + a), so r_mb(a, iota) is the unique root
+# between the two (bisection, then Newton steps inside the bracket).
+
+def _cos_inclination_mb(x, a):
+    """cos(iota) of the marginally bound spherical orbit of radius x (units GM/c^2)
+    around a Kerr BH of spin 0 < a < 1."""
+    sq = np.sqrt(x)
+    Delta = x*x - 2.0*x + a*a
+    u = Delta * sq / (sq - 1.0)
+    xL = (x*x - u) / a
+    L = xL + a
+    Q = np.maximum(u*u / Delta - x*x - xL*xL, 0.0)   # (>= 0; rounding at the equatorial ends)
+    return L / np.sqrt(L*L + Q)
+
+def _x_mb_spinning(a, c):
+    """x_mb for arrays of spins 0 < a < 1 and cos(iota) = c: bisection to a bracket
+    of ~1e-5 GM/c^2, then Newton steps kept inside the bracket (converged to
+    rounding, ~1e-15 relative)."""
+    lo = 2.0 - a + 2.0*np.sqrt(1.0 - a)            # prograde equatorial (cos(iota) = 1)
+    hi = 2.0 + a + 2.0*np.sqrt(1.0 + a)            # retrograde equatorial (cos(iota) = -1)
+    for _ in range(19):
+        mid = 0.5*(lo + hi)
+        above = _cos_inclination_mb(mid, a) > c
+        lo = np.where(above, mid, lo)
+        hi = np.where(above, hi, mid)
+    x = 0.5*(lo + hi)
+    for _ in range(4):
+        h = 1e-7 * x
+        f = _cos_inclination_mb(x, a) - c
+        df = (_cos_inclination_mb(x + h, a) - _cos_inclination_mb(x - h, a)) / (2.0*h)
+        with np.errstate(divide='ignore', invalid='ignore'):
+            step = np.where(df < 0.0, f / df, 0.0)
+        x = np.clip(x - step, lo, hi)
+    return x
+
+def x_mb(a_BH, iota):
+    """
+    Radius of the marginally bound orbit in units of the gravitational radius GM/c^2,
+    for spin magnitude a_BH (0 <= a_BH < 1) and orbital inclination iota (radians,
+    0 <= iota <= pi, measured from the BH spin axis: cos(iota) > 0 is prograde).
+    Exact Kerr result (see the notes above); arrays are evaluated elementwise.
+    """
+    a = np.asarray(a_BH, dtype=float)
+    c = np.cos(np.asarray(iota, dtype=float))
+    a, c = np.broadcast_arrays(a, c)
+    out = np.full(a.shape, 4.0)                    # Schwarzschild: 4 GM/c^2 for any iota
+    spin = a > 1e-12
+    if np.any(spin):
+        aa = a[spin]; cc = c[spin]
+        res = np.empty(aa.shape)
+        for k in range(0, aa.shape[0], 65536):     # (chunks: faster for millions of rows)
+            res[k:k+65536] = _x_mb_spinning(aa[k:k+65536], cc[k:k+65536])
+        out[spin] = res
+    return out if out.ndim else float(out)
 
 def R_mb(M_BH, a_BH, iota):
     """
-    Marginally bound orbit, from interpolated function above.
+    Marginally bound orbit radius (pc) of a BH of mass M_BH (Msun), spin a_BH and
+    orbital inclination iota (see x_mb).
     """
-    
-    rg = G_Newton*M_BH/c_light**2 # gravitational radius
-    rmb = x_mb_interp(a_BH, iota) * rg
-    return rmb
-R_mb = np.vectorize(R_mb, otypes=[float])   # (output type given: the function is not called an extra time to find it)
+    rg = G_Newton*np.asarray(M_BH, dtype=float)/c_light**2   # gravitational radius
+    return x_mb(a_BH, iota) * rg
+
+# placeholder for r_mb in TDE rows, filled in by fill_R_mb when the output is written:
+R_MB_PENDING = -1.0
+
+def fill_R_mb(tdes):
+    """Replace the R_MB_PENDING entries of column r_mb (13) of a TDE array by
+    R_mb(m_BH, s_BH, iota) (columns 6, 7, 12), evaluated for all rows at once."""
+    rows = tdes[:, 13] == R_MB_PENDING
+    if np.any(rows):
+        tdes[rows, 13] = R_mb(tdes[rows, 6], tdes[rows, 7], tdes[rows, 12])
+    return tdes
 
 def E_cosmo(z):
     """

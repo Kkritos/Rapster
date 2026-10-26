@@ -46,9 +46,10 @@ def disrupt_star(seed, t, z, tde_type, m_avg, m_star, R_star, m, s, g, h, m_mean
     # orbital inclination:
     iota = np.arccos(np.random.uniform(-1, 1)) # radians
 
-    # marginally bound orbit (R_mb is np.vectorize'd; for one BH its scalar function
-    # is called directly, same value):
-    r_mb = R_mb.pyfunc(m, s, iota)
+    # marginally bound orbit R_mb(m, s, iota) (functions.py): not needed during the run,
+    # so it is computed for all TDE rows at once when the output is written (fill_R_mb;
+    # the row stores the placeholder R_MB_PENDING until then):
+    r_mb = R_MB_PENDING
 
     # tidal radius:
     r_t = R_star * (m/m_star)**(1/3)

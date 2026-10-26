@@ -100,6 +100,7 @@ def _weights_of(m):
     return [m**p for p in _POWER_LIST]
 
 _ZEROS_EXCL = [0.0] * _N_EXCL
+_add_accumulate = np.add.accumulate   # (= np.cumsum for 1-d arrays, without its Python wrapper)
 
 
 class BHPool:
@@ -128,7 +129,8 @@ class BHPool:
         self._ones = np.ones(B)
         self.D = -1
         self._tot = None   # totals of all families, until the next change
-        self._cb = {}      # cumulative block sums per family, until the next change
+        self._cb = {}      # cumulative block sums per family (kept up to date lazily)
+        self._cbd = {}     # family -> first block whose cumulative sum is out of date
         self._bver = [0] * (cap // B)   # version of each block, increased whenever it changes
         self._wcum = {}    # (family, block) -> (block version, weights, cumulative weights)
         self._rebuild()
@@ -170,8 +172,6 @@ class BHPool:
     # --------------------------------------------------------------- internals
     def _changed(self):
         self._tot = None
-        if self._cb:
-            self._cb = {}
 
     def _rebuild(self):
         """Recompute all weights and block sums from the masses (O(n))."""
@@ -186,6 +186,7 @@ class BHPool:
         self._S[:] = self._W.reshape(-1, self.BLOCK, N_FAMILIES).sum(axis=1)
         self._ST[:] = self._S.T
         self._wcum = {}
+        self._cb = {}; self._cbd = {}
         self._changed()
 
     def _update_block(self, k):
@@ -194,6 +195,10 @@ class BHPool:
         np.dot(self._ones, self._W[b*B:(b+1)*B], out=self._S[b])   # (BLAS: faster than .sum(axis=0))
         self._ST[:, b] = self._S[b]
         self._bver[b] += 1
+        d = self._cbd                          # cached cumulative sums: valid below block b
+        for f in d:
+            if b < d[f]:
+                d[f] = b
 
     def _set_weights(self, k):
         """Weights of slot k from its mass (zero in the D-excluding families if k is D)."""
@@ -334,11 +339,33 @@ class BHPool:
         return tot
 
     def _block_cdf(self, f):
-        """Cumulative block sums of family f (sequential sums; cached until the next change)."""
+        """Cumulative block sums of family f (sequential sums). Kept between changes:
+        after a change of block b only the sums from block b on are recomputed, by the
+        same sequential additions (cb[b] = cb[b-1] + S[b], ...), so the array is
+        bit-identical to np.cumsum of all block sums."""
+        nb = (self.n + self.BLOCK - 1) // self.BLOCK
         cb = self._cb.get(f)
+        if cb is not None:
+            d = self._cbd[f]
+            if d >= nb and cb.shape[0] == nb:
+                return cb
         if cb is None:
-            nb = (self.n + self.BLOCK - 1) // self.BLOCK
-            cb = self._cb[f] = np.cumsum(self._ST[f, :nb])
+            cb = self._cb[f] = _add_accumulate(self._ST[f, :nb])
+            self._cbd[f] = nb
+            return cb
+        L = cb.shape[0]
+        if L != nb:
+            m = min(d, L, nb)
+            new = np.empty(nb); new[:m] = cb[:m]
+            cb = self._cb[f] = new
+            d = m
+        if d < nb:
+            tail = cb[d:]
+            tail[:] = self._ST[f, d:nb]
+            if d:
+                tail[0] = cb[d-1] + tail[0]
+            _add_accumulate(tail, out=tail)
+        self._cbd[f] = nb
         return cb
 
     def total(self, f):
@@ -352,9 +379,7 @@ class BHPool:
 
     def draw(self, f):
         """Slot drawn with probability proportional to its weight in family f."""
-        cb = self._cb.get(f)
-        if cb is None:
-            cb = self._block_cdf(f)
+        cb = self._block_cdf(f)
         B = self.BLOCK
         nb = cb.shape[0]
         total = cb[-1]
@@ -395,6 +420,10 @@ class BHPool:
         assert np.allclose(self._S, S, rtol=1e-12, atol=0)
         assert np.array_equal(self._ST, self._S.T)
         assert not np.any(self._m[n:]) and not np.any(self._W[n:])
+        # the kept cumulative block sums are those of np.cumsum, bit for bit:
+        nb = (n + self.BLOCK - 1) // self.BLOCK
+        for f in list(self._cb):
+            assert np.array_equal(self._block_cdf(f), np.cumsum(self._ST[f, :nb]))
         # total(f) (from the cumulative block sums) equals totals()[f] bit for bit:
         tot = self.totals()
         assert all(self.total(f) == float(tot[f]) for f in range(N_FAMILIES))
