@@ -742,7 +742,7 @@ def find_eMAX(m0, m1, m2, a1, a2, e1, e2, cosi1, cosi2, w, x0=1e-10, tol=1e-10):
     # physically motivated floor: pericenter must exceed 4*GM/c^2 (a few Schwarzschild radii),
     # giving a minimum value of x_min = epsilon_min = 8*G*(m0+m1)/(c^2*a1):
     x_min_floor = 8 * G_Newton * (m0 + m1) / c_light**2 / a1
-    x_min = np.clip(x_min, x_min_floor, 1.0)
+    x_min = np.float64(min(max(x_min, x_min_floor), 1.0))   # (= np.clip(x_min, x_min_floor, 1.0) for scalars, faster)
 
     eMAX = np.sqrt(1 - x_min)
     

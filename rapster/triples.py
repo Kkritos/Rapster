@@ -82,7 +82,7 @@ def evolve_triples(seed, t, z, zCl_form, triples, binaries, BH, mBH_avg, N_Tripl
             
             # maximum eccentricity of inner pair during the ZLK cycle:
             eMAX = find_eMAX(m0, m1, m2, a_in, a_out, e_in, e_out, np.cos(inclination1), np.cos(inclination2), w_in)
-            eMAX = np.clip(eMAX, 0.0, 1.0)  # clamp to physical range in case root finder returns slightly out-of-bounds value
+            eMAX = np.float64(min(max(eMAX, 0.0), 1.0))  # clamp to [0, 1] (= np.clip(eMAX, 0.0, 1.0) for a scalar, faster)
             epsilon_min = 1 - eMAX**2
             
             # ZLK merger timescale:
@@ -166,7 +166,7 @@ def evolve_triples(seed, t, z, zCl_form, triples, binaries, BH, mBH_avg, N_Tripl
                         # lookback time and redshift for the new outer binary formation:
                         t_lb_outer = lookback_interp(zCl_form) - t - t_ZLK  # lookback time at new binary formation
                         z_outer = redshift_interp(t_lb_outer) if t_lb_outer >= 0.1 else 0.0  # formation redshift
-                        binaries = np.append(binaries, [[np.random.randint(0, 999999999), 5, a_out, np.sqrt(np.random.rand()), m2, m_rem, s2, s_rem, g2, g_rem, t + t_ZLK, z_outer, 0, h2, h_rem]], axis=0)
+                        binaries = np.concatenate((binaries, np.array([[np.random.randint(0, 999999999), 5, a_out, np.sqrt(np.random.rand()), m2, m_rem, s2, s_rem, g2, g_rem, t + t_ZLK, z_outer, 0, h2, h_rem]])), axis=0)   # (= np.append(..., axis=0))
 
                         N_BBH+=1
                         N_meRe+=1
@@ -184,7 +184,7 @@ def evolve_triples(seed, t, z, zCl_form, triples, binaries, BH, mBH_avg, N_Tripl
                 # release outer member into the cluster:
                 BH.add(m2, s2, g2, h2)
 
-                binaries = np.append(binaries, [[ind_in, channel_in, a_in, e_in, m0, m1, s0, s1, g0, g1, t, z, 0, h0, h1]], axis=0)
+                binaries = np.concatenate((binaries, np.array([[ind_in, channel_in, a_in, e_in, m0, m1, s0, s1, g0, g1, t, z, 0, h0, h1]])), axis=0)   # (= np.append(..., axis=0))
                 
             i+=1
             

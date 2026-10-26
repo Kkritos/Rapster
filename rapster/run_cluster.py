@@ -31,6 +31,7 @@ from .cluster_evolution import (
     compute_external_params,
     evolve_tdes,
     record_evolution,
+    flush_records,
     update_cluster,
     print_status,
     write_output,
@@ -334,6 +335,9 @@ def main():
 
         # append evolution record:
         record_evolution(state)
+
+        # write finished rows of the evolution, hardening and TDE records to their files:
+        flush_records(state)
 
         # gas accretion onto compact objects (drains the gas reservoir):
         accrete_gas(state, config)

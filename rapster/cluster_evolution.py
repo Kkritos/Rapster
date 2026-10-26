@@ -31,7 +31,7 @@ from .remnant import configure_kick_model
 from .ns_formation import NSFormationTable, sample_ns_formation_times
 from .fastrandom import poisson_draw, maxwell_draws
 from .snapshots import SnapshotStream, dump_streaming
-from .arraycache import ElementwiseCache, RowLog
+from .arraycache import ElementwiseCache, RowLog, StreamedRowLog
 from zipfile import BadZipFile
 
 
@@ -92,6 +92,20 @@ def _draw_ns_masses(n, with_NSs, EoS):
 
     # uniform mass distribution over the EoS-allowed NS range:
     return np.random.uniform(M_NS_min, M_NS_max, n)
+
+
+# rows of the evolution, hardening and TDE records written to their files at a time
+# (memory for at most this many rows per record; ~1-16 MB):
+STREAM_CHUNK_ROWS = 131072
+
+
+def flush_records(state):
+    """Write the evolution, hardening and TDE rows that can no longer change to their
+    output files, once a chunk of them has accumulated (called once per time step)."""
+    for key in ('tdes', 'hardening', 'evolution'):
+        record = state[key]
+        if isinstance(record, StreamedRowLog):
+            record.flush()
 
 
 def initialize_cluster(config):
@@ -371,15 +385,27 @@ def initialize_cluster(config):
     binaries = np.zeros(shape=(1, 15))
     pairs = np.zeros(shape=(1, 5))
     triples = np.zeros(shape=(1, 24))
-    mergers = RowLog(27, [0.0] * 27)     # one placeholder row; -> array at write_output
-    evolution = RowLog(71, [0.0] * 71)   # one placeholder row; -> array at write_output
-    hardening = RowLog(12, [0.0] * 12)   # one placeholder row; -> array at write_output
-    tdes = RowLog(18, [0.0] * 18)        # one placeholder row; -> array at write_output
-
     configure_kick_model(config['recoil_kick_model'])
 
     # per-step BH snapshots (-BOi 1) are streamed to temporary files next to the results:
     results_dir = os.path.join(os.getcwd(), config.get('results_folder_name', 'Results'))
+
+    # records, each with one placeholder row. The merger rows are written at the end
+    # (each line ends with the final cluster properties); the evolution, hardening and
+    # TDE rows are written to their files during the run, in chunks (see flush_records
+    # and StreamedRowLog), with the same text as writing them all at the end:
+    def streamed(ncols, name, keys, indicator, keep, prepare=None):
+        return StreamedRowLog(ncols, [0.0] * ncols,
+                              os.path.join(results_dir, config.get(name + '_file', name) + '.txt'),
+                              '# ' + ' '.join(keys) + '\n', _write_rows, keep=keep,
+                              chunk=STREAM_CHUNK_ROWS, prepare=prepare,
+                              enabled=config.get(indicator, 1) == 1)
+    mergers = RowLog(27, [0.0] * 27)
+    # (the last evolution rows are kept: write_output drops the last one or two rows,
+    # depending on how the run ends; the last hardening row can still change)
+    evolution = streamed(71, 'evolution', evolution_keys, 'Ei', keep=2)
+    hardening = streamed(12, 'hardening', hardening_keys, 'Hi', keep=1)
+    tdes = streamed(18, 'tdes', tdes_keys, 'Ti', keep=0, prepare=fill_R_mb)
     snapshot_list = (lambda: SnapshotStream(results_dir)) if config.get('BOi', 0) == 1 else list
 
     # bundle all mutable simulation variables into the state dictionary:
@@ -1461,6 +1487,26 @@ def _write_rows(f, rows, suffix=''):
         f.writelines(' '.join(map(repr, row)) + suffix + '\n' for row in rows[start:start+chunk].tolist())
 
 
+def _finish_record(record, indicator, results_dir, name, keys, n_rows, prepare=None):
+    """Write the output file of a record (evolution, hardening or TDEs) with its first
+    n_rows data rows (all if None): a StreamedRowLog writes its remaining rows and
+    renames its file; a list of rows or a RowLog (one placeholder row first) is
+    written here."""
+    if isinstance(record, StreamedRowLog):
+        record.finish(n_rows)
+        return
+    if indicator != 1:
+        return
+    rows = np.array(record, dtype=float)[1:]   # drop placeholder row
+    if n_rows is not None:
+        rows = rows[:n_rows]
+    if prepare is not None:
+        rows = prepare(rows)
+    with open(os.path.join(results_dir, name + '.txt'), 'w') as f:
+        f.write('# ' + ' '.join(keys) + '\n')
+        _write_rows(f, rows)
+
+
 def write_output(state, config):
     """Export simulation results to the output directory.
 
@@ -1475,10 +1521,7 @@ def write_output(state, config):
         state (dict): Simulation state at the end of the run.
         config (dict): Configuration dictionary.
     """
-    mergers = np.array(state['mergers'], dtype=float)[1:]       # list -> array, drop placeholder row
-    evolution = np.array(state['evolution'], dtype=float)[1:]   # list -> array, drop placeholder row
-    hardening = np.array(state['hardening'], dtype=float)[1:]   # list -> array, drop placeholder row
-    tdes = fill_R_mb(np.array(state['tdes'], dtype=float)[1:])  # -> array, drop placeholder row, add r_mb
+    mergers = np.array(state['mergers'], dtype=float)[1:]       # -> array, drop placeholder row
 
     CURRENT_WORKING_DIR = os.getcwd()
     RESULTS_DIR = os.path.join(CURRENT_WORKING_DIR, config['results_folder_name'])
@@ -1509,13 +1552,10 @@ def write_output(state, config):
     zCl_form = state['zCl_form']; R_gal0 = state['R_gal0']
     Mcl = state['Mcl']; rh = state['rh']; R_gal = state['R_gal']
 
-    if config['Ti']==1:
-        tdes_path = os.path.join(RESULTS_DIR, config['tdes_file'] + '.txt')
-        with open(tdes_path, 'w') as f_tdes:
-            f_tdes.write('# ' + ' '.join(tdes_keys) + '\n')
-            # every stored row; a whole-binary BBH-star disruption (type 22) adds one
-            # row per BH, so there can be more rows than N_tdeBHWD+N_tdeBHstar+N_tdeBBHstar:
-            _write_rows(f_tdes, tdes)
+    # every stored TDE row; a whole-binary BBH-star disruption (type 22) adds one row
+    # per BH, so there can be more rows than N_tdeBHWD+N_tdeBHstar+N_tdeBBHstar:
+    _finish_record(state['tdes'], config['Ti'], RESULTS_DIR, config.get('tdes_file', 'tdes'),
+                   tdes_keys, None, prepare=fill_R_mb)
 
     if config['Mi']==1:
         mergers_path = os.path.join(RESULTS_DIR, config['mergers_file'] + '.txt')
@@ -1525,16 +1565,10 @@ def write_output(state, config):
             cluster_columns = ' '+str(Mcl0)+' '+str(rh0)+' '+str(Z)+' '+str(zCl_form)+' '+str(R_gal0)+' '+str(Mcl)+' '+str(rh)+' '+str(R_gal)
             _write_rows(f_mergers, mergers[:max(N_me, 0)], cluster_columns)
 
-    if config['Ei']==1:
-        evolution_path = os.path.join(RESULTS_DIR, config['evolution_file'] + '.txt')
-        with open(evolution_path, 'w') as f_evolution:
-            f_evolution.write('# ' + ' '.join(evolution_keys) + '\n')
-            _write_rows(f_evolution, evolution[:max(N_iter-1, 0)])
+    _finish_record(state['evolution'], config['Ei'], RESULTS_DIR, config.get('evolution_file', 'evolution'),
+                   evolution_keys, max(N_iter-1, 0))
 
-    if config['Hi']==1:
-        hardening_path = os.path.join(RESULTS_DIR, config['hardening_file'] + '.txt')
-        with open(hardening_path, 'w') as f_hardening:
-            f_hardening.write('# ' + ' '.join(hardening_keys) + '\n')
-            _write_rows(f_hardening, hardening[:max(N_hardening, 0)])
+    _finish_record(state['hardening'], config['Hi'], RESULTS_DIR, config.get('hardening_file', 'hardening'),
+                   hardening_keys, max(N_hardening, 0))
 
 # End of file.
