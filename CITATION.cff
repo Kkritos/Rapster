@@ -8,6 +8,7 @@ authors:
 version: 2.14.1
 date-released: 2026-10-26
 license: GPL-3.0-or-later
+doi: "10.5281/zenodo.23429403"
 repository-code: "https://github.com/Kkritos/Rapster"
 keywords:
   - population synthesis
