@@ -133,6 +133,7 @@ class BHPool:
         self._cbd = {}     # family -> first block whose cumulative sum is out of date
         self._bver = [0] * (cap // B)   # version of each block, increased whenever it changes
         self._wcum = {}    # (family, block) -> (block version, weights, cumulative weights)
+        self._dirty = set()   # blocks whose sums are out of date (see _settle)
         self._rebuild()
 
     # ------------------------------------------------------------------ views
@@ -187,18 +188,31 @@ class BHPool:
         self._ST[:] = self._S.T
         self._wcum = {}
         self._cb = {}; self._cbd = {}
+        self._dirty = set()
         self._changed()
 
     def _update_block(self, k):
-        B = self.BLOCK
-        b = k // B
-        np.dot(self._ones, self._W[b*B:(b+1)*B], out=self._S[b])   # (BLAS: faster than .sum(axis=0))
-        self._ST[:, b] = self._S[b]
+        """Mark the block of slot k as changed. Its sums are recomputed by _settle when
+        they are next needed (a block that changes several times in between, e.g.
+        the last block while BHs are removed, is summed once, with the same result)."""
+        b = k // self.BLOCK
         self._bver[b] += 1
-        d = self._cbd                          # cached cumulative sums: valid below block b
+        self._dirty.add(b)
+
+    def _settle(self):
+        """Recompute the sums of the blocks changed since the last call."""
+        dirty = self._dirty
+        B = self.BLOCK
+        W = self._W; S = self._S; ST = self._ST; ones = self._ones
+        for b in dirty:
+            np.dot(ones, W[b*B:(b+1)*B], out=S[b])   # (BLAS: faster than .sum(axis=0))
+            ST[:, b] = S[b]
+        bmin = min(dirty)
+        d = self._cbd                          # cached cumulative sums: valid below bmin
         for f in d:
-            if b < d[f]:
-                d[f] = b
+            if bmin < d[f]:
+                d[f] = bmin
+        dirty.clear()
 
     def _set_weights(self, k):
         """Weights of slot k from its mass (zero in the D-excluding families if k is D)."""
@@ -334,6 +348,8 @@ class BHPool:
         """Sums of the weights of all families over all single BHs (array, do not modify)."""
         tot = self._tot
         if tot is None:
+            if self._dirty:
+                self._settle()
             nb = (self.n + self.BLOCK - 1) // self.BLOCK
             tot = self._tot = self._S[:nb].sum(axis=0)
         return tot
@@ -343,6 +359,8 @@ class BHPool:
         after a change of block b only the sums from block b on are recomputed, by the
         same sequential additions (cb[b] = cb[b-1] + S[b], ...), so the array is
         bit-identical to np.cumsum of all block sums."""
+        if self._dirty:
+            self._settle()
         nb = (self.n + self.BLOCK - 1) // self.BLOCK
         cb = self._cb.get(f)
         if cb is not None:
@@ -396,7 +414,7 @@ class BHPool:
             entry = wcum.get((f, b))
             if entry is None or entry[0] != ver:
                 w = self._W[b*B:(b+1)*B, f]
-                entry = wcum[(f, b)] = (ver, w, np.cumsum(w))
+                entry = wcum[(f, b)] = (ver, w, _add_accumulate(w))   # (= np.cumsum(w))
             w = entry[1]
             i = int(entry[2].searchsorted(t, side='right'))
             if i < B and w[i] > 0.0:
@@ -409,6 +427,8 @@ class BHPool:
 
     def check(self):
         """Consistency check (used by the tests): weights, block sums, D."""
+        if self._dirty:
+            self._settle()
         n = self.n
         W = np.zeros_like(self._W)
         if n:

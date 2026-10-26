@@ -2,6 +2,18 @@
 
 All notable changes to Rapster will be documented in this file.
 
+## [2.14.2] - 2026-10-26
+
+Results are byte-identical to 2.14.1 for a given seed (all output files; checked on 26 configurations up to N = 1e8 and on full runs of the most compact massive clusters).
+
+### Changed
+- **Output written during the run.** The evolution, hardening and TDE tables (millions of rows in compact massive clusters) are written to their files in chunks of 131072 rows during the run (`StreamedRowLog` in `arraycache.py`, `flush_records` once per time step) instead of being kept in memory and written at the end, with the same text: memory no longer grows with the number of recorded events. Peak memory of full runs: 4.75 -> 1.18 GB for N = 1e8, r_h = 0.1 pc (which forms a 2.4e5 Msun IMBH and records 6e6 TDEs and 9e6 hardening interactions), 1.11 -> 0.39 GB for N = 10^7.5, r_h = 0.1 pc. The rows go to hidden temporary files (`.evolution.txt.part`, ...) in the results folder, renamed to the output files when the run ends normally, so a run that is interrupted leaves only `.part` files. The rows that can still change are kept until the end (the last hardening row, whose end-of-evolution condition is set afterwards, and the last two evolution rows, of which `write_output` drops one or two depending on how the run ends). The merger rows, which end with the final cluster properties, are still written at the end. Rows of tables switched off (`-Ei 0`, `-Hi 0`, `-Ti 0`) are no longer kept in memory. Checked to give identical files whatever the chunk size (`tests/test_streaming.py`).
+
+### Performance (results unchanged)
+1.2-1.3x faster for compact clusters dominated by three-body binaries and BBH encounters (e.g. 148.5 -> 123.6 s for N = 1e7, r_h = 0.1 pc, which forms a ~1350 Msun IMBH; 52.3 -> 40.9 s for a 2e4 Msun seed BH in N = 2e6, r_h = 0.3 pc, n = 4e7 pc^-3), 1.05-1.15x for those dominated by BH-star TDEs (e.g. 594.7 -> 518.1 s for the full run of N = 10^7.5, r_h = 0.1 pc; 1786 -> 1707 s for N = 1e8, r_h = 0.1 pc), unchanged for ordinary clusters (paired timings, the two versions running side by side):
+- **Pool of single BHs**: a change of a BH now only marks its block of 128 BHs; the block sums are recomputed when next needed, once per block however many times it changed (e.g. the last block while the BHs of the new three-body binaries are removed). This also removes, from every pool update, the loop over the cumulative sums kept since 2.14.1, which had made clusters dominated by three-body binaries a few percent slower in 2.14.1. Same sums, bit for bit (the same BLAS dot product over the same block contents).
+- Cumulative sums in the weighted draws without the `np.cumsum` Python wrapper (`np.add.accumulate`), scalar clamps of the ZLK eccentricity without `np.clip`, and rows appended to the binary and triple arrays with the `np.concatenate` that `np.append` calls (identical values).
+
 ## [2.14.1] - 2026-10-26
 
 Dynamics and all output except the column `r_mb` of `tdes.txt` are byte-identical to 2.14.0 for a given seed (checked on 26 configurations up to N = 1e8).

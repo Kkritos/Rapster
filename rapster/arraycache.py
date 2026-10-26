@@ -32,6 +32,7 @@
 
 from array import array
 
+import os
 import numpy as np
 
 
@@ -216,5 +217,94 @@ class RowLog:
     def __array__(self, dtype=None, copy=None):
         out = np.array(np.frombuffer(self.data, dtype=np.float64)).reshape(-1, self.ncols)
         return out if dtype is None else out.astype(dtype, copy=False)
+
+
+class StreamedRowLog(RowLog):
+    """
+    RowLog whose rows are written to their output file during the run, in chunks,
+    instead of all at the end, so that memory stays bounded however many rows a run
+    produces (millions of hardening and TDE rows in compact clusters).
+
+    The rows go to a temporary file `.<name>.part` next to the output file, which is
+    renamed to the output file by finish() when the run ends normally; a run that is
+    interrupted leaves only the .part file. The text is the same as writing all rows
+    at the end: the same writer (and `prepare` step) is applied chunk by chunk.
+
+    - Row 0 is the placeholder row and is never written.
+    - The last `keep` rows always stay in memory: they may still change (set_last)
+      or be cut at the end of the run (finish(n_rows) writes only the first n_rows
+      data rows).
+    - If `enabled` is False the rows are discarded instead of written.
+    - len() counts all rows appended so far, including those already written.
+    """
+
+    def __init__(self, ncols, first_row, path, header, writer, keep=0, chunk=131072,
+                 prepare=None, enabled=True):
+        super().__init__(ncols, first_row)
+        self.path = path
+        self.part_path = os.path.join(os.path.dirname(path), '.' + os.path.basename(path) + '.part')
+        self.header = header
+        self.writer = writer
+        self.keep = keep
+        self.chunk = chunk
+        self.prepare = prepare
+        self.enabled = enabled
+        self.removed = 0      # rows (counting the placeholder row) no longer in memory
+        self._f = None
+
+    def __len__(self):
+        return self.removed + len(self.data) // self.ncols
+
+    def __array__(self, dtype=None, copy=None):
+        if self.removed:
+            raise RuntimeError('rows of this log were already written to its output file')
+        return super().__array__(dtype, copy)
+
+    def _open(self):
+        if self._f is None:
+            os.makedirs(os.path.dirname(self.path) or '.', exist_ok=True)
+            self._f = open(self.part_path, 'w')
+            self._f.write(self.header)
+
+    def _emit(self, a, b):
+        """Write in-memory rows a..b-1 (the placeholder row excluded) and drop
+        in-memory rows 0..b-1."""
+        nc = self.ncols
+        if self.removed == 0:
+            a = max(a, 1)                      # in-memory row 0 is the placeholder row
+        if self.enabled and b > a:
+            rows = np.frombuffer(self.data, dtype=np.float64, count=b*nc).reshape(b, nc)[a:b].copy()
+            if self.prepare is not None:
+                rows = self.prepare(rows)
+            self._open()
+            self.writer(self._f, rows)
+        del self.data[:b*nc]
+        self.removed += b
+
+    def flush(self):
+        """Write the rows that can no longer change, once there are `chunk` of them."""
+        n = len(self.data) // self.ncols - self.keep
+        if n >= self.chunk:
+            self._emit(0, n)
+
+    def finish(self, n_rows=None):
+        """Write the data rows not yet written, up to data row n_rows (all rows if
+        None; the placeholder row is not counted), close the file and rename it to the
+        output file. In-memory row i is row removed + i of the whole log (row 0: the
+        placeholder), so data row n_rows is in-memory row n_rows - removed."""
+        m = len(self.data) // self.ncols
+        if n_rows is None:
+            n_rows = self.removed + m - 1
+        if n_rows < self.removed - 1:
+            raise RuntimeError('rows to be cut at the end were already written')
+        end = min(max(n_rows + 1 - self.removed, 0), m)
+        self._emit(0, end)
+        del self.data[:]
+        self.removed += m - end
+        if self.enabled:
+            self._open()
+            self._f.close()
+            self._f = None
+            os.replace(self.part_path, self.path)
 
 # End of file.

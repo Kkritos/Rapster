@@ -329,7 +329,7 @@ def evolve_BBHs(seed, t, z, dt, zCl_form, binaries, hardening, mergers, BH, n_st
                     # row 0 has weight 0), located directly in the cumulative weights:
                     w_bb = (binaries[:, 4] + binaries[:, 5]) * binaries[:, 2]
                     w_bb[i] = 0.0
-                    cw_bb = np.cumsum(w_bb)
+                    cw_bb = np.add.accumulate(w_bb)   # (= np.cumsum(w_bb), without its Python wrapper)
                     total_bb = cw_bb[-1]
                     if not total_bb > 0:
                         continue
@@ -387,8 +387,8 @@ def evolve_BBHs(seed, t, z, dt, zCl_form, binaries, hardening, mergers, BH, n_st
                     if a_outer/a_inner > 2.8 * (1 + m2 / (m1 + m0))**(2/5) * (1 + e_outer)**(2/5) / (1 - e_outer)**(6/5) * (1 - 0.3 * inclination / np.pi): # hierarchical triple
                         
                         # append triple:
-                        triples = np.append(triples, [[a_inner, a_outer, e_inner, e_outer, m0, m1, m2, s0, s1, s2, g0, g1, g2, inclination1, inclination2, t, z,
-                                                       binaries[k_hard][0], binaries[k_hard][1], binaries[k_hard][10], binaries[k_hard][11], h0, h1, h2]], axis=0)
+                        triples = np.concatenate((triples, np.array([[a_inner, a_outer, e_inner, e_outer, m0, m1, m2, s0, s1, s2, g0, g1, g2, inclination1, inclination2, t, z,
+                                                       binaries[k_hard][0], binaries[k_hard][1], binaries[k_hard][10], binaries[k_hard][11], h0, h1, h2]])), axis=0)   # (= np.append(..., axis=0))
                         
                         N_Triples+=1
                         
