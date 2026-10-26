@@ -16,6 +16,7 @@
 
 '''
 
+import math
 import sys
 from .constants import *
 from .functions import *
@@ -23,8 +24,61 @@ from .remnant import *
 from .compact_accretion import *  # provides the evolve() spin-accretion routine
 from .stellar_evolution import *  # provides the get_star() field-star sampling routine
 from .tidal_disruptions import *  # provides the try_BBH_star_disruption() helper
+from .fastrandom import choice_weighted
+from .bhpool import FAM
 
-def evolve_BBHs(seed, t, z, dt, zCl_form, binaries, hardening, mergers, mBH, sBH, gBH, hBH, n_star, v_star, vBH, t_rlx, m_avg, mBH_avg, na_BH, nc_BH, N_BH, N_BBH, N_me, N_me2b, N_3cap, N_meFi, N_meRe, N_meEj, N_dis, N_ex, N_BHej, N_BBHej, N_hardening, Vc_BH, N_bb, triples, N_Triples, tdes, N_tdeBBHstar, m_min, m_max, f_accreted, EoS):
+# constant factor (85 pi / 3 / sqrt(2))^(2/7) of the critical pericenter of GW capture in IMS:
+_RP3BM_CONST = (85 * np.pi / 3 / np.sqrt(2))**(2/7)
+
+# indices of the pool weight families of the partner draw:
+_I_P15, _I_P25, _I_P17, _I_P27 = FAM['p15'], FAM['p25'], FAM['p17'], FAM['p27']
+
+def sample_BBH_partner(m12, BH):
+    """
+    Draw the single BH that interacts with a BBH of total mass m12, with weights
+        p3 = (m12 + m) / sqrt(m12**(-2/5) + m**(-2/5)) * m**(3/2)
+    over the single-BH masses m (as np.random.choice(mBH, p=p3/np.sum(p3)) did).
+
+    Rejection sampling from the pool BH (bhpool.BHPool): since
+    (m12**(-2/5) + m**(-2/5))**(-1/2) <= min(m12, m)**(1/5), p3 is bounded by
+        B1 = m12**(1/5) (m12 m^(3/2) + m^(5/2))   or   B2 = m12 m^(17/10) + m^(27/10),
+    both mixtures of two pool weight families. The bound with the smaller total is
+    used; a candidate is accepted with probability p3 / bound, which is at least
+    1/sqrt(2) for B1 when m >= m12 and for B2 when m <= m12, and ~0.4-0.9 otherwise.
+
+    @in m12: total BBH mass m1 + m2 [Msun]
+    @in BH: pool of single BHs (not empty)
+
+    @out m3: mass of the sampled single BH [Msun]
+    @out k3: its slot in the pool
+    """
+    M = float(m12)
+    S15 = BH.total(_I_P15); S25 = BH.total(_I_P25)
+    S17 = BH.total(_I_P17); S27 = BH.total(_I_P27)
+    M02 = M**0.2
+    M_25 = M**(-2/5)
+    T1 = M02 * (M * S15 + S25)
+    T2 = M * S17 + S27
+    m = BH.m
+    draw = BH.draw
+    # (the candidate's weight and bound are evaluated with Python floats: the same
+    # IEEE operations as with NumPy scalars, with less overhead)
+    while True:
+        if T1 <= T2:
+            k = draw(_I_P15) if np.random.rand() * (M * S15 + S25) < M * S15 else draw(_I_P25)
+            mk = m[k]
+            x = float(mk)
+            bound = M02 * (M + x) * x**1.5
+        else:
+            k = draw(_I_P17) if np.random.rand() * T2 < M * S17 else draw(_I_P27)
+            mk = m[k]
+            x = float(mk)
+            bound = (M + x) * x**1.7
+        p3 = (M + x) / math.sqrt(M_25 + x**(-2/5)) * x**(3/2)
+        if np.random.rand() * bound < p3:
+            return mk, k
+
+def evolve_BBHs(seed, t, z, dt, zCl_form, binaries, hardening, mergers, BH, n_star, v_star, vBH, t_rlx, m_avg, mBH_avg, na_BH, nc_BH, N_BH, N_BBH, N_me, N_me2b, N_3cap, N_meFi, N_meRe, N_meEj, N_dis, N_ex, N_BHej, N_BBHej, N_hardening, Vc_BH, N_bb, triples, N_Triples, tdes, N_tdeBBHstar, m_min, m_max, f_accreted, EoS):
     """
     @in seed: simulation seed number
     @in t: simulation time
@@ -34,10 +88,7 @@ def evolve_BBHs(seed, t, z, dt, zCl_form, binaries, hardening, mergers, mBH, sBH
     @in binaries: array of BBHs
     @in hardening: array of BBH evolution
     @in mergers: array of BBH mergers
-    @in mBH: array of single BH masses
-    @in sBH: array of single BH spins
-    @in gBH: array of single BH generations
-    @in hBH: array of BH tdes count
+    @in BH: pool of single BHs (bhpool.BHPool: masses, spins, generations, TDE counts)
     @in m_avg: average mass
     @in n_star: central stellar density
     @in v_star: 3D star velocity dispersion
@@ -79,7 +130,29 @@ def evolve_BBHs(seed, t, z, dt, zCl_form, binaries, hardening, mergers, mBH, sBH
         
         # shuffle binaries to avoid biases:
         np.random.shuffle(binaries[1:])  # shuffle all BBH rows excluding the placeholder first row
-        
+
+        # mean total BBH mass np.mean(binaries[:, 4]+binaries[:, 5]), recomputed only
+        # when the binaries array is replaced or its masses are modified in place:
+        mtot_mean = None
+        mtot_mean_of = None   # the binaries array mtot_mean was computed for
+
+        # Quantities that stay constant during this call, computed once instead of at
+        # every interaction (same operations in the same order, so the values are
+        # identical to evaluating them in place):
+        v_esc = v_esc_cl(v_star, vBH)              # cluster escape velocity
+        t_lb_form = lookback_interp(zCl_form)       # lookback time at cluster formation
+        # interaction rates Rate_int(m, n, v, rp) = n * (2 pi G m rp / v_rel^2) * v_rel,
+        # v_rel = sqrt(2) v, written out with the v-dependent factors precomputed:
+        two_pi_G = 2 * np.pi * G_Newton
+        vrel_star = np.sqrt(2) * np.sqrt(v_star**2 + vBH**2)   # (star-BBH relative velocity)
+        vrel_star2 = vrel_star**2
+        vrel_BH = np.sqrt(2) * vBH
+        vrel_BH2 = vrel_BH**2
+        # leading factors of the Maxwellian dispersions sqrt(m_avg v_star^2 / 3 / m) and
+        # sqrt(mBH_avg vBH^2 / 3 / m):
+        disp_star = m_avg * v_star**2 / 3
+        disp_BH = mBH_avg * vBH**2 / 3
+
         # initialize iteration index:
         i=1
         
@@ -102,33 +175,20 @@ def evolve_BBHs(seed, t, z, dt, zCl_form, binaries, hardening, mergers, mBH, sBH
                     i=1
                 
                 # unwrap parameters of current binary:
-                ind = binaries[i][0]
-                channel = binaries[i][1]
-                a = binaries[i][2]
-                e = binaries[i][3]
-                m1 = binaries[i][4]
-                m2 = binaries[i][5]
-                s1 = binaries[i][6]
-                s2 = binaries[i][7]
-                g1 = binaries[i][8]
-                g2 = binaries[i][9]
-                q = np.min([m1, m2])/np.max([m1, m2])
-                t_form = binaries[i][10]
-                z_form = binaries[i][11]
-                Nex = binaries[i][12]
-                h1 = binaries[i][13]
-                h2 = binaries[i][14]
+                row = binaries[i]
+                ind, channel, a, e, m1, m2, s1, s2, g1, g2, t_form, z_form, Nex, h1, h2 = row
+                q = (m2 / m1) if m2 < m1 else (m1 / m2)    # = min_of(m1, m2)/max_of(m1, m2)
                 
-                # BBH-star interaction timescale (encounter cross-section set by the binary separation a):
+                # BBH-star interaction timescale (encounter cross-section set by the binary separation a);
+                # = 1 / Rate_int(m1 + m2 + m_avg, n_star, sqrt(v_star**2 + vBH**2), kp_max * a):
                 if n_star>0:
-                    v_rel = np.sqrt(v_star**2 + vBH**2)  # relative velocity between star and BBH center of mass
-                    t_BBH_star = 1 / Rate_int(m1 + m2 + m_avg, n_star, v_rel, kp_max * a)
+                    t_BBH_star = 1 / (n_star * (two_pi_G * (m1 + m2 + m_avg) * (kp_max * a) / vrel_star2) * vrel_star)
                 else:
                     t_BBH_star = 1e100
 
-                # BBH-BH interaction timescale:
-                if mBH.size>0:
-                    t_BBH_BH = 1 / Rate_int(m1+m2+mBH_avg, nc_BH, vBH, kp_max * a) + t_conv
+                # BBH-BH interaction timescale, = 1 / Rate_int(m1+m2+mBH_avg, nc_BH, vBH, kp_max * a) + t_conv:
+                if BH.size>0:
+                    t_BBH_BH = 1 / (nc_BH * (two_pi_G * (m1+m2+mBH_avg) * (kp_max * a) / vrel_BH2) * vrel_BH) + t_conv
                 else:
                     t_BBH_BH = 1e100
                 
@@ -137,7 +197,11 @@ def evolve_BBHs(seed, t, z, dt, zCl_form, binaries, hardening, mergers, mBH, sBH
                     # BBH number density:
                     n_BBH = (N_BBH - 1) / Vc_BH
                     
-                    t_BBH_BBH = 1 / Rate_int(m1 + m2 + np.mean(binaries[:, 4]+binaries[:, 5]), n_BBH, vBH, kp_max * a) + t_conv
+                    if mtot_mean_of is not binaries:
+                        mtot_tot = binaries[:, 4]+binaries[:, 5]
+                        mtot_mean = np.add.reduce(mtot_tot) / mtot_tot.shape[0]   # = np.mean(mtot_tot)
+                        mtot_mean_of = binaries
+                    t_BBH_BBH = 1 / (n_BBH * (two_pi_G * (m1 + m2 + mtot_mean) * (kp_max * a) / vrel_BH2) * vrel_BH) + t_conv
                 else:
                     t_BBH_BBH = 1e100
                     
@@ -170,7 +234,7 @@ def evolve_BBHs(seed, t, z, dt, zCl_form, binaries, hardening, mergers, mBH, sBH
                 if condition>0:
                     break
                 
-                if T_GW(m1, m2, a, e) < np.min([dt_local, dt, lookback_interp(zCl_form) - t - t_local]): # 2-body in-cluster merger during the current time-step
+                if T_GW(m1, m2, a, e) < min_of(dt_local, dt, t_lb_form - t - t_local): # 2-body in-cluster merger during the current time-step
                     
                     theta1, theta2, dPhi = sample_angles()
                     
@@ -178,12 +242,9 @@ def evolve_BBHs(seed, t, z, dt, zCl_form, binaries, hardening, mergers, mBH, sBH
                     g_rem = np.max([g1, g2]) + 1
                     h_rem = h1 + h2
 
-                    if vGW_kick < v_esc_cl(v_star, vBH): # merger remnant retained in cluster
+                    if vGW_kick < v_esc: # merger remnant retained in cluster
                         
-                        mBH = np.append(mBH, m_rem)
-                        sBH = np.append(sBH, s_rem)
-                        gBH = np.append(gBH, g_rem)
-                        hBH = np.append(hBH, h_rem)
+                        BH.add(m_rem, s_rem, g_rem, h_rem)
                         
                         N_BH = N_BH - 1
                         
@@ -216,21 +277,21 @@ def evolve_BBHs(seed, t, z, dt, zCl_form, binaries, hardening, mergers, mBH, sBH
                     
                     # merger time and redshift:
                     t_merge = t + t_local + T_GW(m1, m2, a, e)     # absolute merger time [Myr]
-                    t_lb = lookback_interp(zCl_form) - t_merge     # lookback time remaining at merger
+                    t_lb = t_lb_form - t_merge     # lookback time remaining at merger
                     z_merge = redshift_interp(t_lb) if t_lb >= 0.1 else 0.0     # merger redshift (0 if within 0.1 Myr of today)
 
                     # append merger:
-                    mergers = np.append(mergers, [[seed, ind, channel, a, e, m1, m2, s1, s2, g1, g2, theta1, theta2, dPhi, t_form, z_form,
-                                                   t_merge, z_merge, m_rem, s_rem, g_rem, vGW_kick, s_eff, q, v_esc_cl(v_star, vBH), h1, h2]], axis=0)
+                    mergers.append([seed, ind, channel, a, e, m1, m2, s1, s2, g1, g2, theta1, theta2, dPhi, t_form, z_form,
+                                    t_merge, z_merge, m_rem, s_rem, g_rem, vGW_kick, s_eff, q, v_esc, h1, h2])
                     
-                    binaries = np.delete(binaries, i, axis=0)
+                    binaries = delete_row(binaries, i)
                     
                     i = i - 1
                     
                     N_BBH = N_BBH - 1
                     
                     condition=2
-                    hardening[i][10]=condition
+                    hardening.set_last(10, condition)  # the row appended for this interaction
                     break
                 
                 # probability for interaction:
@@ -260,29 +321,25 @@ def evolve_BBHs(seed, t, z, dt, zCl_form, binaries, hardening, mergers, mBH, sBH
                     
                     N_bb+=1
                     
-                    # BBH semimajor axes (excluding the current one):
-                    other_binaries = np.delete(binaries, i, axis=0)
-                    smas = other_binaries[:, 2]
-
-                    # BBH masses (excluding the current one):
-                    masses = other_binaries[:, 4] + other_binaries[:, 5]
-                    
                     # semimajor axis of current BBH:
                     a1 = a
-                    
-                    # sample binary:
-                    valid = np.where(masses * smas > 0)[0]
-                    if len(valid) < 1:
+
+                    # sample the other BBH with probability ~ (m1 + m2) a, among the BBHs
+                    # other than the current one (row i, weight set to 0; the placeholder
+                    # row 0 has weight 0), located directly in the cumulative weights:
+                    w_bb = (binaries[:, 4] + binaries[:, 5]) * binaries[:, 2]
+                    w_bb[i] = 0.0
+                    cw_bb = np.cumsum(w_bb)
+                    total_bb = cw_bb[-1]
+                    if not total_bb > 0:
                         continue
-                    a2 = np.random.choice(smas[valid], p=(masses * smas)[valid] / np.sum((masses * smas)[valid]))
+                    k2 = int(cw_bb.searchsorted(np.random.rand() * total_bb, side='right'))
+                    while k2 >= cw_bb.shape[0]:      # (rounding at the end: draw again)
+                        k2 = int(cw_bb.searchsorted(np.random.rand() * total_bb, side='right'))
+                    a2 = binaries[k2][2]
 
                     # index of current BBH:
                     k1 = i
-                    
-                    # find index location of binary:
-                    k2 = np.squeeze(np.where(binaries[:, 2]==a2))+0
-                    
-                    k2 = int(np.atleast_1d(k2)[0])
                         
                     # order based on hardness:
                     if a1 < a2:
@@ -304,13 +361,10 @@ def evolve_BBHs(seed, t, z, dt, zCl_form, binaries, hardening, mergers, mBH, sBH
                         m_freed = binaries[k_soft][5]; s_freed = binaries[k_soft][7]; g_freed = binaries[k_soft][9]; h_freed = binaries[k_soft][14]
                         m2 = binaries[k_soft][4]; s2 = binaries[k_soft][6]; g2 = binaries[k_soft][8]; h2 = binaries[k_soft][13]
                     
-                    mBH = np.append(mBH, m_freed)
-                    sBH = np.append(sBH, s_freed)
-                    gBH = np.append(gBH, g_freed)
-                    hBH = np.append(hBH, h_freed)
+                    BH.add(m_freed, s_freed, g_freed, h_freed)
                     
                     # delete softer BBH:
-                    binaries = np.delete(binaries, k_soft, axis=0)
+                    binaries = delete_row(binaries, k_soft)
                     
                     N_dis+=1
                     
@@ -338,7 +392,7 @@ def evolve_BBHs(seed, t, z, dt, zCl_form, binaries, hardening, mergers, mBH, sBH
                         
                         N_Triples+=1
                         
-                        binaries = np.delete(binaries, k_hard, axis=0)
+                        binaries = delete_row(binaries, k_hard)
                         
                         N_BBH = N_BBH - 1
                         
@@ -346,10 +400,7 @@ def evolve_BBHs(seed, t, z, dt, zCl_form, binaries, hardening, mergers, mBH, sBH
                         
                     else: # `inner' binary is freed:
                         
-                        mBH = np.append(mBH, m2)
-                        sBH = np.append(sBH, s2)
-                        gBH = np.append(gBH, g2)
-                        hBH = np.append(hBH, h2)
+                        BH.add(m2, s2, g2, h2)
                         
                         # append binary:
                         Delta = 0.38 # Zevin et al., ApJ 871 (2019), 91.
@@ -362,7 +413,7 @@ def evolve_BBHs(seed, t, z, dt, zCl_form, binaries, hardening, mergers, mBH, sBH
                     elif k_soft == i_old:
                         i = i - 1
                         condition=4
-                        hardening[i][10]=condition
+                        hardening.set_last(10, condition)  # the row appended for this interaction
                         break
                     else:
                         continue
@@ -387,28 +438,26 @@ def evolve_BBHs(seed, t, z, dt, zCl_form, binaries, hardening, mergers, mBH, sBH
                     # dispersion reflects energy equipartition with the star's own mass,
                     # anchored to the stellar population's characteristic energy scale
                     # (m_avg * v_star^2), mirroring the analogous BH formula below:
-                    vS_before = get_maxwell_sample(np.sqrt(m_avg * v_star**2 / 3 / m3))
+                    vS_before = get_maxwell_sample(np.sqrt(disp_star / m3))
 
                 else: # BBH-BH occurs
 
-                    if mBH.size == 0:  # no single BHs left to interact with, skip
+                    if BH.size == 0:  # no single BHs left to interact with, skip
                         continue
-                    p3 = (m1 + m2 + mBH) / np.sqrt((m1 + m2)**(-2/5) + mBH**(-2/5)) * mBH**(3/2)
-                    m3 = np.random.choice(mBH, replace=False, p=p3/np.sum(p3))
+                    # sample the single BH, with weight
+                    # p3 = (m1 + m2 + m) / sqrt((m1 + m2)**(-2/5) + m**(-2/5)) * m**(3/2),
+                    # and its slot k3 in the pool:
+                    m3, k3 = sample_BBH_partner(m1 + m2, BH)
                     
-                    k3 = np.squeeze(np.where(mBH==m3))+0
-                    
-                    k3 = int(np.atleast_1d(k3)[0])
-                    
-                    s3 = sBH[k3]
-                    g3 = gBH[k3]
-                    h3 = hBH[k3]
+                    s3 = BH.s[k3]
+                    g3 = BH.g[k3]
+                    h3 = BH.h[k3]
                     
                     # sample single velocity before interaction:
-                    vS_before = get_maxwell_sample(np.sqrt(mBH_avg * vBH**2 / 3 / m3))
+                    vS_before = get_maxwell_sample(np.sqrt(disp_BH / m3))
                     
                 # sample binary velocity before interaction:
-                vB_before = get_maxwell_sample(np.sqrt(mBH_avg * vBH**2 / 3 / (m1 + m2)))
+                vB_before = get_maxwell_sample(np.sqrt(disp_BH / (m1 + m2)))
 
                 # sample cosine angle before interaction:
                 cos_theta_before = np.random.uniform(-1, 1)
@@ -423,19 +472,17 @@ def evolve_BBHs(seed, t, z, dt, zCl_form, binaries, hardening, mergers, mBH, sBH
                     
                     N_dis+=1
                     
-                    binaries = np.delete(binaries, i, axis=0)
+                    binaries = delete_row(binaries, i)
                     
                     i = i - 1
                     
-                    mBH = np.append(mBH, m1); mBH = np.append(mBH, m2)
-                    sBH = np.append(sBH, s1); sBH = np.append(sBH, s2)
-                    gBH = np.append(gBH, g1); gBH = np.append(gBH, g2)
-                    hBH = np.append(hBH, h1); hBH = np.append(hBH, h2)
+                    BH.add(m1, s1, g1, h1)
+                    BH.add(m2, s2, g2, h2)
                     
                     N_BBH = N_BBH - 1
                     
                     condition=3
-                    hardening[i][10]=condition
+                    hardening.set_last(10, condition)  # the row appended for this interaction
                     break
 
                 # sample pericenter of interaction (shared between TDE and dynamical checks,
@@ -444,7 +491,7 @@ def evolve_BBHs(seed, t, z, dt, zCl_form, binaries, hardening, mergers, mBH, sBH
                 rp = np.random.uniform(0, kp_max * a)
 
                 # critical pericenter for resonant interaction:
-                rp_c = np.max([m1, m2]) / (m1 + m2) * a
+                rp_c = max_of(m1, m2) / (m1 + m2) * a
 
                 if type_int==1: # check for tidal disruption on this passage
                     disrupted, m1, m2, s1, s2, h1, h2, tdes = try_BBH_star_disruption(
@@ -455,6 +502,7 @@ def evolve_BBHs(seed, t, z, dt, zCl_form, binaries, hardening, mergers, mBH, sBH
                         N_tdeBBHstar+=1
                         binaries[i][4] = m1; binaries[i][6] = s1; binaries[i][13] = h1
                         binaries[i][5] = m2; binaries[i][7] = s2; binaries[i][14] = h2
+                        mtot_mean_of = None  # masses changed
                         continue # star consumed; move to next interaction draw for this binary
 
                     if rp < rp_c: # resonant encounter: multiple close passages possible
@@ -467,6 +515,7 @@ def evolve_BBHs(seed, t, z, dt, zCl_form, binaries, hardening, mergers, mBH, sBH
                                 N_tdeBBHstar+=1
                                 binaries[i][4] = m1; binaries[i][6] = s1; binaries[i][13] = h1
                                 binaries[i][5] = m2; binaries[i][7] = s2; binaries[i][14] = h2
+                                mtot_mean_of = None  # masses changed
                                 break
                         if disrupted:
                             continue # star consumed during one of the resonant passages
@@ -477,38 +526,45 @@ def evolve_BBHs(seed, t, z, dt, zCl_form, binaries, hardening, mergers, mBH, sBH
 
                 if rp < rp_c and type_int==2: # interaction is resonant
                     
-                    u_3bm = np.random.rand(3)
+                    u_3bm = np.random.rand(3).tolist()
+
+                    # For each of the three pairs (m1, m2), (m2, m3), (m3, m1) of the
+                    # intermediate states (IMS): semimajor axis assuming energy conservation,
+                    # critical pericenter for a GW capture merger, critical eccentricity and
+                    # probability of a 3-body merger over N_IMS IMS; the pair with the
+                    # largest ratio p_3bm / u_3bm is selected (written with Python floats,
+                    # pair by pair, instead of three-element arrays):
+                    mm12 = m1 * m2
+                    rp_pre = _RP3BM_CONST * a**(2/7) / 2
+                    mm12_25 = mm12**(2/5)
+                    pair_m = ((m1, m2), (m2, m3), (m3, m1))
+                    j_3bm = 0
+                    ratio_max = None
+                    a_3bm = [0.0, 0.0, 0.0]
+                    e_3bm_c = [0.0, 0.0, 0.0]
+                    for j in range(3):
+                        x, y = pair_m[j]
+                        a_3bm[j] = a / mm12 * (x * y)
+                        rp_c3 = rp_pre * (2 * G_Newton * (x * y)**(4/5) * (x + y)**(1/5) / mm12_25 / c_light**2)**(5/7)
+                        e_3bm_c[j] = 1 - rp_c3 / a_3bm[j]
+                        p_3bm = 1 - e_3bm_c[j]**(2 * N_IMS)
+                        u = u_3bm[j]
+                        ratio = p_3bm / u if u > 0.0 else (math.inf if p_3bm > 0 else -math.inf)
+                        if ratio_max is None or ratio > ratio_max:
+                            ratio_max = ratio
+                            j_3bm = j
+
+                    # eccentricities of the IMS (drawn for all three as before; NaN, as before,
+                    # if the critical eccentricity is negative and the draw exceeds 1/(1 - e_c)):
+                    v_3bm = np.random.rand(3)
+
+                    m_3bm_1 = (m1, m2, m3); s_3bm_1 = (s1, s2, s3); g_3bm_1 = (g1, g2, g3); h_3bm_1 = (h1, h2, h3)
+                    m_3bm_2 = (m2, m3, m1); s_3bm_2 = (s2, s3, s1); g_3bm_2 = (g2, g3, g1); h_3bm_2 = (h2, h3, h1)
+                    m_3bm_3 = (m3, m1, m2); s_3bm_3 = (s3, s1, s2); g_3bm_3 = (g3, g1, g2); h_3bm_3 = (h3, h1, h2)
                     
-                    # semimajor axes of IMS assuming energy conservation:
-                    a_3bm = a / (m1*m2) * np.array([m1*m2, m2*m3, m3*m1])
-                    
-                    # critical pericenter distances for GW capture merger during binary-single interaction:
-                    rp_3bm_c = (85 * np.pi / 3 / np.sqrt(2))**(2/7) * a**(2/7) / 2 \
-                        * np.array([(2 * G_Newton * (m1 * m2)**(4/5) *(m1 + m2)**(1/5) /(m1*m2)**(2/5) /c_light**2)**(5/7),
-                                    (2 * G_Newton * (m2 * m3)**(4/5) *(m2 + m3)**(1/5) /(m1*m2)**(2/5) /c_light**2)**(5/7),
-                                    (2 * G_Newton * (m3 * m1)**(4/5) *(m3 + m1)**(1/5) /(m1*m2)**(2/5) /c_light**2)**(5/7)])
-                    
-                    # critical eccentricities for 3-body merger:
-                    e_3bm_c = 1 - rp_3bm_c / a_3bm
-                    
-                    # probabilities for 3-body merger:
-                    p_3bm = (1 - e_3bm_c**(2 * N_IMS))
-                    
-                    e_3bm = np.sqrt(1 - (1 - e_3bm_c) * np.random.rand(3))
-                    
-                    ratios_3bm = p_3bm / u_3bm
-                    j_3bm = np.argmax(ratios_3bm)
-                    
-                    m_3bm_1 = np.array([m1, m2, m3]); s_3bm_1 = np.array([s1, s2, s3]); g_3bm_1 = np.array([g1, g2, g3]); h_3bm_1 = np.array([h1, h2, h3])
-                    m_3bm_2 = np.array([m2, m3, m1]); s_3bm_2 = np.array([s2, s3, s1]); g_3bm_2 = np.array([g2, g3, g1]); h_3bm_2 = np.array([h2, h3, h1])
-                    m_3bm_3 = np.array([m3, m1, m2]); s_3bm_3 = np.array([s3, s1, s2]); g_3bm_3 = np.array([g3, g1, g2]); h_3bm_3 = np.array([h3, h1, h2])
-                    
-                    if ratios_3bm[j_3bm] > 1: # binary-single GW capture merger occurs
+                    if ratio_max > 1: # binary-single GW capture merger occurs
                         
-                        mBH = np.delete(mBH, k3)
-                        sBH = np.delete(sBH, k3)
-                        gBH = np.delete(gBH, k3)
-                        hBH = np.delete(hBH, k3)
+                        BH.remove(k3)
                         
                         mA = m_3bm_1[j_3bm]; sA = s_3bm_1[j_3bm]; gA = g_3bm_1[j_3bm]; hA = h_3bm_1[j_3bm]
                         mB = m_3bm_2[j_3bm]; sB = s_3bm_2[j_3bm]; gB = g_3bm_2[j_3bm]; hB = h_3bm_2[j_3bm]
@@ -521,14 +577,11 @@ def evolve_BBHs(seed, t, z, dt, zCl_form, binaries, hardening, mergers, mBH, sBH
                         h_rem = h1 + h2
                         
                         sma = a_3bm[j_3bm]
-                        eccen = e_3bm[j_3bm]
+                        eccen = np.sqrt(1 - (1 - e_3bm_c[j_3bm]) * v_3bm[j_3bm])
                         
-                        if vGW_kick < v_esc_cl(v_star, vBH): # merger remnant retained in cluster
+                        if vGW_kick < v_esc: # merger remnant retained in cluster
                             
-                            mBH = np.append(mBH, m_rem)
-                            sBH = np.append(sBH, s_rem)
-                            gBH = np.append(gBH, g_rem)
-                            hBH = np.append(hBH, h_rem)
+                            BH.add(m_rem, s_rem, g_rem, h_rem)
                             
                             N_BH = N_BH - 1
                             N_meRe+=1
@@ -557,31 +610,27 @@ def evolve_BBHs(seed, t, z, dt, zCl_form, binaries, hardening, mergers, mBH, sBH
                         
                         # merger time and redshift:
                         t_merge = t + t_local + T_GW(mA, mB, sma, eccen)  # absolute merger time [Myr]
-                        t_lb = lookback_interp(zCl_form) - t_merge          # lookback time remaining at merger
+                        t_lb = t_lb_form - t_merge          # lookback time remaining at merger
                         z_merge = redshift_interp(t_lb) if t_lb >= 0.1 else 0.0  # merger redshift (0 if within 0.1 Myr of today)
 
                         # append merger:
-                        mergers = np.append(mergers,
-                                            [[seed, ind, 6, sma, eccen, m1, m2, s1, s2, g1, g2, theta1, theta2, dPhi, t_form, z_form, 
-                                              t_merge, z_merge, m_rem, s_rem, g_rem, vGW_kick, s_eff, q, v_esc_cl(v_star, vBH), h1, h2]], axis=0)
+                        mergers.append([seed, ind, 6, sma, eccen, m1, m2, s1, s2, g1, g2, theta1, theta2, dPhi, t_form, z_form, 
+                                        t_merge, z_merge, m_rem, s_rem, g_rem, vGW_kick, s_eff, q, v_esc, h1, h2])
                         
                         # delete BBH:
-                        binaries = np.delete(binaries, i, axis=0)
+                        binaries = delete_row(binaries, i)
                         
                         N_BBH = N_BBH - 1
                         
                         i = i - 1
                         
-                        mBH = np.append(mBH, mC)
-                        sBH = np.append(sBH, sC)
-                        gBH = np.append(gBH, gC)
-                        hBH = np.append(hBH, hC)
+                        BH.add(mC, sC, gC, hC)
                         
                         condition=6
-                        hardening[i][10]=condition
+                        hardening.set_last(10, condition)  # the row appended for this interaction
                         break
                         
-                if m3>np.min([m1, m2]) and rp<rp_c and type_int==2: # exchange occurs
+                if m3>min_of(m1, m2) and rp<rp_c and type_int==2: # exchange occurs
 
                     N_ex+=1
                     binaries[i][12]+=1
@@ -599,19 +648,13 @@ def evolve_BBHs(seed, t, z, dt, zCl_form, binaries, hardening, mergers, mBH, sBH
                     # impose binding energy conservation after substitution:
                     binaries[i][2] = m3/ms * binaries[i][2]
 
-                    mBH = np.delete(mBH, k3)
-                    sBH = np.delete(sBH, k3)
-                    gBH = np.delete(gBH, k3)
-                    hBH = np.delete(hBH, k3)
-
-                    mBH = np.append(mBH, ms)
-                    sBH = np.append(sBH, ss)
-                    gBH = np.append(gBH, gs)
-                    hBH = np.append(hBH, hs)
+                    # the binary member replaced by the single BH takes its place in the pool:
+                    BH.replace(k3, ms, ss, gs, hs)
 
                     # update binary masses:
                     binaries[i][4] = mr
                     binaries[i][5] = m3
+                    mtot_mean_of = None  # masses changed
                     
                     # update binary spins:
                     binaries[i][6] = sr
@@ -628,8 +671,6 @@ def evolve_BBHs(seed, t, z, dt, zCl_form, binaries, hardening, mergers, mBH, sBH
                     m1 = mr; s1 = sr; g1 = gr; h1 = hr
                     m2 = m3; s2 = s3; g2 = g3; h2 = h3
                     m3 = ms; s3 = ss; g3 = gs; h3 = hs
-                    
-                    k3 = mBH.size - 1
                     
                     a = binaries[i][2]
                     e = binaries[i][3]
@@ -657,27 +698,24 @@ def evolve_BBHs(seed, t, z, dt, zCl_form, binaries, hardening, mergers, mBH, sBH
                 v12_after = m3 / (m1 + m2 + m3) * v_rel_after
                 
                 # check if single is ejected:
-                if v3_after > v_esc_cl(v_star, vBH) and type_int==2:
+                if v3_after > v_esc and type_int==2:
                     
-                    mBH = np.delete(mBH, k3)
-                    sBH = np.delete(sBH, k3)
-                    gBH = np.delete(gBH, k3)
-                    hBH = np.delete(hBH, k3)
+                    BH.remove(k3)
 
                     N_BH = N_BH - 1
                     
                     N_BHej+=1
                     
                 if v12_after > 2 * vBH \
-                   and v12_after < v_esc_cl(v_star, vBH): # binary convection
+                   and v12_after < v_esc: # binary convection
                     
                     t_conv = m_avg / (m1 + m2) * t_rlx
                     
                 # check if binary is ejected:
-                if v12_after > v_esc_cl(v_star, vBH):
+                if v12_after > v_esc:
                     
                     # check if BBH mergers in the field:
-                    if t + t_local + T_GW(m1, m2, a, e) < lookback_interp(zCl_form): # BBH merges
+                    if t + t_local + T_GW(m1, m2, a, e) < t_lb_form: # BBH merges
                         
                         theta1, theta2, dPhi = sample_angles()
                         
@@ -708,14 +746,14 @@ def evolve_BBHs(seed, t, z, dt, zCl_form, binaries, hardening, mergers, mBH, sBH
                         s_eff = (m1 * s1 * np.cos(theta1) + m2 * s2 * np.cos(theta2)) / (m1 + m2)
                         
                         # lookback time and redshift at field merger:
-                        t_lb = lookback_interp(zCl_form) - t_merge  # lookback time remaining at merger
+                        t_lb = t_lb_form - t_merge  # lookback time remaining at merger
                         z_merge = redshift_interp(t_lb) if t_lb >= 0.1 else 0.0  # merger redshift (0 if within 0.1 Myr of today)
 
                         # append merger:
-                        mergers = np.append(mergers, [[seed, ind, -channel, a, e, m1, m2, s1, s2, g1, g2, theta1, theta2, dPhi, t_form, z_form, t_merge,
-                                                       z_merge, m_rem, s_rem, g_rem, vGW_kick, s_eff, q, v_esc_cl(v_star, vBH), h1, h2]], axis=0)
+                        mergers.append([seed, ind, -channel, a, e, m1, m2, s1, s2, g1, g2, theta1, theta2, dPhi, t_form, z_form, t_merge,
+                                        z_merge, m_rem, s_rem, g_rem, vGW_kick, s_eff, q, v_esc, h1, h2])
                         
-                    binaries = np.delete(binaries, i, axis=0)
+                    binaries = delete_row(binaries, i)
                     
                     i = i - 1
                     
@@ -726,13 +764,13 @@ def evolve_BBHs(seed, t, z, dt, zCl_form, binaries, hardening, mergers, mBH, sBH
                     N_BBHej+=1
                     
                     condition=5
-                    hardening[i][10]=condition
+                    hardening.set_last(10, condition)  # the row appended for this interaction
                     break
 
             hardening.append([t, dt, t_local, dt_local, ind, a, e, m1, m2, q, condition, Nex])
             N_hardening+=1
             i+=1
             
-    return seed, t, z, dt, zCl_form, binaries, hardening, mergers, mBH, sBH, gBH, hBH, n_star, v_star, vBH, t_rlx, m_avg, mBH_avg, na_BH, nc_BH, N_BH, N_BBH, N_me, N_me2b, N_3cap, N_meFi, N_meRe, N_meEj, N_dis, N_ex, N_BHej, N_BBHej, N_hardening, Vc_BH, N_bb, triples, N_Triples, tdes, N_tdeBBHstar, m_min, m_max, f_accreted, EoS
+    return seed, t, z, dt, zCl_form, binaries, hardening, mergers, BH, n_star, v_star, vBH, t_rlx, m_avg, mBH_avg, na_BH, nc_BH, N_BH, N_BBH, N_me, N_me2b, N_3cap, N_meFi, N_meRe, N_meEj, N_dis, N_ex, N_BHej, N_BBHej, N_hardening, Vc_BH, N_bb, triples, N_Triples, tdes, N_tdeBBHstar, m_min, m_max, f_accreted, EoS
 
 # End of file.

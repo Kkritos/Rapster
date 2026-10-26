@@ -1,7 +1,7 @@
 # Rapster
 
 <p align="center">
-	<a href="https://github.com/Kkritos/Rapster/releases"><img src="https://img.shields.io/badge/version-2.13.1-blue" alt="version"></a>
+	<a href="https://github.com/Kkritos/Rapster/releases"><img src="https://img.shields.io/badge/version-2.14.0-blue" alt="version"></a>
 	<a href="https://arxiv.org/abs/2210.10055"><img src="https://img.shields.io/badge/arXiv-2210.10055-b31b1b.svg" alt="arXiv"></a>
 	<a href="https://arxiv.org/abs/2605.21593"><img src="https://img.shields.io/badge/arXiv-2605.21593-b31b1b.svg" alt="arXiv"></a>
 	<a href="https://arxiv.org/abs/2609.26878"><img src="https://img.shields.io/badge/arXiv-2609.26878-b31b1b.svg" alt="arXiv"></a>
@@ -20,7 +20,7 @@ $\tt Rapster$ stands for $\rm RAPid\ cluSTER$ evolution.
 
 Author: Konstantinos Kritos <konstantinos.kritos@stonybrook.edu>
 
-Version: 2.13.1, October 16, 2026.
+Version: 2.14.0, October 25, 2026.
 (Thanks to Tousif Islam for helping modularize this repository!)
 
 ![LOGO](.assets/LOGO.png)
@@ -46,6 +46,10 @@ Version: 2.13.1, October 16, 2026.
 The repository provides the source code files for the current version in ``rapster/`` and all necessary data files in the ``Data/`` folder, for the rapid evolution of dense star cluster environments and the dynamical assembly of compact-object coalescences and tidal disruption events.
 
 The modeling accounts for the necessary physical processes governing the formation of compact-object binaries and cluster evolution, employing semi-analytic prescriptions described in Sec. 2 of [K. Kritos et al. PRD (2024)](https://arxiv.org/abs/2210.10055). This is our code paper, written with Vladimir Strokov, Vishal Baibhav, and Emanuele Berti.
+
+##### New in version 2.14.0:
+
+Six bugs of version 2.13.1 are fixed; most importantly, three-body binaries now pair the BHs with the intended mass weighting, so that the heaviest BHs pair first (see ``CHANGELOG.md`` for all fixes). The code is also considerably faster: about 2x for typical clusters and 4-8x for compact clusters (large $N$, small $r$), including those that grow an intermediate-mass black hole, compared with version 2.13.1 with the same bug fixes. For a given seed the results differ from those of version 2.13.1, with the same statistical properties as the corrected code (see ``CHANGELOG.md`` for the validation).
 
 ##### Note:
 
@@ -83,14 +87,14 @@ Developer tools that are not part of the installed package are in ``tools/``, an
 
 Rapster supports Python >= 3.10. Its declared dependencies are:
 
-- $\tt numpy$ (=1.26.4)
-- $\tt scipy$ (=1.11.4)
-- $\tt pandas$ (=2.1.3)
+- $\tt numpy$ (>=1.26)
+- $\tt scipy$ (>=1.11)
+- $\tt pandas$ (>=2.1)
 - $\tt matplotlib$
 - $\tt astropy$
 - $\tt jupyterlab$ and $\tt ipykernel$ (for the tutorial notebook)
 
-The NumPy, SciPy, and pandas versions are pinned in ``pyproject.toml``; the other listed dependencies are unpinned. The CLI imports Matplotlib even when plotting is disabled. JupyterLab and ipykernel are only needed to run the tutorial notebook in ``Example/``.
+The minimum NumPy, SciPy, and pandas versions are set in ``pyproject.toml``; the other listed dependencies have no version requirement. The tests pass on Python 3.10-3.13 with current NumPy 2.x and SciPy releases. Matplotlib is imported only when plots are requested (``-plot 1``). JupyterLab and ipykernel are only needed to run the tutorial notebook in ``Example/``.
 
 First, create an environment called ``.rapsterenv`` in the root directory of the repository Rapster/, and hidden from view:
 
@@ -163,7 +167,7 @@ For the user’s convenience, we paste the list of optional arguments in the for
 | -mM, --maximum_star_mass | Largest ZAMS mass [Msun] (not above 340 suns) | float | ``150`` |
 | -Z, --metallicity | Absolute metallicity | float | ``0.001`` |
 | -z, --cluster_formation_redshift | Redshift of cluster formation | float | ``3.0`` |
-| -n, --central_stellar_density | Initial central stellar number density [pc^-3] | float | ``5.3e5`` |
+| -n, --central_stellar_density | Initial central stellar number density [pc^-3] | float | Plummer value ``0.53 N / r^3`` (``5.3e5`` for the default N and r) |
 | -fb, --binary_fraction | Initial binary star fraction | float | ``0.1`` |
 | -S, --seed | Seed number | int | ``1234567890`` |
 | -dtm, --minimum_time_step | Minimum simulation time-step [Myr] | float | ``0.1`` |
@@ -215,7 +219,7 @@ For the user’s convenience, we paste the list of optional arguments in the for
 
 ##### Note:
 
-The initial value of the central stellar density is set by default to 5.3e5 (pc^-3), which assumes a Plummer density profile: $n=3(1.3)^3N/(4\pi)\simeq0.53N$, where $N$ is the number of stars and $r=1\,\rm pc$. The cluster then evolves homologically, by assumption. Under the Plummer profile, if the input values for the initial number of stars or initial half-mass radius $r$ are updated, then the central density should be set accordingly, $n=0.53 N/r^3$. If the user prefers an alternative stellar density profile, a different relation may hold between $N$ and $r$.
+Unless it is given with ``-n``, the initial central stellar density is set to the value of a Plummer density profile with the chosen number of stars $N$ and half-mass radius $r$: $n=3(1.3)^3N/(4\pi r^3)\simeq0.53N/r^3$, i.e. 5.3e5 pc^-3 for the default $N=10^6$ and $r=1\,\rm pc$. The value used is printed at the top of ``log.txt``. The cluster then evolves homologically, by assumption. If you prefer an alternative stellar density profile, a different relation may hold between $N$ and $r$; pass the density explicitly with ``-n``. (Up to version 2.13.1 the default was 5.3e5 pc^-3 whatever the values of ``-N`` and ``-r``.)
 
 <a name="runningasimulation"></a>
 ### 5. Running a simulation
@@ -281,6 +285,11 @@ Each test file can also be run on its own, e.g. ``python3 tests/test_regression.
 - ``tests/test_regression.py`` runs the default configuration with a fixed seed and checks that key results (numbers of mergers, TDEs, retained and ejected BHs; final cluster mass, half-mass radius and maximum BH mass) match stored reference values. If a change is meant to alter results, regenerate the reference values with ``python3 tests/test_regression.py --update`` and note the change in ``CHANGELOG.md``.
 - ``tests/test_ns_formation.py``, ``tests/test_ns_initialization.py`` and ``tests/test_ns_main_loop.py`` test the NS formation-time sampler, the NS initialization and NS formation in the main loop.
 - ``tests/test_ns_physics.py`` compares the number of retained NSs in a full run with the analytic expectation from the natal-kick distribution and the escape velocity of the evolving cluster.
+- ``tests/test_fixes.py`` checks the fixes listed in ``CHANGELOG.md`` (three-body binary mass distribution, reproducible beta spins, hardening and TDE files, BH snapshots, default central density).
+- ``tests/test_exact_speedups.py`` and ``tests/test_exact_samplers.py`` check the bit-exact optimizations: each fast routine is compared with the straightforward implementation it replaces (same values and same consumption of the random-number stream), including large and changing BH populations and random numbers placed on the boundaries of the cumulative distributions.
+- ``tests/test_bhpool.py`` checks the pool of single BHs (``rapster/bhpool.py``) and the samplers built on it: the pool's sums after random sequences of additions, removals and mass changes, the sampled three-body binaries, BBH-single partners, two-body captures and TDE hosts against their exact target distributions (chi-square tests with fixed seeds), the Runge-Kutta spin evolution during TDE accretion against the Euler integration it replaces, and the ZLK root solver against ``scipy.optimize.root``.
+
+Since the pool-based samplers (see ``CHANGELOG.md``) use the random numbers differently from version 2.13.1, a given seed gives a different realization than 2.13.1, with the same statistical properties.
 
 Diagnostic figures of the NS formation times are produced by ``python3 tools/plot_ns_formation_check.py``.
 
@@ -456,7 +465,7 @@ Condition or binary status (second-to-last column of hardening file):
 - ``5``: Binary ejected
 - ``6``: Binary-single capture
 
-The local simulation is terminated unless ${\rm condition}=0$.
+The local simulation is terminated unless ${\rm condition}=0$. A BBH whose evolution ends in a merger, disruption, ejection or capture (conditions 2-6) has that condition on the row of its last interaction and on the closing row that follows it.
 
 d) Column description of tdes .txt file:
 
@@ -489,9 +498,9 @@ TDE type is an integer index that corresponds to the following (CO may be a BH o
 - ``4``: CO/star TDE during CO-star binary - CO-star binary strong interaction
 - ``11``: CO/WD TDE during single CO - single WD encounter
 - ``21``: CO/star hard-TDE during binary CO - single star encounter
-- ``22``: CO-CO/star soft-TDE during binary CO - single star encounter
+- ``22``: CO-CO/star soft-TDE during binary CO - single star encounter. The star is disrupted by the binary as a whole and its debris is shared by both COs, so each such event has two rows, one per CO (``N_tdeBBHstar`` in the evolution file counts events).
 
-e) The outputBHs.pkl file (if exported) contains the properties of all BHs in the system at each time step.
+e) The outputBHs.pkl file (if exported) is a dictionary with the simulation times (``t``) and, at each of them, arrays with the masses (``mBH``), spins (``sBH``), generations (``gBH``) and numbers of previous TDEs (``hBH``) of all single BHs, BBH members and BHs in BH-star pairs (BHs in hierarchical triples are not included). For heavy clusters this file can be large (e.g. ~20 GB for N = 2.5e7, r = 0.4 pc); use ``-BOi 0`` if it is not needed. The snapshots are written to a temporary file during the run rather than kept in memory.
 
 <a name="applicationsofthecode"></a>
 ### 7. Applications of the code

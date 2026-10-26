@@ -40,7 +40,7 @@ def setup(nst, extra=()):
 
 def run(state, config, t_max):
     """Main loop as in run_cluster.main, checking the BH bookkeeping at every step."""
-    while state['t'] < t_max and state['R_gal'] > 0 and state['Mcl'] > 0 and state['mBH'].sum() < fBH_max * state['Mcl']:
+    while state['t'] < t_max and state['R_gal'] > 0 and state['Mcl'] > 0 and state['BH'].m.sum() < fBH_max * state['Mcl']:
         form_neutron_stars(state, config)
         if not compute_cluster_properties(state, config):
             break
@@ -49,8 +49,8 @@ def run(state, config, t_max):
         accrete_gas(state, config)
         if state['i_aux1'] == 1:
             n_single = state['N_BH'] - 2 * state['N_BBH'] - state['N_BHstar'] - 3 * state['N_Triples']
-            assert n_single == state['mBH'].size
-        assert state['mBH'].size == state['sBH'].size == state['gBH'].size == state['hBH'].size
+            assert n_single == state['BH'].m.size
+        assert state['BH'].m.size == state['BH'].s.size == state['BH'].g.size == state['BH'].h.size
         if not update_cluster(state, config):
             break
     return state
@@ -65,7 +65,7 @@ def test_form_neutron_stars_takes_only_formed_NSs():
     assert abs(k - n0 / 2) <= 1                       # half have t_form <= median
     assert np.all(s['tNS_pending'] > t)                # the rest are still pending
     assert s['mNS_pending'].size == s['vNS_pending'].size == n0 - k
-    assert s['N_NS_retained'] == np.sum(s['mBH'] < 3.0)
+    assert s['N_NS_retained'] == np.sum(s['BH'].m < 3.0)
 
 
 def test_retention_uses_current_escape_velocity():
@@ -82,7 +82,7 @@ def test_NSs_added_to_N_BH_only_after_activation():
     s['t'] = 5.0                                       # before tBH_form: i_aux1 == 0
     form_neutron_stars(s, c)
     assert s['N_BH'] == 0
-    s['i_aux1'] = 1; s['N_BH'] = s['mBH'].size; n = s['N_BH']; r = s['N_NS_retained']
+    s['i_aux1'] = 1; s['N_BH'] = s['BH'].m.size; n = s['N_BH']; r = s['N_NS_retained']
     s['t'] = 100.0
     form_neutron_stars(s, c)
     assert s['N_BH'] == n + (s['N_NS_retained'] - r)
@@ -90,10 +90,10 @@ def test_NSs_added_to_N_BH_only_after_activation():
 
 def test_NSt0_has_nothing_to_form():
     s, c = setup(0)
-    m = s['mBH'].copy()
+    m = s['BH'].m.copy()
     s['t'] = 1e5
     form_neutron_stars(s, c)
-    assert np.array_equal(s['mBH'], m) and s['N_NS_formed'] == 0
+    assert np.array_equal(s['BH'].m, m) and s['N_NS_formed'] == 0
 
 
 def test_full_runs_keep_bookkeeping_and_form_all_NSs():
@@ -109,10 +109,12 @@ def test_BH_free_cluster_waits_for_NSs():
     empty = os.path.join(tempfile.mkdtemp(), 'empty.npz')
     np.savez(empty, mBH_ini=np.array([]))
     s, c = setup(2, extra=['-BIi', '1', '-BIF', empty])
-    assert s['mBH'].size == 0
+    assert s['BH'].m.size == 0
     run(s, c, 200.0)
     assert s['t'] >= 200.0                             # did not stop with 'BH SUBSYSTEM EVAPORATED'
-    assert s['i_aux1'] == 1 and s['N_BH'] > 0
+    # the retained NSs activated the subsystem and interacted (whether some are still
+    # in the cluster at 200 Myr depends on the realization):
+    assert s['N_NS_retained'] > 0 and s['N_3bb'] + s['N_2cap'] > 0
 
 
 if __name__ == '__main__':

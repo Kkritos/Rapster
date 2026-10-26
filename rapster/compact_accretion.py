@@ -18,6 +18,12 @@
 
 import math
 
+# the compiled interpolation that np.interp calls for real-valued data (same results):
+try:
+    from numpy._core.multiarray import interp as _compiled_interp      # NumPy >= 2
+except ImportError:                                                    # NumPy 1.x
+    from numpy.core.multiarray import interp as _compiled_interp
+
 from .constants import *
 
 # ---------------------------------------------------------------------------
@@ -81,7 +87,8 @@ class EquationOfState:
 
     def radius(self, M):
         """Circumferential radius [km] at gravitational mass M [Msun]."""
-        return np.interp(M, self.M, self.R)
+        # (the compiled function np.interp calls, without its Python-level checks; same value)
+        return _compiled_interp(M, self.M, self.R, None, None)
 
 EOS_REGISTRY = {name: EquationOfState(name, f) for name, f in EOS_TABLES.items()}
 
@@ -397,6 +404,49 @@ def _E_J_isco_NS(M, R, f, prograde=True):
     return E, J
 
 
+# The NS branch of evolve_spin_during_accretion evaluates the helpers above once per
+# mass step (~100 times per TDE onto a NS). _ns_spin_state and _ns_E_J_isco repeat
+# their expressions with Python floats and math.sqrt, operation by operation (same
+# IEEE results as NumPy scalars and np.sqrt), without the function-call and
+# NumPy-scalar overhead; tests/test_exact_speedups.py checks that they agree exactly.
+
+def _ns_spin_state(M, chi, R):
+    """(f, fK, chiK) of a NS = (f_from_chi(M, chi, R=R, NS=True), f_kepler(M, NS=True, R=R),
+    chi_kepler(M, NS=True, R=R)), for Python floats M, chi, R > 0."""
+    C = M / R
+    I_SI = 0.237 * M * R**2 * (1.0 + 0.674*C + 4.48*C**4) * Msun * km**2   # moment_of_inertia * Msun * km**2
+    M_SI = M * Msun
+    f = chi * G * M_SI**2 / (2.0 * math.pi * c * I_SI)
+    fK = 1045.0 * math.sqrt(M) * (10.0 / R)**1.5
+    chiK = c * I_SI * 2.0 * math.pi * fK / (G * M_SI**2)
+    return f, fK, chiK
+
+def _ns_E_J_isco(M, R, f, prograde=True):
+    """_E_J_isco_NS(M, R, f, prograde) for Python floats M, R > 0 and f."""
+    sign = +1.0 if prograde else -1.0
+    Mg = M * Msun_to_km
+    # R_ISCO(M, NS=True, f=f):
+    if f <= 0.0:
+        r = 8.809 * M
+    else:
+        x = M * f
+        r = (8.809*x + -9.166e-4*x**2 + 8.787e-8*x**3 + -6.019e-12*x**4) / f
+    r_S = 2.0 * Mg
+    if r <= r_S:
+        r = r_S * 1.001
+    C = M / R
+    I_SI = 0.237 * M * R**2 * (1.0 + 0.674*C + 4.48*C**4) * Msun * km**2
+    J_SI = I_SI * 2.0 * math.pi * f
+    r_m = r * km
+    Nphi = 2.0 * G * J_SI / (r_m**3 * c**3)
+    Omega_S = math.sqrt(Mg * km) / r_m**1.5
+    N = math.sqrt(1.0 - r_S / r)
+    v = min(max((Omega_S - sign * Nphi) * r_m / N, 0.0), 0.9999)
+    gamma = 1.0 / math.sqrt(1.0 - v**2)
+    E = (N + Nphi * v * r_m) * gamma
+    J = sign * v * r_m * gamma / km
+    return E, J
+
 def E_isco(M, NS=True, R=None, f=None, chi=None, prograde=True):
     """
     Specific energy at the ISCO  (dimensionless, E~ = E/mc^2).
@@ -560,7 +610,9 @@ def evolve_spin_during_accretion(Mi, Mf, NS, f=None, chi=0.0, dM=1e-3, eos='APR'
         R_TOV     = None
 
     # dM sign follows direction (np.sign identical to this for nonzero) ---
-    step = abs(dM)
+    # (as a Python float: with a NumPy scalar dM, M += dM would turn M and the whole
+    # loop into slower NumPy-scalar arithmetic, with identical IEEE results)
+    step = abs(float(dM))
     dM = step if (Mf - Mi) > 0 else (-step if (Mf - Mi) < 0 else 0.0)
 
     # --- initialise ---
@@ -578,13 +630,18 @@ def evolve_spin_during_accretion(Mi, Mf, NS, f=None, chi=0.0, dM=1e-3, eos='APR'
 
     J = chi * Mg**2
 
-    def not_done(m):
-        return m > Mf if dM < 0 else m < Mf
+    decreasing = dM < 0
+
+    # constant factors of the BH-branch expressions below (same operations, hoisted):
+    c3 = c**3                                    # in f = c**3 * chi / (...)
+    c3_thorne = c**3 * THORNE_LIMIT              # numerator of fK
+    four_pi_G = 4.0 * math.pi * G                # leading factor of both denominators
+    thorne_term = 1.0 + math.sqrt(1.0 - THORNE_LIMIT**2)
 
     prograde_now = prograde
     last = None   # only the final per-step state is needed by callers (evo[...][-1])
 
-    while not_done(M):
+    while (M > Mf) if decreasing else (M < Mf):
 
         is_NS = NS and (M < M_max_rot)
 
@@ -592,38 +649,40 @@ def evolve_spin_during_accretion(Mi, Mf, NS, f=None, chi=0.0, dM=1e-3, eos='APR'
         chi = float(min(max(J / Mg**2, 0.0), THORNE_LIMIT))
 
         if is_NS:
-            # rarer NS path: reuse original (correct) helpers
-            R    = Radius(min(M, M_TOV))
-            f    = f_from_chi(M, chi, R=R, NS=True)
-            fK   = f_kepler(M, NS=True, R=R)
-            chiK = chi_kepler(M, NS=True, R=R)
+            # NS path: f_from_chi, f_kepler and chi_kepler (see _ns_spin_state)
+            R    = float(Radius(min(M, M_TOV)))
+            f, fK, chiK = _ns_spin_state(M, chi, R)
         else:
             # BH path, inlined with math.sqrt (mirrors f_from_chi / R_ISCO / E_isco / J_isco)
-            R    = Mg * (1.0 + math.sqrt(1.0 - chi**2))
+            chi2 = chi**2
+            horizon_term = 1.0 + math.sqrt(1.0 - chi2)
+            R    = Mg * horizon_term
             M_SI = M * Msun
-            f    = c**3 * chi / (4.0 * math.pi * G * M_SI * (1.0 + math.sqrt(1.0 - chi**2)))
-            fK   = c**3 * THORNE_LIMIT / (4.0 * math.pi * G * M_SI
-                                          * (1.0 + math.sqrt(1.0 - THORNE_LIMIT**2)))
+            f    = c3 * chi / (four_pi_G * M_SI * horizon_term)
+            fK   = c3_thorne / (four_pi_G * M_SI * thorne_term)
             chiK = THORNE_LIMIT
 
         last = (is_NS, M, J, R, f, chi, fK, chiK)   # current pre-advance state
 
         if f < fK:
             if is_NS:
-                e = E_isco(M, NS=True, R=R, f=f, prograde=prograde_now)
-                j = J_isco(M, NS=True, R=R, f=f, prograde=prograde_now)
+                # E_isco and J_isco for NS=True, i.e. _E_J_isco_NS (evaluated once for both)
+                e, j = _ns_E_J_isco(M, R, f, prograde=prograde_now)
             else:
                 # BH: R_ISCO computed once, shared by E~ and J~ (mirrors E_isco/J_isco, NS=False)
+                # (chi**2, rt**1.5 and rt**0.5 are each computed once and reused)
                 sign = +1.0 if prograde_now else -1.0
-                Z1   = 1.0 + (1.0 - chi**2)**(1.0/3.0) * (
+                Z1   = 1.0 + (1.0 - chi2)**(1.0/3.0) * (
                            (1.0 + chi)**(1.0/3.0) + (1.0 - chi)**(1.0/3.0))
-                Z2   = math.sqrt(3.0 * chi**2 + Z1**2)
+                Z2   = math.sqrt(3.0 * chi2 + Z1**2)
                 r    = Mg * (3.0 + Z2 - sign * math.sqrt((3.0 - Z1) * (3.0 + Z1 + 2.0*Z2)))
                 rt   = r / Mg
-                e    = ((1.0 - 2.0/rt + sign*chi/rt**1.5)
-                        / math.sqrt(1.0 - 3.0/rt + 2.0*sign*chi/rt**1.5))
-                num   = sign * (rt**2 - 2.0*sign*chi*rt**0.5 + chi**2)
-                denom = rt**0.75 * math.sqrt(rt**1.5 - 3.0*rt**0.5 + 2.0*sign*chi)
+                rt15 = rt**1.5
+                rt05 = rt**0.5
+                e    = ((1.0 - 2.0/rt + sign*chi/rt15)
+                        / math.sqrt(1.0 - 3.0/rt + 2.0*sign*chi/rt15))
+                num   = sign * (rt**2 - 2.0*sign*chi*rt05 + chi2)
+                denom = rt**0.75 * math.sqrt(rt15 - 3.0*rt05 + 2.0*sign*chi)
                 j    = Mg * num / denom
 
             J_new = J + (j / e) * dM * Msun_to_km
@@ -650,6 +709,152 @@ def evolve_spin_during_accretion(Mi, Mf, NS, f=None, chi=0.0, dM=1e-3, eos='APR'
         'fK'  : np.array([fK]),
         'chiK': np.array([chiK]),
     }
+
+# ---------------------------------------------------------------------------
+# Fast evaluation of the final spin of a BH (not NS) for small relative growth
+# ---------------------------------------------------------------------------
+#
+# For a BH (NS=False), the loop of evolve_spin_during_accretion integrates, with
+# Euler steps of dM in M,
+#     dJ/dM = (j~/e~) Msun_to_km,   j~ = Mg J~/Mg  (Bardeen 1970),
+# which with J = chi Mg^2 is the autonomous equation
+#     dchi/dlnM = (J~/Mg)(chi) / E~(chi) - 2 chi
+# (spin-up for prograde, spin-down for retrograde accretion; chi capped at
+# THORNE_LIMIT; a retrograde disk that spins the BH down to chi = 0 continues as
+# a prograde disk). The value returned there, evo['chi'][-1], is the spin at the
+# start of the last Euler step, i.e. at M_{N-1}, the last mass of the sequence
+# M_0 = Mi, M_{i+1} = M_i + dM below Mf.
+#
+# bh_spin_after_accretion integrates the same equation from Mi to M_{N-1} with
+# fourth-order Runge-Kutta steps in ln M (at most 0.01 each) instead of the ~100
+# Euler steps, ~10x faster. The two differ by the error of the Euler steps, which
+# relative to the change of chi is ~ 1.5 (Mf - Mi)/(100 Mi): for growth up to
+# FAST_SPIN_MAX_GROWTH = 2% (used by spin_after_accretion) below 3e-4 of the
+# change of chi, i.e. < 2e-5 in chi. (A retrograde disk reaching chi = 0 switches
+# to prograde at the next mass M_i of the sequence, as in the Euler loop; the
+# Euler steps of a BH at the Thorne limit are repeated exactly, since whether it
+# leaves the limit under retrograde accretion depends on the rounding of J/Mg^2.)
+
+FAST_SPIN_MAX_GROWTH = 0.02
+
+def _dchi_dlnM(chi, sign):
+    """dchi/dlnM for a thin disk at the BH ISCO (sign = +1 prograde, -1 retrograde);
+    same expressions as the BH branch of evolve_spin_during_accretion."""
+    chi2 = chi * chi
+    Z1 = 1.0 + (1.0 - chi2)**(1.0/3.0) * ((1.0 + chi)**(1.0/3.0) + (1.0 - chi)**(1.0/3.0))
+    Z2 = math.sqrt(3.0 * chi2 + Z1**2)
+    rt = 3.0 + Z2 - sign * math.sqrt((3.0 - Z1) * (3.0 + Z1 + 2.0*Z2))
+    rt15 = rt**1.5
+    rt05 = rt**0.5
+    e = (1.0 - 2.0/rt + sign*chi/rt15) / math.sqrt(1.0 - 3.0/rt + 2.0*sign*chi/rt15)
+    j = sign * (rt**2 - 2.0*sign*chi*rt05 + chi2) / (rt**0.75 * math.sqrt(rt15 - 3.0*rt05 + 2.0*sign*chi))
+    return j / e - 2.0 * chi
+
+def _rk4_spin(chi, x, x_end, sign):
+    """
+    Integrate dchi/dlnM from x = ln M to x_end with RK4 steps <= 0.01.
+    Returns (chi, x, crossed): for retrograde accretion, crossed is True if chi
+    would become negative within the next step, which then starts at x.
+    """
+    L = x_end - x
+    if L <= 0.0:
+        return chi, x, False
+    nsub = max(1, int(math.ceil(L / 0.01)))
+    h = L / nsub
+    for _ in range(nsub):
+        if chi >= THORNE_LIMIT and sign > 0:
+            return THORNE_LIMIT, x_end, False   # prograde: stays at the limit
+        k1 = _dchi_dlnM(chi, sign)
+        c = chi + 0.5*h*k1
+        if c < 0.0:
+            return chi, x, True
+        k2 = _dchi_dlnM(min(c, THORNE_LIMIT), sign)
+        c = chi + 0.5*h*k2
+        if c < 0.0:
+            return chi, x, True
+        k3 = _dchi_dlnM(min(c, THORNE_LIMIT), sign)
+        c = chi + h*k3
+        if c < 0.0:
+            return chi, x, True
+        k4 = _dchi_dlnM(min(c, THORNE_LIMIT), sign)
+        c = chi + h/6.0*(k1 + 2.0*k2 + 2.0*k3 + k4)
+        if c < 0.0:
+            return chi, x, True
+        chi = min(c, THORNE_LIMIT)
+        x += h
+    return chi, x_end, False
+
+def bh_spin_after_accretion(Mi, Mf, chi=0.0, dM=1e-3, prograde=True):
+    """
+    Final spin of a BH accreting from Mi to Mf > Mi, as
+    evolve_spin_during_accretion(Mi, Mf, NS=False, chi=chi, dM=dM, prograde=prograde)['chi'][-1],
+    computed with RK4 steps instead of Euler steps (see the notes above).
+    """
+    step = abs(float(dM))
+    Mi = float(Mi)
+    if not Mf > Mi:
+        raise ValueError('bh_spin_after_accretion requires Mf > Mi')
+
+    # last mass M_{N-1} < Mf of the sequence M_{i+1} = M_i + dM (as in the Euler loop):
+    M = Mi
+    M_end = Mi
+    while M < Mf:
+        M_end = M
+        M += step
+
+    # A BH at the Thorne limit stays there in the Euler loop as long as J/Mg^2 does
+    # not round to below THORNE_LIMIT (then f = fK and J is reset to the limit);
+    # these steps are repeated exactly, also for retrograde accretion:
+    chi = float(min(max(chi, 0.0), THORNE_LIMIT))
+    M = Mi
+    J = chi * (M * Msun_to_km)**2
+    while True:
+        chi = float(min(max(J / (M * Msun_to_km)**2, 0.0), THORNE_LIMIT))
+        if chi < THORNE_LIMIT:
+            break
+        if not M + step < Mf:
+            return chi                         # (last step of the Euler loop)
+        M += step
+        J = THORNE_LIMIT * (M * Msun_to_km)**2
+
+    x_end = math.log(M_end)
+    if prograde:
+        return _rk4_spin(chi, math.log(M), x_end, 1.0)[0]
+
+    chi, x, crossed = _rk4_spin(chi, math.log(M), x_end, -1.0)
+    if not crossed:
+        return chi
+    # chi reaches 0 within the next RK step: approach the crossing with RK4 steps of
+    # 0.9 times the linear estimate of the distance (each reduces chi ~10-fold), then
+    # extrapolate linearly:
+    while True:
+        k = _dchi_dlnM(chi, -1.0)
+        d = chi / (-k)
+        if chi < 1e-8:
+            x_c = x + d
+            break
+        x_next = min(x + 0.9 * d, x_end)
+        chi, x, crossed = _rk4_spin(chi, x, x_next, -1.0)
+        if x >= x_end and not crossed:
+            return chi
+    # the Euler loop sets J = 0 and turns prograde at the first mass of the
+    # sequence above the crossing:
+    M = Mi
+    while math.log(M) <= x_c:
+        M += step
+    if M > M_end:
+        return 0.0
+    return _rk4_spin(0.0, math.log(M), x_end, 1.0)[0]
+
+def spin_after_accretion(Mi, Mf, NS, chi=0.0, dM=1e-3, eos='APR', prograde=True):
+    """
+    Final spin evo['chi'][-1] of evolve_spin_during_accretion(Mi, Mf, NS, chi=chi,
+    dM=dM, eos=eos, prograde=prograde), with bh_spin_after_accretion for BHs that
+    grow by at most FAST_SPIN_MAX_GROWTH (relative).
+    """
+    if not NS and Mf > Mi and Mf - Mi <= FAST_SPIN_MAX_GROWTH * Mi:
+        return bh_spin_after_accretion(Mi, Mf, chi=chi, dM=dM, prograde=prograde)
+    return evolve_spin_during_accretion(Mi=Mi, Mf=Mf, NS=NS, f=None, chi=chi, dM=dM, eos=eos, prograde=prograde)['chi'][-1]
 
 def radiative_efficiency(m, chi, is_NS, eos):
     """eta = 1 - E_isco using the object's spin magnitude (prograde disk). Spin not evolved."""
@@ -685,9 +890,10 @@ def accrete_gas(state, config):
     v_eff2  = c_s**2 + vBH**2
 
     binaries = state['binaries']; pairs = state['pairs']; triples = state['triples']
-    mass_cols = [state['mBH'], binaries[:, 4], binaries[:, 5], pairs[:, 1],
+    BH = state['BH']
+    mass_cols = [BH.m, binaries[:, 4], binaries[:, 5], pairs[:, 1],
                  triples[:, 4], triples[:, 5], triples[:, 6]]
-    spin_cols = [state['sBH'], binaries[:, 6], binaries[:, 7], pairs[:, 2],
+    spin_cols = [BH.s, binaries[:, 6], binaries[:, 7], pairs[:, 2],
                  triples[:, 7], triples[:, 8], triples[:, 9]]
 
     dms = []
@@ -705,7 +911,7 @@ def accrete_gas(state, config):
     if total > M_gas and total > 0:                       # conserve: can't accrete more than exists
         dms = [d*(M_gas/total) for d in dms]; total = M_gas
 
-    state['mBH']   = mass_cols[0] + dms[0]
+    BH.set_all_masses(mass_cols[0] + dms[0])
     binaries[:, 4] += dms[1]; binaries[:, 5] += dms[2]
     pairs[:, 1]    += dms[3]
     triples[:, 4]  += dms[4]; triples[:, 5] += dms[5]; triples[:, 6] += dms[6]

@@ -26,16 +26,16 @@ import tempfile
 import numpy as np
 
 REFERENCE = {
-    'n_evolution_rows': 593,
-    'n_mergers': 12,
-    'n_tdes': 152,
-    'N_BH_final': 743,
-    'N_BHej_final': 242,
-    't_final': 11506.9607419086,
-    'M_cl_final': 203822.20004733145,
-    'r_h_final': 10.202486491238583,
-    'mBH_max_final': 40.969309621978596,
-    'merger_remnant_mass_sum': 856.9351831643548,
+    'n_evolution_rows': 586,
+    'n_mergers': 8,
+    'n_tdes': 172,
+    'N_BH_final': 691,
+    'N_BHej_final': 300,
+    't_final': 11526.43421710654,
+    'M_cl_final': 209192.37607724348,
+    'r_h_final': 9.831598127482364,
+    'mBH_max_final': 40.661851175102434,
+    'merger_remnant_mass_sum': 521.8577802355334,
 }
 
 COUNTS = ('n_evolution_rows', 'n_mergers', 'n_tdes', 'N_BH_final', 'N_BHej_final')

@@ -24,10 +24,14 @@ from .binary_evolution import evolve_BBHs
 from .triples import evolve_triples
 from .two_body_capture import two_body_capture
 from .exchanges import StarStar_to_BHstar, BHstar_to_BBH
-from .tidal_disruptions import BH_TidalDisruptions
+from .tidal_disruptions import BH_TidalDisruptions, single_BH_TidalDisruption
+from .bhpool import BHPool, FAM
 from .compact_accretion import *
 from .remnant import configure_kick_model
 from .ns_formation import NSFormationTable, sample_ns_formation_times
+from .fastrandom import poisson_draw, maxwell_draws
+from .snapshots import SnapshotStream, dump_streaming
+from .arraycache import ElementwiseCache, RowLog
 from zipfile import BadZipFile
 
 
@@ -311,8 +315,9 @@ def initialize_cluster(config):
     elif SD==1:
         sBH = s1g_max * np.ones(mBH.size)
     elif SD==2:
-        rng = np.random.default_rng()
-        sBH = rng.beta(1.4, 3.6, mBH.size) * s1g_max
+        # drawn from the seeded global stream (np.random.seed(seed) above), so that
+        # runs with a given -S are reproducible:
+        sBH = np.random.beta(1.4, 3.6, mBH.size) * s1g_max
 
     # NSs that have not formed yet (used only when NSt > 0); filled below:
     mNS_pending = np.array([])
@@ -323,7 +328,7 @@ def initialize_cluster(config):
     if with_NSs>0:
         f_NS_form = Kroupa_norm*integrate.quad(IMF_kroupa, 8, 18)[0]
         N_NS_form = int(f_NS_form*N)
-        v_NS_natal = maxwell.rvs(loc=0, scale=np.sqrt(3)*wSN_kick, size=N_NS_form)
+        v_NS_natal = maxwell_draws(np.sqrt(3)*wSN_kick, N_NS_form)   # = maxwell.rvs(loc=0, scale=..., size=N_NS_form)
 
         if NSt==0:
             # legacy: all NSs form at tBH_form; tBH_form is a lower bound on the
@@ -366,12 +371,16 @@ def initialize_cluster(config):
     binaries = np.zeros(shape=(1, 15))
     pairs = np.zeros(shape=(1, 5))
     triples = np.zeros(shape=(1, 24))
-    mergers = np.zeros(shape=(1, 27))
+    mergers = RowLog(27, [0.0] * 27)     # one placeholder row; -> array at write_output
     evolution = [[0.0] * 71]   # list-accumulated (one placeholder row); -> array at write_output
-    hardening = [[0.0] * 12]   # list-accumulated (one placeholder row); -> array at write_output
-    tdes = np.zeros(shape=(1, 18))
+    hardening = RowLog(12, [0.0] * 12)   # one placeholder row; -> array at write_output
+    tdes = [[0.0] * 18]        # list-accumulated (one placeholder row); -> array at write_output
 
     configure_kick_model(config['recoil_kick_model'])
+
+    # per-step BH snapshots (-BOi 1) are streamed to temporary files next to the results:
+    results_dir = os.path.join(os.getcwd(), config.get('results_folder_name', 'Results'))
+    snapshot_list = (lambda: SnapshotStream(results_dir)) if config.get('BOi', 0) == 1 else list
 
     # bundle all mutable simulation variables into the state dictionary:
     state = {
@@ -383,8 +392,8 @@ def initialize_cluster(config):
         'Kroupa_norm': Kroupa_norm, 'Nb': Nb, 'ab': ab,
         't_cc': t_cc, 't_rlx': 0.0,
         'N': N, 'Z': Z,
-        # BH properties:
-        'mBH': mBH, 'sBH': sBH, 'gBH': gBH, 'hBH': hBH, 
+        # single BHs (and retained NSs): masses, spins, generations, TDE counts:
+        'BH': BHPool(mBH, sBH, gBH, hBH),
         'mBH_avg': 0.0, 'vBH': 0.0,
         # NSs not yet formed (NSt > 0), sorted by formation time [Msun, Myr, km/s]:
         'mNS_pending': mNS_pending, 'tNS_pending': tNS_pending, 'vNS_pending': vNS_pending,
@@ -403,8 +412,9 @@ def initialize_cluster(config):
         't': 0, 'z': zCl_form, 'dt': dt_min, 'zCl_form': zCl_form, 'seed': seed,
         # aux:
         'i_aux1': 0,
-        # tracking lists:
-        'simulation_times': [], 'black_hole_masses': [], 'black_hole_spins': [], 'black_hole_generations': [], 'black_hole_tdes': []
+        # tracking lists (snapshots for -BOi 1 are kept on disk, see snapshots.py):
+        'simulation_times': [], 'black_hole_masses': snapshot_list(), 'black_hole_spins': snapshot_list(),
+        'black_hole_generations': snapshot_list(), 'black_hole_tdes': snapshot_list()
     }
 
     return state
@@ -442,10 +452,7 @@ def form_neutron_stars(state, config):
     N_ret = mNS_ret.size
 
     if N_ret > 0:
-        state['mBH'] = np.concatenate((state['mBH'], mNS_ret))
-        state['sBH'] = np.concatenate((state['sBH'], np.zeros(N_ret)))
-        state['gBH'] = np.concatenate((state['gBH'], np.ones(N_ret)))
-        state['hBH'] = np.concatenate((state['hBH'], np.zeros(N_ret)))
+        state['BH'].add_many(mNS_ret, np.zeros(N_ret), np.ones(N_ret), np.zeros(N_ret))
         if state['i_aux1'] == 1:
             state['N_BH'] = state['N_BH'] + N_ret
 
@@ -477,7 +484,7 @@ def compute_cluster_properties(state, config):
 
     # unpack current state into local variables:
     t = state['t']
-    mBH = state['mBH']
+    BH = state['BH']
     binaries = state['binaries']
     pairs = state['pairs']
     i_aux1 = state['i_aux1']
@@ -498,19 +505,21 @@ def compute_cluster_properties(state, config):
 
     # save current BH properties (only needed for the BH-masses output file, -BOi 1;
     # for clusters with millions of BHs these snapshots otherwise grow to tens of GB):
+    # (row 0 of binaries and pairs is an all-zero placeholder, not a BH, and is skipped)
     if config['BOi']==1:
         state['simulation_times'].append(t)
-        state['black_hole_masses'].append(np.concatenate((mBH, binaries[:, 4], binaries[:, 5], pairs[:, 1])))
-        state['black_hole_spins'].append(np.concatenate((state['sBH'], binaries[:, 6], binaries[:, 7], pairs[:, 2])))
-        state['black_hole_generations'].append(np.concatenate((state['gBH'], binaries[:, 8], binaries[:, 9], pairs[:, 3])))
+        state['black_hole_masses'].append(np.concatenate((BH.m, binaries[1:, 4], binaries[1:, 5], pairs[1:, 1])))
+        state['black_hole_spins'].append(np.concatenate((BH.s, binaries[1:, 6], binaries[1:, 7], pairs[1:, 2])))
+        state['black_hole_generations'].append(np.concatenate((BH.g, binaries[1:, 8], binaries[1:, 9], pairs[1:, 3])))
+        state['black_hole_tdes'].append(np.concatenate((BH.h, binaries[1:, 13], binaries[1:, 14], pairs[1:, 4])))
 
     # NSs still to form (only for NSt > 0):
     NSs_pending = state['tNS_pending'].size > 0
 
     # activate BH subsystem once BH formation time is reached (if it would be
     # empty and NSs are still to form, wait for them):
-    if t>tBH_form and i_aux1==0 and (mBH.size>0 or not NSs_pending):
-        N_BH = mBH.size
+    if t>tBH_form and i_aux1==0 and (BH.size>0 or not NSs_pending):
+        N_BH = BH.size
         i_aux1 = 1
 
     # check if BH subsystem has fully evaporated:
@@ -526,16 +535,13 @@ def compute_cluster_properties(state, config):
 
     # average BH mass:
     if i_aux1==1:
-        mBH_avg = (np.sum(mBH) + np.sum(binaries[:, 4]) + np.sum(binaries[:, 5]) + np.sum(pairs[:, 1]) ) / N_BH
+        mBH_avg = (BH.total(FAM['mass']) + np.sum(binaries[:, 4]) + np.sum(binaries[:, 5]) + np.sum(pairs[:, 1]) ) / N_BH
     else:
         mBH_avg = 0.0
 
     # maximum BH mass:
     if i_aux1==1:
-        try:
-            mBHs_max = np.max(mBH)
-        except Exception:
-            mBHs_max = 0.0
+        mBHs_max = BH.max_mass()
         try:
             mBH1_max = np.max(binaries[:, 4])
         except Exception:
@@ -592,7 +598,7 @@ def compute_cluster_properties(state, config):
 
     # BH relaxation factor:
     if i_aux1==1 and N_BH>0:
-        psi_BH = (np.sum(mBH**(5/2)) + np.sum(binaries[:, 4]**(5/2)) + \
+        psi_BH = (BH.total(FAM['p25']) + np.sum(binaries[:, 4]**(5/2)) + \
                   np.sum(binaries[:, 5]**(5/2)) + np.sum(pairs[:, 1]**(5/2)) ) \
                   / N_BH / mBH_avg**(5/2)
     else:
@@ -703,6 +709,18 @@ def compute_cluster_properties(state, config):
     return True
 
 
+# np.mean of the star-star binary separations, recomputed only when `ab` is a new
+# array (it is replaced, never modified in place). The array has up to N*fb/2
+# entries (~10^6 for heavy clusters), and its mean was needed at every step.
+_ab_mean_cache = {'ab': None, 'mean': None}
+
+def _mean_ab(ab):
+    if _ab_mean_cache['ab'] is not ab:
+        _ab_mean_cache['ab'] = ab
+        _ab_mean_cache['mean'] = np.mean(ab)
+    return _ab_mean_cache['mean']
+
+
 def compute_timescales(state, config):
     """Compute dynamical timescales and the adaptive timestep.
 
@@ -761,7 +779,7 @@ def compute_timescales(state, config):
     # star-star -> BH-star timescale:
     if t>t_cc and N_BHsin>0 and nb>0:
         try:
-            t_ex1 = 1 / Rate_exc(m_avg, m_avg, mBH_avg, nb, np.sqrt(v_star**2 + vBH**2), np.mean(ab)) / Nc_BH / 2
+            t_ex1 = 1 / Rate_exc(m_avg, m_avg, mBH_avg, nb, np.sqrt(v_star**2 + vBH**2), _mean_ab(ab)) / Nc_BH / 2
         except Exception:
             t_ex1 = 1e100
     else:
@@ -815,10 +833,7 @@ def form_binaries(state, config):
     zCl_form = state['zCl_form']
     mBH_avg = state['mBH_avg']
     binaries = state['binaries']
-    mBH = state['mBH']
-    sBH = state['sBH']
-    gBH = state['gBH']
-    hBH = state['hBH']
+    BH = state['BH']
     vBH = state['vBH']
     v_star = state['v_star']
     m_avg = state['m_avg']
@@ -852,39 +867,39 @@ def form_binaries(state, config):
     N_BHsin = N_BH - 2*N_BBH - N_BHstar - 3*N_Triples
 
     # number of 3bbs:
-    k_3bb = np.min([poisson.rvs(mu=np.min([dt / t_3bb, 1e8])), int(N_BHsin / 3)])
+    k_3bb = np.min([poisson_draw(np.min([dt / t_3bb, 1e8])), int(N_BHsin / 3)])
 
     # 3bb formation:
-    t, z, k_3bb, mBH_avg, binaries, mBH, sBH, gBH, hBH, vBH, N_3bb, N_BBH = three_body_binary(t, z, k_3bb, mBH_avg, binaries, mBH, sBH, gBH, hBH, vBH, N_3bb, N_BBH, random_pairing=config['random_pairing'])
+    t, z, k_3bb, mBH_avg, binaries, BH, vBH, N_3bb, N_BBH = three_body_binary(t, z, k_3bb, mBH_avg, binaries, BH, vBH, N_3bb, N_BBH, random_pairing=config['random_pairing'])
 
     # number of 2-body captures:
     N_BHsin = N_BH - 2*N_BBH - N_BHstar - 3*N_Triples
-    k_2cap = np.min([poisson.rvs(mu=np.min([dt / t_2cap, 1e8])), int(N_BHsin / 2)])
+    k_2cap = np.min([poisson_draw(np.min([dt / t_2cap, 1e8])), int(N_BHsin / 2)])
 
     # 2-body capture(s):
-    seed, t, dt, z, zCl_form, k_2cap, mBH_avg, binaries, mBH, sBH, gBH, hBH, vBH, v_star, N_2cap, N_BH, N_BBH, N_me, N_meRe, N_meEj, mergers = \
-        two_body_capture(seed, t, dt, z, zCl_form, k_2cap, mBH_avg, binaries, mBH, sBH, gBH, hBH, vBH, v_star, N_2cap, N_BH, N_BBH, N_me, N_meRe, N_meEj, mergers, random_pairing=config['random_pairing'])
+    seed, t, dt, z, zCl_form, k_2cap, mBH_avg, binaries, BH, vBH, v_star, N_2cap, N_BH, N_BBH, N_me, N_meRe, N_meEj, mergers = \
+        two_body_capture(seed, t, dt, z, zCl_form, k_2cap, mBH_avg, binaries, BH, vBH, v_star, N_2cap, N_BH, N_BBH, N_me, N_meRe, N_meEj, mergers, random_pairing=config['random_pairing'])
 
     # number of star-star -> BH-star exchanges:
     N_BHsin = N_BH - 2*N_BBH - N_BHstar - 3*N_Triples
-    k_ex1 = np.min([poisson.rvs(mu=np.min([dt / state['t_ex1'], 1e8])), int(N_BHsin)])
+    k_ex1 = np.min([poisson_draw(np.min([dt / state['t_ex1'], 1e8])), int(N_BHsin)])
 
     # star-star -> BH-star exchange(s):
     if k_ex1 > 0:
-        seed, t, z, k_ex1, N_ex1, m_avg, mBH, sBH, gBH, hBH, ab, pairs, N_BHstar, N_tdeBHstar, v_star, vBH, tdes, binaries, m_min, m_max, with_tdes, f_accreted, EoS = StarStar_to_BHstar(seed, t, z, k_ex1, N_ex1, m_avg, mBH, sBH, gBH, hBH, ab, pairs, N_BHstar, N_tdeBHstar, v_star, vBH, tdes, binaries, m_min, m_max, with_tdes, f_accreted, EoS)
+        seed, t, z, k_ex1, N_ex1, m_avg, BH, ab, pairs, N_BHstar, N_tdeBHstar, v_star, vBH, tdes, binaries, m_min, m_max, with_tdes, f_accreted, EoS = StarStar_to_BHstar(seed, t, z, k_ex1, N_ex1, m_avg, BH, ab, pairs, N_BHstar, N_tdeBHstar, v_star, vBH, tdes, binaries, m_min, m_max, with_tdes, f_accreted, EoS)
     
     # number of BH-star -> BH-BH exchanges:
     N_BHsin = N_BH - 2*N_BBH - N_BHstar - 3*N_Triples
-    k_ex2 = np.min([poisson.rvs(mu=np.min([dt / state['t_ex2'], 1e8])), int(N_BHsin), int(N_BHstar)])
+    k_ex2 = np.min([poisson_draw(np.min([dt / state['t_ex2'], 1e8])), int(N_BHsin), int(N_BHstar)])
 
     # BH-star -> BBH exchange(s):
     if k_ex2 > 0:
-        seed, t, z, k_ex2, N_ex2, m_avg, mBH, sBH, gBH, hBH, pairs, binaries, N_BBH, N_BHstar, N_tdeBHstar, v_star, vBH, tdes, m_min, m_max, with_tdes, f_accreted, EoS = BHstar_to_BBH(seed, t, z, k_ex2, N_ex2, m_avg, mBH, sBH, gBH, hBH, pairs, binaries, N_BBH, N_BHstar, N_tdeBHstar, v_star, vBH, tdes, m_min, m_max, with_tdes, f_accreted, EoS)
+        seed, t, z, k_ex2, N_ex2, m_avg, BH, pairs, binaries, N_BBH, N_BHstar, N_tdeBHstar, v_star, vBH, tdes, m_min, m_max, with_tdes, f_accreted, EoS = BHstar_to_BBH(seed, t, z, k_ex2, N_ex2, m_avg, BH, pairs, binaries, N_BBH, N_BHstar, N_tdeBHstar, v_star, vBH, tdes, m_min, m_max, with_tdes, f_accreted, EoS)
     
     # write back:
     state['t'] = t; state['z'] = z; state['dt'] = dt; state['seed'] = seed
-    state['mBH_avg'] = mBH_avg; state['binaries'] = binaries; state['mBH'] = mBH
-    state['sBH'] = sBH; state['gBH'] = gBH; state['hBH'] = hBH; state['vBH'] = vBH; state['v_star'] = v_star
+    state['mBH_avg'] = mBH_avg; state['binaries'] = binaries
+    state['vBH'] = vBH; state['v_star'] = v_star
     state['m_avg'] = m_avg; state['ab'] = ab; state['pairs'] = pairs; state['mergers'] = mergers
     state['N_BH'] = N_BH; state['N_BBH'] = N_BBH; state['N_BHstar'] = N_BHstar
     state['N_3bb'] = N_3bb; state['N_2cap'] = N_2cap; state['N_me'] = N_me
@@ -913,7 +928,7 @@ def evolve_interactions(state, config):
     seed = state['seed']
     t = state['t']; z = state['z']; dt = state['dt']; zCl_form = state['zCl_form']
     binaries = state['binaries']; hardening = state['hardening']; mergers = state['mergers']
-    mBH = state['mBH']; sBH = state['sBH']; gBH = state['gBH']; hBH = state['hBH']
+    BH = state['BH']
     n_star = state['n_star']; v_star = state['v_star']; vBH = state['vBH']
     t_rlx = state['t_rlx']; m_avg = state['m_avg']; mBH_avg = state['mBH_avg']
     na_BH = state['na_BH']; nc_BH = state['nc_BH']
@@ -938,7 +953,7 @@ def evolve_interactions(state, config):
     EoS = config['EoS']
 
     # BBH evolution:
-    seed, t, z, dt, zCl_form, binaries, hardening, mergers, mBH, sBH, gBH, hBH, n_star, v_star, vBH, t_rlx, m_avg, mBH_avg, na_BH, nc_BH, N_BH, N_BBH, N_me, N_me2b, N_3cap, N_meFi, N_meRe, N_meEj, N_dis, N_ex, N_BHej, N_BBHej, N_hardening, Vc_BH, N_bb, triples, N_Triples, tdes, N_tdeBBHstar, m_min, m_max, f_accreted, EoS = evolve_BBHs(seed, t, z, dt, zCl_form, binaries, hardening, mergers, mBH, sBH, gBH, hBH, n_star, v_star, vBH, t_rlx, m_avg, mBH_avg, na_BH, nc_BH, N_BH, N_BBH, N_me, N_me2b, N_3cap, N_meFi, N_meRe, N_meEj, N_dis, N_ex, N_BHej, N_BBHej, N_hardening, Vc_BH, N_bb, triples, N_Triples, tdes, N_tdeBBHstar, m_min, m_max, f_accreted, EoS)
+    seed, t, z, dt, zCl_form, binaries, hardening, mergers, BH, n_star, v_star, vBH, t_rlx, m_avg, mBH_avg, na_BH, nc_BH, N_BH, N_BBH, N_me, N_me2b, N_3cap, N_meFi, N_meRe, N_meEj, N_dis, N_ex, N_BHej, N_BBHej, N_hardening, Vc_BH, N_bb, triples, N_Triples, tdes, N_tdeBBHstar, m_min, m_max, f_accreted, EoS = evolve_BBHs(seed, t, z, dt, zCl_form, binaries, hardening, mergers, BH, n_star, v_star, vBH, t_rlx, m_avg, mBH_avg, na_BH, nc_BH, N_BH, N_BBH, N_me, N_me2b, N_3cap, N_meFi, N_meRe, N_meEj, N_dis, N_ex, N_BHej, N_BBHej, N_hardening, Vc_BH, N_bb, triples, N_Triples, tdes, N_tdeBBHstar, m_min, m_max, f_accreted, EoS)
 
     # average BBH number density:
     if i_aux1==1:
@@ -974,7 +989,7 @@ def evolve_interactions(state, config):
     dt = state['dt']
     
     # cap mu to avoid scipy Poisson overflow for extremely high interaction rates:
-    k_pp = np.min([poisson.rvs(mu=np.min([dt / t_pp, 1e8])), int(N_BHstar / 2)])
+    k_pp = np.min([poisson_draw(np.min([dt / t_pp, 1e8])), int(N_BHstar / 2)])
 
     # execute pair-pair interactions: two BH-star pairs form a new BBH:
     if k_pp>0:
@@ -1019,9 +1034,7 @@ def evolve_interactions(state, config):
                 # Sample star mass from evolving mass function:
                 m_star, R_star = get_star(t, tBH_form, m_min, m_max)
 
-                k_tdeBHstar = 1
-                seed, t, z, k_tdeBHstar, N_tdeBHstar, tde_type, m_avg, m_star, R_star, m1, s1, g1, h1, v_star, vBH, tdes, binaries, pairs, f_accreted, EoS = BH_TidalDisruptions(seed, t, z, k_tdeBHstar, N_tdeBHstar, tde_type, m_avg, m_star, R_star, np.array([m1]), np.array([s1]), np.array([g1]), np.array([h1]), v_star, vBH, tdes, binaries, pairs, f_accreted, EoS)
-                m1, s1, g1, h1 = float(m1[0]), float(s1[0]), float(g1[0]), float(h1[0])
+                N_tdeBHstar, m1, s1, g1, h1, tdes = single_BH_TidalDisruption(seed, t, z, N_tdeBHstar, tde_type, m_avg, m_star, R_star, m1, s1, g1, h1, v_star, vBH, tdes, f_accreted, EoS)
 
             if np.random.rand() < p2_TDE:
                 # then TDE-2 occurs:
@@ -1031,9 +1044,7 @@ def evolve_interactions(state, config):
                 # Sample star mass from evolving mass function:
                 m_star, R_star = get_star(t, tBH_form, m_min, m_max)
 
-                k_tdeBHstar = 1
-                seed, t, z, k_tdeBHstar, N_tdeBHstar, tde_type, m_avg, m_star, R_star, m2, s2, g2, h2, v_star, vBH, tdes, binaries, pairs, f_accreted, EoS = BH_TidalDisruptions(seed, t, z, k_tdeBHstar, N_tdeBHstar, tde_type, m_avg, m_star, R_star, np.array([m2]), np.array([s2]), np.array([g2]), np.array([h2]), v_star, vBH, tdes, binaries, pairs, f_accreted, EoS)
-                m2, s2, g2, h2 = float(m2[0]), float(s2[0]), float(g2[0]), float(h2[0])
+                N_tdeBHstar, m2, s2, g2, h2, tdes = single_BH_TidalDisruption(seed, t, z, N_tdeBHstar, tde_type, m_avg, m_star, R_star, m2, s2, g2, h2, v_star, vBH, tdes, f_accreted, EoS)
 
             # the following exchange happens:
             # BH-star + BH-star -> BH-BH + star' + star'
@@ -1050,13 +1061,12 @@ def evolve_interactions(state, config):
             N_BBH+=1
 
     # Triple evolution:
-    seed, t, z, zCl_form, triples, binaries, mBH, sBH, gBH, hBH, mBH_avg, N_Triples, N_BBH, N_BH, N_me, N_meRe, N_meEj, N_ZLK, v_star, vBH, nc_BH, mergers = \
-        evolve_triples(seed, t, z, zCl_form, triples, binaries, mBH, sBH, gBH, hBH, mBH_avg, N_Triples, N_BBH, N_BH, N_me, N_meRe, N_meEj, N_ZLK, v_star, vBH, nc_BH, mergers)
+    seed, t, z, zCl_form, triples, binaries, BH, mBH_avg, N_Triples, N_BBH, N_BH, N_me, N_meRe, N_meEj, N_ZLK, v_star, vBH, nc_BH, mergers = \
+        evolve_triples(seed, t, z, zCl_form, triples, binaries, BH, mBH_avg, N_Triples, N_BBH, N_BH, N_me, N_meRe, N_meEj, N_ZLK, v_star, vBH, nc_BH, mergers)
 
     # write back:
     state['seed'] = seed; state['t'] = t; state['z'] = z; state['dt'] = dt; state['zCl_form'] = zCl_form
     state['binaries'] = binaries; state['hardening'] = hardening; state['mergers'] = mergers
-    state['mBH'] = mBH; state['sBH'] = sBH; state['gBH'] = gBH; state['hBH'] = hBH
     state['n_star'] = n_star; state['v_star'] = v_star; state['vBH'] = vBH
     state['t_rlx'] = t_rlx; state['m_avg'] = m_avg; state['mBH_avg'] = mBH_avg
     state['na_BH'] = na_BH; state['nc_BH'] = nc_BH
@@ -1099,7 +1109,7 @@ def evolve_tdes(state, config):
 
     # unpack current state into local variables:
     seed = state['seed']; t = state['t']; z = state['z']; dt = state['dt']
-    mBH = state['mBH']; sBH = state['sBH']; gBH = state['gBH']; hBH = state['hBH']
+    BH = state['BH']
     vBH = state['vBH']; v_star = state['v_star']
     mBH_avg = state['mBH_avg']; m_avg = state['m_avg']
     N_BH = state['N_BH']; N_Triples = state['N_Triples']
@@ -1140,12 +1150,12 @@ def evolve_tdes(state, config):
     N_WD = N_WD + dN_WDdt * dt
 
     # Poisson number of BH-WD TDEs:
-    k_tdeBHWD = np.min([poisson.rvs(mu=np.min([dt*dN_tdeBHWDdt, 1e8])), int(N_BH-3*N_Triples), int(N_WD)]) if N_WD>0 else 0
+    k_tdeBHWD = np.min([poisson_draw(np.min([dt*dN_tdeBHWDdt, 1e8])), int(N_BH-3*N_Triples), int(N_WD)]) if N_WD>0 else 0
 
     # execute BH-WD tidal disruption events:
     if k_tdeBHWD > 0:
         tde_type = 11
-        seed, t, z, k_tdeBHWD, N_tdeBHWD, tde_type, m_avg, m_WD, R_WD, mBH, sBH, gBH, hBH, v_WD, vBH, tdes, binaries, pairs, f_accreted, EoS = BH_TidalDisruptions(seed, t, z, k_tdeBHWD, N_tdeBHWD, tde_type, m_avg, m_WD, R_WD, mBH, sBH, gBH, hBH, v_WD, vBH, tdes, binaries, pairs, f_accreted, EoS)
+        seed, t, z, k_tdeBHWD, N_tdeBHWD, tde_type, m_avg, m_WD, R_WD, BH, v_WD, vBH, tdes, binaries, pairs, f_accreted, EoS = BH_TidalDisruptions(seed, t, z, k_tdeBHWD, N_tdeBHWD, tde_type, m_avg, m_WD, R_WD, BH, v_WD, vBH, tdes, binaries, pairs, f_accreted, EoS)
 
     # micro-TDEs:
     v_BHstar = np.sqrt(v_star**2 + vBH**2)
@@ -1153,7 +1163,7 @@ def evolve_tdes(state, config):
 
     # Poisson number of BH-star TDEs at this timestep:
     N_strs = Mcl/m_avg
-    k_tdeBHstar = np.min([poisson.rvs(mu=np.min([dt*dN_tdeBHstardt, 1e8])), int(N_BH-3*N_Triples), int(N_strs)]) if (N_BH>0)*(n_star>0) else 0
+    k_tdeBHstar = np.min([poisson_draw(np.min([dt*dN_tdeBHstardt, 1e8])), int(N_BH-3*N_Triples), int(N_strs)]) if (N_BH>0)*(n_star>0) else 0
 
     # execute BH-star tidal disruption events (micro-TDEs):
     if k_tdeBHstar > 0:
@@ -1162,11 +1172,10 @@ def evolve_tdes(state, config):
         # Sample star mass from evolving mass function:
         m_star, R_star = get_star(t, tBH_form, m_min, m_max)
 
-        seed, t, z, k_tdeBHstar, N_tdeBHstar, tde_type, m_avg, m_star, R_star, mBH, sBH, gBH, hBH, v_star, vBH, tdes, binaries, pairs, f_accreted, EoS = BH_TidalDisruptions(seed, t, z, k_tdeBHstar, N_tdeBHstar, tde_type, m_avg, m_star, R_star, mBH, sBH, gBH, hBH, v_star, vBH, tdes, binaries, pairs, f_accreted, EoS)
+        seed, t, z, k_tdeBHstar, N_tdeBHstar, tde_type, m_avg, m_star, R_star, BH, v_star, vBH, tdes, binaries, pairs, f_accreted, EoS = BH_TidalDisruptions(seed, t, z, k_tdeBHstar, N_tdeBHstar, tde_type, m_avg, m_star, R_star, BH, v_star, vBH, tdes, binaries, pairs, f_accreted, EoS)
 
     # write back:
     state['seed'] = seed; state['t'] = t; state['z'] = z
-    state['mBH'] = mBH; state['sBH'] = sBH; state['gBH'] = gBH; state['hBH'] = hBH
     state['v_star'] = v_star; state['vBH'] = vBH
     state['binaries'] = binaries; state['pairs'] = pairs; state['tdes'] = tdes
     state['N_WD'] = N_WD; state['v_WD'] = v_WD
@@ -1415,14 +1424,41 @@ def print_status(state, config, local_time_initial, simulation_time_initial):
     data_1 = {"t[Myr]": [frmt_1%t], "dt[Myr]": [frmt_1%dt], "z": [frmt_1%z], "Mcl[MMsun]": [frmt_1%(Mcl/1e6)], "rh[pc]": [frmt_1%rh], "R_gal[kpc]": [frmt_1%(R_gal/1e3)]}
     data_2 = {"N_BH": [frmt_2%N_BH], "N_BBH": [frmt_2%N_BBH], "N_Triples": [frmt_2%N_Triples], "N_me": [frmt_2%N_me], "N_tdeBHWD": [frmt_2%N_tdeBHWD], "N_tdeBHstar": [frmt_2%N_tdeBHstar], "N_tdeBBHstar": [frmt_2%N_tdeBBHstar]}
     data_3 = {"steptime[ms]": [frmt_4%(np.abs(local_time_final - local_time_initial)*1e3)], "runtime[s]": [frmt_3%np.abs(time.time() - simulation_time_initial)]}
-    headers = [" "]
-    df_1 = pd.DataFrame(data_1, headers)
-    df_2 = pd.DataFrame(data_2, headers)
-    df_3 = pd.DataFrame(data_3, headers)
-    print(df_1)
-    print(df_2)
-    print(df_3)
+    print(_one_row_table(data_1))
+    print(_one_row_table(data_2))
+    print(_one_row_table(data_3))
     print("\n")
+
+
+def _one_row_table(data):
+    """Text of print(pd.DataFrame(data, [" "])) for a one-row table of strings.
+
+    Building three DataFrames per iteration cost ~3 ms, comparable to a whole
+    simulation step in small clusters. The layout below is pandas' (right-aligned
+    columns, a leading space in front of every value, a 1-character index); wider
+    tables, which pandas would truncate, are still handed to pandas.
+    """
+    keys = list(data)
+    vals = [data[k][0] for k in keys]
+    widths = [max(len(k), len(v) + 1) for k, v in zip(keys, vals)]
+    head = ' ' + ' '.join(k.rjust(w) for k, w in zip(keys, widths))
+    if len(head) >= 80:
+        return str(pd.DataFrame(data, [" "]))
+    row = ' ' + ' '.join((' ' + v).rjust(w) for v, w in zip(vals, widths))
+    return head + '\n' + row
+
+
+def _write_rows(f, rows, suffix=''):
+    """
+    Write a 2-D float array, one row per line, values separated by spaces and
+    `suffix` appended to every line. repr of a Python float is the same text as
+    str of a NumPy float64 (shortest round-trip representation), so the file is
+    identical to writing str(rows[i][j]) value by value, which it replaces
+    (~10x faster for the large hardening and evolution files).
+    """
+    chunk = 10000   # rows converted to Python floats at a time (bounded memory)
+    for start in range(0, len(rows), chunk):
+        f.writelines(' '.join(map(repr, row)) + suffix + '\n' for row in rows[start:start+chunk].tolist())
 
 
 def write_output(state, config):
@@ -1439,10 +1475,10 @@ def write_output(state, config):
         state (dict): Simulation state at the end of the run.
         config (dict): Configuration dictionary.
     """
-    mergers = np.delete(state['mergers'], 0, axis=0)
+    mergers = np.array(state['mergers'], dtype=float)[1:]       # list -> array, drop placeholder row
     evolution = np.array(state['evolution'], dtype=float)[1:]   # list -> array, drop placeholder row
     hardening = np.array(state['hardening'], dtype=float)[1:]   # list -> array, drop placeholder row
-    tdes = np.delete(state['tdes'], 0, axis=0)
+    tdes = np.array(state['tdes'], dtype=float)[1:]             # list -> array, drop placeholder row
 
     CURRENT_WORKING_DIR = os.getcwd()
     RESULTS_DIR = os.path.join(CURRENT_WORKING_DIR, config['results_folder_name'])
@@ -1458,7 +1494,10 @@ def write_output(state, config):
         }
         BOF_path = os.path.join(RESULTS_DIR, config['BOF'] + '.pkl')
         with open(BOF_path, "wb") as f:
-            pickle.dump(data_to_save, f)
+            dump_streaming(data_to_save, f)
+        for key in ('black_hole_masses', 'black_hole_spins', 'black_hole_generations', 'black_hole_tdes'):
+            if isinstance(state[key], SnapshotStream):
+                state[key].close()
 
     N_tdeBHWD = state['N_tdeBHWD']
     N_tdeBHstar = state['N_tdeBHstar']
@@ -1474,52 +1513,28 @@ def write_output(state, config):
         tdes_path = os.path.join(RESULTS_DIR, config['tdes_file'] + '.txt')
         with open(tdes_path, 'w') as f_tdes:
             f_tdes.write('# ' + ' '.join(tdes_keys) + '\n')
-            for i in range(N_tdeBHWD+N_tdeBHstar+N_tdeBBHstar):
-                f_tdes.write(str(tdes[i][ 0])+' '+str(tdes[i][ 1])+' '+str(tdes[i][ 2])+' '+str(tdes[i][ 3])+' '+\
-                             str(tdes[i][ 4])+' '+str(tdes[i][ 5])+' '+str(tdes[i][ 6])+' '+str(tdes[i][ 7])+' '+\
-                             str(tdes[i][ 8])+' '+str(tdes[i][ 9])+' '+str(tdes[i][10])+' '+str(tdes[i][11])+' '+\
-                             str(tdes[i][12])+' '+str(tdes[i][13])+' '+str(tdes[i][14])+' '+str(tdes[i][15])+' '+\
-                             str(tdes[i][16])+' '+str(tdes[i][17]))
-                f_tdes.write('\n')
+            # every stored row; a whole-binary BBH-star disruption (type 22) adds one
+            # row per BH, so there can be more rows than N_tdeBHWD+N_tdeBHstar+N_tdeBBHstar:
+            _write_rows(f_tdes, tdes)
 
     if config['Mi']==1:
         mergers_path = os.path.join(RESULTS_DIR, config['mergers_file'] + '.txt')
         with open(mergers_path, 'w') as f_mergers:
             f_mergers.write('# ' + ' '.join(merger_keys) + '\n')
-            for i in range(N_me):
-                f_mergers.write(str(mergers[i][0 ])+' '+str(mergers[i][1 ])+' '+str(mergers[i][2 ])+' '+str(mergers[i][3 ])+' '+str(mergers[i][4 ])+' '+str(mergers[i][5 ])+' '+str(mergers[i][6 ])+' '+\
-                                str(mergers[i][7 ])+' '+str(mergers[i][8 ])+' '+str(mergers[i][9 ])+' '+str(mergers[i][10])+' '+str(mergers[i][11])+' '+str(mergers[i][12])+' '+str(mergers[i][13])+' '+\
-                                str(mergers[i][14])+' '+str(mergers[i][15])+' '+str(mergers[i][16])+' '+str(mergers[i][17])+' '+str(mergers[i][18])+' '+str(mergers[i][19])+' '+str(mergers[i][20])+' '+\
-                                str(mergers[i][21])+' '+str(mergers[i][22])+' '+str(mergers[i][23])+' '+str(mergers[i][24])+' '+str(mergers[i][25])+' '+str(mergers[i][26])+' '+str(Mcl0)+' '+str(rh0)+' '+str(Z)+' '+str(zCl_form)+' '+str(R_gal0)+' '+str(Mcl)+' '+str(rh)+' '+str(R_gal))
-                f_mergers.write('\n')
+            # initial and final cluster properties, the same on every row:
+            cluster_columns = ' '+str(Mcl0)+' '+str(rh0)+' '+str(Z)+' '+str(zCl_form)+' '+str(R_gal0)+' '+str(Mcl)+' '+str(rh)+' '+str(R_gal)
+            _write_rows(f_mergers, mergers[:max(N_me, 0)], cluster_columns)
 
     if config['Ei']==1:
         evolution_path = os.path.join(RESULTS_DIR, config['evolution_file'] + '.txt')
         with open(evolution_path, 'w') as f_evolution:
             f_evolution.write('# ' + ' '.join(evolution_keys) + '\n')
-            for i in range(N_iter-1):
-                f_evolution.write(str(evolution[i][0 ])+' '+str(evolution[i][1 ])+' '+str(evolution[i][2 ])+' '+str(evolution[i][3 ])+' '+str(evolution[i][4 ])+' '+str(evolution[i][5 ])+' '+\
-                                  str(evolution[i][6 ])+' '+str(evolution[i][7 ])+' '+str(evolution[i][8 ])+' '+str(evolution[i][9 ])+' '+str(evolution[i][10])+' '+str(evolution[i][11])+' '+\
-                                  str(evolution[i][12])+' '+str(evolution[i][13])+' '+str(evolution[i][14])+' '+str(evolution[i][15])+' '+str(evolution[i][16])+' '+str(evolution[i][17])+' '+\
-                                  str(evolution[i][18])+' '+str(evolution[i][19])+' '+str(evolution[i][20])+' '+str(evolution[i][21])+' '+str(evolution[i][22])+' '+str(evolution[i][23])+' '+\
-                                  str(evolution[i][24])+' '+str(evolution[i][25])+' '+str(evolution[i][26])+' '+str(evolution[i][27])+' '+str(evolution[i][28])+' '+str(evolution[i][29])+' '+\
-                                  str(evolution[i][30])+' '+str(evolution[i][31])+' '+str(evolution[i][32])+' '+str(evolution[i][33])+' '+str(evolution[i][34])+' '+str(evolution[i][35])+' '+\
-                                  str(evolution[i][36])+' '+str(evolution[i][37])+' '+str(evolution[i][38])+' '+str(evolution[i][39])+' '+str(evolution[i][40])+' '+str(evolution[i][41])+' '+\
-                                  str(evolution[i][42])+' '+str(evolution[i][43])+' '+str(evolution[i][44])+' '+str(evolution[i][45])+' '+str(evolution[i][46])+' '+str(evolution[i][47])+' '+\
-                                  str(evolution[i][48])+' '+str(evolution[i][49])+' '+str(evolution[i][50])+' '+str(evolution[i][51])+' '+str(evolution[i][52])+' '+str(evolution[i][53])+' '+\
-                                  str(evolution[i][54])+' '+str(evolution[i][55])+' '+str(evolution[i][56])+' '+str(evolution[i][57])+' '+str(evolution[i][58])+' '+str(evolution[i][59])+' '+\
-                                  str(evolution[i][60])+' '+str(evolution[i][61])+' '+str(evolution[i][62])+' '+str(evolution[i][63])+' '+str(evolution[i][64])+' '+str(evolution[i][65])+' '+\
-                                  str(evolution[i][66])+' '+str(evolution[i][67])+' '+str(evolution[i][68])+' '+str(evolution[i][69])+' '+str(evolution[i][70]))
-                f_evolution.write('\n')
+            _write_rows(f_evolution, evolution[:max(N_iter-1, 0)])
 
     if config['Hi']==1:
         hardening_path = os.path.join(RESULTS_DIR, config['hardening_file'] + '.txt')
         with open(hardening_path, 'w') as f_hardening:
             f_hardening.write('# ' + ' '.join(hardening_keys) + '\n')
-            for i in range(N_hardening):
-                f_hardening.write(str(hardening[i][0 ])+' '+str(hardening[i][1 ])+' '+str(hardening[i][2 ])+' '+str(hardening[i][3 ])+' '+str(hardening[i][4 ])+' '+\
-                                  str(hardening[i][5 ])+' '+str(hardening[i][6 ])+' '+str(hardening[i][7 ])+' '+str(hardening[i][8 ])+' '+str(hardening[i][9 ])+' '+\
-                                  str(hardening[i][10])+' '+str(hardening[i][11]))
-                f_hardening.write('\n')
+            _write_rows(f_hardening, hardening[:max(N_hardening, 0)])
 
 # End of file.

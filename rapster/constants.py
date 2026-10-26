@@ -18,13 +18,44 @@
 
 import numpy as np
 import argparse
-from scipy.stats import poisson
-from scipy.stats import maxwell
+import importlib
 import scipy.integrate as integrate
 from scipy import interpolate
 import time
 import pickle
-import pandas as pd
+
+
+class _LazyImport:
+    """
+    Stand-in for a module (or a module attribute) that is imported on first use.
+    scipy.stats and pandas take ~0.7 s to import, more than a whole small run, and
+    are needed only rarely (NS natal kicks, wide status tables); the objects
+    returned are the same, so results are unchanged.
+    """
+    def __init__(self, module, attr=None):
+        self.__dict__['_spec'] = (module, attr)
+        self.__dict__['_target'] = None
+
+    def _load(self):
+        target = self.__dict__['_target']
+        if target is None:
+            module, attr = self.__dict__['_spec']
+            target = importlib.import_module(module)
+            if attr is not None:
+                target = getattr(target, attr)
+            self.__dict__['_target'] = target
+        return target
+
+    def __getattr__(self, name):
+        return getattr(self._load(), name)
+
+    def __call__(self, *args, **kwargs):
+        return self._load()(*args, **kwargs)
+
+
+poisson = _LazyImport('scipy.stats', 'poisson')   # scipy.stats.poisson
+maxwell = _LazyImport('scipy.stats', 'maxwell')   # scipy.stats.maxwell
+pd = _LazyImport('pandas')                        # pandas
 from math import erf
 from scipy.optimize import root
 from scipy.interpolate import CloughTocher2DInterpolator
