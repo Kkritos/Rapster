@@ -372,9 +372,9 @@ def initialize_cluster(config):
     pairs = np.zeros(shape=(1, 5))
     triples = np.zeros(shape=(1, 24))
     mergers = RowLog(27, [0.0] * 27)     # one placeholder row; -> array at write_output
-    evolution = [[0.0] * 71]   # list-accumulated (one placeholder row); -> array at write_output
+    evolution = RowLog(71, [0.0] * 71)   # one placeholder row; -> array at write_output
     hardening = RowLog(12, [0.0] * 12)   # one placeholder row; -> array at write_output
-    tdes = [[0.0] * 18]        # list-accumulated (one placeholder row); -> array at write_output
+    tdes = RowLog(18, [0.0] * 18)        # one placeholder row; -> array at write_output
 
     configure_kick_model(config['recoil_kick_model'])
 
@@ -1478,7 +1478,7 @@ def write_output(state, config):
     mergers = np.array(state['mergers'], dtype=float)[1:]       # list -> array, drop placeholder row
     evolution = np.array(state['evolution'], dtype=float)[1:]   # list -> array, drop placeholder row
     hardening = np.array(state['hardening'], dtype=float)[1:]   # list -> array, drop placeholder row
-    tdes = np.array(state['tdes'], dtype=float)[1:]             # list -> array, drop placeholder row
+    tdes = fill_R_mb(np.array(state['tdes'], dtype=float)[1:])  # -> array, drop placeholder row, add r_mb
 
     CURRENT_WORKING_DIR = os.getcwd()
     RESULTS_DIR = os.path.join(CURRENT_WORKING_DIR, config['results_folder_name'])

@@ -641,6 +641,18 @@ def evolve_spin_during_accretion(Mi, Mf, NS, f=None, chi=0.0, dM=1e-3, eos='APR'
     prograde_now = prograde
     last = None   # only the final per-step state is needed by callers (evo[...][-1])
 
+    if NS:
+        # The masses of the steps, M_0 = Mi, M_{i+1} = M_i + dM, do not depend on the
+        # spin, so the NS radii R(min(M_i, M_TOV)) are interpolated for all steps in
+        # one call (np.interp gives the same value for each point as one by one):
+        Ms = []
+        Mx = M
+        while (Mx > Mf) if decreasing else (Mx < Mf):
+            Ms.append(Mx if Mx < M_TOV else M_TOV)    # = min(Mx, M_TOV)
+            Mx += dM
+        Rs = Radius(np.array(Ms)).tolist() if Ms else []
+        istep = 0
+
     while (M > Mf) if decreasing else (M < Mf):
 
         is_NS = NS and (M < M_max_rot)
@@ -649,9 +661,15 @@ def evolve_spin_during_accretion(Mi, Mf, NS, f=None, chi=0.0, dM=1e-3, eos='APR'
         chi = float(min(max(J / Mg**2, 0.0), THORNE_LIMIT))
 
         if is_NS:
-            # NS path: f_from_chi, f_kepler and chi_kepler (see _ns_spin_state)
-            R    = float(Radius(min(M, M_TOV)))
-            f, fK, chiK = _ns_spin_state(M, chi, R)
+            # NS path: f_from_chi, f_kepler and chi_kepler, inlined from _ns_spin_state
+            # (same operations; C and I_SI are reused by the ISCO quantities below)
+            R    = Rs[istep]
+            C    = M / R
+            I_SI = 0.237 * M * R**2 * (1.0 + 0.674*C + 4.48*C**4) * Msun * km**2
+            M_SI = M * Msun
+            f    = chi * G * M_SI**2 / (2.0 * math.pi * c * I_SI)
+            fK   = 1045.0 * math.sqrt(M) * (10.0 / R)**1.5
+            chiK = c * I_SI * 2.0 * math.pi * fK / (G * M_SI**2)
         else:
             # BH path, inlined with math.sqrt (mirrors f_from_chi / R_ISCO / E_isco / J_isco)
             chi2 = chi**2
@@ -666,8 +684,26 @@ def evolve_spin_during_accretion(Mi, Mf, NS, f=None, chi=0.0, dM=1e-3, eos='APR'
 
         if f < fK:
             if is_NS:
-                # E_isco and J_isco for NS=True, i.e. _E_J_isco_NS (evaluated once for both)
-                e, j = _ns_E_J_isco(M, R, f, prograde=prograde_now)
+                # E_isco and J_isco for NS=True (_ns_E_J_isco inlined, same operations;
+                # Mg, C and I_SI as computed above)
+                sgn = +1.0 if prograde_now else -1.0
+                if f <= 0.0:
+                    r = 8.809 * M
+                else:
+                    x = M * f
+                    r = (8.809*x + -9.166e-4*x**2 + 8.787e-8*x**3 + -6.019e-12*x**4) / f
+                r_S = 2.0 * Mg
+                if r <= r_S:
+                    r = r_S * 1.001
+                J_SI = I_SI * 2.0 * math.pi * f
+                r_m = r * km
+                Nphi = 2.0 * G * J_SI / (r_m**3 * c**3)
+                Omega_S = math.sqrt(Mg * km) / r_m**1.5
+                N_ = math.sqrt(1.0 - r_S / r)
+                v = min(max((Omega_S - sgn * Nphi) * r_m / N_, 0.0), 0.9999)
+                gamma = 1.0 / math.sqrt(1.0 - v**2)
+                e = (N_ + Nphi * v * r_m) * gamma
+                j = sgn * v * r_m * gamma / km
             else:
                 # BH: R_ISCO computed once, shared by E~ and J~ (mirrors E_isco/J_isco, NS=False)
                 # (chi**2, rt**1.5 and rt**0.5 are each computed once and reused)
@@ -695,6 +731,8 @@ def evolve_spin_during_accretion(Mi, Mf, NS, f=None, chi=0.0, dM=1e-3, eos='APR'
             M  += dM
             Mg  = M * Msun_to_km
             J   = chiK * Mg**2
+        if NS:
+            istep += 1
 
     # only the final per-step state is returned (as length-1 arrays so callers'
     # evo[key][-1] indexing still works); intermediate history is not stored.

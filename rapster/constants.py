@@ -58,7 +58,6 @@ maxwell = _LazyImport('scipy.stats', 'maxwell')   # scipy.stats.maxwell
 pd = _LazyImport('pandas')                        # pandas
 from math import erf
 from scipy.optimize import root
-from scipy.interpolate import CloughTocher2DInterpolator
 import os
 
 # Use astrophysical units throughout:

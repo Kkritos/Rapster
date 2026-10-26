@@ -2,6 +2,20 @@
 
 All notable changes to Rapster will be documented in this file.
 
+## [2.14.1] - 2026-10-26
+
+Dynamics and all output except the column `r_mb` of `tdes.txt` are byte-identical to 2.14.0 for a given seed (checked on 26 configurations up to N = 1e8).
+
+### Fixed
+1. **Marginally bound radius of TDE orbits** (`r_mb`, column 14 of `tdes.txt`; output only, not used by the dynamics). The lookup table `Data/x_mb_vec.pkl` measured the orbital angle from the equatorial plane (90 deg = equatorial), while the code passed the inclination measured from the BH spin axis (0 = prograde equatorial), so prograde orbits were given the values of the complementary inclination (e.g. a polar-orbit radius for an equatorial orbit), and every retrograde orbit (inclination > 90 deg, half of the TDEs) fell outside the table and was written as `nan`. The table also contained unconverged points (its root finder returned the initial guess 4 GM/c^2, e.g. for retrograde orbits around rapidly spinning BHs). `r_mb` is now computed exactly: for a Kerr BH the conditions R = R' = 0 of a marginally bound (E = 1) spherical orbit give the axial angular momentum and Carter constant in closed form for each radius, and the radius with the sampled inclination is found by root finding (`x_mb` in `functions.py`; checked against the equatorial limits and an independent solution in `tests/test_marginally_bound.py`). `Data/x_mb_vec.pkl` and its generator `Data/.marginally_bound.py` are removed.
+
+### Performance (results unchanged)
+Byte-identical output (26 configurations, including NS, gas, IMBH-seed, TDE-dominated and N = 1e8 clusters); ~1.3x faster for clusters dominated by BH-star TDEs (e.g. 699 -> 530 s for N = 10^7.5, r_h = 0.1 pc; 214 -> 165 s for the first 25 Myr of N = 1e8, r_h = 0.1 pc), unchanged for clusters dominated by three-body binaries, with 20-25% less memory (exactness checked in `tests/test_speedups_2141.py`):
+- `r_mb` is computed for all TDEs at once when the output is written, instead of interpolating at every TDE (it is not used during the run).
+- **NS spin evolution during TDEs** (~2x faster per NS TDE): the masses of the Euler steps do not depend on the spin, so the NS radii are interpolated for all steps in one call, and the NS spin and ISCO expressions are evaluated inline, sharing the moment of inertia (the same operations in the same order).
+- **Pool totals**: the cumulative block sums of each weight family are kept between draws and, after a BH changes, recomputed only from its block on, with the same sequential additions (bit-identical to recomputing them all).
+- The TDE and evolution records are stored compactly (8 bytes per value) like the hardening and merger records.
+
 ## [2.14.0] - 2026-10-25
 
 Results change with respect to 2.13.1 through the three-body-binary fix (1) and the new default central density (6) when `-N`/`-r` differ from their defaults; fixes 3-5 change only the corresponding output files. The first two groups of performance changes leave results bit-identical; the pool of single BHs and the last group (batched three-body draws, BBH-BBH partner draw, ZLK root) give statistically equivalent results: the same distributions, but for a given seed a different realization than before.
