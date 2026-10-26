@@ -19,41 +19,49 @@
 from .constants import *
 from .functions import *
 from .remnant import *
+from .bhpool import FAM
 
-def fast_sample_2capture(mBH, n_samples=1):
+def sample_2capture(BH):
     """
-    Fast sampling for using rejection sampling with complexity O(N).
+    Sample the two single BHs that form a binary by GW capture, from the pool BH
+    (bhpool.BHPool), with the distribution of the sampler of versions <= 2.13.1
+    (fast_sample_2capture): the pair (i, j), i != j, drawn as
+    np.random.choice(size=2, replace=False) with proposal probabilities p ~ m^(2/7)
+    (i first, then j among the others) and accepted with probability
+    ~ (m_i + m_j)^(10/7), i.e.
+        P(i, j) ~ p_i p_j / (1 - p_i) (m_i + m_j)^(10/7).
 
-    @in mBH: array of BH masses
-    @in n_samples: number of samples (m1, m2)
+    Rejection sampling: with w = m^(2/7) and (m_i + m_j)^(10/7) <=
+    2^(3/7) (m_i^(10/7) + m_j^(10/7)) (convexity), candidates are drawn from
+        w_i w_j (m_i^(10/7) + m_j^(10/7)) = c127_i c27_j + c27_i c127_j
+    (pool families c27 = m^(2/7), c127 = m^(12/7); equal pairs i = j rejected) and
+    accepted with probability
+        (m_i + m_j)^(10/7) / (2^(3/7) (m_i^(10/7) + m_j^(10/7))) * (1 - p_max) / (1 - p_i),
+    with p_max the largest p. The first factor is at least 2^(-3/7) ~ 0.74, the second
+    is close to 1 unless one BH dominates the m^(2/7) weights.
+
+    @in BH: pool of single BHs (at least 2)
+
+    @out: m1, m2, slot of m1, slot of m2
     """
-    
-    # Pre-calculate individual weights based on the separable part: m^(2/7)
-    # This acts as our "proposal" distribution.
-    individual_weights = mBH**(2/7)
-    p_proposal = individual_weights / individual_weights.sum()
-    
-    max_m = np.max(mBH)
-    # The maximum possible value of the non-separable part (m1 + m2)^(10/7)
-    # used to normalize the rejection criteria.
-    max_weight_factor = (2 * max_m)**(10/7)
-    
-    results = []
-    while len(results) < n_samples:
-        # Sample two candidates based on p_proposal
-        candidates = np.random.choice(mBH, size=2, replace=False, p=p_proposal)
-        m1_cand, m2_cand = candidates
-        
-        # Acceptance/Rejection step
-        # We check the "interaction" term: (m1 + m2)^(10/7)
-        acceptance_prob = (m1_cand + m2_cand)**(10/7) / max_weight_factor
-        
-        if np.random.rand() < acceptance_prob:
-            results.append((m1_cand, m2_cand))
-            
-    return results[0] if n_samples == 1 else results
+    f27 = FAM['c27']; f127 = FAM['c127']
+    S27 = BH.total(f27)
+    q_max = 1 - BH.weight(f27, BH.D) / S27      # 1 - p_max (the heaviest BH has the largest weight)
+    m = BH.m
+    c = 2**(3/7)
+    while True:
+        if np.random.rand() < 0.5:
+            i = BH.draw(f127); j = BH.draw(f27)
+        else:
+            i = BH.draw(f27); j = BH.draw(f127)
+        if i == j:
+            continue
+        mi = m[i]; mj = m[j]
+        accept = (mi + mj)**(10/7) / (c * (mi**(10/7) + mj**(10/7))) * q_max / (1 - BH.weight(f27, i) / S27)
+        if np.random.rand() < accept:
+            return mi, mj, i, j
 
-def two_body_capture(seed, t, dt, z, zCl_form, k_2cap, mBH_avg, binaries, mBH, sBH, gBH, hBH, vBH, v_star, N_2cap, N_BH, N_BBH, N_me, N_meRe, N_meEj, mergers, random_pairing=False):
+def two_body_capture(seed, t, dt, z, zCl_form, k_2cap, mBH_avg, binaries, BH, vBH, v_star, N_2cap, N_BH, N_BBH, N_me, N_meRe, N_meEj, mergers, random_pairing=False):
     """
     @in seed: simulation seed number
     @in t: simulation time
@@ -63,10 +71,7 @@ def two_body_capture(seed, t, dt, z, zCl_form, k_2cap, mBH_avg, binaries, mBH, s
     @in k_2cap: number of 2-captures in current step
     @in mBH_avg: average BH mass
     @in binaries: array of BBHs
-    @in mBH: array of single BH masses
-    @in sBH: array of single BH spins
-    @in gBH: array of single BH generations
-    @in hBH: array of BH tdes count
+    @in BH: pool of single BHs (bhpool.BHPool: masses, spins, generations, TDE counts)
     @in vBH: 3D BH velocity dispersion
     @in v_star: 3D star velocity dispersion
     @in N_2cap: number of 2-captures
@@ -83,43 +88,31 @@ def two_body_capture(seed, t, dt, z, zCl_form, k_2cap, mBH_avg, binaries, mBH, s
     
     if k_2cap > 0:
 
-        mBH_temp = []
-        sBH_temp = []
-        gBH_temp = []
-        hBH_temp = []
+        retained = []   # merger remnants retained in the cluster (added after the loop)
 
         for i in range(k_2cap):
-            if len(mBH) < 2:
-                break # avoid infinite loop in the fast_sample_2capture function.
+            if BH.size < 2:
+                break # avoid infinite loop in the sampler
             
-            # sample the masses that form the captured binary:
+            # sample the BHs that form the captured binary (slots k1 != k2):
             if random_pairing:
-                m1, m2 = np.random.choice(mBH, size=2, replace=False)
+                k1 = BH.draw_uniform()
+                k2 = BH.draw_uniform()
+                while k2 == k1:
+                    k2 = BH.draw_uniform()
+                m1, m2 = BH.m[k1], BH.m[k2]
             else:
-                m1, m2 = fast_sample_2capture(mBH, n_samples=1)
-            
-            # find index locations of the sampled BHs:
-            k1 = np.squeeze(np.where(mBH==m1))+0
-            k2 = np.squeeze(np.where(mBH==m2))+0
-
-            k1 = int(np.atleast_1d(k1)[0])
-            k2 = int(np.atleast_1d(k2)[0])
-
-            if k1 == k2:
-                candidates = np.where(mBH == m2)[0]
-                k2 = int(candidates[1]) if len(candidates) > 1 else None
-                if k2 is None:
-                    continue
+                m1, m2, k1, k2 = sample_2capture(BH)
                 
-            s1 = sBH[k1]; g1 = gBH[k1]; h1 = hBH[k1]
-            s2 = sBH[k2]; g2 = gBH[k2]; h2 = hBH[k2]
+            s1 = BH.s[k1]; g1 = BH.g[k1]; h1 = BH.h[k1]
+            s2 = BH.s[k2]; g2 = BH.g[k2]; h2 = BH.h[k2]
             
             ind = np.random.randint(0, 999999999)
             
             theta1, theta2, dPhi = sample_angles()
             
-            m_rem, s_rem, vGW_kick = merger_remnant(m1, m2, sBH[k1], sBH[k2], theta1, theta2, dPhi)
-            g_rem = np.max([gBH[k1], gBH[k2]]) + 1
+            m_rem, s_rem, vGW_kick = merger_remnant(m1, m2, s1, s2, theta1, theta2, dPhi)
+            g_rem = np.max([g1, g2]) + 1
             h_rem = h1 + h2
 
             # relative velocity:
@@ -176,10 +169,7 @@ def two_body_capture(seed, t, dt, z, zCl_form, k_2cap, mBH_avg, binaries, mBH, s
             eccen = np.sqrt(1 + 2 * E_fin * b**2 * v_rel**2 / m12**2 / mu / G_Newton**2)
             
             # delete captured BHs:
-            mBH = np.delete(mBH, [k1, k2])
-            sBH = np.delete(sBH, [k1, k2])
-            gBH = np.delete(gBH, [k1, k2])
-            hBH = np.delete(hBH, [k1, k2])
+            BH.remove_two(k1, k2)
             
             N_2cap+=1
             
@@ -188,10 +178,7 @@ def two_body_capture(seed, t, dt, z, zCl_form, k_2cap, mBH_avg, binaries, mBH, s
                 
                 if vGW_kick < v_esc_cl(v_star, vBH): # merger remnant retained in cluster
                     
-                    mBH_temp.append(m_rem)
-                    sBH_temp.append(s_rem)
-                    gBH_temp.append(g_rem)
-                    hBH_temp.append(h_rem)
+                    retained.append((m_rem, s_rem, g_rem, h_rem))
                     
                     N_BH = N_BH - 1
                     
@@ -227,8 +214,8 @@ def two_body_capture(seed, t, dt, z, zCl_form, k_2cap, mBH_avg, binaries, mBH, s
                 z_merge = redshift_interp(t_lb) if t_lb >= 0.1 else 0.0  # merger redshift (0 if within 0.1 Myr of today)
 
                 # append merger:
-                mergers = np.append(mergers, [[seed, ind, 2, sma, eccen, m1, m2, s1, s2, g1, g2, theta1, theta2, dPhi, t, z, t_merge,
-                                               z_merge, m_rem, s_rem, g_rem, vGW_kick, s_eff, q, v_esc_cl(v_star, vBH), h1, h2]], axis=0)
+                mergers.append([seed, ind, 2, sma, eccen, m1, m2, s1, s2, g1, g2, theta1, theta2, dPhi, t, z, t_merge,
+                                z_merge, m_rem, s_rem, g_rem, vGW_kick, s_eff, q, v_esc_cl(v_star, vBH), h1, h2])
 
             else:
                 
@@ -237,16 +224,9 @@ def two_body_capture(seed, t, dt, z, zCl_form, k_2cap, mBH_avg, binaries, mBH, s
                 
                 N_BBH+=1
                 
-        mBH_temp = np.array(mBH_temp)
-        sBH_temp = np.array(sBH_temp)
-        gBH_temp = np.array(gBH_temp)
-        hBH_temp = np.array(hBH_temp)
-
-        mBH = np.append(mBH, mBH_temp)
-        sBH = np.append(sBH, sBH_temp)
-        gBH = np.append(gBH, gBH_temp)
-        hBH = np.append(hBH, hBH_temp)
+        for remnant in retained:
+            BH.add(*remnant)
         
-    return seed, t, dt, z, zCl_form, k_2cap, mBH_avg, binaries, mBH, sBH, gBH, hBH, vBH, v_star, N_2cap, N_BH, N_BBH, N_me, N_meRe, N_meEj, mergers
+    return seed, t, dt, z, zCl_form, k_2cap, mBH_avg, binaries, BH, vBH, v_star, N_2cap, N_BH, N_BBH, N_me, N_meRe, N_meEj, mergers
 
 # End of file.

@@ -20,8 +20,70 @@ from .constants import *
 from .functions import *
 from .stellar_evolution import *
 from .compact_accretion import *
+from .bhpool import FAM
 
-def BH_TidalDisruptions(seed, t, z, k_tde, N_tde, tde_type, m_avg, m_star, R_star, mBH, sBH, gBH, hBH, vSTAR, vBH, tdes, binaries, pairs, f_accreted, EoS):
+def draw_TDE_BH(BH, m_star):
+    """
+    Slot of the single BH that disrupts a star of mass m_star, drawn with weights
+    p = (m_star + m) m^(1/3) (as np.random.choice(mBH, p=p/np.sum(p)) did): an exact
+    mixture of the pool weight families m^(1/3) and m^(4/3).
+    """
+    T13 = m_star * BH.total(FAM['c13'])
+    T43 = BH.total(FAM['c43'])
+    return BH.draw(FAM['c13']) if np.random.rand() * (T13 + T43) < T13 else BH.draw(FAM['c43'])
+
+def disrupt_star(seed, t, z, tde_type, m_avg, m_star, R_star, m, s, g, h, m_mean, vSTAR, vBH, tdes, f_accreted, EoS):
+    """
+    Tidal disruption of a star by the compact object (m, s, g, h): samples the orbit,
+    evolves the spin while the accreted debris is added, and records the TDE.
+
+    @in m_mean: mean single-BH mass (Msun), for the relative velocity
+    (other inputs as in BH_TidalDisruptions)
+
+    @out m_new, s_new, h_new: mass, spin and TDE count after the disruption
+    """
+
+    # orbital inclination:
+    iota = np.arccos(np.random.uniform(-1, 1)) # radians
+
+    # marginally bound orbit (R_mb is np.vectorize'd; for one BH its scalar function
+    # is called directly, same value):
+    r_mb = R_mb.pyfunc(m, s, iota)
+
+    # tidal radius:
+    r_t = R_star * (m/m_star)**(1/3)
+
+    # pericenter radius:
+    r_p = np.random.rand()*r_t
+
+    # penetration parameter:
+    beta = r_t/r_p
+
+    # mass increment:
+    dm = f_accreted*m_star
+
+    # direction of accretion:
+    prograde = True if np.cos(iota)>0 else False
+
+    # maximum NS mass (TOV) for the chosen EoS:
+    M_NS_max = get_eos(EoS).M_TOV
+
+    # nature of compact object:
+    NS = True if m<M_NS_max else False
+
+    # final spin after disk accretion (spin_after_accretion: evolve_spin_during_accretion's
+    # final spin, integrated with RK4 steps for BHs that grow by <= 2%):
+    s_new = spin_after_accretion(Mi=m, Mf=m+dm, NS=NS, chi=s, dM=dm/100, eos=EoS, prograde=prograde)
+
+    # relative velocity:
+    v_rel = np.sqrt(vSTAR**2*m_avg/m_star + m_mean/m*vBH**2)
+
+    # append tde:
+    tdes.append([seed, t, z, tde_type, m_star, R_star, m, s, g, r_t, r_p, beta, iota, r_mb, dm, s_new, v_rel, h])
+
+    return m + dm, s_new, h + 1
+
+def BH_TidalDisruptions(seed, t, z, k_tde, N_tde, tde_type, m_avg, m_star, R_star, BH, vSTAR, vBH, tdes, binaries, pairs, f_accreted, EoS):
     """
     @in seed: seed number of the main simulation
     @in t: current time (Myr)
@@ -32,10 +94,7 @@ def BH_TidalDisruptions(seed, t, z, k_tde, N_tde, tde_type, m_avg, m_star, R_sta
     @in m_avg: average stellar mass (Msun)
     @in m_star: stellar mass (Msun)
     @in R_star: stellar radius (pc)
-    @in mBH: single BH masses (Msun)
-    @in sBH: single BH dimensionless spins
-    @in gBH: single BH generations
-    @in hBH: array of BH tdes count
+    @in BH: pool of single BHs (bhpool.BHPool: masses, spins, generations, TDE counts)
     @in vSTAR: velocity dispersion of stars (km/s)
     @in vBH: velocity dispersion of BHs (km/s)
     @in tdes: tdes array [seed, t, z, type, mstar, Rstar, m_BH, s_BH, g_BH, r_t, r_p, beta, iota, r_mb, dm, s_new, v_rel, h_BH]
@@ -47,80 +106,41 @@ def BH_TidalDisruptions(seed, t, z, k_tde, N_tde, tde_type, m_avg, m_star, R_sta
     @out: all inputs
     """
 
-    if mBH.size==0:
+    if BH.size==0:
         k_tde = 0
 
     if k_tde>0: # perform BH TDE(s)
         
-       	for i in range(k_tde):
+        for i in range(k_tde):
             
-            if mBH.size==0: # BH pool exhausted mid-step
+            if BH.size==0: # BH pool exhausted mid-step
                 break
 
             N_tde+=1 # update number of BH TDEs
             
-            # sample single BH mass:
-            p = (m_star + mBH)*mBH**(1/3) # weighting probability
-            m = np.random.choice(mBH, p=p/np.sum(p))
-            
-            # find index location of that BH mass:
-            k = np.squeeze(np.where(mBH==m))+0
-            
-            k = int(np.atleast_1d(k)[0])
-            
-            s = sBH[k] # get BH's (dimensionless) spin
-            g = gBH[k] # get BH's generation
-            h = hBH[k] # get BH's tdes count
-            
-            # orbital inclination:
-            iota = np.arccos(np.random.uniform(-1, 1)) # radians
-            
-            # marginally bound orbit:
-            r_mb = R_mb(m, s, iota)
-            
-            # tidal radius:
-            r_t = R_star * (m/m_star)**(1/3)
-            
-            # pericenter radius:
-            r_p = np.random.rand()*r_t
-            
-            # penetration parameter:
-            beta = r_t/r_p
-            
-            # mass increment:
-            dm = f_accreted*m_star
+            # sample the disrupting single BH, with weights p = (m_star + m)*m**(1/3):
+            k = draw_TDE_BH(BH, m_star)
+            m, s, g, h = BH.get(k)
 
-            # direction of accretion:
-            prograde = True if np.cos(iota)>0 else False
+            m_new, s_new, h_new = disrupt_star(seed, t, z, tde_type, m_avg, m_star, R_star, m, s, g, h,
+                                               BH.mean_mass(), vSTAR, vBH, tdes, f_accreted, EoS)
 
-            # maximum NS mass (TOV) for the chosen EoS:
-            M_NS_max = get_eos(EoS).M_TOV
+            # update BH mass, spin and TDE count:
+            BH.set_mass(k, m_new)
+            BH.set_spin(k, s_new)
+            BH.set_tde_count(k, h_new)
 
-            # nature of compact object:
-            NS = True if m<M_NS_max else False
+    return seed, t, z, k_tde, N_tde, tde_type, m_avg, m_star, R_star, BH, vSTAR, vBH, tdes, binaries, pairs, f_accreted, EoS
 
-            # evolve spin during disk accretion:
-            evo = evolve_spin_during_accretion(Mi=m, Mf=m+dm, NS=NS, f=None, chi=s, dM=dm/100, eos=EoS, prograde=prograde)
+def single_BH_TidalDisruption(seed, t, z, N_tde, tde_type, m_avg, m_star, R_star, m, s, g, h, vSTAR, vBH, tdes, f_accreted, EoS):
+    """
+    Tidal disruption of a star by one given compact object (m, s, g, h), e.g. a BH
+    in a BH-star pair (as BH_TidalDisruptions with a single BH).
 
-            # final spin:
-            s_new = evo['chi'][-1]
-            
-            # relative velocity:
-            v_rel = np.sqrt(vSTAR**2*m_avg/m_star + np.mean(mBH)/m*vBH**2)
-            
-            # append tde:
-            tdes = np.append(tdes, [[seed, t, z, tde_type, m_star, R_star, m, s, g, r_t, r_p, beta, iota, r_mb, dm, s_new, v_rel, h]], axis=0)
-            
-            # update BH mass:
-            mBH[k] = m + dm
-            
-            # update BH spin:
-            sBH[k] = s_new
-
-            # update BH tdes count:
-            hBH[k] += 1
-
-    return seed, t, z, k_tde, N_tde, tde_type, m_avg, m_star, R_star, mBH, sBH, gBH, hBH, vSTAR, vBH, tdes, binaries, pairs, f_accreted, EoS
+    @out: N_tde, m, s, g, h (updated), tdes
+    """
+    m, s, h = disrupt_star(seed, t, z, tde_type, m_avg, m_star, R_star, m, s, g, h, m, vSTAR, vBH, tdes, f_accreted, EoS)
+    return N_tde + 1, float(m), float(s), float(g), float(h), tdes
 
 def try_BBH_star_disruption(rp, a, m1, m2, s1, s2, g1, g2, h1, h2, m_star, R_star, f_accreted, EoS, seed, t, z, tdes, m_avg, vBH, v_star):
     """
@@ -176,18 +196,15 @@ def try_BBH_star_disruption(rp, a, m1, m2, s1, s2, g1, g2, h1, h2, m_star, R_sta
         NS2 = True if m2<M_NS_max else False
 
         # evolve the spin of each BH/NS as it accretes its share of the debris:
-        evo1 = evolve_spin_during_accretion(Mi=m1, Mf=m1+dm1, NS=NS1, f=None, chi=s1, dM=dm1/100, eos=EoS, prograde=True)
-        evo2 = evolve_spin_during_accretion(Mi=m2, Mf=m2+dm2, NS=NS2, f=None, chi=s2, dM=dm2/100, eos=EoS, prograde=True)
-
-        s1_new = evo1['chi'][-1]
-        s2_new = evo2['chi'][-1]
+        s1_new = spin_after_accretion(Mi=m1, Mf=m1+dm1, NS=NS1, chi=s1, dM=dm1/100, eos=EoS, prograde=True)
+        s2_new = spin_after_accretion(Mi=m2, Mf=m2+dm2, NS=NS2, chi=s2, dM=dm2/100, eos=EoS, prograde=True)
 
         # relative velocity between the star and the binary's center of mass:
         v_rel_tde = np.sqrt(v_star**2*m_avg/m_star + (m1+m2)/m_star*vBH**2)
 
         # record one TDE entry per accreting BH; beta = r_t_bin/rp is the penetration parameter:
-        tdes = np.append(tdes, [[seed, t, z, 22, m_star, R_star, m1, s1, g1, r_t_bin, rp, r_t_bin/rp, 0.0, 0.0, dm1, s1_new, v_rel_tde, h1]], axis=0)
-        tdes = np.append(tdes, [[seed, t, z, 22, m_star, R_star, m2, s2, g2, r_t_bin, rp, r_t_bin/rp, 0.0, 0.0, dm2, s2_new, v_rel_tde, h2]], axis=0)
+        tdes.append([seed, t, z, 22, m_star, R_star, m1, s1, g1, r_t_bin, rp, r_t_bin/rp, 0.0, 0.0, dm1, s1_new, v_rel_tde, h1])
+        tdes.append([seed, t, z, 22, m_star, R_star, m2, s2, g2, r_t_bin, rp, r_t_bin/rp, 0.0, 0.0, dm2, s2_new, v_rel_tde, h2])
 
         m1 = m1 + dm1; s1 = s1_new; h1 = h1 + 1
         m2 = m2 + dm2; s2 = s2_new; h2 = h2 + 1
@@ -214,13 +231,12 @@ def try_BBH_star_disruption(rp, a, m1, m2, s1, s2, g1, g2, h1, h2, m_star, R_sta
 
         NS = True if m_d<M_NS_max else False
 
-        evo = evolve_spin_during_accretion(Mi=m_d, Mf=m_d+dm, NS=NS, f=None, chi=s_d, dM=dm/100, eos=EoS, prograde=True)
-        s_new = evo['chi'][-1]
+        s_new = spin_after_accretion(Mi=m_d, Mf=m_d+dm, NS=NS, chi=s_d, dM=dm/100, eos=EoS, prograde=True)
 
         v_rel_tde = np.sqrt(v_star**2*m_avg/m_star + np.mean([m1, m2])/m_star*vBH**2)
 
         # record the TDE entry; beta = r_t/rp is the penetration parameter:
-        tdes = np.append(tdes, [[seed, t, z, 21, m_star, R_star, m_d, s_d, g_d, r_t, rp, r_t/rp, 0.0, 0.0, dm, s_new, v_rel_tde, h_d]], axis=0)
+        tdes.append([seed, t, z, 21, m_star, R_star, m_d, s_d, g_d, r_t, rp, r_t/rp, 0.0, 0.0, dm, s_new, v_rel_tde, h_d])
 
         if disrupt_1:
             m1 = m_d + dm; s1 = s_new; h1 = h_d + 1

@@ -20,8 +20,21 @@ from .constants import *
 from .functions import *
 from .stellar_evolution import *
 from .tidal_disruptions import *
+from .fastrandom import choice_weighted, first_index_of
+from .bhpool import FAM
 
-def StarStar_to_BHstar(seed, t, z, k_ex1, N_ex1, m_avg, mBH, sBH, gBH, hBH, ab, pairs, N_BHstar, N_tdeBHstar, v_star, vBH, tdes, binaries, m_min, m_max, with_tdes, f_accreted, EoS):
+
+def _choose(values, p):
+    """np.random.choice(values, p=p) and the first index holding the drawn value
+    (as np.where(values == value)[0][0]); same draw, same random numbers."""
+    value, k = choice_weighted(values, p)
+    if k is None:
+        k = int(np.atleast_1d(np.squeeze(np.where(values==value))+0)[0])
+    else:
+        k = first_index_of(values, k)
+    return value, k
+
+def StarStar_to_BHstar(seed, t, z, k_ex1, N_ex1, m_avg, BH, ab, pairs, N_BHstar, N_tdeBHstar, v_star, vBH, tdes, binaries, m_min, m_max, with_tdes, f_accreted, EoS):
     """
     Creates BH-star binaries from star-star pairs, or a TDE occurs during the binary-single interaction.
 
@@ -31,10 +44,7 @@ def StarStar_to_BHstar(seed, t, z, k_ex1, N_ex1, m_avg, mBH, sBH, gBH, hBH, ab, 
     @in k_ex1: current number of star-star -> BH-star exchanges
     @in N_ex1: total number of star-star -> BH-star exchanges
     @in m_avg: average mass
-    @in mBH: array of single BH masses
-    @in sBH: array of single BH spins
-    @in gBH: array of single BH generations
-    @in hBH: array of BH tdes count
+    @in BH: pool of single BHs (bhpool.BHPool: masses, spins, generations, TDE counts)
     @in ab: array of star-star semimajor axes
     @in pairs: array of BH-star pairs
     @in N_BHstar: number of BH-star pairs
@@ -59,25 +69,17 @@ def StarStar_to_BHstar(seed, t, z, k_ex1, N_ex1, m_avg, mBH, sBH, gBH, hBH, ab, 
             if ab.size == 0:  # no star-star binaries left to exchange, exit loop
                 break
 
-            # sample mass of the BH that substitutes one of the stars:
-            m = np.random.choice(mBH, p=mBH/np.sum(mBH))
-            
-            k = np.squeeze(np.where(mBH==m))+0
-            
-            k = int(np.atleast_1d(k)[0])
-            
-            s = sBH[k]
-            g = gBH[k]
-            h = hBH[k]
+            if BH.size == 0:  # no single BHs left, exit loop
+                break
+
+            # sample the BH that substitutes one of the stars (probability ~ its mass):
+            k = BH.draw(FAM['mass'])
+            m, s, g, h = BH.get(k)
                 
-            a = np.random.choice(ab, p=ab/np.sum(ab))
-                
-            kss = np.squeeze(np.where(ab==a))+0
-            
-            kss = int(np.atleast_1d(kss)[0])
+            a, kss = _choose(ab, ab/np.sum(ab))
 
             # delete star-star:
-            ab = np.delete(ab, kss)
+            ab = delete_at(ab, kss)
 
             # probability for TDE:
             p_TDE = min(2*R_sun*(m/m_avg)**(1/3)/a, 1.0) if with_tdes==1 else 0.0
@@ -90,15 +92,10 @@ def StarStar_to_BHstar(seed, t, z, k_ex1, N_ex1, m_avg, mBH, sBH, gBH, hBH, ab, 
                 # Sample star mass from evolving mass function:
                 m_star, R_star = get_star(t, tBH_form, m_min, m_max)
 
-                k_tdeBHstar = 1
-                seed, t, z, k_tdeBHstar, N_tdeBHstar, tde_type, m_avg, m_star, R_star, m, s, g, h, v_star, vBH, tdes, binaries, pairs, f_accreted, EoS = BH_TidalDisruptions(seed, t, z, k_tdeBHstar, N_tdeBHstar, tde_type, m_avg, m_star, R_star, np.array([m]), np.array([s]), np.array([g]), np.array([h]), v_star, vBH, tdes, binaries, pairs, f_accreted, EoS)
-                m, s, g, h = float(m[0]), float(s[0]), float(g[0]), float(h[0])
+                N_tdeBHstar, m, s, g, h, tdes = single_BH_TidalDisruption(seed, t, z, N_tdeBHstar, tde_type, m_avg, m_star, R_star, m, s, g, h, v_star, vBH, tdes, f_accreted, EoS)
 
-                # update and release m1 into the single population:
-                mBH[k] = m
-                sBH[k] = s
-                gBH[k] = g
-                hBH[k] = h
+                # update the BH, which stays in the single population:
+                BH.replace(k, m, s, g, h)
 
             else:
                 # BH substitutes a star and no TDE occurs:
@@ -112,14 +109,11 @@ def StarStar_to_BHstar(seed, t, z, k_ex1, N_ex1, m_avg, mBH, sBH, gBH, hBH, ab, 
                 N_ex1+=1 # update number of star-star -> BH-star exchanges
                 N_BHstar+=1
                 
-                mBH = np.delete(mBH, k)
-                sBH = np.delete(sBH, k)
-                gBH = np.delete(gBH, k)
-                hBH = np.delete(hBH, k)
+                BH.remove(k)
 
-    return seed, t, z, k_ex1, N_ex1, m_avg, mBH, sBH, gBH, hBH, ab, pairs, N_BHstar, N_tdeBHstar, v_star, vBH, tdes, binaries, m_min, m_max, with_tdes, f_accreted, EoS
+    return seed, t, z, k_ex1, N_ex1, m_avg, BH, ab, pairs, N_BHstar, N_tdeBHstar, v_star, vBH, tdes, binaries, m_min, m_max, with_tdes, f_accreted, EoS
 
-def BHstar_to_BBH(seed, t, z, k_ex2, N_ex2, m_avg, mBH, sBH, gBH, hBH, pairs, binaries, N_BBH, N_BHstar, N_tdeBHstar, v_star, vBH, tdes, m_min, m_max, with_tdes, f_accreted, EoS):
+def BHstar_to_BBH(seed, t, z, k_ex2, N_ex2, m_avg, BH, pairs, binaries, N_BBH, N_BHstar, N_tdeBHstar, v_star, vBH, tdes, m_min, m_max, with_tdes, f_accreted, EoS):
     """
     Creates BH-BH binaries from BH-star pairs, or a TDE occurs during the binary-single interaction.
 
@@ -130,29 +124,22 @@ def BHstar_to_BBH(seed, t, z, k_ex2, N_ex2, m_avg, mBH, sBH, gBH, hBH, pairs, bi
         
         for i in range(k_ex2):
 
-            if mBH.size == 0: # no single BHs left for exchange, exit loop
+            if BH.size == 0: # no single BHs left for exchange, exit loop
                 break
 
-            # draw a single BH that will substitute the star in the BH-star pair:
-            m2 = np.random.choice(mBH, p=(np.mean(pairs[:, 1]) + mBH)/np.sum(np.mean(pairs[:, 1]) + mBH))
-            
-            # location of the sampled BH:
-            k2 = np.squeeze(np.where(mBH==m2))+0
-            
-            k2 = int(np.atleast_1d(k2)[0])
-                
-            s2 = sBH[k2] # spin of the second BH
-            g2 = gBH[k2] # generation of the second BH
-            h2 = hBH[k2] # number of second BH's tdes
+            # draw a single BH that will substitute the star in the BH-star pair, with
+            # probability ~ (mean pair BH mass + m): a mixture of uniform and mass-weighted draws:
+            m_pairs = np.mean(pairs[:, 1])
+            if np.random.rand() * (m_pairs * BH.size + BH.total(FAM['mass'])) < m_pairs * BH.size:
+                k2 = BH.draw_uniform()
+            else:
+                k2 = BH.draw(FAM['mass'])
+            m2, s2, g2, h2 = BH.get(k2)  # mass, spin, generation and number of TDEs of the second BH
             
             # draw a BH-star pair:
             if np.sum(pairs[:, 0]) == 0:
                 continue
-            ap = np.random.choice(pairs[:, 0], p=pairs[:, 0] / np.sum(pairs[:, 0]))
-            
-            kp = np.squeeze(np.where(pairs[:, 0]==ap))+0
-
-            kp = int(np.atleast_1d(kp)[0])
+            ap, kp = _choose(pairs[:, 0], pairs[:, 0] / np.sum(pairs[:, 0]))
                 
             m1 = pairs[kp][1]
             s1 = pairs[kp][2]
@@ -160,7 +147,7 @@ def BHstar_to_BBH(seed, t, z, k_ex2, N_ex2, m_avg, mBH, sBH, gBH, hBH, pairs, bi
             h1 = pairs[kp][4]
 
             # delete pair:
-            pairs = np.delete(pairs, kp, axis=0)
+            pairs = delete_row(pairs, kp)
             
             # probability for TDE:
             p_TDE = min(R_sun*(m2/m_avg)**(1/3)/ap, 1.0) if with_tdes==1 else 0.0
@@ -173,21 +160,13 @@ def BHstar_to_BBH(seed, t, z, k_ex2, N_ex2, m_avg, mBH, sBH, gBH, hBH, pairs, bi
                 # Sample star mass from evolving mass function:
                 m_star, R_star = get_star(t, tBH_form, m_min, m_max)
 
-                k_tdeBHstar = 1
-                seed, t, z, k_tdeBHstar, N_tdeBHstar, tde_type, m_avg, m_star, R_star, m2, s2, g2, h2, v_star, vBH, tdes, binaries, pairs, f_accreted, EoS = BH_TidalDisruptions(seed, t, z, k_tdeBHstar, N_tdeBHstar, tde_type, m_avg, m_star, R_star, np.array([m2]), np.array([s2]), np.array([g2]), np.array([h2]), v_star, vBH, tdes, binaries, pairs, f_accreted, EoS)
-                m2, s2, g2, h2 = float(m2[0]), float(s2[0]), float(g2[0]), float(h2[0])  # unpack from single-element arrays returned by BH_TidalDisruptions
-
-                # release BH from BH-star pair into the single population:
-                mBH = np.append(mBH, m1)
-                sBH = np.append(sBH, s1)
-                gBH = np.append(gBH, g1)
-                hBH = np.append(hBH, h1)
+                N_tdeBHstar, m2, s2, g2, h2, tdes = single_BH_TidalDisruption(seed, t, z, N_tdeBHstar, tde_type, m_avg, m_star, R_star, m2, s2, g2, h2, v_star, vBH, tdes, f_accreted, EoS)
 
                 # update secondary BH:
-                mBH[k2] = m2
-                sBH[k2] = s2
-                gBH[k2] = g2
-                hBH[k2] = h2
+                BH.replace(k2, m2, s2, g2, h2)
+
+                # release BH from BH-star pair into the single population:
+                BH.add(m1, s1, g1, h1)
 
             else:
                 # BH substitutes the star and no TDE occurs:
@@ -201,16 +180,13 @@ def BHstar_to_BBH(seed, t, z, k_ex2, N_ex2, m_avg, mBH, sBH, gBH, hBH, pairs, bi
                 # append binary:
                 binaries = np.append(binaries, [[np.random.randint(0, 999999999), 1, sma, eccen, m1, m2, s1, s2, g1, g2, t, z, 0, h1, h2]], axis=0)
             
-                mBH = np.delete(mBH, k2)
-                sBH = np.delete(sBH, k2)
-                gBH = np.delete(gBH, k2)
-                hBH = np.delete(hBH, k2)
+                BH.remove(k2)
             
                 N_BHstar = N_BHstar - 1
             
                 N_ex2+=1 # update number of BH-star -> BH-BH exchanges
                 N_BBH+=1
             
-    return seed, t, z, k_ex2, N_ex2, m_avg, mBH, sBH, gBH, hBH, pairs, binaries, N_BBH, N_BHstar, N_tdeBHstar, v_star, vBH, tdes, m_min, m_max, with_tdes, f_accreted, EoS
+    return seed, t, z, k_ex2, N_ex2, m_avg, BH, pairs, binaries, N_BBH, N_BHstar, N_tdeBHstar, v_star, vBH, tdes, m_min, m_max, with_tdes, f_accreted, EoS
 
 # end of file

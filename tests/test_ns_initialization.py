@@ -37,7 +37,7 @@ def make_state(ns, nst, extra=()):
 
 
 def n_ns_in_mBH(state):
-    return int(np.sum(state['mBH'] < 3.0))
+    return int(np.sum(state['BH'].m < 3.0))
 
 
 def test_tBH_form_is_10_Myr():
@@ -49,7 +49,7 @@ def test_NSt0_puts_retained_NSs_in_mBH_and_nothing_pending():
         s = make_state(ns, 0)
         assert n_ns_in_mBH(s) > 0, ns
         assert s['mNS_pending'].size == 0 and s['tNS_pending'].size == 0 and s['vNS_pending'].size == 0
-        assert s['mBH'].size == s['sBH'].size == s['gBH'].size == s['hBH'].size
+        assert s['BH'].m.size == s['BH'].s.size == s['BH'].g.size == s['BH'].h.size
 
 
 def test_NSt_positive_defers_all_NSs():
@@ -65,9 +65,9 @@ def test_NSt_positive_defers_all_NSs():
 
 def test_BHs_unchanged_by_NSt():
     # BH masses are drawn before any NS random numbers, so they must not depend on -NSt:
-    m0 = make_state(2, 0)['mBH']
-    m1 = make_state(2, 1)['mBH']
-    m2 = make_state(2, 2)['mBH']
+    m0 = make_state(2, 0)['BH'].m
+    m1 = make_state(2, 1)['BH'].m
+    m2 = make_state(2, 2)['BH'].m
     bh0 = m0[m0 >= 3.0]
     assert np.array_equal(bh0, m1) and np.array_equal(bh0, m2)
 

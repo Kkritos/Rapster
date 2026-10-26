@@ -17,6 +17,13 @@
 '''
 
 from .constants import *
+import math
+
+# the compiled interpolation that np.interp calls for real-valued data (same results):
+try:
+    from numpy._core.multiarray import interp as _compiled_interp      # NumPy >= 2
+except ImportError:                                                    # NumPy 1.x
+    from numpy.core.multiarray import interp as _compiled_interp
 
 # Get the directory where constants.py lives (the 'rapster' folder):
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -48,6 +55,10 @@ _Z_MIN, _Z_MAX = float(Planck18_lookup_table['z'].min()), float(Planck18_lookup_
 _T_MIN, _T_MAX = float(Planck18_lookup_table['t'].min()), float(Planck18_lookup_table['t'].max())
 
 
+# memo of scalar lookback times: the main loop asks for lookback_interp(zCl_form),
+# always with the same redshift, tens of thousands of times per run:
+_lookback_memo = {}
+
 def lookback_interp(z):
     """
     Lookback time [Myr] at redshift z, via interpolation over the Planck18
@@ -57,12 +68,20 @@ def lookback_interp(z):
 
     @out: lookback time [Myr]
     """
+    scalar = type(z) is float or type(z) is np.float64
+    if scalar:
+        cached = _lookback_memo.get((type(z), z))
+        if cached is not None:
+            return cached.copy()   # same 0-d array the interpolator returns
     if np.any(np.asarray(z) < _Z_MIN) or np.any(np.asarray(z) > _Z_MAX):
         raise ValueError(
             f"lookback_interp: redshift z={z} is outside the Planck18 lookup "
             f"table range z in [{_Z_MIN}, {_Z_MAX}]."
         )
-    return _lookback_interp(z)
+    out = _lookback_interp(z)
+    if scalar and z == z:          # skip NaN, which is never equal to itself
+        _lookback_memo[(type(z), z)] = out.copy()
+    return out
 
 
 def redshift_interp(t):
@@ -92,7 +111,7 @@ def R_mb(M_BH, a_BH, iota):
     rg = G_Newton*M_BH/c_light**2 # gravitational radius
     rmb = x_mb_interp(a_BH, iota) * rg
     return rmb
-R_mb = np.vectorize(R_mb)
+R_mb = np.vectorize(R_mb, otypes=[float])   # (output type given: the function is not called an extra time to find it)
 
 def E_cosmo(z):
     """
@@ -135,6 +154,83 @@ def redshift(t):
     
     return z
 
+def min_of(*values):
+    """
+    Same value as np.min([...]) for a few real scalars, without building an array
+    (called several times per BBH interaction). NaN is handed to np.min, so it
+    propagates exactly as before.
+    """
+    m = values[0]
+    for v in values[1:]:
+        if v < m:
+            m = v
+        elif not v >= m:   # a NaN is involved
+            return np.min(list(values))
+    return m
+
+def max_of(*values):
+    """
+    Same value as np.max([...]) for a few real scalars (see min_of).
+    """
+    m = values[0]
+    for v in values[1:]:
+        if v > m:
+            m = v
+        elif not v <= m:   # a NaN is involved
+            return np.max(list(values))
+    return m
+
+def delete_at(arr, index):
+    """
+    Same result as np.delete(arr, index) for a 1-D array and an int index or a
+    list of two distinct ints, but built from slices, without np.delete's
+    overhead (the BH arrays are edited thousands of times per step).
+    """
+    if arr.ndim == 1:
+        n = arr.shape[0]
+        if isinstance(index, (int, np.integer)):
+            k = int(index)
+            if 0 <= k < n:
+                return np.concatenate((arr[:k], arr[k+1:]))
+        elif isinstance(index, list) and len(index) == 2:
+            a, b = int(index[0]), int(index[1])
+            if 0 <= a < n and 0 <= b < n and a != b:
+                a, b = min(a, b), max(a, b)
+                return np.concatenate((arr[:a], arr[a+1:b], arr[b+1:]))
+    return np.delete(arr, index)
+
+def delete_row(arr, index):
+    """
+    Same result as np.delete(arr, index, axis=0) for an int index (row arrays
+    such as binaries, triples and pairs), built from slices.
+    """
+    if isinstance(index, (int, np.integer)) and arr.ndim >= 1:
+        k = int(index)
+        if 0 <= k < arr.shape[0]:
+            return np.concatenate((arr[:k], arr[k+1:]), axis=0)
+    return np.delete(arr, index, axis=0)
+
+def append_to(arr, values):
+    """
+    Same result as np.append(arr, values) for a 1-D array.
+    """
+    return np.concatenate((arr, np.ravel(values)))
+
+def append2_to(arr, value1, value2):
+    """
+    Same result as append_to(append_to(arr, value1), value2), with one copy of arr.
+    """
+    return np.concatenate((arr, np.ravel(value1), np.ravel(value2)))
+
+def delete_append(arr, index, value):
+    """
+    Same result as append_to(delete_at(arr, index), value), with one copy of arr.
+    """
+    if arr.ndim == 1 and isinstance(index, (int, np.integer)) and 0 <= index < arr.shape[0]:
+        k = int(index)
+        return np.concatenate((arr[:k], arr[k+1:], np.ravel(value)))
+    return append_to(delete_at(arr, index), value)
+
 def T_GW(m1, m2, a0, e0):
     """
     I. Mandel (2021) fit to Peters timescale.
@@ -147,6 +243,18 @@ def T_GW(m1, m2, a0, e0):
     @out: GW coalescence timescale [Myr]
     """
     
+    # Called for every BBH interaction: for ordinary values the expressions below are
+    # evaluated with Python floats (the same IEEE operations, and the same pow, as with
+    # NumPy scalars, so the value is identical) and returned as a NumPy float; other
+    # inputs (arrays, e0 outside [0, 1), non-positive masses) take the NumPy path.
+    if (type(m1) in _FLOAT_TYPES and type(m2) in _FLOAT_TYPES and type(a0) in _FLOAT_TYPES
+            and type(e0) in _FLOAT_TYPES and m1 > 0.0 and m2 > 0.0 and 0.0 <= e0 < 1.0
+            and 0.0 <= a0 < 1e60):
+        m1 = float(m1); m2 = float(m2); a0 = float(a0); e0 = float(e0)
+        Tc = 5 * c_light**5 * a0**4 / 256 / G_Newton**3 / m1 / m2 / (m1 + m2)
+        factor_e = (1 + 0.27 * e0**10 + 0.33 * e0**20 + 0.2 * e0**1000) * (1 - e0**2)**(7/2)
+        return np.float64(Tc * factor_e)
+
     # Coalescence time for circular orbits:
     Tc = 5 * c_light**5 * a0**4 / 256 / G_Newton**3 / m1 / m2 / (m1 + m2)
     
@@ -154,6 +262,8 @@ def T_GW(m1, m2, a0, e0):
     factor_e = (1 + 0.27 * e0**10 + 0.33 * e0**20 + 0.2 * e0**1000) * (1 - e0**2)**(7/2)
     
     return Tc * factor_e
+
+_FLOAT_TYPES = (float, np.float64)
 
 def t_relax(Mcl, rh, m_avg, psi, logL):
     """
@@ -309,7 +419,32 @@ def CDF_maxwell(w):
     return erf(w/np.sqrt(2)) - np.sqrt(2/np.pi)*w*np.exp(-w**2/2)
 
 w_s = np.linspace(0, 10000, 10**6) # normalized velocities (assuming 1D velo. disp. =1)
-CDF_maxwell_s = np.vectorize(CDF_maxwell)(w_s)
+
+def _maxwell_cdf_table(w):
+    """CDF_maxwell evaluated on the grid w, identical to np.vectorize(CDF_maxwell)(w).
+
+    Above w ~ 9 the CDF is exactly 1.0 in double precision: erf(w/sqrt(2)) rounds
+    to 1 and w*exp(-w^2/2) is below half an ulp of 1 (it underflows to 0 for
+    w > 38.6). So the function is evaluated point by point only up to w = 50, and
+    the remaining ~995,000 grid points are set to 1.0. This replaces ~4 s of
+    start-up time with ~10 ms. The shortcut is used only after checking that the
+    function really returns 1.0 at the end of the evaluated range and at sample
+    points across the filled range; otherwise every point is evaluated as before.
+    """
+    n_eval = int(np.searchsorted(w, 50.0, side='right'))
+    head = np.vectorize(CDF_maxwell)(w[:n_eval])
+    tail_samples = w[n_eval::997]
+    tail_is_one = (n_eval < w.size
+                   and np.all(head[-500:] == 1.0)
+                   and np.all(np.vectorize(CDF_maxwell)(tail_samples) == 1.0)
+                   and CDF_maxwell(w[-1]) == 1.0)
+    if not tail_is_one:
+        return np.vectorize(CDF_maxwell)(w)
+    table = np.ones(w.size, dtype=head.dtype)
+    table[:n_eval] = head
+    return table
+
+CDF_maxwell_s = _maxwell_cdf_table(w_s)
 
 def get_maxwell_sample(sigma):
     """
@@ -318,7 +453,8 @@ def get_maxwell_sample(sigma):
     @in sigma: 1D velocity dispersion parameter
     """
     
-    return sigma * np.interp(np.random.rand(), CDF_maxwell_s, w_s)
+    # (the compiled function np.interp calls, without its Python-level checks; same value)
+    return sigma * _compiled_interp(np.random.rand(), CDF_maxwell_s, w_s, None, None)
 
 def DW(x, m0, m1, m2, a1, a2, e1, e2, cosi1, cosi2, w):
     """
@@ -365,13 +501,179 @@ def DW(x, m0, m1, m2, a1, a2, e1, e2, cosi1, cosi2, w):
     
     return -2*E + E*cosI**2 + 5*(1-E)*(cosI**2-1) + tPN/np.sqrt(x) - W
 
+def _DW_of_x(m0, m1, m2, a1, a2, e1, e2, cosi1, cosi2, w):
+    """
+    DW as a function of x alone, for the root finder in find_eMAX.
+
+    Every quantity that does not depend on x is computed once here, with the same
+    expressions as in DW, instead of at each of the ~50 evaluations the root finder
+    makes; the returned function gives values identical to DW(x, ...).
+    """
+
+    E = 1 - e1**2
+    i1, i2 = np.arccos(cosi1), np.arccos(cosi2)
+    sinw = np.sin(w)
+    M1 = m0 + m1
+    M2 = M1 + m2
+    mu1 = m0*m1/M1
+    mu2 = M1*m2/M2
+    B = mu2/mu1*np.sqrt(M1*a1/M2/a2*(1-e2**2))
+    A = np.sqrt(E)*np.cos(i1) + B*np.cos(i2)
+    tPN = 8*M1/m2*(a2/a1*np.sqrt(1-e2**2))**3*M1/232/a1/(3e5)**2
+    cosi = (A**2-B**2-E)/2/B/np.sqrt(E)
+    W = - 2*E + E*cosi**2 + 5*(1-E)*sinw**2*(cosi**2-1) + tPN/np.sqrt(E)
+
+    # x-independent pieces of the expressions in DW (same operation order):
+    A2_B2 = A**2-B**2       # (A**2-B**2-x) == (A**2-B**2) - x
+    minus_2E = -2*E
+    five_1mE = 5*(1-E)      # 5*(1-E)*(cosI**2-1) == (5*(1-E)) * (cosI**2-1)
+
+    def DW_x_numpy(x):
+        cosI = (A2_B2-x)/2/B/np.sqrt(x)
+        return minus_2E + E*cosI**2 + five_1mE*(cosI**2-1) + tPN/np.sqrt(x) - W
+
+    # The root finder calls this ~50 times per triple with a 1-element array x.
+    # The same IEEE operations on Python floats (cosI**2 of an array is cosI*cosI,
+    # and sqrt is correctly rounded in both) give identical values without NumPy's
+    # per-operation overhead. Division by zero, which NumPy turns into inf/nan
+    # but Python raises on, and anything unusual are handed to the NumPy version.
+    c_A2_B2 = float(A2_B2); c_B = float(B); c_E = float(E); c_minus_2E = float(minus_2E)
+    c_five_1mE = float(five_1mE); c_tPN = float(tPN); c_W = float(W)
+    scalars_ok = all(type(v) in (float, np.float64) for v in (A2_B2, B, E, minus_2E, five_1mE, tPN, W))
+
+    def DW_x(x):
+        if scalars_ok and type(x) is np.ndarray and x.shape == (1,) and x.dtype == np.float64:
+            xv = float(x[0])
+            try:
+                sx = math.sqrt(xv) if xv >= 0.0 else math.nan
+                cosI = (c_A2_B2-xv)/2/c_B/sx
+                cosI2 = cosI*cosI
+                val = c_minus_2E + c_E*cosI2 + c_five_1mE*(cosI2-1) + c_tPN/sx - c_W
+                return np.array([val])
+            except (ZeroDivisionError, OverflowError, ValueError):
+                pass
+        return DW_x_numpy(x)
+
+    # x-independent quantities, as Python floats, for _zlk_smallest_root (None if unusual):
+    DW_x.params = (c_E, c_B, c_A2_B2, c_tPN, c_W) if scalars_ok else None
+    return DW_x
+
+# root(fun, x0, tol=tol) (default method 'hybr') hands the problem to MINPACK's hybrd
+# through several Python layers (argument checks, a call of fun to find the output
+# shape, a wrapper counting the evaluations). _root_hybr_x makes the same MINPACK call
+# with the same parameters directly (identical result, less overhead per triple);
+# if SciPy's internal module is not available, it calls root.
+try:
+    from scipy.optimize import _minpack as _scipy_minpack
+    _hybrd = _scipy_minpack._hybrd
+except (ImportError, AttributeError):
+    _hybrd = None
+_EPS_FLOAT64 = float(np.finfo(np.float64).eps)
+
+def _root_hybr_x(fun, x0, tol):
+    """Same as root(fun=fun, x0=x0, tol=tol)['x'] for a function returning float64 values."""
+    if _hybrd is None:
+        return root(fun=fun, x0=x0, tol=tol)['x']
+    x0 = np.asarray(x0).flatten()
+    # _root_hybr: xtol=tol, maxfev=200*(n+1), ml=mu=-10 (no band), epsfcn=eps of the
+    # output dtype, factor=100, diag=None:
+    return _hybrd(fun, x0, (), 1, tol, 200 * (len(x0) + 1), -10, -10, _EPS_FLOAT64, 100, None)[0]
+
+def _zlk_smallest_root(E, B, C, tPN, W):
+    """
+    Smallest positive root x of DW(x) (see _DW_of_x), or None.
+
+    With y = sqrt(x) and cosI = (C - x) / (2 B y), C = A^2 - B^2,
+        DW = K1 cosI^2 + c0 + tPN / y,   K1 = 5 - 4E,   c0 = -2E - 5(1-E) - W,
+    and 4 B^2 y^2 DW = P(y) = K1 y^4 + b2 y^2 + b1 y + b0, with b2 = -2 C K1 + 4 B^2 c0,
+    b1 = 4 B^2 tPN >= 0, b0 = K1 C^2 >= 0. By Descartes' rule P has two positive roots
+    or none; if the local minimum y* of P (found by Newton's method on P') is below
+    zero, the smaller root lies in (0, y*), where it is found by safeguarded Newton
+    iterations and then polished with Newton steps on DW(x) itself.
+
+    This is the root that the MINPACK root finder (scipy.optimize.root, method 'hybr')
+    started at x0 = 1e-10 converges to: for ~40,000 triples from compact-cluster runs
+    the two agree to <= 1e-13 (relative), ~4x faster. When there is no positive root
+    (P(y*) >= 0), or anything is unusual, None is returned and find_eMAX uses the root
+    finder as before (which then stops where it can make no further progress).
+    """
+    K1 = 5.0 - 4.0*E
+    c0 = -2.0*E - 5.0*(1.0 - E) - W
+    B2 = B*B
+    b2 = -2.0*C*K1 + 4.0*B2*c0
+    b1 = 4.0*B2*tPN
+    b0 = K1*C*C
+    if not (K1 > 0.0 and b2 < 0.0 and b0 > 0.0 and b1 >= 0.0 and B > 0.0):
+        return None
+    try:
+        # local minimum of P (P' = 4 K1 y^3 + 2 b2 y + b1): Newton from the minimum of
+        # K1 y^4 + b2 y^2, where P' = b1 >= 0 and P'' > 0, moving left:
+        y = math.sqrt(-b2/(2.0*K1))
+        for _ in range(60):
+            d1 = (4.0*K1*y*y + 2.0*b2)*y + b1
+            d2 = 12.0*K1*y*y + 2.0*b2
+            if not d2 > 0.0:
+                return None
+            step = d1/d2
+            y_new = y - step
+            if not y_new > 0.0:
+                return None
+            done = abs(step) <= 1e-15*y
+            y = y_new
+            if done:
+                break
+        else:
+            return None
+        if not ((K1*y*y + b2)*y + b1)*y + b0 < 0.0:
+            return None          # no positive root
+        # the root in (0, y*): P(lo) > 0 > P(hi)
+        lo, hi = 0.0, y
+        v = 0.5*y
+        for _ in range(200):
+            pv = ((K1*v*v + b2)*v + b1)*v + b0
+            if pv > 0.0:
+                lo = v
+            else:
+                hi = v
+            dp = (4.0*K1*v*v + 2.0*b2)*v + b1
+            v_new = v - pv/dp if dp != 0.0 else 0.5*(lo + hi)
+            if not lo < v_new < hi:
+                v_new = 0.5*(lo + hi)
+            done = abs(v_new - v) <= 1e-15*v
+            v = v_new
+            if done:
+                break
+        x = v*v
+        # polish on DW(x) (Newton steps in x):
+        for _ in range(2):
+            sx = math.sqrt(x)
+            cI = (C - x)/2/B/sx
+            f = K1*cI*cI + c0 + tPN/sx
+            df = 2.0*K1*cI*(-(C + x)/(4.0*B*x*sx)) - tPN/(2.0*x*sx)
+            if not df != 0.0:
+                break
+            x_new = x - f/df
+            if not x_new > 0.0:
+                break
+            x = x_new
+        return x if 0.0 < x < math.inf else None
+    except (ZeroDivisionError, OverflowError, ValueError):
+        return None
+
 def find_eMAX(m0, m1, m2, a1, a2, e1, e2, cosi1, cosi2, w, x0=1e-10, tol=1e-10):
     """
     Maximum eccentricity during a von Zeipel-Lidov-Kozai cycle.
     Same inputs as function DW in this file.
     """
  
-    x_min = root(fun=DW, x0=x0, args=(m0, m1, m2, a1, a2, e1, e2, cosi1, cosi2, w), tol=tol)['x'][0]
+    fun = _DW_of_x(m0, m1, m2, a1, a2, e1, e2, cosi1, cosi2, w)
+    # the smallest positive root, which the root finder started at x0 = 1e-10 finds
+    # (see _zlk_smallest_root); the root finder itself when there is none:
+    x_min = None
+    if x0 == 1e-10 and tol == 1e-10 and fun.params is not None:
+        x_min = _zlk_smallest_root(*fun.params)
+    if x_min is None:
+        x_min = _root_hybr_x(fun, x0, tol)[0]
 
     # physically motivated floor: pericenter must exceed 4*GM/c^2 (a few Schwarzschild radii),
     # giving a minimum value of x_min = epsilon_min = 8*G*(m0+m1)/(c^2*a1):

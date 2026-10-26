@@ -45,7 +45,7 @@ def run_with_expectation(args, t_max):
     state = initialize_cluster(config)
     sigma = np.sqrt(3) * config['wSN_kick']
     mean, var, history = 0.0, 0.0, []
-    while state['t'] < t_max and state['R_gal'] > 0 and state['Mcl'] > 0 and state['mBH'].sum() < fBH_max * state['Mcl']:
+    while state['t'] < t_max and state['R_gal'] > 0 and state['Mcl'] > 0 and state['BH'].m.sum() < fBH_max * state['Mcl']:
         # NSs about to join this step, and their retention probability:
         k = np.searchsorted(state['tNS_pending'], state['t'], side='right')
         if k > 0:

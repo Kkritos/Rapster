@@ -35,8 +35,6 @@ from .cluster_evolution import (
     print_status,
     write_output,
 )
-from .plot_cluster import generate_all_plots
-from .analyze_cluster import analyze_cluster
 from .stellar_evolution import init_stellar_mass_sampler
 from .compact_accretion import EOS_TABLES, accrete_gas
 from .functions import set_escape_factor
@@ -87,7 +85,7 @@ def parse_args():
     parser.add_argument('-mM', '--maximum_star_mass', type=float, metavar=' ', default=150.0, help='Largest ZAMS mass [Msun]')
     parser.add_argument('-Z', '--metallicity', type=float, metavar=' ', default=0.001, help='Absolute metallicity')
     parser.add_argument('-z', '--cluster_formation_redshift', type=float, metavar=' ', default=3.0, help='Redshift of cluster formation')
-    parser.add_argument('-n', '--central_stellar_density', type=float, metavar=' ', default=5.3e5, help='Initial central stellar number density [pc^-3]')
+    parser.add_argument('-n', '--central_stellar_density', type=float, metavar=' ', default=None, help='Initial central stellar number density [pc^-3]; default: Plummer value 0.53 N / r^3 (5.3e5 for N = 1e6, r = 1 pc)')
     parser.add_argument('-fb', '--binary_fraction', type=float, metavar=' ', default=0.1, help='Initial binary star fraction')
     parser.add_argument('-S', '--seed', type=int, metavar=' ', default=1234567890, help='Seed number')
     parser.add_argument('-dtm', '--minimum_time_step', type=float, metavar=' ', default=0.1, help='Minimum simulation time-step [Myr]')
@@ -137,6 +135,16 @@ def parse_args():
     parser.add_argument('-cxi', '--bh_temperature_prefactor', type=float, metavar=' ', default=1.0, help='Prefactor c_xi of the BH-to-star temperature ratio xi = c_xi q^(3/5) Q^(2/5) (lnL_BH/lnL)^(-2/5) (Breen & Heggie 2013); r_h,BH scales as 1/c_xi')
 
     args = parser.parse_args()
+
+    # Initial central density: unless given with -n, the Plummer-profile value for the
+    # chosen N and r_h, n = 3 (1.305)^3 N / (4 pi r_h^3) ~= 0.53 N / r_h^3, written as
+    # 5.3e5 (N/1e6) (r_h/pc)^-3 so that the default N = 1e6, r_h = 1 pc gives exactly
+    # 5.3e5 pc^-3 as before. (Previously the default stayed 5.3e5 whatever -N and -r.)
+    if args.central_stellar_density is None:
+        if args.half_mass_radius > 0 and np.isfinite(args.half_mass_radius) and np.isfinite(args.number):
+            args.central_stellar_density = 5.3e5 * (args.number / 1e6) / args.half_mass_radius**3
+        else:
+            args.central_stellar_density = 5.3e5  # invalid -N/-r are reported below
 
     if args.blackholes_in_file_indicator and not os.path.isfile(args.blackholes_in_file_name):
         parser.error(f'initial black-hole input file not found: {args.blackholes_in_file_name}')
@@ -280,6 +288,7 @@ def main():
     initialization_time_initial = time.time()
     print('RAPSTER VERSION:', __version__)
     print('INITIALIZING...')
+    print('Initial central stellar density: {:.6g} pc^-3'.format(config['n_star']))
 
     init_stellar_mass_sampler(config['mass_bias_power'])
     set_escape_factor(config['f_esc'])
@@ -295,7 +304,7 @@ def main():
     simulation_time_initial = time.time()
 
     # Simulation:
-    while state['t']<config['t_max'] and state['R_gal']>0 and state['Mcl']>0 and state['mBH'].sum()<fBH_max*state['Mcl']:
+    while state['t']<config['t_max'] and state['R_gal']>0 and state['Mcl']>0 and state['BH'].m.sum()<fBH_max*state['Mcl']:
 
         # start local clock:
         local_time_initial = time.time()
@@ -346,12 +355,14 @@ def main():
     print('END OF SIMULATION. RUNTIME:', "{:.3g}".format(np.abs(time.time() - simulation_time_initial)), 's')
     print('\n')
 
-    # print analysis summary if requested:
+    # print analysis summary if requested (imported here: only needed on request):
     if config['analyze_results']:
+        from .analyze_cluster import analyze_cluster
         analyze_cluster(results_dir)
 
-    # generate diagnostic plots if requested:
+    # generate diagnostic plots if requested (matplotlib is imported only then):
     if config['generate_plots']:
+        from .plot_cluster import generate_all_plots
         generate_all_plots(results_dir)
 
     # close log file and restore stdout:

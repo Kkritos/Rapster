@@ -26,8 +26,22 @@ from .cluster_evolution import (
     print_status,
     write_output,
 )
-from .analyze_cluster import analyze_cluster
-from .plot_cluster import generate_all_plots, load_results
+# analysis and plotting helpers are loaded on first use, so that running a
+# simulation does not import matplotlib:
+_LAZY = {
+    'analyze_cluster': ('.analyze_cluster', 'analyze_cluster'),
+    'generate_all_plots': ('.plot_cluster', 'generate_all_plots'),
+    'load_results': ('.plot_cluster', 'load_results'),
+}
+
+def __getattr__(name):
+    if name in _LAZY:
+        from importlib import import_module
+        module, attr = _LAZY[name]
+        value = getattr(import_module(module, __name__), attr)
+        globals()[name] = value
+        return value
+    raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
 
 __all__ = [
     '__version__',
