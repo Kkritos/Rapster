@@ -1,7 +1,7 @@
 # Rapster
 
 <p align="center">
-	<a href="https://github.com/Kkritos/Rapster/releases"><img src="https://img.shields.io/badge/version-2.13.1-blue" alt="version"></a>
+	<a href="https://github.com/Kkritos/Rapster/releases"><img src="https://img.shields.io/badge/version-2.14.0-blue" alt="version"></a>
 	<a href="https://arxiv.org/abs/2210.10055"><img src="https://img.shields.io/badge/arXiv-2210.10055-b31b1b.svg" alt="arXiv"></a>
 	<a href="https://arxiv.org/abs/2605.21593"><img src="https://img.shields.io/badge/arXiv-2605.21593-b31b1b.svg" alt="arXiv"></a>
 	<a href="https://arxiv.org/abs/2609.26878"><img src="https://img.shields.io/badge/arXiv-2609.26878-b31b1b.svg" alt="arXiv"></a>
@@ -20,7 +20,7 @@ $\tt Rapster$ stands for $\rm RAPid\ cluSTER$ evolution.
 
 Author: Konstantinos Kritos <konstantinos.kritos@stonybrook.edu>
 
-Version: 2.13.1, October 16, 2026.
+Version: 2.14.0, October 25, 2026.
 (Thanks to Tousif Islam for helping modularize this repository!)
 
 ![LOGO](.assets/LOGO.png)
@@ -46,6 +46,10 @@ Version: 2.13.1, October 16, 2026.
 The repository provides the source code files for the current version in ``rapster/`` and all necessary data files in the ``Data/`` folder, for the rapid evolution of dense star cluster environments and the dynamical assembly of compact-object coalescences and tidal disruption events.
 
 The modeling accounts for the necessary physical processes governing the formation of compact-object binaries and cluster evolution, employing semi-analytic prescriptions described in Sec. 2 of [K. Kritos et al. PRD (2024)](https://arxiv.org/abs/2210.10055). This is our code paper, written with Vladimir Strokov, Vishal Baibhav, and Emanuele Berti.
+
+##### New in version 2.14.0:
+
+Six bugs of version 2.13.1 are fixed; most importantly, three-body binaries now pair the BHs with the intended mass weighting, so that the heaviest BHs pair first (see ``CHANGELOG.md`` for all fixes). The code is also considerably faster: about 2x for typical clusters and 4-8x for compact clusters (large $N$, small $r$), including those that grow an intermediate-mass black hole, compared with version 2.13.1 with the same bug fixes. For a given seed the results differ from those of version 2.13.1, with the same statistical properties as the corrected code (see ``CHANGELOG.md`` for the validation).
 
 ##### Note:
 
@@ -83,14 +87,14 @@ Developer tools that are not part of the installed package are in ``tools/``, an
 
 Rapster supports Python >= 3.10. Its declared dependencies are:
 
-- $\tt numpy$ (=1.26.4)
-- $\tt scipy$ (=1.11.4)
-- $\tt pandas$ (=2.1.3)
+- $\tt numpy$ (>=1.26)
+- $\tt scipy$ (>=1.11)
+- $\tt pandas$ (>=2.1)
 - $\tt matplotlib$
 - $\tt astropy$
 - $\tt jupyterlab$ and $\tt ipykernel$ (for the tutorial notebook)
 
-The NumPy, SciPy, and pandas versions are pinned in ``pyproject.toml``; the other listed dependencies are unpinned. Matplotlib is imported only when plots are requested (``-plot 1``). JupyterLab and ipykernel are only needed to run the tutorial notebook in ``Example/``.
+The minimum NumPy, SciPy, and pandas versions are set in ``pyproject.toml``; the other listed dependencies have no version requirement. The tests pass on Python 3.10-3.13 with current NumPy 2.x and SciPy releases. Matplotlib is imported only when plots are requested (``-plot 1``). JupyterLab and ipykernel are only needed to run the tutorial notebook in ``Example/``.
 
 First, create an environment called ``.rapsterenv`` in the root directory of the repository Rapster/, and hidden from view:
 

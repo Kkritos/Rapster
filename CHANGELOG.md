@@ -2,7 +2,7 @@
 
 All notable changes to Rapster will be documented in this file.
 
-## [Unreleased]
+## [2.14.0] - 2026-10-25
 
 Results change with respect to 2.13.1 through the three-body-binary fix (1) and the new default central density (6) when `-N`/`-r` differ from their defaults; fixes 3-5 change only the corresponding output files. The first two groups of performance changes leave results bit-identical; the pool of single BHs and the last group (batched three-body draws, BBH-BBH partner draw, ZLK root) give statistically equivalent results: the same distributions, but for a given seed a different realization than before.
 
