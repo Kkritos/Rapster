@@ -33,6 +33,7 @@
 from array import array
 
 import os
+from itertools import islice
 import numpy as np
 
 
@@ -287,11 +288,19 @@ class StreamedRowLog(RowLog):
         if n >= self.chunk:
             self._emit(0, n)
 
-    def finish(self, n_rows=None):
+    def finish(self, n_rows=None, suffix=''):
         """Write the data rows not yet written, up to data row n_rows (all rows if
         None; the placeholder row is not counted), close the file and rename it to the
         output file. In-memory row i is row removed + i of the whole log (row 0: the
-        placeholder), so data row n_rows is in-memory row n_rows - removed."""
+        placeholder), so data row n_rows is in-memory row n_rows - removed.
+
+        With a suffix (text known only at the end, e.g. the final cluster properties
+        on every merger line), all rows are written first and the file is then copied
+        line by line, keeping the first n_rows data lines and appending the suffix to
+        each: the same text as writing rows + suffix at the end."""
+        if suffix:
+            self._finish_with_suffix(n_rows, suffix)
+            return
         m = len(self.data) // self.ncols
         if n_rows is None:
             n_rows = self.removed + m - 1
@@ -306,5 +315,21 @@ class StreamedRowLog(RowLog):
             self._f.close()
             self._f = None
             os.replace(self.part_path, self.path)
+
+    def _finish_with_suffix(self, n_rows, suffix):
+        m = len(self.data) // self.ncols
+        self._emit(0, m)
+        if not self.enabled:
+            return
+        self._open()
+        self._f.close()
+        self._f = None
+        tmp_path = self.part_path + '2'
+        with open(self.part_path) as src, open(tmp_path, 'w') as dst:
+            dst.write(src.readline())                       # header line
+            lines = src if n_rows is None else islice(src, max(n_rows, 0))
+            dst.writelines(line[:-1] + suffix + '\n' for line in lines)
+        os.remove(self.part_path)
+        os.replace(tmp_path, self.path)
 
 # End of file.
