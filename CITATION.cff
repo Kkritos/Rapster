@@ -1,5 +1,5 @@
 cff-version: 1.2.0
-message: "If you use Rapster in your research, please cite the paper below. If you use the IMBH-formation or micro-TDE features, please also cite arXiv:2605.21593 and arXiv:2609.26878 (listed under references)."
+message: "If you use Rapster in your research, please cite the paper below. If you use the residual-gas, gas-expulsion or gas-accretion features, please also cite arXiv:2212.06845; if you use the IMBH-formation or micro-TDE features, please also cite arXiv:2605.21593 and arXiv:2609.26878 (listed under references)."
 title: "Rapster: Rapid cluster evolution code"
 type: software
 authors:
@@ -38,6 +38,22 @@ preferred-citation:
     - type: other
       value: "arXiv:2210.10055"
 references:
+  - type: article
+    title: "Massive black hole assembly in nuclear star clusters"
+    authors:
+      - family-names: Kritos
+        given-names: Konstantinos
+      - family-names: Berti
+        given-names: Emanuele
+      - family-names: Silk
+        given-names: Joseph
+    journal: "Physical Review D"
+    volume: 108
+    issue: 8
+    start: "083012"
+    year: 2023
+    doi: "10.1103/PhysRevD.108.083012"
+    url: "https://arxiv.org/abs/2212.06845"
   - type: article
     title: "Predicting intermediate-mass black hole formation in star clusters with machine learning"
     authors:
