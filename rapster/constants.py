@@ -120,6 +120,10 @@ R_sun = 2.25e-8
 # Probability for star ejection from isolated cluster (assuming Maxwellian):
 xi_e0 = 0.0074
 
+# largest fraction of the cluster mass lost by escape in a single time step (time steps are
+# shortened accordingly, but not below the minimum time step -dtm):
+f_dt_esc = 0.1
+
 # Stellar evolution start time:
 t_sev = 2.0
 
@@ -127,7 +131,8 @@ t_sev = 2.0
 # formed by then; the BH subsystem is activated at t > tBH_form):
 tBH_form = 10.0
 
-# Maximum fraction of cluster's mass locked in BHs:
+# Default maximum fraction of the cluster's stellar mass locked in compact objects
+# (the simulation stops beyond it; set with -fCO):
 fBH_max = 0.20
 
 # Stellar evolution parameter:
