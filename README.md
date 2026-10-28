@@ -3,6 +3,7 @@
 <p align="center">
 	<a href="https://github.com/Kkritos/Rapster/releases"><img src="https://img.shields.io/badge/version-2.15.0-blue" alt="version"></a>
 	<a href="https://arxiv.org/abs/2210.10055"><img src="https://img.shields.io/badge/arXiv-2210.10055-b31b1b.svg" alt="arXiv"></a>
+	<a href="https://arxiv.org/abs/2212.06845"><img src="https://img.shields.io/badge/arXiv-2212.06845-b31b1b.svg" alt="arXiv"></a>
 	<a href="https://arxiv.org/abs/2605.21593"><img src="https://img.shields.io/badge/arXiv-2605.21593-b31b1b.svg" alt="arXiv"></a>
 	<a href="https://arxiv.org/abs/2609.26878"><img src="https://img.shields.io/badge/arXiv-2609.26878-b31b1b.svg" alt="arXiv"></a>
 	<a href="https://doi.org/10.5281/zenodo.23429403"><img src="https://zenodo.org/badge/DOI/10.5281/zenodo.23429403.svg" alt="DOI"></a>
@@ -683,6 +684,10 @@ The code uses the theory of Breen & Heggie to evolve the cluster. This theory is
 If you utilize this code in your research, please cite the following reference:
 
 [K. Kritos, V. Strokov, V. Baibhav & E. Berti, Phys. Rev. D 110, 043023 (2024)](https://arxiv.org/abs/2210.10055).
+
+If you use the residual gas, gas expulsion or gas accretion features (``-sfe``, ``-tge``, ``-fEdd``, ``-cs``), please also cite:
+
+- [K. Kritos, E. Berti & J. Silk, Phys. Rev. D 108, 083012 (2023)](https://arxiv.org/abs/2212.06845)
 
 If you use the intermediate-mass black hole formation or micro-tidal disruption event features, please also cite:
 
