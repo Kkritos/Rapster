@@ -2,6 +2,17 @@
 
 All notable changes to Rapster will be documented in this file.
 
+## [2.14.3] - 2026-10-26
+
+Results are byte-identical to 2.14.2 for a given seed (all output files; `log.txt` gains a line), except in runs where a ZLK merger of a hierarchical triple would happen after redshift 0 (fix 1), which change from that point on. No such case occurred in the 26 test configurations or in four full runs of compact clusters with ~30-10^4 ZLK mergers each.
+
+### Fixed
+1. **ZLK mergers after redshift 0** (`triples.py`). When the ZLK merger time t + t_ZLK of a triple's inner pair fell after the present, the merger was still counted in `N_me` and `N_ZLK` (but not written to `mergers.txt`), the triple was removed, and either the remnant (with its GW kick) was put back in the cluster at once, although the merger had not yet happened, or, if the outer BH stayed bound, the remnant and the outer BH disappeared from the cluster altogether (neither single nor in a binary, while still counted in `N_BH`). Such a merger has not happened by the end of the simulation: the triple is now kept unchanged and examined again at later steps like any other triple. The check comes before any random draw, so runs without such a case are unchanged (`tests/test_zlk_after_today.py`).
+
+### Changed
+- **Reason for the end of the run in `log.txt`.** The stops decided inside a time step already printed their reason (`REDSHIFT 0 REACHED`, `CLUSTER DISSOLVED`, `CLUSTER REACHED GALAXY CENTER`, `BH SUBSYSTEM EVAPORATED`), but a run ended by the condition of the main loop said nothing. It now prints `SINGLE BHS REACHED A FRACTION fBH_max = 0.2 OF THE CLUSTER MASS` (the usual end of small, compact clusters, previously easy to mistake for a crash) or `MAXIMUM SIMULATION TIME REACHED` (`-tM`).
+- **Merger table written during the run**, like the other tables since 2.14.2. Each merger line ends with the final cluster properties, known only at the end, so the rows are written during the run and the file is then copied once, line by line, appending them (`StreamedRowLog.finish(..., suffix=...)`; same text, checked in `tests/test_streaming.py`). This removes the memory used by the merger rows (e.g. peak memory 1.22 -> 1.07 GB for N = 1e8, r_h = 0.1 pc, with 6.5e5 mergers; run time unchanged).
+
 ## [2.14.2] - 2026-10-26
 
 Results are byte-identical to 2.14.1 for a given seed (all output files; checked on 26 configurations up to N = 1e8 and on full runs of the most compact massive clusters).

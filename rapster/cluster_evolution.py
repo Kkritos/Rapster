@@ -100,9 +100,9 @@ STREAM_CHUNK_ROWS = 131072
 
 
 def flush_records(state):
-    """Write the evolution, hardening and TDE rows that can no longer change to their
-    output files, once a chunk of them has accumulated (called once per time step)."""
-    for key in ('tdes', 'hardening', 'evolution'):
+    """Write the evolution, hardening, TDE and merger rows that can no longer change to
+    their output files, once a chunk of them has accumulated (called once per time step)."""
+    for key in ('tdes', 'hardening', 'evolution', 'mergers'):
         record = state[key]
         if isinstance(record, StreamedRowLog):
             record.flush()
@@ -390,17 +390,17 @@ def initialize_cluster(config):
     # per-step BH snapshots (-BOi 1) are streamed to temporary files next to the results:
     results_dir = os.path.join(os.getcwd(), config.get('results_folder_name', 'Results'))
 
-    # records, each with one placeholder row. The merger rows are written at the end
-    # (each line ends with the final cluster properties); the evolution, hardening and
-    # TDE rows are written to their files during the run, in chunks (see flush_records
-    # and StreamedRowLog), with the same text as writing them all at the end:
+    # records, each with one placeholder row. The merger, evolution, hardening and TDE
+    # rows are written to their files during the run, in chunks (see flush_records and
+    # StreamedRowLog), with the same text as writing them all at the end:
     def streamed(ncols, name, keys, indicator, keep, prepare=None):
         return StreamedRowLog(ncols, [0.0] * ncols,
                               os.path.join(results_dir, config.get(name + '_file', name) + '.txt'),
                               '# ' + ' '.join(keys) + '\n', _write_rows, keep=keep,
                               chunk=STREAM_CHUNK_ROWS, prepare=prepare,
                               enabled=config.get(indicator, 1) == 1)
-    mergers = RowLog(27, [0.0] * 27)
+    # (each merger line ends with the final cluster properties, added when the run ends)
+    mergers = streamed(27, 'mergers', merger_keys, 'Mi', keep=0)
     # (the last evolution rows are kept: write_output drops the last one or two rows,
     # depending on how the run ends; the last hardening row can still change)
     evolution = streamed(71, 'evolution', evolution_keys, 'Ei', keep=2)
@@ -1521,8 +1521,6 @@ def write_output(state, config):
         state (dict): Simulation state at the end of the run.
         config (dict): Configuration dictionary.
     """
-    mergers = np.array(state['mergers'], dtype=float)[1:]       # -> array, drop placeholder row
-
     CURRENT_WORKING_DIR = os.getcwd()
     RESULTS_DIR = os.path.join(CURRENT_WORKING_DIR, config['results_folder_name'])
     os.makedirs(RESULTS_DIR, exist_ok=True)
@@ -1557,12 +1555,14 @@ def write_output(state, config):
     _finish_record(state['tdes'], config['Ti'], RESULTS_DIR, config.get('tdes_file', 'tdes'),
                    tdes_keys, None, prepare=fill_R_mb)
 
-    if config['Mi']==1:
-        mergers_path = os.path.join(RESULTS_DIR, config['mergers_file'] + '.txt')
-        with open(mergers_path, 'w') as f_mergers:
+    # initial and final cluster properties, the same on every merger row:
+    cluster_columns = ' '+str(Mcl0)+' '+str(rh0)+' '+str(Z)+' '+str(zCl_form)+' '+str(R_gal0)+' '+str(Mcl)+' '+str(rh)+' '+str(R_gal)
+    if isinstance(state['mergers'], StreamedRowLog):
+        state['mergers'].finish(max(N_me, 0), suffix=cluster_columns)
+    elif config['Mi']==1:
+        mergers = np.array(state['mergers'], dtype=float)[1:]   # drop placeholder row
+        with open(os.path.join(RESULTS_DIR, config['mergers_file'] + '.txt'), 'w') as f_mergers:
             f_mergers.write('# ' + ' '.join(merger_keys) + '\n')
-            # initial and final cluster properties, the same on every row:
-            cluster_columns = ' '+str(Mcl0)+' '+str(rh0)+' '+str(Z)+' '+str(zCl_form)+' '+str(R_gal0)+' '+str(Mcl)+' '+str(rh)+' '+str(R_gal)
             _write_rows(f_mergers, mergers[:max(N_me, 0)], cluster_columns)
 
     _finish_record(state['evolution'], config['Ei'], RESULTS_DIR, config.get('evolution_file', 'evolution'),

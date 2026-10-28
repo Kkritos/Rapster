@@ -93,7 +93,18 @@ def evolve_triples(seed, t, z, zCl_form, triples, binaries, BH, mBH_avg, N_Tripl
             
             # check whether inner pair merges before next interaction with another object:
             if t_ZLK < t_3: # ZLK merger occurs
-                
+
+                # merger time:
+                t_merge = t + t_ZLK
+
+                # a merger after redshift 0 (today) has not happened by the end of the
+                # simulation: the triple is kept as it is (no merger counted, no remnant)
+                # and examined again at the next step, like any other triple. (Checked
+                # before any random draw, so runs without such a case are unchanged.)
+                if not t_merge < lookback_interp(zCl_form):
+                    i+=1
+                    continue
+
                 # sample spin orientations:
                 theta0, theta1, dPhi = sample_angles()
                 
@@ -104,9 +115,6 @@ def evolve_triples(seed, t, z, zCl_form, triples, binaries, BH, mBH_avg, N_Tripl
 
                 N_me+=1
                 N_ZLK+=1
-                
-                # merger time:
-                t_merge = t + t_ZLK
                 
                 # order BHs by mass:
                 mA = m0; sA = s0; gA = g0; hA = h0; thetaA = theta0
@@ -124,15 +132,13 @@ def evolve_triples(seed, t, z, zCl_form, triples, binaries, BH, mBH_avg, N_Tripl
                 # effective spin parameter:
                 s_eff = (m0 * s0 * np.cos(theta0) + m1 * s1 * np.cos(theta1)) / (m0 + m1)
                 
-                if t_merge < lookback_interp(zCl_form): # check merger happens by redshift z=0 (today):
+                # lookback time and redshift at ZLK merger (before z = 0, see above):
+                t_lb = lookback_interp(zCl_form) - t_merge  # lookback time remaining at merger
+                z_merge = redshift_interp(t_lb) if t_lb >= 0.1 else 0.0  # merger redshift (0 if within 0.1 Myr of today)
 
-                    # lookback time and redshift at ZLK merger:
-                    t_lb = lookback_interp(zCl_form) - t_merge  # lookback time remaining at merger
-                    z_merge = redshift_interp(t_lb) if t_lb >= 0.1 else 0.0  # merger redshift (0 if within 0.1 Myr of today)
-
-                    # append merger:
-                    mergers.append([seed, ind_in, 4, a_in, eMAX, m0, m1, s0, s1, g0, g1, theta0, theta1, dPhi, t_form_in, z_form_in, t_merge,
-                                    z_merge, m_rem, s_rem, g_rem, vGW_kick, s_eff, q, v_esc_cl(v_star, vBH), h0, h1])
+                # append merger:
+                mergers.append([seed, ind_in, 4, a_in, eMAX, m0, m1, s0, s1, g0, g1, theta0, theta1, dPhi, t_form_in, z_form_in, t_merge,
+                                z_merge, m_rem, s_rem, g_rem, vGW_kick, s_eff, q, v_esc_cl(v_star, vBH), h0, h1])
                 
                 triples = delete_row(triples, i)
 
@@ -160,16 +166,14 @@ def evolve_triples(seed, t, z, zCl_form, triples, binaries, BH, mBH_avg, N_Tripl
 
                 else: # new outer binary survives
                     
-                    # append binary;
-                    # only append the new outer binary if the merger time is within the simulation horizon:
-                    if t + t_ZLK < lookback_interp(zCl_form):
-                        # lookback time and redshift for the new outer binary formation:
-                        t_lb_outer = lookback_interp(zCl_form) - t - t_ZLK  # lookback time at new binary formation
-                        z_outer = redshift_interp(t_lb_outer) if t_lb_outer >= 0.1 else 0.0  # formation redshift
-                        binaries = np.concatenate((binaries, np.array([[np.random.randint(0, 999999999), 5, a_out, np.sqrt(np.random.rand()), m2, m_rem, s2, s_rem, g2, g_rem, t + t_ZLK, z_outer, 0, h2, h_rem]])), axis=0)   # (= np.append(..., axis=0))
+                    # append binary (formed at the merger time, before z = 0):
+                    # lookback time and redshift for the new outer binary formation:
+                    t_lb_outer = lookback_interp(zCl_form) - t - t_ZLK  # lookback time at new binary formation
+                    z_outer = redshift_interp(t_lb_outer) if t_lb_outer >= 0.1 else 0.0  # formation redshift
+                    binaries = np.concatenate((binaries, np.array([[np.random.randint(0, 999999999), 5, a_out, np.sqrt(np.random.rand()), m2, m_rem, s2, s_rem, g2, g_rem, t + t_ZLK, z_outer, 0, h2, h_rem]])), axis=0)   # (= np.append(..., axis=0))
 
-                        N_BBH+=1
-                        N_meRe+=1
+                    N_BBH+=1
+                    N_meRe+=1
 
             else: # triple breaks and inner binary is released
                 

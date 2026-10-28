@@ -350,6 +350,18 @@ def main():
         # print runtime information:
         print_status(state, config, local_time_initial, simulation_time_initial)
 
+    else:
+        # the loop condition ended the run (the other stops print their reason where
+        # they occur): say which condition
+        if not state['t'] < config['t_max']:
+            print('MAXIMUM SIMULATION TIME REACHED (t_max = {:.6g} Myr)'.format(config['t_max']))
+        elif not state['BH'].m.sum() < fBH_max*state['Mcl']:
+            print('SINGLE BHS REACHED A FRACTION fBH_max = {:.3g} OF THE CLUSTER MASS'.format(fBH_max))
+        elif not state['R_gal'] > 0:
+            print('CLUSTER REACHED GALAXY CENTER')
+        elif not state['Mcl'] > 0:
+            print('CLUSTER DISSOLVED')
+
     write_output(state, config)
 
     if config['NSt']>0:

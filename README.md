@@ -1,7 +1,7 @@
 # Rapster
 
 <p align="center">
-	<a href="https://github.com/Kkritos/Rapster/releases"><img src="https://img.shields.io/badge/version-2.14.2-blue" alt="version"></a>
+	<a href="https://github.com/Kkritos/Rapster/releases"><img src="https://img.shields.io/badge/version-2.14.3-blue" alt="version"></a>
 	<a href="https://arxiv.org/abs/2210.10055"><img src="https://img.shields.io/badge/arXiv-2210.10055-b31b1b.svg" alt="arXiv"></a>
 	<a href="https://arxiv.org/abs/2605.21593"><img src="https://img.shields.io/badge/arXiv-2605.21593-b31b1b.svg" alt="arXiv"></a>
 	<a href="https://arxiv.org/abs/2609.26878"><img src="https://img.shields.io/badge/arXiv-2609.26878-b31b1b.svg" alt="arXiv"></a>
@@ -20,7 +20,7 @@ $\tt Rapster$ stands for $\rm RAPid\ cluSTER$ evolution.
 
 Author: Konstantinos Kritos <konstantinos.kritos@stonybrook.edu>
 
-Version: 2.14.2, October 26, 2026.
+Version: 2.14.3, October 26, 2026.
 (Thanks to Tousif Islam for helping modularize this repository!)
 
 ![LOGO](.assets/LOGO.png)
@@ -46,6 +46,10 @@ Version: 2.14.2, October 26, 2026.
 The repository provides the source code files for the current version in ``rapster/`` and all necessary data files in the ``Data/`` folder, for the rapid evolution of dense star cluster environments and the dynamical assembly of compact-object coalescences and tidal disruption events.
 
 The modeling accounts for the necessary physical processes governing the formation of compact-object binaries and cluster evolution, employing semi-analytic prescriptions described in Sec. 2 of [K. Kritos et al. PRD (2024)](https://arxiv.org/abs/2210.10055). This is our code paper, written with Vladimir Strokov, Vishal Baibhav, and Emanuele Berti.
+
+##### New in version 2.14.3:
+
+A ZLK merger of a hierarchical triple that would happen after redshift 0 is no longer counted (the triple is kept; previously its BHs could also be lost from the cluster), ``log.txt`` now states why every run ended, including the previously silent stops when single BHs reach a fraction ``fBH_max`` = 0.2 of the cluster mass or the maximum time ``-tM`` is reached, and the merger table is also written during the run. Results are otherwise byte-identical to version 2.14.2 (see ``CHANGELOG.md``).
 
 ##### New in version 2.14.2:
 
@@ -317,7 +321,7 @@ Different seed values yield different system realizations under the same initial
 
 At the end of each simulation, the code generates by default four ``.txt`` tables and one ``.pkl`` file: dynamical mergers, time-dependent cluster evolution, BBH hardening, TDEs, and BH properties at each timestep. It also writes ``log.txt``.
 
-The files are exported in the configured results folder (``Results/`` by default) under the current working directory. The evolution, hardening and TDE tables are written during the run, in chunks, to hidden temporary files (``.evolution.txt.part``, ...) that are renamed to their final names when the simulation ends, so memory use does not grow with the number of rows; a run that is interrupted leaves only the ``.part`` files. For a given seed the output is reproducible bit for bit on the same platform and library versions (e.g. Linux and macOS may differ in the last digits, after which a stochastic run diverges).
+The files are exported in the configured results folder (``Results/`` by default) under the current working directory. The four tables are written during the run, in chunks, to hidden temporary files (``.mergers.txt.part``, ``.evolution.txt.part``, ...) that are renamed to their final names when the simulation ends (the final cluster properties are then added to each merger line), so memory use does not grow with the number of rows; a run that is interrupted leaves only the ``.part`` files. For a given seed the output is reproducible bit for bit on the same platform and library versions (e.g. Linux and macOS may differ in the last digits, after which a stochastic run diverges).
 
 a) Column description of mergers .txt file:
 

@@ -44,6 +44,27 @@ def test_streamed_rows_match_rows_written_at_the_end(chunk, keep, cut):
         assert os.listdir(os.path.dirname(path)) == ['x.txt']   # no .part file left
 
 
+@pytest.mark.parametrize('chunk', [1, 4, 100])
+@pytest.mark.parametrize('n_rows', [None, 0, 5, 37, 50])
+def test_suffix_added_at_the_end(chunk, n_rows):
+    """Rows streamed during the run get a suffix known only at the end (merger rows:
+    the final cluster properties), and only the first n_rows are kept."""
+    rng = np.random.default_rng(chunk)
+    with tempfile.TemporaryDirectory() as d:
+        path = os.path.join(d, 'm.txt')
+        log = StreamedRowLog(3, [0.0] * 3, path, '# h\n', _writer, chunk=chunk)
+        rows = [[0.0] * 3]
+        for i in range(37):
+            row = rng.normal(size=3).tolist()
+            log.append(row); rows.append(row)
+            log.flush()
+        log.finish(n_rows, suffix=' 1.5 2.5')
+        data = rows[1:] if n_rows is None else rows[1:1 + n_rows]
+        with open(path) as f:
+            assert f.read() == '# h\n' + ''.join(' '.join(map(repr, r)) + ' 1.5 2.5\n' for r in data)
+        assert os.listdir(d) == ['m.txt']
+
+
 def test_disabled_and_empty_records():
     with tempfile.TemporaryDirectory() as d:
         off = StreamedRowLog(2, [0.0, 0.0], os.path.join(d, 'off.txt'), '# h\n', _writer,
