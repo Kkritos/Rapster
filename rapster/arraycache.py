@@ -251,6 +251,7 @@ class StreamedRowLog(RowLog):
         self.prepare = prepare
         self.enabled = enabled
         self.removed = 0      # rows (counting the placeholder row) no longer in memory
+        self.offset = 0       # data rows of the log written by an earlier run (restarts)
         self._f = None
 
     def __len__(self):
@@ -287,6 +288,33 @@ class StreamedRowLog(RowLog):
         n = len(self.data) // self.ncols - self.keep
         if n >= self.chunk:
             self._emit(0, n)
+
+    def sync(self):
+        """Write every row but the last `keep` to the file now (whatever the chunk size),
+        and flush the file; used at checkpoints. Returns (removed, rows in
+        memory): the state from which restore() continues the log in another run.
+        (No fsync: the rows are in the operating system's buffers, which a stopped process
+        does not lose; an fsync per checkpoint would slow down short runs noticeably.)"""
+        n = len(self.data) // self.ncols - self.keep
+        if n > 0:
+            self._emit(0, n)
+        if self.enabled:
+            self._open()
+            self._f.flush()
+        rows = np.frombuffer(self.data, dtype=np.float64).reshape(-1, self.ncols).copy()
+        return self.removed, rows
+
+    def restore(self, removed, rows):
+        """Continue a log saved by sync() in another run (a restart): its rows before
+        the saved in-memory rows are in the earlier run's file, not in this one. Row
+        numbers (len, finish) stay those of the whole log."""
+        if self.removed or self._f is not None:
+            raise RuntimeError('restore() must be called on a new log')
+        rows = np.asarray(rows, dtype=np.float64).reshape(-1, self.ncols)
+        del self.data[:]
+        self.data.frombytes(rows.tobytes())
+        self.removed = int(removed)
+        self.offset = max(self.removed - 1, 0)
 
     def finish(self, n_rows=None, suffix=''):
         """Write the data rows not yet written, up to data row n_rows (all rows if
@@ -327,7 +355,7 @@ class StreamedRowLog(RowLog):
         tmp_path = self.part_path + '2'
         with open(self.part_path) as src, open(tmp_path, 'w') as dst:
             dst.write(src.readline())                       # header line
-            lines = src if n_rows is None else islice(src, max(n_rows, 0))
+            lines = src if n_rows is None else islice(src, max(n_rows - self.offset, 0))
             dst.writelines(line[:-1] + suffix + '\n' for line in lines)
         os.remove(self.part_path)
         os.replace(tmp_path, self.path)

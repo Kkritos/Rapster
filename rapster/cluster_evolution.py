@@ -32,6 +32,8 @@ from .ns_formation import NSFormationTable, sample_ns_formation_times
 from .fastrandom import poisson_draw, maxwell_draws
 from .snapshots import SnapshotStream, dump_streaming
 from .arraycache import ElementwiseCache, RowLog, StreamedRowLog
+from .populations import StellarPopulations, POPULATION_KEYS
+import math
 from zipfile import BadZipFile
 
 
@@ -64,6 +66,98 @@ def _load_initial_bh_masses(input_file):
     return masses
 
 
+def _sample_bh_masses_and_kicks(Mcl, Z, config):
+    """BHs formed by a stellar population of initial mass Mcl [Msun] and metallicity Z:
+    (masses [Msun], natal kicks [km/s]) of all BHs, before retention, drawn as for the
+    initial population (-BMD, -RP, -K, Kroupa IMF between -mm and -mM). Used for the
+    initial population (initialize_cluster) and for later populations (populations.py);
+    the random numbers are drawn in the same order as before this was a function."""
+    m_min = config['m_min']; m_max = config['m_max']
+    BMD = config['BMD']; RP = config['RP']; NKP = config['NKP']; wSN_kick = config['wSN_kick']
+    min_1g_bh_mass = config['min_1g_bh_mass']; max_1g_bh_mass = config['max_1g_bh_mass']
+
+    # number of massive stars:
+    N_massive = int(Mcl * integrate.quad(IMF_kroupa, mM_min, m_max)[0] \
+                    / integrate.quad(lambda x: x * IMF_kroupa(x), m_min, m_max)[0])
+
+    if BMD==0:
+        # default: Kroupa IMF + stellar collapse + SN kicks
+
+        # massive star masses drawn from Kroupa (2002) IMF:
+        u_massive = np.random.rand(N_massive)
+        m_massive = (u_massive * (m_max**(alphaIMF + 1) - mM_min**(alphaIMF + 1)) \
+                     + mM_min**(alphaIMF + 1))**(1 / (alphaIMF + 1))
+
+        # remnant masses:
+        if   RP==0:
+            m_rem = Mrem_SEVNdelayed(m_massive, Z) + 0.01 * np.random.rand(m_massive.size)
+        elif RP==1:
+            m_rem = Mrem_F12d(m_massive, Z) + 0.01 * np.random.rand(m_massive.size)
+        elif RP==2:
+            m_rem = Mrem_SEVNrapid(m_massive, Z) + 0.01 * np.random.rand(m_massive.size)
+        elif RP==3:
+            m_rem = Mrem_F12r(m_massive, Z) + 0.01 * np.random.rand(m_massive.size)
+
+        # Separate BHs from other remnants:
+        mBH = m_rem[m_rem > mBH_min]
+
+        # compute supernova kicks:
+        if NKP==0:
+            if   RP==0:
+                fallback = np.vectorize(f_fb_delayed, otypes=[float])(m_massive[m_rem > mBH_min], np.vectorize(M_CO_SEVN, otypes=[float])(m_massive[m_rem > mBH_min], Z))
+                vSN_kick = (1 - fallback) * np.vectorize(get_SN_kick, otypes=[float])(1.4 * np.ones(mBH.size), wSN_kick)
+            elif RP==1:
+                fallback = np.vectorize(f_fb_delayed, otypes=[float])(m_massive[m_rem > mBH_min], np.vectorize(M_CO_SSE, otypes=[float])(m_massive[m_rem > mBH_min], Z))
+                vSN_kick = (1 - fallback) * np.vectorize(get_SN_kick, otypes=[float])(1.4 * np.ones(mBH.size), wSN_kick)
+            elif RP==2:
+                fallback = np.vectorize(f_fb_rapid, otypes=[float])(m_massive[m_rem > mBH_min], np.vectorize(M_CO_SEVN, otypes=[float])(m_massive[m_rem > mBH_min], Z))
+                vSN_kick = (1 - fallback) * np.vectorize(get_SN_kick, otypes=[float])(1.4 * np.ones(mBH.size), wSN_kick)
+            elif RP==3:
+                fallback = np.vectorize(f_fb_rapid, otypes=[float])(m_massive[m_rem > mBH_min], np.vectorize(M_CO_SSE, otypes=[float])(m_massive[m_rem > mBH_min], Z))
+                vSN_kick = (1 - fallback) * np.vectorize(get_SN_kick, otypes=[float])(1.4 * np.ones(mBH.size), wSN_kick)
+        elif NKP==1:
+            vSN_kick = np.vectorize(get_SN_kick, otypes=[float])(mBH, wSN_kick)
+
+
+    else:
+        # For BMD=1,2: run Kroupa path to determine N_BH, then replace masses.
+        u_massive = np.random.rand(N_massive)
+        m_massive = (u_massive * (m_max**(alphaIMF + 1) - mM_min**(alphaIMF + 1)) \
+                     + mM_min**(alphaIMF + 1))**(1 / (alphaIMF + 1))
+        if   RP==0:
+            m_rem = Mrem_SEVNdelayed(m_massive, Z) + 0.01 * np.random.rand(m_massive.size)
+        elif RP==1:
+            m_rem = Mrem_F12d(m_massive, Z) + 0.01 * np.random.rand(m_massive.size)
+        elif RP==2:
+            m_rem = Mrem_SEVNrapid(m_massive, Z) + 0.01 * np.random.rand(m_massive.size)
+        elif RP==3:
+            m_rem = Mrem_F12r(m_massive, Z) + 0.01 * np.random.rand(m_massive.size)
+        N_BH_init = (m_rem > mBH_min).sum()
+
+        if BMD==1:
+            # uniform BH mass distribution in [min_1g_bh_mass, max_1g_bh_mass]:
+            mBH = np.random.uniform(min_1g_bh_mass, max_1g_bh_mass, N_BH_init)
+
+        elif BMD==2:
+            # Salpeter power law (m^-2.35) in [min_1g_bh_mass, max_1g_bh_mass]:
+            alpha_salpeter = -2.35
+            u = np.random.rand(N_BH_init)
+            mBH = (u * (max_1g_bh_mass**(alpha_salpeter + 1) - min_1g_bh_mass**(alpha_salpeter + 1)) \
+                   + min_1g_bh_mass**(alpha_salpeter + 1))**(1 / (alpha_salpeter + 1))
+
+        elif BMD==3:
+            # log-uniform BH mass distribution in [min_1g_bh_mass, max_1g_bh_mass]:
+            mBH = 10**(np.random.uniform(np.log10(min_1g_bh_mass), np.log10(max_1g_bh_mass), N_BH_init))
+
+        # Apply momentum-conservation SN kicks (retention is decided by the caller).
+        # Fallback kicks (NKP==0) are not available for BMD>0 because there is no
+        # stellar progenitor or CO core mass to compute the fallback fraction from.
+        # Momentum-conservation kicks only depend on the BH mass, so they apply regardless.
+        vSN_kick = np.vectorize(get_SN_kick, otypes=[float])(mBH, wSN_kick)
+
+    return mBH, vSN_kick
+
+
 def _draw_ns_masses(n, with_NSs, EoS):
     """Draw n NS masses [Msun] from the distribution selected by -NS.
 
@@ -94,6 +188,16 @@ def _draw_ns_masses(n, with_NSs, EoS):
     return np.random.uniform(M_NS_min, M_NS_max, n)
 
 
+def compact_object_mass(state):
+    """Total mass [Msun] of the compact objects (BHs and retained NSs) in the cluster:
+    single ones (the pool) and those in binaries, hierarchical triples and BH-star
+    pairs (the placeholder first rows of these arrays are zero)."""
+    return (float(state['BH'].m.sum())
+            + float(state['binaries'][:, 4].sum() + state['binaries'][:, 5].sum())
+            + float(state['triples'][:, 4:7].sum())
+            + float(state['pairs'][:, 1].sum()))
+
+
 # rows of the evolution, hardening and TDE records written to their files at a time
 # (memory for at most this many rows per record; ~1-16 MB):
 STREAM_CHUNK_ROWS = 131072
@@ -102,10 +206,39 @@ STREAM_CHUNK_ROWS = 131072
 def flush_records(state):
     """Write the evolution, hardening, TDE and merger rows that can no longer change to
     their output files, once a chunk of them has accumulated (called once per time step)."""
-    for key in ('tdes', 'hardening', 'evolution', 'mergers'):
-        record = state[key]
+    for key in ('tdes', 'hardening', 'evolution', 'mergers', 'populations'):
+        record = state.get(key)
         if isinstance(record, StreamedRowLog):
             record.flush()
+
+
+def _new_records(config, with_populations):
+    """The records of a run, each with one placeholder row: mergers, evolution, hardening,
+    TDEs and (with_populations) populations. Their rows are written to their files during
+    the run, in chunks (see flush_records and StreamedRowLog), with the same text as
+    writing them all at the end."""
+    results_dir = os.path.join(os.getcwd(), config.get('results_folder_name', 'Results'))
+
+    def streamed(ncols, name, keys, indicator, keep, prepare=None):
+        return StreamedRowLog(ncols, [0.0] * ncols,
+                              os.path.join(results_dir, config.get(name + '_file', name) + '.txt'),
+                              '# ' + ' '.join(keys) + '\n', _write_rows, keep=keep,
+                              chunk=STREAM_CHUNK_ROWS, prepare=prepare,
+                              enabled=config.get(indicator, 1) == 1)
+    return {
+        # (each merger line ends with the final cluster properties, added when the run ends)
+        'mergers': streamed(27, 'mergers', merger_keys, 'Mi', keep=0),
+        # (the last evolution rows are kept: write_output drops the last one or two rows,
+        # depending on how the run ends; the last hardening row can still change)
+        'evolution': streamed(71, 'evolution', evolution_keys, 'Ei', keep=2),
+        'hardening': streamed(12, 'hardening', hardening_keys, 'Hi', keep=1),
+        'tdes': streamed(18, 'tdes', tdes_keys, 'Ti', keep=0, prepare=fill_R_mb),
+        'populations': (streamed(len(POPULATION_KEYS), 'populations', POPULATION_KEYS, 'POPi', keep=0)
+                        if with_populations else None),
+    }
+
+
+RECORD_KEYS = ('mergers', 'evolution', 'hardening', 'tdes', 'populations')
 
 
 def initialize_cluster(config):
@@ -153,7 +286,7 @@ def initialize_cluster(config):
     max_1g_bh_mass = config['max_1g_bh_mass']
     EoS = config['EoS']
     SFE = config['SFE']
-    f_ge = config['f_ge']
+    t_ge = config['t_ge']   # gas expulsion timescale [Myr]
     c_s = config['c_s']
     f_Edd = config['f_Edd']
 
@@ -181,13 +314,21 @@ def initialize_cluster(config):
     M_gas0 = (1 - SFE) / SFE * Mcl0
     M_gas = M_gas0
 
-    # initial crossing time (embedded, total mass) and gas expulsion timescale:
-    v_dyn0 = np.sqrt(0.4 * G_Newton * (Mcl0 + M_gas0) / rh0)
-    t_cross0 = 2 * rh0 / v_dyn0
-    t_ge = f_ge * t_cross0
 
     # gas remaining at BH formation; reused for NSs as an upper bound
     M_gas_BHform = M_gas0 * np.exp(- tBH_form / t_ge)
+
+    # mass that retains the BHs (and, for -NSt 0, the NSs) of the first population, which
+    # form at tBH_form: its stars and remaining gas, and those of the stellar populations
+    # born before then (-POP), if any:
+    M_retain = Mcl + M_gas_BHform
+    M_early = 0.0
+    for p in config.get('populations', ()):
+        if p['t_birth'] < tBH_form:
+            M_k = p['N'] * m_avg
+            M_early += M_k + (1 - p['SFE']) / p['SFE'] * M_k * np.exp(- (tBH_form - p['t_birth']) / t_ge)
+    if M_early > 0:
+        M_retain = M_retain + M_early
 
     # initial galactocentric radius:
     R_gal0 = R_gal
@@ -228,87 +369,10 @@ def initialize_cluster(config):
         ab = np.array([])
         v_star = np.sqrt(0.4 * G_Newton * Mcl / rh)
 
-    # number of massive stars:
-    N_massive = int(Mcl * integrate.quad(IMF_kroupa, mM_min, m_max)[0] \
-                    / integrate.quad(lambda x: x * IMF_kroupa(x), m_min, m_max)[0])
-
-    if BMD==0:
-        # default: Kroupa IMF + stellar collapse + SN kicks
-
-        # massive star masses drawn from Kroupa (2002) IMF:
-        u_massive = np.random.rand(N_massive)
-        m_massive = (u_massive * (m_max**(alphaIMF + 1) - mM_min**(alphaIMF + 1)) \
-                     + mM_min**(alphaIMF + 1))**(1 / (alphaIMF + 1))
-
-        # remnant masses:
-        if   RP==0:
-            m_rem = Mrem_SEVNdelayed(m_massive, Z) + 0.01 * np.random.rand(m_massive.size)
-        elif RP==1:
-            m_rem = Mrem_F12d(m_massive, Z) + 0.01 * np.random.rand(m_massive.size)
-        elif RP==2:
-            m_rem = Mrem_SEVNrapid(m_massive, Z) + 0.01 * np.random.rand(m_massive.size)
-        elif RP==3:
-            m_rem = Mrem_F12r(m_massive, Z) + 0.01 * np.random.rand(m_massive.size)
-
-        # Separate BHs from other remnants:
-        mBH = m_rem[m_rem > mBH_min]
-
-        # compute supernova kicks:
-        if NKP==0:
-            if   RP==0:
-                fallback = np.vectorize(f_fb_delayed, otypes=[float])(m_massive[m_rem > mBH_min], np.vectorize(M_CO_SEVN, otypes=[float])(m_massive[m_rem > mBH_min], Z))
-                vSN_kick = (1 - fallback) * np.vectorize(get_SN_kick, otypes=[float])(1.4 * np.ones(mBH.size), wSN_kick)
-            elif RP==1:
-                fallback = np.vectorize(f_fb_delayed, otypes=[float])(m_massive[m_rem > mBH_min], np.vectorize(M_CO_SSE, otypes=[float])(m_massive[m_rem > mBH_min], Z))
-                vSN_kick = (1 - fallback) * np.vectorize(get_SN_kick, otypes=[float])(1.4 * np.ones(mBH.size), wSN_kick)
-            elif RP==2:
-                fallback = np.vectorize(f_fb_rapid, otypes=[float])(m_massive[m_rem > mBH_min], np.vectorize(M_CO_SEVN, otypes=[float])(m_massive[m_rem > mBH_min], Z))
-                vSN_kick = (1 - fallback) * np.vectorize(get_SN_kick, otypes=[float])(1.4 * np.ones(mBH.size), wSN_kick)
-            elif RP==3:
-                fallback = np.vectorize(f_fb_rapid, otypes=[float])(m_massive[m_rem > mBH_min], np.vectorize(M_CO_SSE, otypes=[float])(m_massive[m_rem > mBH_min], Z))
-                vSN_kick = (1 - fallback) * np.vectorize(get_SN_kick, otypes=[float])(1.4 * np.ones(mBH.size), wSN_kick)
-        elif NKP==1:
-            vSN_kick = np.vectorize(get_SN_kick, otypes=[float])(mBH, wSN_kick)
-
-        # retain BHs with SN kick < escape velocity:
-        mBH = mBH[vSN_kick < v_esc(Mcl + M_gas_BHform, rh)]
-
-    else:
-        # For BMD=1,2: run Kroupa path to determine N_BH, then replace masses.
-        u_massive = np.random.rand(N_massive)
-        m_massive = (u_massive * (m_max**(alphaIMF + 1) - mM_min**(alphaIMF + 1)) \
-                     + mM_min**(alphaIMF + 1))**(1 / (alphaIMF + 1))
-        if   RP==0:
-            m_rem = Mrem_SEVNdelayed(m_massive, Z) + 0.01 * np.random.rand(m_massive.size)
-        elif RP==1:
-            m_rem = Mrem_F12d(m_massive, Z) + 0.01 * np.random.rand(m_massive.size)
-        elif RP==2:
-            m_rem = Mrem_SEVNrapid(m_massive, Z) + 0.01 * np.random.rand(m_massive.size)
-        elif RP==3:
-            m_rem = Mrem_F12r(m_massive, Z) + 0.01 * np.random.rand(m_massive.size)
-        N_BH_init = (m_rem > mBH_min).sum()
-
-        if BMD==1:
-            # uniform BH mass distribution in [min_1g_bh_mass, max_1g_bh_mass]:
-            mBH = np.random.uniform(min_1g_bh_mass, max_1g_bh_mass, N_BH_init)
-
-        elif BMD==2:
-            # Salpeter power law (m^-2.35) in [min_1g_bh_mass, max_1g_bh_mass]:
-            alpha_salpeter = -2.35
-            u = np.random.rand(N_BH_init)
-            mBH = (u * (max_1g_bh_mass**(alpha_salpeter + 1) - min_1g_bh_mass**(alpha_salpeter + 1)) \
-                   + min_1g_bh_mass**(alpha_salpeter + 1))**(1 / (alpha_salpeter + 1))
-
-        elif BMD==3:
-            # log-uniform BH mass distribution in [min_1g_bh_mass, max_1g_bh_mass]:
-            mBH = 10**(np.random.uniform(np.log10(min_1g_bh_mass), np.log10(max_1g_bh_mass), N_BH_init))
-
-        # Apply momentum-conservation SN kicks and retain BHs below escape velocity.
-        # Fallback kicks (NKP==0) are not available for BMD>0 because there is no
-        # stellar progenitor or CO core mass to compute the fallback fraction from.
-        # Momentum-conservation kicks only depend on the BH mass, so they apply regardless.
-        vSN_kick = np.vectorize(get_SN_kick, otypes=[float])(mBH, wSN_kick)
-        mBH = mBH[vSN_kick < v_esc(Mcl + M_gas_BHform, rh)]
+    # BH masses and natal kicks of the population (see _sample_bh_masses_and_kicks), and
+    # the BHs retained (kick below the escape velocity, with the gas left at BH formation):
+    mBH, vSN_kick = _sample_bh_masses_and_kicks(Mcl, Z, config)
+    mBH = mBH[vSN_kick < v_esc(M_retain, rh)]
 
     # optionally override BH masses from external file:
     if Bi==1:
@@ -348,7 +412,7 @@ def initialize_cluster(config):
             # legacy: all NSs form at tBH_form; tBH_form is a lower bound on the
             # NS formation time (=> gas upper bound). Random draws are kept in the
             # same order as in earlier versions, so results are bit-identical.
-            N_NS_ret = v_NS_natal[v_NS_natal < v_esc(Mcl + M_gas_BHform, rh)].size
+            N_NS_ret = v_NS_natal[v_NS_natal < v_esc(M_retain, rh)].size
 
             if N_NS_ret > 0:
                 mNS = _draw_ns_masses(N_NS_ret, with_NSs, EoS)
@@ -390,22 +454,10 @@ def initialize_cluster(config):
     # per-step BH snapshots (-BOi 1) are streamed to temporary files next to the results:
     results_dir = os.path.join(os.getcwd(), config.get('results_folder_name', 'Results'))
 
-    # records, each with one placeholder row. The merger, evolution, hardening and TDE
-    # rows are written to their files during the run, in chunks (see flush_records and
-    # StreamedRowLog), with the same text as writing them all at the end:
-    def streamed(ncols, name, keys, indicator, keep, prepare=None):
-        return StreamedRowLog(ncols, [0.0] * ncols,
-                              os.path.join(results_dir, config.get(name + '_file', name) + '.txt'),
-                              '# ' + ' '.join(keys) + '\n', _write_rows, keep=keep,
-                              chunk=STREAM_CHUNK_ROWS, prepare=prepare,
-                              enabled=config.get(indicator, 1) == 1)
-    # (each merger line ends with the final cluster properties, added when the run ends)
-    mergers = streamed(27, 'mergers', merger_keys, 'Mi', keep=0)
-    # (the last evolution rows are kept: write_output drops the last one or two rows,
-    # depending on how the run ends; the last hardening row can still change)
-    evolution = streamed(71, 'evolution', evolution_keys, 'Ei', keep=2)
-    hardening = streamed(12, 'hardening', hardening_keys, 'Hi', keep=1)
-    tdes = streamed(18, 'tdes', tdes_keys, 'Ti', keep=0, prepare=fill_R_mb)
+    # records (merger, evolution, hardening and TDE rows), written during the run:
+    records = _new_records(config, with_populations=bool(config.get('populations')))
+    mergers = records['mergers']; evolution = records['evolution']
+    hardening = records['hardening']; tdes = records['tdes']
     snapshot_list = (lambda: SnapshotStream(results_dir)) if config.get('BOi', 0) == 1 else list
 
     # bundle all mutable simulation variables into the state dictionary:
@@ -443,7 +495,179 @@ def initialize_cluster(config):
         'black_hole_generations': snapshot_list(), 'black_hole_tdes': snapshot_list()
     }
 
+    # stellar populations (populations.py): the initial one, and those born later (-POP):
+    state['pops'] = StellarPopulations(Mcl, Z, SFE, config.get('populations', ()))
+    set_field_star_mixture(None, None)
+    # BHs and NSs of later populations that have not formed yet, sorted by formation time
+    # (masses [Msun], spins, formation times [Myr], natal kicks [km/s], 1 for NSs and 0
+    # for BHs):
+    state['mCO_pending'] = np.array([]); state['sCO_pending'] = np.array([])
+    state['tCO_pending'] = np.array([]); state['vCO_pending'] = np.array([])
+    state['nCO_pending'] = np.array([])
+    state['N_pop_CO_formed'] = 0; state['N_pop_CO_retained'] = 0
+    # one row per population and time step, written when populations are configured (-POP):
+    state['populations'] = records['populations']
+    # (number of evolution rows, number of population rows incl. the placeholder row) after
+    # the last few evolution rows:
+    state['population_marks'] = []
+
     return state
+
+
+def restore_cluster(checkpoint, config, with_populations=False):
+    """The simulation state saved in a checkpoint (restart.py), for a restarted run with
+    configuration config (results in config['results_folder_name']): the output records
+    continue from the checkpoint (StreamedRowLog.restore), and the random number generator
+    from its saved state. with_populations: give the run a populations record even if the
+    checkpoint has none (a population is added at the restart)."""
+    configure_kick_model(config['recoil_kick_model'])
+    set_field_star_mixture(None, None)
+    state = dict(checkpoint['state'])
+    saved = checkpoint['records']
+    records = _new_records(config, with_populations=with_populations or saved.get('populations') is not None)
+    for key, rec in saved.items():
+        if rec is not None and records.get(key) is not None:
+            records[key].restore(*rec)
+    state.update(records)
+    results_dir = os.path.join(os.getcwd(), config.get('results_folder_name', 'Results'))
+    snapshot_list = (lambda: SnapshotStream(results_dir)) if config.get('BOi', 0) == 1 else list
+    state['simulation_times'] = []
+    for key in ('black_hole_masses', 'black_hole_spins', 'black_hole_generations', 'black_hole_tdes'):
+        state[key] = snapshot_list()
+    state['n_snapshots_before'] = checkpoint['n_snapshots']
+    np.random.set_state(checkpoint['rng'])
+    return state
+
+
+def add_black_holes(state, config, masses, spins=None):
+    """Add BHs (masses [Msun]; spins, or drawn as for first-generation BHs with -s and -SD)
+    to the single compact objects of a restarted run: generation 1, no TDEs."""
+    masses = np.asarray(masses, dtype=float)
+    n = masses.size
+    if spins is None:
+        SD = config['SD']; s1g_max = config['s1g_max']
+        if SD==0:
+            spins = np.random.uniform(0, s1g_max, n)
+        elif SD==1:
+            spins = s1g_max * np.ones(n)
+        else:
+            spins = np.random.beta(1.4, 3.6, n) * s1g_max
+    spins = np.asarray(spins, dtype=float)
+    if n > 0:
+        state['BH'].add_many(masses, spins, np.ones(n), np.zeros(n))
+        if state['i_aux1'] == 1:
+            state['N_BH'] = state['N_BH'] + n
+
+
+def form_populations(state, config):
+    """Give birth to the stellar populations scheduled for the current time (-POP, or a
+    population added at a restart). A new population of N stars (Kroupa IMF, as the first
+    one) adds its stellar mass to the cluster, its residual gas (star formation efficiency
+    SFE) to the gas of the cluster, its hard stellar binaries to those available for
+    exchanges, and its BHs and NSs to the compact objects still to form (BHs at an age of
+    tBH_form, NSs as set by -NSt; see form_pending_compact_objects). Updates state in-place."""
+    pops = state['pops']
+    if not pops.scheduled:
+        return
+    t = state['t']
+    for p in pops.due(t):
+        if not pops.multi:
+            # from now on the initial population's mass is kept by the populations:
+            pops.M[0] = state['Mcl']
+        m_avg0 = state['m_avg0']
+        N_k = p['N']
+        M_k = N_k * m_avg0
+        Z_k = p['Z']
+        SFE_k = p['SFE']
+        pops.add(t, N_k, M_k, Z_k, SFE_k, p['x'], p['n_mix'])
+        state['Mcl'] = state['Mcl'] + M_k
+        state['m_avg'] = state['Mcl'] / sum(pops.numbers(t, m_avg0))
+
+        # residual gas of the new population, expelled with the cluster's gas (-tge):
+        state['M_gas'] = state['M_gas'] + (1 - SFE_k) / SFE_k * M_k
+
+        # hard stellar binaries of the new population (as at initialization):
+        Nb_k = int(N_k * config['fb'] / 2)
+        if Nb_k > 0 and state['n_star'] > 0:
+            ab_min = 3 * R_sun
+            ab_max = (3 / np.pi / 4 / state['n_star'])**(1/3) / 10
+            ab_k = 10**(np.random.uniform(np.log10(ab_min), np.log10(ab_max), Nb_k))
+            v_star = np.sqrt(0.4 * G_Newton * state['Mcl'] / state['rh'])
+            ab_k = ab_k[ab_k < G_Newton * state['m_avg'] / v_star]
+            state['ab'] = np.concatenate((state['ab'], ab_k))
+            state['Nb'] = state['Nb'] + Nb_k
+
+        # BHs: masses and natal kicks drawn as for the first population; they form at an
+        # age of tBH_form, and are retained if the kick is below the escape velocity then:
+        mBH, vBH_kick = _sample_bh_masses_and_kicks(M_k, Z_k, config)
+        SD = config['SD']; s1g_max = config['s1g_max']
+        if SD==0:
+            sBH = np.random.uniform(0, s1g_max, mBH.size)
+        elif SD==1:
+            sBH = s1g_max * np.ones(mBH.size)
+        else:
+            sBH = np.random.beta(1.4, 3.6, mBH.size) * s1g_max
+        m_new = [mBH]; s_new = [sBH]; t_new = [t + tBH_form * np.ones(mBH.size)]; v_new = [vBH_kick]
+        n_new = [np.zeros(mBH.size)]
+
+        # NSs (zero spin), forming at an age of tBH_form (-NSt 0) or at the ages of the
+        # COMPAS distribution (-NSt 1, 2):
+        with_NSs = config['with_NSs']
+        if with_NSs > 0:
+            f_NS_form = state['Kroupa_norm'] * integrate.quad(IMF_kroupa, 8, 18)[0]
+            N_NS = int(f_NS_form * N_k)
+            if N_NS > 0:
+                vNS = maxwell_draws(np.sqrt(3) * config['wSN_kick'], N_NS)
+                mNS = _draw_ns_masses(N_NS, with_NSs, config['EoS'])
+                NSt = config.get('NSt', 0)
+                if NSt == 0:
+                    tNS = t + tBH_form * np.ones(N_NS)
+                else:
+                    tNS = t + sample_ns_formation_times(mNS, NSt, tBH_form, table=NSFormationTable())
+                m_new.append(mNS); s_new.append(np.zeros(N_NS)); t_new.append(tNS); v_new.append(vNS)
+                n_new.append(np.ones(N_NS))
+
+        m_all = np.concatenate([state['mCO_pending']] + m_new)
+        s_all = np.concatenate([state['sCO_pending']] + s_new)
+        t_all = np.concatenate([state['tCO_pending']] + t_new)
+        v_all = np.concatenate([state['vCO_pending']] + v_new)
+        n_all = np.concatenate([state['nCO_pending']] + n_new)
+        order = np.argsort(t_all, kind='stable')
+        state['mCO_pending'] = m_all[order]; state['sCO_pending'] = s_all[order]
+        state['tCO_pending'] = t_all[order]; state['vCO_pending'] = v_all[order]
+        state['nCO_pending'] = n_all[order]
+
+        print('STELLAR POPULATION {} BORN AT t = {:.6g} Myr: N = {:.6g}, M = {:.6g} Msun, Z = {:.6g}, SFE = {:.6g}, '
+              'r_h,k/r_h = {:.6g}{}'.format(pops.size - 1, t, N_k, M_k, Z_k, SFE_k, p['x'],
+                                           '' if p['x'] == 1.0 else ', mixing time {:.6g} t_rh'.format(p['n_mix'])))
+
+
+def form_pending_compact_objects(state, config):
+    """Form the BHs and NSs of later stellar populations whose formation time has been
+    reached; each is retained if its natal kick is below the current escape velocity, and
+    joins the single compact objects (generation 1, no TDEs). Updates state in-place."""
+    tq = state['tCO_pending']
+    if tq.size == 0:
+        return
+    k = np.searchsorted(tq, state['t'], side='right')
+    if k == 0:
+        return
+    m = state['mCO_pending'][:k]; s = state['sCO_pending'][:k]; v = state['vCO_pending'][:k]
+    retained = v < v_esc(state['Mcl'] + state['M_gas'], state['rh'])
+    n_ret = int(retained.sum())
+    if n_ret > 0:
+        state['BH'].add_many(m[retained], s[retained], np.ones(n_ret), np.zeros(n_ret))
+        if state['i_aux1'] == 1:
+            state['N_BH'] = state['N_BH'] + n_ret
+    is_NS = state['nCO_pending'][:k] == 1
+    state['mCO_pending'] = state['mCO_pending'][k:]; state['sCO_pending'] = state['sCO_pending'][k:]
+    state['tCO_pending'] = tq[k:]; state['vCO_pending'] = state['vCO_pending'][k:]
+    state['nCO_pending'] = state['nCO_pending'][k:]
+    state['N_pop_CO_formed'] = state['N_pop_CO_formed'] + k
+    state['N_pop_CO_retained'] = state['N_pop_CO_retained'] + n_ret
+    # (NSs are also counted with those of the first population, printed at the end for -NSt > 0)
+    state['N_NS_formed'] = state['N_NS_formed'] + int(is_NS.sum())
+    state['N_NS_retained'] = state['N_NS_retained'] + int((is_NS & retained).sum())
 
 
 def form_neutron_stars(state, config):
@@ -539,8 +763,17 @@ def compute_cluster_properties(state, config):
         state['black_hole_generations'].append(np.concatenate((BH.g, binaries[1:, 8], binaries[1:, 9], pairs[1:, 3])))
         state['black_hole_tdes'].append(np.concatenate((BH.h, binaries[1:, 13], binaries[1:, 14], pairs[1:, 4])))
 
-    # NSs still to form (only for NSt > 0):
-    NSs_pending = state['tNS_pending'].size > 0
+    # NSs still to form (only for NSt > 0), and compact objects of later populations (still
+    # to form, or of populations to be born before t_max):
+    pops = state['pops']
+    NSs_pending = (state['tNS_pending'].size > 0 or state['tCO_pending'].size > 0
+                   or pops.next_birth_time() < config['t_max'])
+
+    # several stellar populations: draw field stars from them (stellar_evolution.get_star)
+    if pops.multi:
+        set_field_star_mixture(pops.ages(t), pops.central_weights(t, m_avg0))
+    else:
+        set_field_star_mixture(None, None)
 
     # activate BH subsystem once BH formation time is reached (if it would be
     # empty and NSs are still to form, wait for them):
@@ -678,6 +911,9 @@ def compute_cluster_properties(state, config):
 
     # stellar density updated:
     n_star = n_star0 * (rh0 / rh)**3 * (Mcl / Mcl0) * (m_avg0 / m_avg)
+    if pops.multi and pops.segregated:
+        # central density of populations with their own half-mass radii (populations.py):
+        n_star = n_star * pops.density_factor(t, m_avg0)
 
     # half-mass volume:
     Vh = 4 * np.pi / 3 * rh**3
@@ -827,8 +1063,29 @@ def compute_timescales(state, config):
     else:
         dt = np.min([dt_max, np.max([dt_min, np.min([t_3bb, t_2cap, t_ex1, t_ex2])])])
 
+    # at most a fraction f_dt_esc of the cluster mass lost by escape in a step (escape rate
+    # of the previous step): otherwise a tidally filling cluster, with a large escape rate
+    # xi_e, could lose most of its mass and reach a negative half-mass radius in one step
+    xi_e_prev = state.get('xi_e', 0.0)
+    t_rlx = state['t_rlx']
+    if xi_e_prev > 0 and t_rlx > 0:
+        dt_esc = f_dt_esc * t_rlx / xi_e_prev
+        if dt > dt_esc:
+            dt = max(dt_min, dt_esc)
+
     if dt > t and t>0:
         dt = t
+
+    # several stellar populations: steps of at most the age of the youngest one (as dt <= t
+    # above for one population: stellar-evolution mass loss ~ dt/age), and steps that end at
+    # the birth of the next population:
+    pops = state['pops']
+    if pops.multi:
+        youngest = min(t - tk for tk in pops.t_birth)
+        dt = min(dt, max(dt_min, youngest))
+    t_next = pops.next_birth_time()
+    if t < t_next < math.inf:
+        dt = min(dt, t_next - t)
 
     state['t_3bb'] = t_3bb
     state['t_2cap'] = t_2cap
@@ -1157,7 +1414,11 @@ def evolve_tdes(state, config):
     N_strs = Mcl/m_avg
 
     # WD formation rate (/Myr):
-    dN_WDformdt = N_strs/t/2.5 * Kroupa_norm*IMF_kroupa((solar_life/t)**(1/2.5)) * (solar_life/t)**(1/2.5) if t>t_WN else 0.0
+    if not state['pops'].multi:
+        dN_WDformdt = N_strs/t/2.5 * Kroupa_norm*IMF_kroupa((solar_life/t)**(1/2.5)) * (solar_life/t)**(1/2.5) if t>t_WN else 0.0
+    else:
+        # sum over the stellar populations, each at its own age:
+        dN_WDformdt = state['pops'].white_dwarf_formation_rate(t, state['m_avg0'], Kroupa_norm, IMF_kroupa)
 
     # WD evaporation rate (/Myr):
     dN_WDevdt = xi_e*N_WD/t_rlx if N_WD>0 else 0.0
@@ -1269,6 +1530,18 @@ def record_evolution(state):
                                        2*vBH, N_Triples, N_ZLK, N_WD, v_WD, k_tdeBHWD, N_tdeBHWD, dN_WDformdt, dN_WDevdt, dN_tdeBHWDdt, k_tdeBHstar,
                                        dN_tdeBHstardt, N_tdeBHstar, N_tdeBBHstar, M_gas])
 
+    # rows of populations.txt (when populations are configured, -POP); the number of rows
+    # written after each evolution row is kept for the last few, as the last evolution
+    # rows are cut at the end of the run (write_output):
+    record = state.get('populations')
+    if record is not None:
+        for row in state['pops'].rows(t, state['m_avg0'], Mcl):
+            record.append(row)
+        record.keep = 3 * state['pops'].size
+        marks = state['population_marks']
+        marks.append((len(state['evolution']), len(record)))
+        del marks[:-4]
+
 def compute_external_params(state, config):
     """Compute external/environmental parameters for the cluster.
 
@@ -1286,17 +1559,23 @@ def compute_external_params(state, config):
     Mcl = state['Mcl']; rh = state['rh']; R_gal = state['R_gal']
     v_gal = state['v_gal']
 
-    # Jacobi radius for an isothermal (flat rotation curve) galaxy:
-    # r_J^3 = G M / (Omega^2 - Phi'') = G M / (2 Omega^2), with Omega = v_gal / R_gal
-    rJ = (G_Newton * Mcl * R_gal**2 / 2 / v_gal**2)**(1/3)
-    
-    # dimensionless escape rate:
-    xi_e = xi_e0 * np.exp(10 * rh / rJ)
-    state['xi_e'] = xi_e
+    if R_gal > 0:
+        # Jacobi radius for an isothermal (flat rotation curve) galaxy:
+        # r_J^3 = G M / (Omega^2 - Phi'') = G M / (2 Omega^2), with Omega = v_gal / R_gal
+        rJ = (G_Newton * Mcl * R_gal**2 / 2 / v_gal**2)**(1/3)
 
-    # dynamical friction timescale 
-    # (Gnedin et al. 2014, Eq. 8; lnL = 5.8, eccentricity factor f_eps = 0.5):
-    t_df = 0.45e3 * (R_gal / 1e3)**2 * v_gal / (Mcl / 1e5) / 2
+        # dimensionless escape rate:
+        xi_e = xi_e0 * np.exp(10 * rh / rJ)
+
+        # dynamical friction timescale
+        # (Gnedin et al. 2014, Eq. 8; lnL = 5.8, eccentricity factor f_eps = 0.5):
+        t_df = 0.45e3 * (R_gal / 1e3)**2 * v_gal / (Mcl / 1e5) / 2
+    else:
+        # at the galactic center (R_gal = 0, -R 0 or -GC 1): no galactic tides (the limit
+        # r_J -> infinity, escape rate of an isolated cluster) and no dynamical friction
+        xi_e = xi_e0
+        t_df = np.inf
+    state['xi_e'] = xi_e
     state['t_df'] = t_df
 
 
@@ -1328,20 +1607,29 @@ def update_cluster(state, config):
     t_df = state['t_df']
     M_gas = state['M_gas']; t_ge = state['t_ge']
 
-    # average mass evolution:
-    if t>t_sev:
-        m_avg = m_avg0 * (t / t_sev)**(-nu_sev)
-    else:
-        m_avg = m_avg0
+    pops = state['pops']
+    if not pops.multi:
+        # average mass evolution:
+        if t>t_sev:
+            m_avg = m_avg0 * (t / t_sev)**(-nu_sev)
+        else:
+            m_avg = m_avg0
 
-    # stellar mass loss:
-    if t>t_sev:
-        dMcl_sev = - nu_sev * Mcl * dt / t
-    else:
-        dMcl_sev = 0.0
+        # stellar mass loss:
+        if t>t_sev:
+            dMcl_sev = - nu_sev * Mcl * dt / t
+        else:
+            dMcl_sev = 0.0
 
-    # relaxation mass loss:
-    dMcl_rlx = - xi_e * Mcl * dt / t_rlx
+        # relaxation mass loss:
+        dMcl_rlx = - xi_e * Mcl * dt / t_rlx
+    else:
+        # several stellar populations (populations.py): mean mass of all stars, escape
+        # (relaxation) mass loss of the cluster shared among the populations, and the
+        # stellar-evolution mass loss of each population at its own age:
+        m_avg = Mcl / sum(pops.numbers(t, m_avg0))
+        dMcl_rlx = - xi_e * Mcl * dt / t_rlx
+        dMcl_sev = pops.evolve(t, dt, m_avg0, dMcl_rlx, t_rlx)
 
     # total mass loss:
     dMcl = dMcl_sev + dMcl_rlx
@@ -1370,10 +1658,12 @@ def update_cluster(state, config):
 
     # galactocentric radius step 
     # (Gnedin et al. 2014, Eq. 7: dR^2/dt = -R^2/t_df  =>  dR/dt = -R/(2 t_df)):
-    dR_gal = - R_gal * dt / (2 * t_df)
+    dR_gal = - R_gal * dt / (2 * t_df) if R_gal > 0 else 0.0
 
     # cluster mass update:
     Mcl = Mcl + dMcl
+    if pops.multi and Mcl >= 0:
+        Mcl = sum(pops.M)      # (the same up to rounding; the populations are the reference)
 
     # gas expulsion (exact exponential drain on t_ge):
     M_gas = M_gas * np.exp(-dt / t_ge)
@@ -1386,13 +1676,23 @@ def update_cluster(state, config):
     # half-mass radius update:
     rh = rh + drh
 
+    if not rh > 0:
+        # (possible only if the time step is dt_min and the escape rate is extreme)
+        print('CLUSTER DISSOLVED')
+        state['Mcl'] = Mcl
+        return False
+
     # galactocentric radius update:
     R_gal = R_gal + dR_gal
 
     if R_gal<0:
         print('CLUSTER REACHED GALAXY CENTER')
-        state['R_gal'] = R_gal
-        return False
+        if not config.get('continue_at_GC', 0):
+            state['R_gal'] = R_gal
+            return False
+        # -GC 1: the cluster stays at the center, without galactic tides from now on
+        print('CONTINUING AT THE GALACTIC CENTER WITHOUT GALACTIC TIDES (t = {:.6g} Myr)'.format(t + dt))
+        R_gal = 0.0
 
     # simulation time update:
     t+=dt
@@ -1557,6 +1857,7 @@ def write_output(state, config):
 
     # initial and final cluster properties, the same on every merger row:
     cluster_columns = ' '+str(Mcl0)+' '+str(rh0)+' '+str(Z)+' '+str(zCl_form)+' '+str(R_gal0)+' '+str(Mcl)+' '+str(rh)+' '+str(R_gal)
+    state['merger_suffix'] = cluster_columns     # (restart.json of a restarted run)
     if isinstance(state['mergers'], StreamedRowLog):
         state['mergers'].finish(max(N_me, 0), suffix=cluster_columns)
     elif config['Mi']==1:
@@ -1570,5 +1871,17 @@ def write_output(state, config):
 
     _finish_record(state['hardening'], config['Hi'], RESULTS_DIR, config.get('hardening_file', 'hardening'),
                    hardening_keys, max(N_hardening, 0))
+
+    # populations.txt: the rows of the time steps kept in evolution.txt (its first
+    # N_iter - 1 rows):
+    if state.get('populations') is not None:
+        n_evo = max(N_iter - 1, 0)
+        n_pop = 0
+        for n_e, n_p in state['population_marks']:
+            if n_e - 1 == n_evo:            # (n_e counts the placeholder row)
+                n_pop = n_p - 1
+        if n_evo > 0 and n_pop == 0 and state['population_marks']:
+            raise RuntimeError('populations.txt: rows of the last time steps not found')
+        state['populations'].finish(n_pop)
 
 # End of file.

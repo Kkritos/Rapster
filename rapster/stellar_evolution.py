@@ -434,6 +434,21 @@ def init_stellar_mass_sampler(mass_bias_power):
     cdf_values /= cdf_values[-1]
     inv_cdf = interpolate.interp1d(cdf_values, m_fine_grid, bounds_error=False, fill_value=(0.08, 340.0))
 
+# Several stellar populations (populations.py): ages [Myr] and cumulative weights of the
+# populations among the stars of the cluster center, set at every step by
+# compute_cluster_properties; None for a single population.
+_field_star_mixture = None
+
+def set_field_star_mixture(ages, weights):
+    """Draw the stars of get_star from several populations: population k (age ages[k])
+    with probability weights[k] / sum(weights). ages=None: a single population, of age
+    equal to the simulation time (the default)."""
+    global _field_star_mixture
+    if ages is None:
+        _field_star_mixture = None
+    else:
+        _field_star_mixture = (list(ages), np.cumsum(np.asarray(weights, dtype=float)))
+
 def get_star(t, tBH_form, m_min, m_max):
     """
     Returns a main-sequence star (mass/Msun and radius/pc) from an evolving mass function at time t.
@@ -442,8 +457,18 @@ def get_star(t, tBH_form, m_min, m_max):
     @in tBH_form: time of BH-subsystem formation (Myr)
     @in m_min: ZAMS minimum mass (Msun)
     @in m_max: ZAMS maximum mass (Msun)
+
+    With several stellar populations (set_field_star_mixture), the star belongs to
+    population k with probability proportional to its weight, and t is replaced by the
+    age of that population.
     """
-    
+
+    mixture = _field_star_mixture
+    if mixture is not None:
+        ages, cum = mixture
+        k = int(cum.searchsorted(np.random.random() * cum[-1], side='right'))
+        t = ages[min(k, len(ages) - 1)]
+
     # current mass limit:
     current_m_max = (1e4/t)**(1/2.5) if t > tBH_form else m_max
     

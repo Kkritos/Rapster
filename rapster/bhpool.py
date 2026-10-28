@@ -136,6 +136,29 @@ class BHPool:
         self._dirty = set()   # blocks whose sums are out of date (see _settle)
         self._rebuild()
 
+    # ------------------------------------------------------------- pickling
+    def __getstate__(self):
+        """State for pickling (checkpoints, restart.py), kept small: the slots beyond n
+        are zero and are not stored, and the caches of cumulative sums (_cb, _wcum) are
+        left out; they are recomputed when needed, with the same sequential sums."""
+        state = self.__dict__.copy()
+        n = self.n
+        state['_capacity'] = self._m.shape[0]
+        for name in ('_m', '_s', '_g', '_h', '_W'):
+            state[name] = getattr(self, name)[:n].copy()
+        state['_cb'] = {}; state['_cbd'] = {}; state['_wcum'] = {}
+        return state
+
+    def __setstate__(self, state):
+        state = dict(state)
+        cap = state.pop('_capacity', None)
+        if cap is not None:
+            n = state['n']
+            for name in ('_m', '_s', '_g', '_h'):
+                a = np.zeros(cap); a[:n] = state[name]; state[name] = a
+            W = np.zeros((cap, N_FAMILIES)); W[:n] = state['_W']; state['_W'] = W
+        self.__dict__.update(state)
+
     # ------------------------------------------------------------------ views
     @property
     def m(self):

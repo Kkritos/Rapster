@@ -17,11 +17,12 @@ import numpy as np
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, ROOT)
 
-from rapster.constants import tBH_form, fBH_max
+from rapster.constants import tBH_form
 from rapster.run_cluster import parse_args
 from rapster.cluster_evolution import (initialize_cluster, form_neutron_stars, compute_cluster_properties,
                                        compute_timescales, form_binaries, evolve_interactions,
-                                       compute_external_params, evolve_tdes, record_evolution, update_cluster)
+                                       compute_external_params, evolve_tdes, record_evolution, update_cluster,
+                                       compact_object_mass)
 from rapster.compact_accretion import accrete_gas
 from rapster.stellar_evolution import init_stellar_mass_sampler
 from rapster.functions import set_escape_factor, v_esc
@@ -40,7 +41,7 @@ def setup(nst, extra=()):
 
 def run(state, config, t_max):
     """Main loop as in run_cluster.main, checking the BH bookkeeping at every step."""
-    while state['t'] < t_max and state['R_gal'] > 0 and state['Mcl'] > 0 and state['BH'].m.sum() < fBH_max * state['Mcl']:
+    while state['t'] < t_max and state['R_gal'] >= 0 and state['Mcl'] > 0 and compact_object_mass(state) < config['fCO_max'] * state['Mcl']:
         form_neutron_stars(state, config)
         if not compute_cluster_properties(state, config):
             break
