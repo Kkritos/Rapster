@@ -2,6 +2,20 @@
 
 All notable changes to Rapster will be documented in this file.
 
+## [2.15.1] - 2026-10-29
+
+Faster, with byte-identical results: every output file is the same as with 2.15.0 for a given seed (32 test configurations up to N = 1e8, including multiple populations, NSs, residual gas and IMBH seeds). Paired timings (the two versions running side by side): 1.30x for the full run of N = 10^7.5, r_h = 0.1 pc (515 -> 396 s), 1.47x for a 2e4 Msun seed BH in N = 2e6, r_h = 0.3 pc, n = 4e7 pc^-3 to 200 Myr (37.9 -> 25.7 s), 1.24x for a 1000 Msun seed BH in the default cluster (9.8 -> 7.9 s), 1.11x for the first 25 Myr of N = 1e8, r_h = 0.1 pc (158 -> 143 s), unchanged for ordinary clusters.
+
+### Performance (results unchanged)
+- **Pool of single BHs** (`bhpool.py`): the cumulative block sums used by the weighted draws are brought up to date in one pass from the first changed block, for several weight families at once where they are drawn together (the BBH-single partner and the three-body binaries); a draw locates its block in a list copy of the cumulative sums (`bisect`) and its BH in a cumulative sum of the block's weights kept until the block changes; repeated draws from an unchanged pool use a draw function with these lookups bound (`BHPool.drawer`). The weight families drawn together are stored next to each other (checkpoints of 2.15.0 are converted when loaded). A heavier mass of the heaviest BH no longer triggers a search for the heaviest BH over the whole pool (an IMBH growing by TDEs). Same sums and same draws, bit for bit.
+- **Three-body binaries** (`three_body_binary.py`): what the sampler computes from the pool (region totals, draw functions) is kept while the pool is unchanged, i.e. for all the binaries formed between two removals of the BHs taken; the BHs taken are removed in one call.
+- **BBH interactions** (`binary_evolution.py`): the loop over interactions uses Python floats for the rates, the GW time and the encounter outcomes (the same IEEE operations as with NumPy scalars; where Python would raise on a division by zero or an overflow, the NumPy value is used), and the triples formed in BBH-BBH interactions are appended to the triple array once per step.
+- **Tables of binaries and triples**: a row is deleted by moving the rows after it in place with one memory move, and the binaries released by triples are appended once per step (the same rows in the same order).
+- **Mergers**: remnant mass, spin and kick computed in one pass, with the cosines of the spin angles computed once (`merger_remnant`); the redshift of a merger interpolated without the overhead of `scipy.interpolate.interp1d` (the same `np.interp` that `interp1d` calls; with scipy versions that do not use it, `interp1d` is called as before).
+- **GW captures and TDEs**: constants computed once per step, and the quantities of a TDE computed on Python floats, which also makes the Euler loop of the spin evolution faster; for the Runge-Kutta spin evolution of BHs, the last mass of the Euler steps it reproduces is computed directly instead of by ~100 additions (within a binade the additions all add the same rounded step; otherwise, or for a step halfway between two representable increments, the additions are done).
+
+The new tests are in `tests/test_speedups_2151.py`.
+
 ## [2.15.0] - 2026-10-28
 
 Easier set-ups for users: multiple stellar populations, checkpoints and restarts, and simpler options. For a single stellar population, results are byte-identical to 2.14.3 for a given seed except where fixes 1 and 2 apply and with residual gas (`-sfe` < 1, through the new `-tge`); of 30 test configurations up to N = 1e8, 26 are identical, `-sfe 0.5` changes through `-tge`, one ends a step earlier through fix 1, and two tidally limited clusters change in their last steps before dissolution through fix 2.

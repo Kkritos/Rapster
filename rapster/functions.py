@@ -42,6 +42,19 @@ Planck18_lookup_table = np.load(DATA_PATH_Planck18)
 _lookback_interp = interpolate.interp1d(Planck18_lookup_table['z'], Planck18_lookup_table['lookback'])
 _redshift_interp = interpolate.interp1d(Planck18_lookup_table['t'], Planck18_lookup_table['redshift'])
 
+# Scalar calls of the interpolators above (redshift_interp per merger) are dominated by
+# the Python-level overhead of interp1d: for float64 tables, interp1d evaluates
+# np.interp(x, self.x, self.y) (scipy >= 1.10, _call_linear_np), which is called directly
+# below, with the same value; with other versions of scipy the interpolators are used.
+def _np_tables(f):
+    call_np = getattr(type(f), '_call_linear_np', None)
+    if call_np is not None and getattr(f, '_call', None) is call_np:
+        return (np.ascontiguousarray(f.x, dtype=np.float64), np.ascontiguousarray(f.y, dtype=np.float64))
+    return None
+
+_redshift_np = _np_tables(_redshift_interp)
+_lookback_np = _np_tables(_lookback_interp)
+
 # tabulated domains (set by the Planck18 lookup table):
 _Z_MIN, _Z_MAX = float(Planck18_lookup_table['z'].min()), float(Planck18_lookup_table['z'].max())
 _T_MIN, _T_MAX = float(Planck18_lookup_table['t'].min()), float(Planck18_lookup_table['t'].max())
@@ -70,7 +83,11 @@ def lookback_interp(z):
             f"lookback_interp: redshift z={z} is outside the Planck18 lookup "
             f"table range z in [{_Z_MIN}, {_Z_MAX}]."
         )
-    out = _lookback_interp(z)
+    if scalar and _lookback_np is not None:
+        # (the np.interp of interp1d without its Python-level overhead, as a 0-d array)
+        out = np.array(_compiled_interp(np.array([z]), _lookback_np[0], _lookback_np[1], None, None)[0])
+    else:
+        out = _lookback_interp(z)
     if scalar and z == z:          # skip NaN, which is never equal to itself
         _lookback_memo[(type(z), z)] = out.copy()
     return out
@@ -85,6 +102,15 @@ def redshift_interp(t):
 
     @out: redshift
     """
+    if _redshift_np is not None and (type(t) is float or type(t) is np.float64):
+        # (scalar: the np.interp of interp1d without its Python-level overhead, the
+        # same value as a 0-d array)
+        if t < _T_MIN or t > _T_MAX:
+            raise ValueError(
+                f"redshift_interp: lookback time t={t} Myr is outside the Planck18 "
+                f"lookup table range t in [{_T_MIN}, {_T_MAX}] Myr."
+            )
+        return np.array(_compiled_interp(np.array([t]), _redshift_np[0], _redshift_np[1], None, None)[0])
     if np.any(np.asarray(t) < _T_MIN) or np.any(np.asarray(t) > _T_MAX):
         raise ValueError(
             f"redshift_interp: lookback time t={t} Myr is outside the Planck18 "
@@ -273,6 +299,30 @@ def delete_row(arr, index):
         if 0 <= k < arr.shape[0]:
             return np.concatenate((arr[:k], arr[k+1:]), axis=0)
     return np.delete(arr, index, axis=0)
+
+def delete_row_inplace(arr, index):
+    """
+    Same rows as delete_row(arr, index), for an int index, without allocating a new
+    array: the rows after index move up by one in arr's memory, and a view of the
+    first n - 1 rows is returned. arr itself must not be used afterwards (its content
+    changes); used for the binaries and triples arrays, which are replaced by the
+    returned view.
+    """
+    if isinstance(index, (int, np.integer)) and arr.ndim >= 1:
+        k = int(index)
+        n = arr.shape[0]
+        if 0 <= k < n:
+            if k < n - 1:
+                if arr.flags.c_contiguous and arr.flags.writeable and arr.dtype.hasobject is False:
+                    # (the same bytes moved with one memmove of the buffer: NumPy copies
+                    # overlapping slices through a temporary array)
+                    w = arr.strides[0] if arr.ndim > 1 else arr.itemsize
+                    mv = memoryview(arr).cast('B')
+                    mv[k*w:(n-1)*w] = mv[(k+1)*w:n*w]
+                else:
+                    arr[k:n-1] = arr[k+1:n]
+            return arr[:n-1]
+    return delete_row(arr, index)
 
 def append_to(arr, values):
     """
@@ -574,18 +624,39 @@ def _DW_of_x(m0, m1, m2, a1, a2, e1, e2, cosi1, cosi2, w):
     makes; the returned function gives values identical to DW(x, ...).
     """
 
-    E = 1 - e1**2
-    i1, i2 = np.arccos(cosi1), np.arccos(cosi2)
-    sinw = np.sin(w)
-    M1 = m0 + m1
-    M2 = M1 + m2
-    mu1 = m0*m1/M1
-    mu2 = M1*m2/M2
-    B = mu2/mu1*np.sqrt(M1*a1/M2/a2*(1-e2**2))
-    A = np.sqrt(E)*np.cos(i1) + B*np.cos(i2)
-    tPN = 8*M1/m2*(a2/a1*np.sqrt(1-e2**2))**3*M1/232/a1/(3e5)**2
-    cosi = (A**2-B**2-E)/2/B/np.sqrt(E)
-    W = - 2*E + E*cosi**2 + 5*(1-E)*sinw**2*(cosi**2-1) + tPN/np.sqrt(E)
+    # (computed with Python floats when possible: the same IEEE operations, sqrt
+    # correctly rounded in both, NumPy's trigonometric functions; otherwise, e.g. for
+    # a division by zero, with NumPy scalars, which keep NumPy's inf/nan)
+    try:
+        sqrt = math.sqrt
+        m0_ = float(m0); m1_ = float(m1); m2_ = float(m2); a1_ = float(a1); a2_ = float(a2)
+        e1_ = float(e1); e2_ = float(e2)
+        E = 1 - e1_**2
+        i1, i2 = np.arccos(cosi1), np.arccos(cosi2)
+        sinw = float(np.sin(w))
+        M1 = m0_ + m1_
+        M2 = M1 + m2_
+        mu1 = m0_*m1_/M1
+        mu2 = M1*m2_/M2
+        B = mu2/mu1*sqrt(M1*a1_/M2/a2_*(1-e2_**2))
+        sqrtE = sqrt(E)
+        A = sqrtE*float(np.cos(i1)) + B*float(np.cos(i2))
+        tPN = 8*M1/m2_*(a2_/a1_*sqrt(1-e2_**2))**3*M1/232/a1_/(3e5)**2
+        cosi = (A**2-B**2-E)/2/B/sqrtE
+        W = - 2*E + E*cosi**2 + 5*(1-E)*sinw**2*(cosi**2-1) + tPN/sqrtE
+    except (ZeroDivisionError, OverflowError, ValueError):
+        E = 1 - e1**2
+        i1, i2 = np.arccos(cosi1), np.arccos(cosi2)
+        sinw = np.sin(w)
+        M1 = m0 + m1
+        M2 = M1 + m2
+        mu1 = m0*m1/M1
+        mu2 = M1*m2/M2
+        B = mu2/mu1*np.sqrt(M1*a1/M2/a2*(1-e2**2))
+        A = np.sqrt(E)*np.cos(i1) + B*np.cos(i2)
+        tPN = 8*M1/m2*(a2/a1*np.sqrt(1-e2**2))**3*M1/232/a1/(3e5)**2
+        cosi = (A**2-B**2-E)/2/B/np.sqrt(E)
+        W = - 2*E + E*cosi**2 + 5*(1-E)*sinw**2*(cosi**2-1) + tPN/np.sqrt(E)
 
     # x-independent pieces of the expressions in DW (same operation order):
     A2_B2 = A**2-B**2       # (A**2-B**2-x) == (A**2-B**2) - x
@@ -603,7 +674,9 @@ def _DW_of_x(m0, m1, m2, a1, a2, e1, e2, cosi1, cosi2, w):
     # but Python raises on, and anything unusual are handed to the NumPy version.
     c_A2_B2 = float(A2_B2); c_B = float(B); c_E = float(E); c_minus_2E = float(minus_2E)
     c_five_1mE = float(five_1mE); c_tPN = float(tPN); c_W = float(W)
-    scalars_ok = all(type(v) in (float, np.float64) for v in (A2_B2, B, E, minus_2E, five_1mE, tPN, W))
+    _ft = _FLOAT_TYPES
+    scalars_ok = (type(A2_B2) in _ft and type(B) in _ft and type(E) in _ft and type(minus_2E) in _ft
+                  and type(five_1mE) in _ft and type(tPN) in _ft and type(W) in _ft)   # (= all(...), faster)
 
     def DW_x(x):
         if scalars_ok and type(x) is np.ndarray and x.shape == (1,) and x.dtype == np.float64:

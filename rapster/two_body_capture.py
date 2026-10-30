@@ -21,6 +21,8 @@ from .functions import *
 from .remnant import *
 from .bhpool import FAM
 
+_SQRT_2_3 = np.sqrt(2/3)
+
 def sample_2capture(BH):
     """
     Sample the two single BHs that form a binary by GW capture, from the pool BH
@@ -45,21 +47,29 @@ def sample_2capture(BH):
     @out: m1, m2, slot of m1, slot of m2
     """
     f27 = FAM['c27']; f127 = FAM['c127']
+
     S27 = BH.total(f27)
     q_max = 1 - BH.weight(f27, BH.D) / S27      # 1 - p_max (the heaviest BH has the largest weight)
     m = BH.m
+    mass = BH._m.item; w27 = BH._W.item
     c = 2**(3/7)
+    draw = BH.draw; rand = np.random.rand
     while True:
-        if np.random.rand() < 0.5:
-            i = BH.draw(f127); j = BH.draw(f27)
+        if rand() < 0.5:
+            i = draw(f127); j = draw(f27)
         else:
-            i = BH.draw(f27); j = BH.draw(f127)
+            i = draw(f27); j = draw(f127)
         if i == j:
             continue
-        mi = m[i]; mj = m[j]
-        accept = (mi + mj)**(10/7) / (c * (mi**(10/7) + mj**(10/7))) * q_max / (1 - BH.weight(f27, i) / S27)
-        if np.random.rand() < accept:
-            return mi, mj, i, j
+        # (Python floats: the same IEEE operations as on the NumPy scalars m[i], m[j])
+        mi = mass(i); mj = mass(j)
+        try:
+            accept = (mi + mj)**(10/7) / (c * (mi**(10/7) + mj**(10/7))) * q_max / (1 - w27(i, f27) / S27)
+        except (ZeroDivisionError, OverflowError):
+            mi = m[i]; mj = m[j]
+            accept = (mi + mj)**(10/7) / (c * (mi**(10/7) + mj**(10/7))) * q_max / (1 - BH.weight(f27, i) / S27)
+        if rand() < accept:
+            return m[i], m[j], i, j
 
 def two_body_capture(seed, t, dt, z, zCl_form, k_2cap, mBH_avg, binaries, BH, vBH, v_star, N_2cap, N_BH, N_BBH, N_me, N_meRe, N_meEj, mergers, random_pairing=False):
     """
@@ -90,6 +100,12 @@ def two_body_capture(seed, t, dt, z, zCl_form, k_2cap, mBH_avg, binaries, BH, vB
 
         retained = []   # merger remnants retained in the cluster (added after the loop)
 
+        # (constant within the call: computed once, the same values)
+        t_lb_form = lookback_interp(zCl_form)
+        v_esc_ = v_esc_cl(v_star, vBH)
+        sigma_rel = _SQRT_2_3 * vBH
+        BH_s, BH_g, BH_h = BH._s, BH._g, BH._h
+
         for i in range(k_2cap):
             if BH.size < 2:
                 break # avoid infinite loop in the sampler
@@ -104,19 +120,19 @@ def two_body_capture(seed, t, dt, z, zCl_form, k_2cap, mBH_avg, binaries, BH, vB
             else:
                 m1, m2, k1, k2 = sample_2capture(BH)
                 
-            s1 = BH.s[k1]; g1 = BH.g[k1]; h1 = BH.h[k1]
-            s2 = BH.s[k2]; g2 = BH.g[k2]; h2 = BH.h[k2]
+            s1 = BH_s[k1]; g1 = BH_g[k1]; h1 = BH_h[k1]
+            s2 = BH_s[k2]; g2 = BH_g[k2]; h2 = BH_h[k2]
             
             ind = np.random.randint(0, 999999999)
             
             theta1, theta2, dPhi = sample_angles()
             
             m_rem, s_rem, vGW_kick = merger_remnant(m1, m2, s1, s2, theta1, theta2, dPhi)
-            g_rem = np.max([g1, g2]) + 1
+            g_rem = (g1 if g1 >= g2 else g2) + 1      # (= np.max([g1, g2]) + 1)
             h_rem = h1 + h2
 
             # relative velocity:
-            v_rel = get_maxwell_sample(np.sqrt(2/3) * vBH)
+            v_rel = get_maxwell_sample(sigma_rel)
             
             # total mass:
             m12 = m1 + m2
@@ -174,9 +190,11 @@ def two_body_capture(seed, t, dt, z, zCl_form, k_2cap, mBH_avg, binaries, BH, vB
             N_2cap+=1
             
             # check if binary merges within the current step:
-            if T_GW(m1, m2, sma, eccen) < np.min([dt, lookback_interp(zCl_form) - t]):
+            T_gw = T_GW(m1, m2, sma, eccen)
+            t_left = t_lb_form - t
+            if T_gw < (dt if dt <= t_left else t_left):     # (= np.min([dt, t_left]))
                 
-                if vGW_kick < v_esc_cl(v_star, vBH): # merger remnant retained in cluster
+                if vGW_kick < v_esc_: # merger remnant retained in cluster
                     
                     retained.append((m_rem, s_rem, g_rem, h_rem))
                     
@@ -209,13 +227,13 @@ def two_body_capture(seed, t, dt, z, zCl_form, k_2cap, mBH_avg, binaries, BH, vB
                 s_eff = (m1 * s1 * np.cos(theta1) + m2 * s2 * np.cos(theta2)) / (m1 + m2)
                 
                 # merger time and redshift for 2-body GW capture:
-                t_merge = t + T_GW(m1, m2, sma, eccen)  # absolute merger time [Myr]
-                t_lb = lookback_interp(zCl_form) - t_merge  # lookback time remaining at merger
+                t_merge = t + T_gw  # absolute merger time [Myr]
+                t_lb = t_lb_form - t_merge  # lookback time remaining at merger
                 z_merge = redshift_interp(t_lb) if t_lb >= 0.1 else 0.0  # merger redshift (0 if within 0.1 Myr of today)
 
                 # append merger:
                 mergers.append([seed, ind, 2, sma, eccen, m1, m2, s1, s2, g1, g2, theta1, theta2, dPhi, t, z, t_merge,
-                                z_merge, m_rem, s_rem, g_rem, vGW_kick, s_eff, q, v_esc_cl(v_star, vBH), h1, h2])
+                                z_merge, m_rem, s_rem, g_rem, vGW_kick, s_eff, q, v_esc_, h1, h2])
 
             else:
                 

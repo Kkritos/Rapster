@@ -1,7 +1,7 @@
 # Rapster
 
 <p align="center">
-	<a href="https://github.com/Kkritos/Rapster/releases"><img src="https://img.shields.io/badge/version-2.15.0-blue" alt="version"></a>
+	<a href="https://github.com/Kkritos/Rapster/releases"><img src="https://img.shields.io/badge/version-2.15.1-blue" alt="version"></a>
 	<a href="https://arxiv.org/abs/2210.10055"><img src="https://img.shields.io/badge/arXiv-2210.10055-b31b1b.svg" alt="arXiv"></a>
 	<a href="https://arxiv.org/abs/2212.06845"><img src="https://img.shields.io/badge/arXiv-2212.06845-b31b1b.svg" alt="arXiv"></a>
 	<a href="https://arxiv.org/abs/2605.21593"><img src="https://img.shields.io/badge/arXiv-2605.21593-b31b1b.svg" alt="arXiv"></a>
@@ -21,7 +21,7 @@ $\tt Rapster$ stands for $\rm RAPid\ cluSTER$ evolution.
 
 Author: Konstantinos Kritos <konstantinos.kritos@stonybrook.edu>
 
-Version: 2.15.0, October 28, 2026.
+Version: 2.15.1, October 29, 2026.
 (Thanks to Tousif Islam for helping modularize this repository!)
 
 ![LOGO](.assets/LOGO.png)
@@ -50,6 +50,10 @@ Version: 2.15.0, October 28, 2026.
 The repository provides the source code files for the current version in ``rapster/`` and all necessary data files in the ``Data/`` folder, for the rapid evolution of dense star cluster environments and the dynamical assembly of compact-object coalescences and tidal disruption events.
 
 The modeling accounts for the necessary physical processes governing the formation of compact-object binaries and cluster evolution, employing semi-analytic prescriptions described in Sec. 2 of [K. Kritos et al. PRD (2024)](https://arxiv.org/abs/2210.10055). This is our code paper, written with Vladimir Strokov, Vishal Baibhav, and Emanuele Berti.
+
+##### New in version 2.15.1:
+
+Faster, with byte-identical results: 1.1-1.5x faster for compact clusters (e.g. 515 -> 396 s for the full run of N = 10^7.5, r = 0.1 pc), unchanged for ordinary clusters (see ``CHANGELOG.md``).
 
 ##### New in version 2.15.0:
 
@@ -336,6 +340,7 @@ Each test file can also be run on its own, e.g. ``python3 tests/test_regression.
 - ``tests/test_populations.py`` checks multiple stellar populations: the ``-POP`` file, the bookkeeping of the populations (masses, numbers of stars, stellar-evolution mass loss, the shares of the escaping mass, mixing of segregated populations, WD formation), the drawing of field stars from several populations, and whole runs (population rows in step with the evolution rows and adding up to the cluster mass, BHs of a later population, unchanged results when no second population is born, and a cluster born as two halves 0.1 Myr apart compared with a single population).
 - ``tests/test_restart.py`` checks checkpoints and restarts: a run stopped abruptly after a checkpoint, restarted and joined, and a run continued twice from its final checkpoint, give byte-identical files to an uninterrupted run; the changes allowed at a restart, and the options a restart refuses.
 - ``tests/test_user_options.py`` checks ``-tge``, ``-fCO`` (counting all compact objects), ``-R 0`` and ``-GC``.
+- ``tests/test_speedups_2151.py`` checks the optimizations of version 2.15.1 against the code they replace: the pool's cumulative sums and draw functions, the heaviest BH, the conversion of checkpoints of 2.15.0, the interpolation of redshifts, the merger remnants, the deletion of table rows and the last mass of the Euler steps of the spin evolution.
 - ``tests/test_bhpool.py`` checks the pool of single BHs (``rapster/bhpool.py``) and the samplers built on it: the pool's sums after random sequences of additions, removals and mass changes, the sampled three-body binaries, BBH-single partners, two-body captures and TDE hosts against their exact target distributions (chi-square tests with fixed seeds), the Runge-Kutta spin evolution during TDE accretion against the Euler integration it replaces, and the ZLK root solver against ``scipy.optimize.root``.
 
 Since the pool-based samplers (see ``CHANGELOG.md``) use the random numbers differently from version 2.13.1, a given seed gives a different realization than 2.13.1, with the same statistical properties.

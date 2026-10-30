@@ -28,9 +28,13 @@ def draw_TDE_BH(BH, m_star):
     p = (m_star + m) m^(1/3) (as np.random.choice(mBH, p=p/np.sum(p)) did): an exact
     mixture of the pool weight families m^(1/3) and m^(4/3).
     """
-    T13 = m_star * BH.total(FAM['c13'])
-    T43 = BH.total(FAM['c43'])
-    return BH.draw(FAM['c13']) if np.random.rand() * (T13 + T43) < T13 else BH.draw(FAM['c43'])
+
+    T13 = m_star * BH.total(_I_C13)
+    T43 = BH.total(_I_C43)
+    return BH.draw(_I_C13) if np.random.rand() * (T13 + T43) < T13 else BH.draw(_I_C43)
+
+_I_C13, _I_C43 = FAM['c13'], FAM['c43']
+assert (_I_C43, FAM['mass']) == (_I_C13 + 1, _I_C13 + 2)
 
 def disrupt_star(seed, t, z, tde_type, m_avg, m_star, R_star, m, s, g, h, m_mean, vSTAR, vBH, tdes, f_accreted, EoS):
     """
@@ -42,6 +46,10 @@ def disrupt_star(seed, t, z, tde_type, m_avg, m_star, R_star, m, s, g, h, m_mean
 
     @out m_new, s_new, h_new: mass, spin and TDE count after the disruption
     """
+
+    # (Python floats: the same IEEE operations as on NumPy scalars, and faster loops in
+    # spin_after_accretion)
+    m = float(m); m_star = float(m_star); R_star = float(R_star); f_accreted = float(f_accreted)
 
     # orbital inclination:
     iota = np.arccos(np.random.uniform(-1, 1)) # radians
@@ -58,7 +66,7 @@ def disrupt_star(seed, t, z, tde_type, m_avg, m_star, R_star, m, s, g, h, m_mean
     r_p = np.random.rand()*r_t
 
     # penetration parameter:
-    beta = r_t/r_p
+    beta = r_t/r_p if r_p != 0.0 else float(np.float64(r_t)/np.float64(r_p))   # (inf, as NumPy)
 
     # mass increment:
     dm = f_accreted*m_star
