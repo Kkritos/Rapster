@@ -822,6 +822,38 @@ def _rk4_spin(chi, x, x_end, sign):
         x += h
     return chi, x_end, False
 
+def _last_mass_below(Mi, Mf, step):
+    """
+    The last M_i < Mf of the sequence M_0 = Mi, M_{i+1} = M_i + step (floating-point
+    additions), for Mi < Mf, as the loop
+        M = Mi; M_end = Mi
+        while M < Mf: M_end = M; M += step
+    computes it. When all the sums stay within the binade of Mi, [2^(e-1), 2^e), each
+    addition adds the same multiple d of the spacing u of the binade (the step rounded
+    to a multiple of u, unless it is halfway between two, a tie whose rounding depends
+    on M), so M_i = Mi + i d exactly and M_end is computed directly; otherwise the loop
+    is run.
+    """
+    Mi = float(Mi); Mf = float(Mf)
+    if Mi > 0.0 and step > 0.0 and Mf > Mi:
+        e = math.frexp(Mi)[1]
+        if Mf + 2.0 * step < math.ldexp(1.0, e):
+            u = math.ulp(Mi)
+            k = step / u                       # (exact: u is a power of 2)
+            k_floor = math.floor(k)
+            frac = k - k_floor
+            if frac != 0.5:
+                D = int(k_floor) + (1 if frac > 0.5 else 0)
+                if D > 0:
+                    A = int((Mf - Mi) / u)     # (exact: Mf - Mi and the division are exact)
+                    return Mi + float(((A - 1) // D) * D) * u
+    M = Mi
+    M_end = Mi
+    while M < Mf:
+        M_end = M
+        M += step
+    return M_end
+
 def bh_spin_after_accretion(Mi, Mf, chi=0.0, dM=1e-3, prograde=True):
     """
     Final spin of a BH accreting from Mi to Mf > Mi, as
@@ -834,11 +866,7 @@ def bh_spin_after_accretion(Mi, Mf, chi=0.0, dM=1e-3, prograde=True):
         raise ValueError('bh_spin_after_accretion requires Mf > Mi')
 
     # last mass M_{N-1} < Mf of the sequence M_{i+1} = M_i + dM (as in the Euler loop):
-    M = Mi
-    M_end = Mi
-    while M < Mf:
-        M_end = M
-        M += step
+    M_end = _last_mass_below(Mi, Mf, step)
 
     # A BH at the Thorne limit stays there in the Euler loop as long as J/Mg^2 does
     # not round to below THORNE_LIMIT (then f = fK and J is reset to the limit);

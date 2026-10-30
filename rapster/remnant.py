@@ -172,6 +172,86 @@ def remnant_mass(m1, m2, chi1, chi2, theta1, theta2, dPhi):
     
     return m_f
 
+import math as _math
+
+def _sqrt(x):
+    """np.sqrt of a float, as math.sqrt (correctly rounded, the same value) when x >= 0."""
+    return _math.sqrt(x) if x >= 0.0 else float(np.sqrt(x))
+
+class _Fallback(Exception):
+    pass
+
+def _cbrt_pow(x):
+    """x**(1/3) of a float (NumPy gives nan for x < 0, Python a complex number)."""
+    if not x >= 0.0:
+        raise _Fallback
+    return x**(1 / 3)
+
+def _merger_remnant_floats(m1, m2, chi1, chi2, theta1, theta2, dPhi):
+    """
+    remnant_mass, remnant_spin and remnant_kick in one pass, with the same operations on
+    Python floats (the same IEEE values as on NumPy scalars; np.cos as before), the
+    cosines and sines of the angles computed once. Raises _Fallback (before drawing the
+    random number of the kick) where Python and NumPy arithmetic would differ.
+    """
+    m1 = float(m1); m2 = float(m2); chi1 = float(chi1); chi2 = float(chi2)
+    if not (m1 > 0.0 and m2 > 0.0):
+        raise _Fallback
+
+    # mass ratio in (0, 1]:
+    q = m2 / m1 if m2 < m1 else m1 / m2
+    eta = q / (1 + q)**2
+
+    cost1, cost2 = float(np.cos(theta1)), float(np.cos(theta2))
+    sint1, sint2 = _sqrt(1 - cost1**2), _sqrt(1 - cost2**2)
+    cdPhi = float(np.cos(dPhi))
+
+    chi1_para, chi2_para = chi1 * cost1, chi2 * cost2
+    chi1_perp, chi2_perp = chi1 * sint1, chi2 * sint2
+    chi_para = (chi1_para + q**2 * chi2_para) / (1 + q)**2
+
+    # remnant_mass:
+    Z1 = 1 + _cbrt_pow(1 - chi_para**2) * (_cbrt_pow(1 + chi_para) + _cbrt_pow(1 - chi_para))
+    Z2 = _sqrt(3 * chi_para**2 + Z1**2)
+    sign = (chi_para > 0) - (chi_para < 0) if chi_para == chi_para else chi_para
+    r_isco = 3 + Z2 - sign * _sqrt((3 - Z1) * (3 + Z1 + 2 * Z2))
+    if r_isco == 0.0:
+        raise _Fallback
+    E_isco = _sqrt(1 - 2 / 3 / r_isco)
+    p0, p1 = 0.04827, 0.01707
+    m_f = (m1 + m2) * (1 - eta * (1 - 4 * eta) * (1 - E_isco) - 16 * eta**2 * (p0 + 4 * p1 * chi_para * (chi_para + 1)))
+
+    # remnant_spin:
+    Delta_para = (chi1_para - q * chi2_para               ) / (1 + q)
+    Delta_perp = (chi1_perp - q * chi2_perp * cdPhi) / (1 + q)
+    chi_perp = (chi1_perp + q**2 * chi2_perp * cdPhi) / (1 + q)**2
+    chi1_chi2 = chi1_para * chi2_para + chi1_perp * chi2_perp * cdPhi
+    chi_squared = (chi1**2 + q**4 * chi2**2 + 2 * q**2 * chi1_chi2) / (1 + q)**4
+    t0, t2, t3, s4, s5 = -2.8904, -3.51712, 2.5763, -0.1229, 0.4537
+    el = _2SQRT3 + t2 * eta + t3 * eta**2 + s4 * (1 + q)**4 / (1 + q**2) * chi_squared \
+    + (s5 * eta + t0 + 2) * (1 + q)**2 / (1 + q**2) * chi_para
+    chi_f = _sqrt(q**2 * el**2 / (1 + q)**4 + chi_squared + 2 * q * el * chi_para / (1 + q)**2)
+    chi_f = np.float64(chi_f) if chi_f < 1 else 1
+
+    # remnant_kick:
+    A, B, H, V11, VA, VB, VC, C2, C3 = 1.2e4, -0.93, 6.9e3, 3677.76, 2481.21, 1792.45, 1506.52, 1140, 2481
+    vm = A * eta**2 * (1 - q) / (1 + q) * (1 + B * eta)
+    vs_perp = H * eta**2 * Delta_para
+    vs_para0 = 16 * eta**2 * (Delta_perp * (V11 + 2 * VA * chi_para + 4 * VB * chi_para**2 + 8 * VC * chi_para**3) \
+                             + 2 * chi_perp * Delta_para * (C2 + 2 * C3 * chi_para))
+    # (the random number is drawn last: nothing below raises)
+    vs_para = vs_para0 * float(np.cos(np.random.rand() * 2 * np.pi))
+    try:
+        vk = _sqrt(vm**2 + 2 * vm * vs_perp * _COS_ZEETA + vs_perp**2 + vs_para**2)
+    except OverflowError:
+        vm, vs_perp, vs_para = np.float64(vm), np.float64(vs_perp), np.float64(vs_para)
+        vk = np.sqrt(vm**2 + 2 * vm * vs_perp * _COS_ZEETA + vs_perp**2 + vs_para**2)
+
+    return np.float64(m_f), chi_f, np.float64(vk)
+
+_2SQRT3 = float(2 * np.sqrt(3))
+_COS_ZEETA = float(np.cos(145*np.pi/180))
+
 def merger_remnant(m1, m2, chi1, chi2, theta1, theta2, dPhi):
     """
     Final mass, final spin parameter and GW kick velocity of a merger remnant.
@@ -190,6 +270,13 @@ def merger_remnant(m1, m2, chi1, chi2, theta1, theta2, dPhi):
     @out vGWkick : merger remnant GW kick velocity [km/s]
     """
     
+    if _recoil_kick_model != 1:
+        # (the same values as below, computed in one pass on Python floats)
+        try:
+            return _merger_remnant_floats(m1, m2, chi1, chi2, theta1, theta2, dPhi)
+        except (_Fallback, ZeroDivisionError, OverflowError, ValueError, TypeError):
+            pass
+
     m_rem = remnant_mass(m1, m2, chi1, chi2, theta1, theta2, dPhi) # remnant mass
     chi_rem = remnant_spin(m1, m2, chi1, chi2, theta1, theta2, dPhi) # remnant dimensionless spin
 

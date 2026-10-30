@@ -46,6 +46,8 @@
 # (called D in three_body_binary.py): its weights are kept at zero there.
 
 import math
+from array import array
+from bisect import bisect_right
 
 import numpy as np
 
@@ -72,13 +74,21 @@ FAMILIES = (
     ('p25',  2.5,          False),
     ('p17',  1.7,          False),
     ('p27',  2.7,          False),
-    ('c13',  1/3,          False),
-    ('c43',  4/3,          False),
     ('c27',  2/7,          False),
     ('c127', 12/7,         False),
+    ('c13',  1/3,          False),
+    ('c43',  4/3,          False),
     ('mass', 1.0,          False),
 )
+# (families used together are adjacent, so that their cumulative sums are computed
+# in one call: w..r for three-body binaries, p15..p27 for BBH-single partners,
+# c27, c127 for two-body captures, c13, c43, mass for TDEs; the order of the
+# families does not change any sum)
 FAM = {name: i for i, (name, _, _) in enumerate(FAMILIES)}
+_FAMILY_NAMES = tuple(name for name, _, _ in FAMILIES)
+# order of the families in version 2.15.0 (checkpoints written by it):
+_FAMILY_NAMES_2150 = ('w', 'v', 'wC', 'q', 'r', 'wv', 'wCwC', 'qq', 'qr', 'p15', 'p25', 'p17', 'p27',
+                      'c13', 'c43', 'c27', 'c127', 'mass')
 N_FAMILIES = len(FAMILIES)
 _POWER_LIST = [p for _, p, _ in FAMILIES]
 _POWERS = np.array(_POWER_LIST)[:, None]
@@ -101,6 +111,23 @@ def _weights_of(m):
 
 _ZEROS_EXCL = [0.0] * _N_EXCL
 _add_accumulate = np.add.accumulate   # (= np.cumsum for 1-d arrays, without its Python wrapper)
+
+# weights of masses added to the pool, by mass (BHs freed from binaries return with
+# the mass they had; the same powers, so the same values):
+_weights_cache = {}
+_WEIGHTS_CACHE_MAX = 50000     # (~10 MB)
+
+def _cached_weights(m):
+    """_weights_of(m) as a read-only array, reused for masses seen before (assigning an
+    array to a row of the weights is faster than assigning a list)."""
+    m = float(m)
+    w = _weights_cache.get(m)
+    if w is None:
+        if len(_weights_cache) >= _WEIGHTS_CACHE_MAX:
+            _weights_cache.clear()
+        w = _weights_cache[m] = np.array(_weights_of(m))
+        w.flags.writeable = False
+    return w
 
 
 class BHPool:
@@ -129,24 +156,33 @@ class BHPool:
         self._ones = np.ones(B)
         self.D = -1
         self._tot = None   # totals of all families, until the next change
-        self._cb = {}      # cumulative block sums per family (kept up to date lazily)
-        self._cbd = {}     # family -> first block whose cumulative sum is out of date
+        # cumulative block sums, one row per family (kept up to date lazily); _cbd[f]
+        # is the number of leading entries of row f that are up to date (families
+        # not in _cbd have none):
+        self._CB = np.zeros((N_FAMILIES, cap // B))
+        self._cbd = {}
+        self._cbv = {}     # family -> view of its row of _CB returned by _block_cdf
         self._bver = [0] * (cap // B)   # version of each block, increased whenever it changes
         self._wcum = {}    # (family, block) -> (block version, weights, cumulative weights)
+        self._drawers = {} # family -> draw function, valid until the next change (see drawer)
+        self._wcuma = {}   # (family, block) -> (block version, cumulative weights as array('d')), for drawer
         self._dirty = set()   # blocks whose sums are out of date (see _settle)
         self._rebuild()
 
     # ------------------------------------------------------------- pickling
     def __getstate__(self):
         """State for pickling (checkpoints, restart.py), kept small: the slots beyond n
-        are zero and are not stored, and the caches of cumulative sums (_cb, _wcum) are
-        left out; they are recomputed when needed, with the same sequential sums."""
+        are zero and are not stored, and the caches of cumulative sums (_CB, _wcum) and
+        draw functions are left out; they are recomputed when needed, with the same
+        sequential sums."""
         state = self.__dict__.copy()
         n = self.n
         state['_capacity'] = self._m.shape[0]
         for name in ('_m', '_s', '_g', '_h', '_W'):
             state[name] = getattr(self, name)[:n].copy()
-        state['_cb'] = {}; state['_cbd'] = {}; state['_wcum'] = {}
+        state['_CB'] = None; state['_cbd'] = {}; state['_wcum'] = {}; state['_drawers'] = {}
+        state['_wcuma'] = {}; state['_cbv'] = {}
+        state['_families'] = _FAMILY_NAMES
         return state
 
     def __setstate__(self, state):
@@ -157,6 +193,17 @@ class BHPool:
             for name in ('_m', '_s', '_g', '_h'):
                 a = np.zeros(cap); a[:n] = state[name]; state[name] = a
             W = np.zeros((cap, N_FAMILIES)); W[:n] = state['_W']; state['_W'] = W
+        # columns of the weight families in this version's order (a checkpoint of
+        # version 2.15.0 has them in its order, and the caches of that version):
+        names = state.pop('_families', _FAMILY_NAMES_2150)
+        if tuple(names) != _FAMILY_NAMES:
+            perm = [list(names).index(f) for f in _FAMILY_NAMES]
+            state['_W'] = np.ascontiguousarray(state['_W'][:, perm])
+            state['_S'] = np.ascontiguousarray(state['_S'][:, perm])
+            state['_ST'] = np.ascontiguousarray(state['_ST'][perm, :])
+        state.pop('_cb', None)
+        state['_cbd'] = {}; state['_wcum'] = {}; state['_drawers'] = {}; state['_wcuma'] = {}; state['_cbv'] = {}
+        state['_CB'] = np.zeros((N_FAMILIES, state['_S'].shape[0]))
         self.__dict__.update(state)
 
     # ------------------------------------------------------------------ views
@@ -196,6 +243,8 @@ class BHPool:
     # --------------------------------------------------------------- internals
     def _changed(self):
         self._tot = None
+        if self._drawers:
+            self._drawers = {}
 
     def _rebuild(self):
         """Recompute all weights and block sums from the masses (O(n))."""
@@ -210,7 +259,9 @@ class BHPool:
         self._S[:] = self._W.reshape(-1, self.BLOCK, N_FAMILIES).sum(axis=1)
         self._ST[:] = self._S.T
         self._wcum = {}
-        self._cb = {}; self._cbd = {}
+        self._wcuma = {}
+        self._cbd = {}
+        self._drawers = {}
         self._dirty = set()
         self._changed()
 
@@ -278,6 +329,8 @@ class BHPool:
         W = np.zeros((new_cap, N_FAMILIES)); W[:cap] = self._W; self._W = W
         S = np.zeros((new_cap // B, N_FAMILIES)); S[:cap // B] = self._S; self._S = S
         ST = np.zeros((N_FAMILIES, new_cap // B)); ST[:, :cap // B] = self._ST; self._ST = ST
+        CB = np.zeros((N_FAMILIES, new_cap // B)); CB[:, :cap // B] = self._CB; self._CB = CB
+        self._cbv = {}
         self._bver += [0] * (new_cap // B - cap // B)
 
     # ----------------------------------------------------------------- updates
@@ -286,15 +339,21 @@ class BHPool:
         if self.n == self._m.shape[0]:
             self._grow()
         k = self.n
-        self._m[k] = m; self._s[k] = s; self._g[k] = g; self._h[k] = h
-        self.n += 1
-        self._changed()
-        if self.D < 0 or self._m[k] > self._m[self.D]:
-            self._W[k] = _weights_of(m)
+        mm = self._m
+        mm[k] = m; self._s[k] = s; self._g[k] = g; self._h[k] = h
+        self.n = k + 1
+        self._tot = None                       # (= self._changed())
+        if self._drawers:
+            self._drawers = {}
+        D = self.D
+        if D < 0 or mm[k] > mm[D]:
+            self._W[k] = _cached_weights(m)
             self._make_D(k)
         else:
-            self._W[k] = _weights_of(m)
-            self._update_block(k)
+            self._W[k] = _cached_weights(m)
+            b = k // self.BLOCK                # (= self._update_block(k))
+            self._bver[b] += 1
+            self._dirty.add(b)
         return k
 
     def add_many(self, m, s, g, h):
@@ -306,27 +365,75 @@ class BHPool:
         n = self.n
         if not 0 <= k < n:
             raise IndexError(f'slot {k} out of range for {n} single BHs')
-        self._changed()
+        self._tot = None                       # (= self._changed())
+        if self._drawers:
+            self._drawers = {}
         last = n - 1
         removed_D = (k == self.D)
+        mm = self._m; ss = self._s; gg = self._g; hh = self._h; W = self._W
         if k != last:
-            self._m[k] = self._m[last]; self._s[k] = self._s[last]
-            self._g[k] = self._g[last]; self._h[k] = self._h[last]
-            self._W[k] = self._W[last]
+            mm[k] = mm[last]; ss[k] = ss[last]
+            gg[k] = gg[last]; hh[k] = hh[last]
+            W[k] = W[last]
             if self.D == last:
                 self.D = k
-        self._m[last] = 0.0; self._s[last] = 0.0; self._g[last] = 0.0; self._h[last] = 0.0
-        self._W[last] = 0.0
+        mm[last] = 0.0; ss[last] = 0.0; gg[last] = 0.0; hh[last] = 0.0
+        W[last] = 0.0
         self.n = last
         if removed_D:
             self.D = -1
             if k != last:
                 self._set_weights(k)          # the moved BH, with all its weights
-        self._update_block(k)
-        if last // self.BLOCK != k // self.BLOCK:
-            self._update_block(last)
+        # (= self._update_block(k) and, if in another block, self._update_block(last))
+        B = self.BLOCK; bver = self._bver; dirty = self._dirty
+        b = k // B
+        bver[b] += 1
+        dirty.add(b)
+        bl = last // B
+        if bl != b:
+            bver[bl] += 1
+            dirty.add(bl)
         if removed_D:
             self._find_D()
+
+    def remove_many(self, slots):
+        """Remove the slots in the given order, as remove(k) for each of them (e.g. in
+        descending order, so that no slot still to be removed is moved)."""
+        if not slots:
+            return
+        self._tot = None                       # (= self._changed())
+        if self._drawers:
+            self._drawers = {}
+        mm = self._m; ss = self._s; gg = self._g; hh = self._h; W = self._W
+        B = self.BLOCK; bver = self._bver; dirty = self._dirty
+        for k in slots:
+            n = self.n
+            if not 0 <= k < n:
+                raise IndexError(f'slot {k} out of range for {n} single BHs')
+            last = n - 1
+            removed_D = (k == self.D)
+            if k != last:
+                mm[k] = mm[last]; ss[k] = ss[last]
+                gg[k] = gg[last]; hh[k] = hh[last]
+                W[k] = W[last]
+                if self.D == last:
+                    self.D = k
+            mm[last] = 0.0; ss[last] = 0.0; gg[last] = 0.0; hh[last] = 0.0
+            W[last] = 0.0
+            self.n = last
+            if removed_D:
+                self.D = -1
+                if k != last:
+                    self._set_weights(k)      # the moved BH, with all its weights
+            b = k // B
+            bver[b] += 1
+            dirty.add(b)
+            bl = last // B
+            if bl != b:
+                bver[bl] += 1
+                dirty.add(bl)
+            if removed_D:
+                self._find_D()
 
     def remove_two(self, k1, k2):
         """Remove two distinct slots."""
@@ -343,12 +450,18 @@ class BHPool:
     def set_mass(self, k, m):
         """Change the mass of slot k (e.g. after accretion)."""
         self._changed()
-        self._m[k] = m
         if k == self.D:
+            grew = m > self._m[k]
+            self._m[k] = m
             self._set_weights(k)
             self._update_block(k)
-            self._find_D()                    # D may have become lighter than another BH
-        elif m > self._m[self.D]:
+            if not grew:
+                self._find_D()                # D may have become lighter than another BH
+            # (a heavier D is still the only heaviest BH, which _find_D would find with
+            # a pass over all BHs: e.g. an IMBH growing by TDEs)
+            return
+        self._m[k] = m
+        if m > self._m[self.D]:
             self._W[k] = _weights_of(m)
             self._make_D(k)
         else:
@@ -377,37 +490,62 @@ class BHPool:
             tot = self._tot = self._S[:nb].sum(axis=0)
         return tot
 
-    def _block_cdf(self, f):
-        """Cumulative block sums of family f (sequential sums). Kept between changes:
-        after a change of block b only the sums from block b on are recomputed, by the
-        same sequential additions (cb[b] = cb[b-1] + S[b], ...), so the array is
-        bit-identical to np.cumsum of all block sums."""
+    def _accumulate(self, f, k, d, nb):
+        """Cumulative block sums of the k families f..f+k-1 from block d on (rows of
+        _CB), by sequential additions cb[j] = cb[j-1] + S[j], as np.cumsum does (one
+        call for the k rows: np.add.accumulate along a row is sequential)."""
+        CB = self._CB; ST = self._ST
+        if d == 0:
+            if k == 1:
+                _add_accumulate(ST[f, :nb], out=CB[f, :nb])
+            else:
+                _add_accumulate(ST[f:f+k, :nb], axis=1, out=CB[f:f+k, :nb])
+        else:
+            # start from the (up to date) entry d-1: block sums of column d-1 are
+            # replaced by it during the call, so that the sums continue from it
+            if k == 1:
+                saved = ST[f, d-1]
+                ST[f, d-1] = CB[f, d-1]
+                _add_accumulate(ST[f, d-1:nb], out=CB[f, d-1:nb])
+                ST[f, d-1] = saved
+            else:
+                saved = ST[f:f+k, d-1].copy()
+                ST[f:f+k, d-1] = CB[f:f+k, d-1]
+                _add_accumulate(ST[f:f+k, d-1:nb], axis=1, out=CB[f:f+k, d-1:nb])
+                ST[f:f+k, d-1] = saved
+        cbd = self._cbd
+        for j in range(f, f + k):
+            cbd[j] = nb
+
+    def prepare(self, f, k=1):
+        """Bring the cumulative block sums of the k families f..f+k-1 up to date at
+        once (families that are drawn or summed together, see FAMILIES)."""
         if self._dirty:
             self._settle()
         nb = (self.n + self.BLOCK - 1) // self.BLOCK
-        cb = self._cb.get(f)
-        if cb is not None:
-            d = self._cbd[f]
-            if d >= nb and cb.shape[0] == nb:
-                return cb
-        if cb is None:
-            cb = self._cb[f] = _add_accumulate(self._ST[f, :nb])
-            self._cbd[f] = nb
-            return cb
-        L = cb.shape[0]
-        if L != nb:
-            m = min(d, L, nb)
-            new = np.empty(nb); new[:m] = cb[:m]
-            cb = self._cb[f] = new
-            d = m
+        cbd = self._cbd
+        d = nb
+        for j in range(f, f + k):
+            dj = cbd.get(j, 0)
+            if dj < d:
+                d = dj
         if d < nb:
-            tail = cb[d:]
-            tail[:] = self._ST[f, d:nb]
-            if d:
-                tail[0] = cb[d-1] + tail[0]
-            _add_accumulate(tail, out=tail)
-        self._cbd[f] = nb
-        return cb
+            self._accumulate(f, k, d, nb)
+
+    def _block_cdf(self, f):
+        """Cumulative block sums of family f (sequential sums), a view of row f of _CB.
+        Kept between changes: after a change of block b only the sums from block b on
+        are recomputed, by the same sequential additions (cb[b] = cb[b-1] + S[b], ...),
+        so the array is bit-identical to np.cumsum of all block sums."""
+        if self._dirty:
+            self._settle()
+        nb = (self.n + self.BLOCK - 1) // self.BLOCK
+        if self._cbd.get(f, 0) < nb:
+            self._accumulate(f, 1, self._cbd.get(f, 0), nb)
+        v = self._cbv.get(f)
+        if v is None or v.shape[0] != nb:
+            v = self._cbv[f] = self._CB[f, :nb]
+        return v
 
     def total(self, f):
         """Sum of the weights of family f over all single BHs (= totals()[f]: both are
@@ -444,6 +582,45 @@ class BHPool:
                 return b*B + i
             # (t fell beyond the block's own cumulative sum, by rounding: draw again)
 
+    def drawer(self, f):
+        """Function that draws a slot as draw(f) does (the same random numbers and
+        slots), for repeated draws from a pool that does not change in between: the
+        cumulative sums are kept as Python lists, searched with bisect (as
+        searchsorted(side='right')). Valid until the next change of the pool."""
+        dr = self._drawers.get(f)
+        if dr is None:
+            dr = self._drawers[f] = self._make_drawer(f)
+        return dr
+
+    def _make_drawer(self, f):
+        cbl = self._block_cdf(f).tolist()
+        nb = len(cbl)
+        total = cbl[-1]
+        W = self._W
+        weight = W.item
+        B = self.BLOCK
+        rand = np.random.rand
+        bver = self._bver
+        cache = self._wcuma
+
+        def draw():
+            while True:
+                t = rand() * total
+                b = bisect_right(cbl, t)
+                if b >= nb:
+                    continue                   # (rounding at the end: draw again)
+                if b:
+                    t -= cbl[b-1]
+                # cumulative weights within block b (kept while the block is unchanged):
+                ver = bver[b]
+                entry = cache.get((f, b))
+                if entry is None or entry[0] != ver:
+                    entry = cache[(f, b)] = (ver, array('d', _add_accumulate(W[b*B:(b+1)*B, f]).tobytes()))
+                i = bisect_right(entry[1], t)
+                if i < B and weight(b*B + i, f) > 0.0:
+                    return b*B + i
+        return draw
+
     def draw_uniform(self):
         """Slot drawn uniformly."""
         return int(np.random.rand() * self.n) % self.n
@@ -465,7 +642,7 @@ class BHPool:
         assert not np.any(self._m[n:]) and not np.any(self._W[n:])
         # the kept cumulative block sums are those of np.cumsum, bit for bit:
         nb = (n + self.BLOCK - 1) // self.BLOCK
-        for f in list(self._cb):
+        for f in list(self._cbd):
             assert np.array_equal(self._block_cdf(f), np.cumsum(self._ST[f, :nb]))
         # total(f) (from the cumulative block sums) equals totals()[f] bit for bit:
         tot = self.totals()

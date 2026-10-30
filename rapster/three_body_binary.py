@@ -16,6 +16,8 @@
 
 '''
 
+import math
+
 from .constants import *
 from .functions import *
 from .arraycache import ElementwiseCache
@@ -217,6 +219,8 @@ def fast_sample_3bodyBinary(mBH, n_samples=1, return_indices=False):
 
 # indices of the pool weight families used below (bhpool.FAMILIES):
 _I_W, _I_V, _I_WC, _I_Q, _I_R, _I_WV, _I_WCWC, _I_QQ, _I_QR = (FAM[f] for f in ('w', 'v', 'wC', 'q', 'r', 'wv', 'wCwC', 'qq', 'qr'))
+assert (_I_V, _I_WC, _I_Q, _I_R) == (_I_W + 1, _I_W + 2, _I_W + 3, _I_W + 4)
+_SQRT6 = float(np.sqrt(6))
 
 def sample_3bodyBinary(BH, exclude=None, max_trials=None):
     """
@@ -247,64 +251,83 @@ def sample_3bodyBinary(BH, exclude=None, max_trials=None):
 
     @out: (m1, m2, m3, slot of m1, slot of m2), or None (see max_trials)
     """
-    D = BH.D
-    m = BH.m
-    mD = float(m[D])
+    # The pool does not change between the calls of a step (BHs taken by earlier
+    # binaries of the step are excluded, not removed), so everything below that depends
+    # only on the pool is computed once per pool state and kept in the pool's cache of
+    # draw functions (cleared at its next change). The draws use the pool's draw
+    # functions (BHPool.drawer: the same slots and random numbers as BHPool.draw, with
+    # less overhead), and masses are read as Python floats (the same IEEE operations as
+    # with NumPy scalars).
+    setup = BH._drawers.get('3bb')
+    if setup is None:
+        D = BH.D
+        m = BH.m
+        mD = float(m[D])
 
-    T = BH.totals()
-    W_, V_, WC_, Q_, R_ = T[_I_W], T[_I_V], T[_I_WC], T[_I_Q], T[_I_R]
+        T = BH.totals()
+        W_, V_, WC_, Q_, R_ = T[_I_W], T[_I_V], T[_I_WC], T[_I_Q], T[_I_R]
 
-    # region totals of the proposal weights (sums over all non-D BHs, repeats included):
-    Z_A = 2 * mD**3 * W_ * V_                 # (D, x, c) and (x, D, c): m_D^4 w_x v_c / m_D
-    Z_C = 4**(-0.25) * mD**2 * WC_**2         # (a, b, D): 4^(-1/4) m_D^(5/2) m_D^(-1/2) wC_a wC_b
-    Z_B = Q_**2 * R_ / np.sqrt(6)             # (a, b, c): q_a q_b r_c / sqrt(6)
-    Z = Z_A + Z_C + Z_B
+        # region totals of the proposal weights (sums over all non-D BHs, repeats included):
+        Z_A = 2 * mD**3 * W_ * V_                 # (D, x, c) and (x, D, c): m_D^4 w_x v_c / m_D
+        Z_C = 4**(-0.25) * mD**2 * WC_**2         # (a, b, D): 4^(-1/4) m_D^(5/2) m_D^(-1/2) wC_a wC_b
+        Z_B = Q_**2 * R_ / np.sqrt(6)             # (a, b, c): q_a q_b r_c / sqrt(6)
+        Z = Z_A + Z_C + Z_B
 
-    # probability that a proposal repeats a BH (for region B an upper bound):
-    p_rep = (Z_A * T[_I_WV] / (W_ * V_)
-             + Z_C * T[_I_WCWC] / WC_**2
-             + Z_B * (T[_I_QQ] / Q_**2 + 2 * T[_I_QR] / (Q_ * R_))) / Z
-    if not p_rep < 0.5:
+        # probability that a proposal repeats a BH (for region B an upper bound):
+        p_rep = (Z_A * T[_I_WV] / (W_ * V_)
+                 + Z_C * T[_I_WCWC] / WC_**2
+                 + Z_B * (T[_I_QQ] / Q_**2 + 2 * T[_I_QR] / (Q_ * R_))) / Z
+        if not p_rep < 0.5:
+            setup = (False,)
+        else:
+            BH.prepare(_I_W, 5)                   # (families w, v, wC, q, r in one call)
+            setup = (True, D, mD, float(Z_A), float(Z_A + Z_C), float(Z), 1 / mD, mD**(-0.5),
+                     BH.drawer(_I_W), BH.drawer(_I_V), BH.drawer(_I_WC), BH.drawer(_I_Q), BH.drawer(_I_R))
+        BH._drawers['3bb'] = setup
+
+    if not setup[0]:
         if exclude:
             return None          # (the caller removes the excluded BHs and draws again)
-        return fast_sample_3bodyBinary(m, n_samples=1, return_indices=True)
+        return fast_sample_3bodyBinary(BH.m, n_samples=1, return_indices=True)
 
-    fw, fv, fwC, fq, fr = _I_W, _I_V, _I_WC, _I_Q, _I_R
+    _, D, mD, Z_A, ZAC, Z, bound_A, mD_05, draw_w, draw_v, draw_wC, draw_q, draw_r = setup
+    mass = BH._m.item
+    rand = np.random.rand
     trials = 0
     while True:
         if exclude:
             trials += 1
             if trials > max_trials:
                 return None
-        u = np.random.rand() * Z
+        u = rand() * Z
         if u < Z_A:     # A: D is a binary member
-            x = BH.draw(fw)
-            c = BH.draw(fv)
+            x = draw_w()
+            c = draw_v()
             if x == c:
                 continue
-            a, b = (D, x) if np.random.rand() < 0.5 else (x, D)
-            bound = 1 / mD
-        elif u < Z_A + Z_C:   # C: D is the third body
-            a = BH.draw(fwC)
-            b = BH.draw(fwC)
+            a, b = (D, x) if rand() < 0.5 else (x, D)
+            bound = bound_A
+        elif u < ZAC:   # C: D is the third body
+            a = draw_wC()
+            b = draw_wC()
             if a == b:
                 continue
             c = D
-            bound = (4 * m[a] * m[b])**(-0.25) * mD**(-0.5)
+            bound = (4 * mass(a) * mass(b))**(-0.25) * mD_05
         else:           # B: D not involved
-            a = BH.draw(fq)
-            b = BH.draw(fq)
-            c = BH.draw(fr)
+            a = draw_q()
+            b = draw_q()
+            c = draw_r()
             if a == b or c == a or c == b:
                 continue
-            bound = (m[a] * m[b])**(-5/12) * m[c]**(-1/6) / np.sqrt(6)
+            bound = (mass(a) * mass(b))**(-5/12) * mass(c)**(-1/6) / _SQRT6
 
         if exclude and (a in exclude or b in exclude or c in exclude):
             continue
 
-        m1, m2, m3 = m[a], m[b], m[c]
+        m1 = mass(a); m2 = mass(b); m3 = mass(c)
         g = (m1 + m2)**(-0.5) * (m1 + m2 + m3)**(-0.5)
-        if np.random.rand() * bound < g:
+        if rand() * bound < g:
             return m1, m2, m3, a, b
 
 def three_body_binary(t, z, k_3bb, mBH_avg, binaries, BH, vBH, N_3bb, N_BBH, random_pairing=False):
@@ -335,8 +358,7 @@ def three_body_binary(t, z, k_3bb, mBH_avg, binaries, BH, vBH, N_3bb, N_BBH, ran
         taken = set()
 
         def flush():
-            for k in sorted(taken, reverse=True):   # (descending: no taken BH is moved)
-                BH.remove(k)
+            BH.remove_many(sorted(taken, reverse=True))   # (descending: no taken BH is moved)
             taken.clear()
         
         for i in range(k_3bb):
@@ -373,10 +395,11 @@ def three_body_binary(t, z, k_3bb, mBH_avg, binaries, BH, vBH, N_3bb, N_BBH, ran
             sma = G_Newton * m1 * m2 / eta / m3 / vBH**2
             
             # eccentricity (thermal):
-            eccen = np.sqrt(np.random.rand())
+            eccen = math.sqrt(np.random.rand())     # (= np.sqrt: correctly rounded)
             
             # new binary (appended to binaries after the loop):
-            s1, s2, g1, g2, h1, h2 = BH._s[k1], BH._s[k2], BH._g[k1], BH._g[k2], BH._h[k1], BH._h[k2]
+            s_, g_, h_ = BH._s, BH._g, BH._h
+            s1, s2, g1, g2, h1, h2 = s_.item(k1), s_.item(k2), g_.item(k1), g_.item(k2), h_.item(k1), h_.item(k2)
             new_rows.append([np.random.randint(0, 999999999), 3, sma, eccen, m1, m2, s1, s2, g1, g2, t, z, 0, h1, h2])
             
             # update number of in-cluster BBHs:

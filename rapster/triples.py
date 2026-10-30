@@ -47,35 +47,20 @@ def evolve_triples(seed, t, z, zCl_form, triples, binaries, BH, mBH_avg, N_Tripl
     
     if N_Triples>0:
         
+        # binaries released or formed below, appended to binaries after the loop (which
+        # does not read it): the same rows as appending them one by one
+        new_binaries = []
+
         # initialize iteration index:
         i=1
         
         # iterate over all available triples:
         while i < N_Triples+1:
             
-            # Unwrap current triples's parameters:
-            a_in = triples[i][0]
-            a_out = triples[i][1]
-            e_in = triples[i][2]
-            e_out = triples[i][3]
-            m0 = triples[i][4]
-            m1 = triples[i][5]
-            m2 = triples[i][6]
-            s0 = triples[i][7]
-            s1 = triples[i][8]
-            s2 = triples[i][9]
-            g0 = triples[i][10]
-            g1 = triples[i][11]
-            g2 = triples[i][12]
-            inclination1 = triples[i][13]
-            inclination2 = triples[i][14]
-            ind_in = triples[i][17]
-            channel_in = triples[i][18]
-            t_form_in = triples[i][19]
-            z_form_in = triples[i][20]
-            h0 = triples[i][21]
-            h1 = triples[i][22]
-            h2 = triples[i][23]
+            # Unwrap current triples's parameters (NumPy scalars, as triples[i][k]):
+            row = triples[i]
+            a_in, a_out, e_in, e_out, m0, m1, m2, s0, s1, s2, g0, g1, g2, inclination1, inclination2 = row[:15]
+            ind_in, channel_in, t_form_in, z_form_in, h0, h1, h2 = row[17:24]
 
             # inner argument of periapsis:
             w_in = np.random.uniform(0, 2*np.pi)
@@ -140,7 +125,7 @@ def evolve_triples(seed, t, z, zCl_form, triples, binaries, BH, mBH_avg, N_Tripl
                 mergers.append([seed, ind_in, 4, a_in, eMAX, m0, m1, s0, s1, g0, g1, theta0, theta1, dPhi, t_form_in, z_form_in, t_merge,
                                 z_merge, m_rem, s_rem, g_rem, vGW_kick, s_eff, q, v_esc_cl(v_star, vBH), h0, h1])
                 
-                triples = delete_row(triples, i)
+                triples = delete_row_inplace(triples, i)
 
                 i = i - 1
                 
@@ -170,14 +155,14 @@ def evolve_triples(seed, t, z, zCl_form, triples, binaries, BH, mBH_avg, N_Tripl
                     # lookback time and redshift for the new outer binary formation:
                     t_lb_outer = lookback_interp(zCl_form) - t - t_ZLK  # lookback time at new binary formation
                     z_outer = redshift_interp(t_lb_outer) if t_lb_outer >= 0.1 else 0.0  # formation redshift
-                    binaries = np.concatenate((binaries, np.array([[np.random.randint(0, 999999999), 5, a_out, np.sqrt(np.random.rand()), m2, m_rem, s2, s_rem, g2, g_rem, t + t_ZLK, z_outer, 0, h2, h_rem]])), axis=0)   # (= np.append(..., axis=0))
+                    new_binaries.append([np.random.randint(0, 999999999), 5, a_out, np.sqrt(np.random.rand()), m2, m_rem, s2, s_rem, g2, g_rem, t + t_ZLK, z_outer, 0, h2, h_rem])
 
                     N_BBH+=1
                     N_meRe+=1
 
             else: # triple breaks and inner binary is released
                 
-                triples = delete_row(triples, i)
+                triples = delete_row_inplace(triples, i)
                 
                 i = i - 1
                 
@@ -188,9 +173,12 @@ def evolve_triples(seed, t, z, zCl_form, triples, binaries, BH, mBH_avg, N_Tripl
                 # release outer member into the cluster:
                 BH.add(m2, s2, g2, h2)
 
-                binaries = np.concatenate((binaries, np.array([[ind_in, channel_in, a_in, e_in, m0, m1, s0, s1, g0, g1, t, z, 0, h0, h1]])), axis=0)   # (= np.append(..., axis=0))
+                new_binaries.append([ind_in, channel_in, a_in, e_in, m0, m1, s0, s1, g0, g1, t, z, 0, h0, h1])
                 
             i+=1
+
+        if new_binaries:
+            binaries = np.concatenate((binaries, np.array(new_binaries)), axis=0)
             
     return seed, t, z, zCl_form, triples, binaries, BH, mBH_avg, N_Triples, N_BBH, N_BH, N_me, N_meRe, N_meEj, N_ZLK, v_star, vBH, nc_BH, mergers
 
