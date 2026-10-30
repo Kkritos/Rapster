@@ -23,7 +23,7 @@ from .bhpool import FAM
 
 _SQRT_2_3 = np.sqrt(2/3)
 
-def sample_2capture(BH):
+def sample_2capture(BH, exclude=None, w_excluded=0.0, max_trials=None):
     """
     Sample the two single BHs that form a binary by GW capture, from the pool BH
     (bhpool.BHPool), with the distribution of the sampler of versions <= 2.13.1
@@ -42,26 +42,45 @@ def sample_2capture(BH):
     with p_max the largest p. The first factor is at least 2^(-3/7) ~ 0.74, the second
     is close to 1 unless one BH dominates the m^(2/7) weights.
 
+    exclude: optional set of slots (not containing the heaviest BH D) that are still in
+    the pool but no longer available (taken by earlier captures of the same step), and
+    w_excluded the sum of their m^(2/7): proposals that contain one of them are
+    rejected, and p is that of the other BHs, which gives the same distribution as
+    removing them first.
+    max_trials: with exclude, give up (return None) after this many proposals.
+
     @in BH: pool of single BHs (at least 2)
 
-    @out: m1, m2, slot of m1, slot of m2
+    @out: m1, m2, slot of m1, slot of m2 (or None, see max_trials)
     """
     f27 = FAM['c27']; f127 = FAM['c127']
 
-    S27 = BH.total(f27)
-    q_max = 1 - BH.weight(f27, BH.D) / S27      # 1 - p_max (the heaviest BH has the largest weight)
+    # (computed once per pool state: the pool does not change between the captures of
+    # a step, whose BHs are excluded until the end of the step)
+    setup = BH._drawers.get('2cap')
+    if setup is None:
+        setup = BH._drawers['2cap'] = (BH.total(f27), BH.weight(f27, BH.D), BH.drawer(f127), BH.drawer(f27))
+    S27, w_D, draw127, draw27 = setup
+    S27 = S27 - w_excluded
+    q_max = 1 - w_D / S27      # 1 - p_max (the heaviest BH has the largest weight)
     m = BH.m
     mass = BH._m.item; w27 = BH._W.item
     c = 2**(3/7)
-    draw = BH.draw; rand = np.random.rand
+    rand = np.random.rand
+    trials = 0
     while True:
+        if exclude:
+            trials += 1
+            if trials > max_trials:
+                return None
         if rand() < 0.5:
-            i = draw(f127); j = draw(f27)
+            i = draw127(); j = draw27()
         else:
-            i = draw(f27); j = draw(f127)
+            i = draw27(); j = draw127()
         if i == j:
             continue
-        # (Python floats: the same IEEE operations as on the NumPy scalars m[i], m[j])
+        if exclude and (i in exclude or j in exclude):
+            continue
         mi = mass(i); mj = mass(j)
         try:
             accept = (mi + mj)**(10/7) / (c * (mi**(10/7) + mj**(10/7))) * q_max / (1 - w27(i, f27) / S27)
@@ -106,8 +125,21 @@ def two_body_capture(seed, t, dt, z, zCl_form, k_2cap, mBH_avg, binaries, BH, vB
         sigma_rel = _SQRT_2_3 * vBH
         BH_s, BH_g, BH_h = BH._s, BH._g, BH._h
 
+        # BHs captured in binaries leave the pool at the end of the step (or when the
+        # heaviest BH is taken, or when many proposals hit taken BHs): until then they
+        # are excluded from the draws, which leaves the pool unchanged and the draws
+        # cheap (see sample_2capture):
+        taken = set()
+        w_taken = [0.0]
+        w27 = BH._W.item; f27 = FAM['c27']
+
+        def flush():
+            BH.remove_many(sorted(taken, reverse=True))   # (descending: no taken BH is moved)
+            taken.clear()
+            w_taken[0] = 0.0
+
         for i in range(k_2cap):
-            if BH.size < 2:
+            if BH.size - len(taken) < 2:
                 break # avoid infinite loop in the sampler
             
             # sample the BHs that form the captured binary (slots k1 != k2):
@@ -118,7 +150,15 @@ def two_body_capture(seed, t, dt, z, zCl_form, k_2cap, mBH_avg, binaries, BH, vB
                     k2 = BH.draw_uniform()
                 m1, m2 = BH.m[k1], BH.m[k2]
             else:
-                m1, m2, k1, k2 = sample_2capture(BH)
+                if BH.D in taken:
+                    flush()
+                sample = sample_2capture(BH, exclude=taken, w_excluded=w_taken[0], max_trials=30) if taken else None
+                if sample is None:
+                    flush()
+                    BH_s, BH_g, BH_h = BH._s, BH._g, BH._h
+                    w27 = BH._W.item
+                    sample = sample_2capture(BH)
+                m1, m2, k1, k2 = sample
                 
             s1 = BH_s[k1]; g1 = BH_g[k1]; h1 = BH_h[k1]
             s2 = BH_s[k2]; g2 = BH_g[k2]; h2 = BH_h[k2]
@@ -184,8 +224,12 @@ def two_body_capture(seed, t, dt, z, zCl_form, k_2cap, mBH_avg, binaries, BH, vB
             # eccentricity at formation:
             eccen = np.sqrt(1 + 2 * E_fin * b**2 * v_rel**2 / m12**2 / mu / G_Newton**2)
             
-            # delete captured BHs:
-            BH.remove_two(k1, k2)
+            # delete captured BHs (at the next flush):
+            if random_pairing:
+                BH.remove_two(k1, k2)
+            else:
+                taken.add(k1); taken.add(k2)
+                w_taken[0] += w27(k1, f27) + w27(k2, f27)
             
             N_2cap+=1
             
@@ -242,6 +286,7 @@ def two_body_capture(seed, t, dt, z, zCl_form, k_2cap, mBH_avg, binaries, BH, vB
                 
                 N_BBH+=1
                 
+        flush()
         for remnant in retained:
             BH.add(*remnant)
         

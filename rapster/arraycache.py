@@ -32,7 +32,14 @@
 
 from array import array
 
+import atexit
 import os
+import pickle
+import queue
+import struct
+import subprocess
+import sys
+import threading
 from itertools import islice
 import numpy as np
 
@@ -220,6 +227,191 @@ class RowLog:
         return out if dtype is None else out.astype(dtype, copy=False)
 
 
+def write_rows(f, rows, suffix=''):
+    """
+    Write a 2-D float array, one row per line, values separated by spaces and
+    `suffix` appended to every line. repr of a Python float is the same text as
+    str of a NumPy float64 (shortest round-trip representation), so the file is
+    identical to writing str(rows[i][j]) value by value, which it replaces
+    (~10x faster for the large hardening and evolution files).
+    """
+    chunk = 10000   # rows converted to Python floats at a time (bounded memory)
+    for start in range(0, len(rows), chunk):
+        f.writelines(' '.join(map(repr, row)) + suffix + '\n' for row in rows[start:start+chunk].tolist())
+
+
+# ---------------------------------------------------------------- background writer
+#
+# Writing the rows of a StreamedRowLog to its file (write_rows: the text of each value,
+# ~0.5 us per value) is done by a separate process, while the simulation continues:
+# the rows are sent to it through a pipe (by a thread of this process, so that a send
+# never waits for the writer), and it appends them to the file, in order. The text is
+# the same. StreamedRowLog.sync (checkpoints) and finish wait until the writer has
+# written (and flushed) every row sent before. Used for chunks of at least
+# BACKGROUND_MIN_ROWS rows (the large hardening, TDE and evolution files of long runs),
+# unless the environment variable RAPSTER_BACKGROUND_WRITER is 0. If the writer cannot
+# be started, the rows are written by this process as before.
+
+BACKGROUND_MIN_ROWS = 20000
+
+
+def _read_exact(f, n):
+    data = f.read(n)
+    if len(data) != n:
+        raise EOFError
+    return data
+
+
+def _send_message(f, header, payload=b''):
+    h = pickle.dumps(header, protocol=pickle.HIGHEST_PROTOCOL)
+    f.write(struct.pack('<QQ', len(h), len(payload)))
+    f.write(h)
+    if payload:
+        f.write(payload)
+
+
+def _read_message(f):
+    nh, npl = struct.unpack('<QQ', _read_exact(f, 16))
+    header = pickle.loads(_read_exact(f, nh))
+    return header, (_read_exact(f, npl) if npl else b'')
+
+
+def _writer_main():
+    """The writer process: append the rows received on stdin to their files, until stdin
+    is closed; answer each sync request on stdout (None, or the error met so far)."""
+    inp = sys.stdin.buffer
+    out = sys.stdout.buffer
+    files = {}
+    error = None
+    while True:
+        try:
+            header, payload = _read_message(inp)
+        except EOFError:
+            break
+        op = header[0]
+        if op == 'w':
+            _, path, ncols = header
+            if error is None:
+                try:
+                    f = files.get(path)
+                    if f is None:
+                        f = files[path] = open(path, 'a')
+                    write_rows(f, np.frombuffer(payload, dtype=np.float64).reshape(-1, ncols))
+                except Exception as err:          # (reported at the next sync)
+                    error = repr(err)
+        elif op == 's':
+            _, path, close = header
+            if error is None:
+                try:
+                    f = files.get(path)
+                    if f is not None:
+                        f.flush()
+                        if close:
+                            f.close()
+                            del files[path]
+                except Exception as err:
+                    error = repr(err)
+            _send_message(out, (error,))
+            out.flush()
+    for f in files.values():
+        try:
+            f.close()
+        except Exception:
+            pass
+
+
+# (the writer runs this module by its file, without importing the rapster package)
+_WRITER_BOOT = ("import sys, importlib.util as u; s = u.spec_from_file_location('_rapster_writer', sys.argv[1]); "
+                "m = u.module_from_spec(s); s.loader.exec_module(m); m._writer_main()")
+
+
+class _BackgroundWriter:
+    PIECE_ROWS = 10000
+
+    def __init__(self):
+        self.proc = subprocess.Popen([sys.executable, '-c', _WRITER_BOOT, os.path.abspath(__file__)],
+                                     stdin=subprocess.PIPE, stdout=subprocess.PIPE)
+        # (at most two chunks wait to be sent: if the writer falls behind, the simulation
+        # waits for it rather than keeping more rows in memory)
+        self.queue = queue.Queue(maxsize=2)
+        self.error = None
+        self.thread = threading.Thread(target=self._send_loop, daemon=True, name='rapster-writer-send')
+        self.thread.start()
+        atexit.register(self.close)
+
+    def alive(self):
+        return self.proc.poll() is None
+
+    def _send_loop(self):
+        while True:
+            item = self.queue.get()
+            try:
+                if item is None:
+                    return
+                if self.error is None:
+                    _send_message(self.proc.stdin, *item)
+                    self.proc.stdin.flush()
+            except Exception as err:
+                self.error = err
+            finally:
+                self.queue.task_done()
+
+    def write(self, path, rows):
+        # (in pieces of PIECE_ROWS rows: at most a few pieces are in memory on their way
+        # to the writer, instead of whole chunks)
+        rows = np.ascontiguousarray(rows, dtype=np.float64)
+        for start in range(0, len(rows), self.PIECE_ROWS):
+            self.queue.put((('w', path, rows.shape[1]), rows[start:start + self.PIECE_ROWS].tobytes()))
+
+    def wait(self, path, close=False):
+        """Wait until every row sent for path is written and flushed (and the file closed)."""
+        self.queue.join()                     # (the send thread is idle from here)
+        if self.error is None:
+            try:
+                _send_message(self.proc.stdin, ('s', path, close))
+                self.proc.stdin.flush()
+                (err,), _ = _read_message(self.proc.stdout)
+                if err is not None:
+                    self.error = RuntimeError(err)
+            except Exception as err:
+                self.error = err
+        if self.error is not None:
+            raise RuntimeError(f'rows of {path} could not be written by the background writer: '
+                               f'{self.error!r}')
+
+    def close(self):
+        """Stop the writer once it has written everything (at exit)."""
+        try:
+            self.queue.put(None, timeout=60)
+            self.thread.join(timeout=60)
+            self.proc.stdin.close()
+            self.proc.wait(timeout=60)
+        except Exception:
+            pass
+
+
+_background = None
+_background_failed = False
+
+
+def _background_writer():
+    """The background writer of this process (started at the first use), or None."""
+    global _background, _background_failed
+    if _background is not None and _background.alive():
+        return _background
+    if _background_failed or os.environ.get('RAPSTER_BACKGROUND_WRITER', '1') == '0':
+        return None
+    if _background is not None:            # (the writer stopped: rows may be lost)
+        raise RuntimeError('the background writer of the output files stopped')
+    try:
+        _background = _BackgroundWriter()
+    except Exception as err:
+        _background_failed = True
+        print(f'(background writer not available, rows written directly: {err!r})', file=sys.stderr)
+        return None
+    return _background
+
+
 class StreamedRowLog(RowLog):
     """
     RowLog whose rows are written to their output file during the run, in chunks,
@@ -253,6 +445,7 @@ class StreamedRowLog(RowLog):
         self.removed = 0      # rows (counting the placeholder row) no longer in memory
         self.offset = 0       # data rows of the log written by an earlier run (restarts)
         self._f = None
+        self._bg = None       # background writer of the file, once a chunk was sent to it
 
     def __len__(self):
         return self.removed + len(self.data) // self.ncols
@@ -279,9 +472,25 @@ class StreamedRowLog(RowLog):
             if self.prepare is not None:
                 rows = self.prepare(rows)
             self._open()
-            self.writer(self._f, rows)
+            bg = self._bg
+            if bg is None and self.writer is write_rows and len(rows) >= BACKGROUND_MIN_ROWS:
+                bg = _background_writer()
+                if bg is not None:
+                    self._f.flush()               # (the header and rows written so far)
+                    self._bg = bg
+            if bg is not None:
+                bg.write(self.part_path, rows)
+            else:
+                self.writer(self._f, rows)
         del self.data[:b*nc]
         self.removed += b
+
+    def _wait_background(self):
+        """Wait until the background writer has written this file's rows, and closed it."""
+        if self._bg is not None:
+            self._f.flush()
+            self._bg.wait(self.part_path, close=True)
+            self._bg = None
 
     def flush(self):
         """Write the rows that can no longer change, once there are `chunk` of them."""
@@ -301,6 +510,8 @@ class StreamedRowLog(RowLog):
         if self.enabled:
             self._open()
             self._f.flush()
+            if self._bg is not None:
+                self._bg.wait(self.part_path)
         rows = np.frombuffer(self.data, dtype=np.float64).reshape(-1, self.ncols).copy()
         return self.removed, rows
 
@@ -340,6 +551,7 @@ class StreamedRowLog(RowLog):
         self.removed += m - end
         if self.enabled:
             self._open()
+            self._wait_background()
             self._f.close()
             self._f = None
             os.replace(self.part_path, self.path)
@@ -350,6 +562,7 @@ class StreamedRowLog(RowLog):
         if not self.enabled:
             return
         self._open()
+        self._wait_background()
         self._f.close()
         self._f = None
         tmp_path = self.part_path + '2'

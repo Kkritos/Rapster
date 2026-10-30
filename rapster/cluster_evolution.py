@@ -31,7 +31,7 @@ from .remnant import configure_kick_model
 from .ns_formation import NSFormationTable, sample_ns_formation_times
 from .fastrandom import poisson_draw, maxwell_draws
 from .snapshots import SnapshotStream, dump_streaming
-from .arraycache import ElementwiseCache, RowLog, StreamedRowLog
+from .arraycache import ElementwiseCache, RowLog, StreamedRowLog, write_rows
 from .populations import StellarPopulations, POPULATION_KEYS
 import math
 from zipfile import BadZipFile
@@ -1774,17 +1774,8 @@ def _one_row_table(data):
     return head + '\n' + row
 
 
-def _write_rows(f, rows, suffix=''):
-    """
-    Write a 2-D float array, one row per line, values separated by spaces and
-    `suffix` appended to every line. repr of a Python float is the same text as
-    str of a NumPy float64 (shortest round-trip representation), so the file is
-    identical to writing str(rows[i][j]) value by value, which it replaces
-    (~10x faster for the large hardening and evolution files).
-    """
-    chunk = 10000   # rows converted to Python floats at a time (bounded memory)
-    for start in range(0, len(rows), chunk):
-        f.writelines(' '.join(map(repr, row)) + suffix + '\n' for row in rows[start:start+chunk].tolist())
+# (_write_rows: arraycache.write_rows, which the background writer of StreamedRowLog uses too)
+_write_rows = write_rows
 
 
 def _finish_record(record, indicator, results_dir, name, keys, n_rows, prepare=None):
