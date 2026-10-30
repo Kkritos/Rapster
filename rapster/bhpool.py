@@ -42,6 +42,17 @@
 # probable) realization than versions <= 2.13.1; ensemble statistics agree
 # (tests/test_bhpool.py, and the validation described in CHANGELOG.md).
 #
+# Since 2.16.0, pools of more than NB_SUPER blocks (~1.3e5 BHs) group the blocks in
+# superblocks of SUPER = 64 blocks, with their sums: a draw locates the random number
+# among the cumulative superblock sums, then among the cumulative block sums of one
+# superblock, then inside one block. After a change only the sums of the changed
+# superblocks and the cumulative sums inside them are recomputed, instead of the
+# cumulative block sums from the changed block on (O(n/BLOCK), which dominated
+# clusters with ~1e5 single BHs and ~1e6 TDEs): the same probabilities, with sums
+# that differ in the last bits (so a given seed gives another realization than 2.15.x
+# once a pool exceeds NB_SUPER blocks). Smaller pools are drawn as in 2.15.1. A draw
+# that falls beyond a sum by rounding is repeated.
+#
 # The families used by the three-body sampler exclude the most massive single BH
 # (called D in three_body_binary.py): its weights are kept at zero there.
 
@@ -141,6 +152,8 @@ class BHPool:
     """
 
     BLOCK = 128
+    SUPER = 64        # blocks per superblock
+    NB_SUPER = 1024   # superblocks are used for pools of more than this many blocks
 
     def __init__(self, m=(), s=(), g=(), h=()):
         m = np.asarray(m, dtype=float)
@@ -167,6 +180,15 @@ class BHPool:
         self._drawers = {} # family -> draw function, valid until the next change (see drawer)
         self._wcuma = {}   # (family, block) -> (block version, cumulative weights as array('d')), for drawer
         self._dirty = set()   # blocks whose sums are out of date (see _settle)
+        # sums over superblocks of SUPER consecutive blocks, one row per family (kept up
+        # to date lazily, for large pools: see NB_SUPER):
+        nsb = (cap // B) // self.SUPER + 1
+        self._SST = np.zeros((N_FAMILIES, nsb))
+        self._sbver = [0] * nsb   # version of each superblock
+        self._sgen = 0            # increased whenever a superblock changes
+        self._sb_dirty = set()    # superblocks whose sums are out of date
+        self._csb = {}            # family -> (generation, cumulative superblock sums as array and list)
+        self._wsb = {}            # (family, superblock) -> (version, cumulative block sums in it)
         self._rebuild()
 
     # ------------------------------------------------------------- pickling
@@ -181,7 +203,7 @@ class BHPool:
         for name in ('_m', '_s', '_g', '_h', '_W'):
             state[name] = getattr(self, name)[:n].copy()
         state['_CB'] = None; state['_cbd'] = {}; state['_wcum'] = {}; state['_drawers'] = {}
-        state['_wcuma'] = {}; state['_cbv'] = {}
+        state['_wcuma'] = {}; state['_cbv'] = {}; state['_csb'] = {}; state['_wsb'] = {}
         state['_families'] = _FAMILY_NAMES
         return state
 
@@ -204,7 +226,12 @@ class BHPool:
         state.pop('_cb', None)
         state['_cbd'] = {}; state['_wcum'] = {}; state['_drawers'] = {}; state['_wcuma'] = {}; state['_cbv'] = {}
         state['_CB'] = np.zeros((N_FAMILIES, state['_S'].shape[0]))
+        state['_csb'] = {}; state['_wsb'] = {}
         self.__dict__.update(state)
+        if '_SST' not in state:                             # (checkpoint of a version 2.15.x)
+            nsb = self._ST.shape[1] // self.SUPER + 1
+            self._SST = np.zeros((N_FAMILIES, nsb)); self._sbver = [0] * nsb; self._sgen = 0
+            self._sb_dirty = set(range(nsb))
 
     # ------------------------------------------------------------------ views
     @property
@@ -263,6 +290,9 @@ class BHPool:
         self._cbd = {}
         self._drawers = {}
         self._dirty = set()
+        self._sbver = [v + 1 for v in self._sbver]
+        self._sgen += 1
+        self._sb_dirty = set(range(len(self._sbver)))
         self._changed()
 
     def _update_block(self, k):
@@ -286,7 +316,25 @@ class BHPool:
         for f in d:
             if bmin < d[f]:
                 d[f] = bmin
+        # superblocks changed (their sums: by _settle_superblocks, when needed):
+        SUPER = self.SUPER
+        sbs = {b // SUPER for b in dirty}
+        sbver = self._sbver
+        for sb in sbs:
+            sbver[sb] += 1
+        self._sgen += 1
+        self._sb_dirty |= sbs
         dirty.clear()
+
+    def _settle_superblocks(self):
+        """Recompute the sums of the superblocks changed since the last call."""
+        if self._dirty:
+            self._settle()
+        SUPER = self.SUPER
+        ST = self._ST; SST = self._SST
+        for sb in self._sb_dirty:
+            np.sum(ST[:, sb*SUPER:(sb+1)*SUPER], axis=1, out=SST[:, sb])
+        self._sb_dirty.clear()
 
     def _set_weights(self, k):
         """Weights of slot k from its mass (zero in the D-excluding families if k is D)."""
@@ -331,6 +379,9 @@ class BHPool:
         ST = np.zeros((N_FAMILIES, new_cap // B)); ST[:, :cap // B] = self._ST; self._ST = ST
         CB = np.zeros((N_FAMILIES, new_cap // B)); CB[:, :cap // B] = self._CB; self._CB = CB
         self._cbv = {}
+        nsb = (new_cap // B) // self.SUPER + 1
+        SST = np.zeros((N_FAMILIES, nsb)); SST[:, :self._SST.shape[1]] = self._SST; self._SST = SST
+        self._sbver += [0] * (nsb - len(self._sbver))
         self._bver += [0] * (new_cap // B - cap // B)
 
     # ----------------------------------------------------------------- updates
@@ -487,7 +538,12 @@ class BHPool:
             if self._dirty:
                 self._settle()
             nb = (self.n + self.BLOCK - 1) // self.BLOCK
-            tot = self._tot = self._S[:nb].sum(axis=0)
+            if nb > self.NB_SUPER:
+                self._settle_superblocks()
+                nsb = (nb + self.SUPER - 1) // self.SUPER
+                tot = self._tot = self._SST[:, :nsb].sum(axis=1)     # (sums of the superblock sums)
+            else:
+                tot = self._tot = self._S[:nb].sum(axis=0)
         return tot
 
     def _accumulate(self, f, k, d, nb):
@@ -523,6 +579,8 @@ class BHPool:
         if self._dirty:
             self._settle()
         nb = (self.n + self.BLOCK - 1) // self.BLOCK
+        if nb > self.NB_SUPER:
+            return                             # (superblocks: nothing to prepare)
         cbd = self._cbd
         d = nb
         for j in range(f, f + k):
@@ -550,6 +608,8 @@ class BHPool:
     def total(self, f):
         """Sum of the weights of family f over all single BHs (= totals()[f]: both are
         the sequential sum of the block sums)."""
+        if self.n > self.BLOCK * self.NB_SUPER:
+            return self._superblock_cdf(f)[2][-1]
         cb = self._block_cdf(f)
         return float(cb[-1]) if cb.shape[0] else 0.0
 
@@ -558,6 +618,8 @@ class BHPool:
 
     def draw(self, f):
         """Slot drawn with probability proportional to its weight in family f."""
+        if self.n > self.BLOCK * self.NB_SUPER:
+            return self._draw_super(f)
         cb = self._block_cdf(f)
         B = self.BLOCK
         nb = cb.shape[0]
@@ -593,6 +655,8 @@ class BHPool:
         return dr
 
     def _make_drawer(self, f):
+        if self.n > self.BLOCK * self.NB_SUPER:
+            return self._make_drawer_super(f)
         cbl = self._block_cdf(f).tolist()
         nb = len(cbl)
         total = cbl[-1]
@@ -612,6 +676,101 @@ class BHPool:
                 if b:
                     t -= cbl[b-1]
                 # cumulative weights within block b (kept while the block is unchanged):
+                ver = bver[b]
+                entry = cache.get((f, b))
+                if entry is None or entry[0] != ver:
+                    entry = cache[(f, b)] = (ver, array('d', _add_accumulate(W[b*B:(b+1)*B, f]).tobytes()))
+                i = bisect_right(entry[1], t)
+                if i < B and weight(b*B + i, f) > 0.0:
+                    return b*B + i
+        return draw
+
+    # ------------------------------------------------- superblocks (large pools)
+    def _superblock_cdf(self, f):
+        """Cumulative sums over the superblocks of family f, as (generation, array, list):
+        recomputed (O(n / (BLOCK SUPER))) when a superblock has changed since the last call."""
+        if self._dirty:
+            self._settle()
+        entry = self._csb.get(f)
+        nsb = (self.n + self.BLOCK * self.SUPER - 1) // (self.BLOCK * self.SUPER)
+        if entry is None or entry[0] != self._sgen or entry[1].shape[0] != nsb:
+            if self._sb_dirty:
+                self._settle_superblocks()
+            c = _add_accumulate(self._SST[f, :nsb])
+            entry = self._csb[f] = (self._sgen, c, c.tolist())
+        return entry
+
+    def _block_in_superblock(self, f, sb):
+        """Cumulative sums of the blocks of superblock sb (family f), as a list, kept while
+        the superblock is unchanged (block sums up to date)."""
+        ver = self._sbver[sb]
+        entry = self._wsb.get((f, sb))
+        if entry is None or entry[0] != ver:
+            SUPER = self.SUPER
+            entry = self._wsb[(f, sb)] = (ver, _add_accumulate(self._ST[f, sb*SUPER:(sb+1)*SUPER]).tolist())
+        return entry[1]
+
+    def _draw_super(self, f):
+        _, _, csb = self._superblock_cdf(f)
+        nsb = len(csb)
+        total = csb[-1]
+        B = self.BLOCK; SUPER = self.SUPER
+        wcum = self._wcuma
+        bver = self._bver
+        W = self._W
+        rand = np.random.rand
+        while True:
+            t = rand() * total
+            sb = bisect_right(csb, t)
+            if sb >= nsb:
+                continue
+            if sb:
+                t -= csb[sb-1]
+            cbs = self._block_in_superblock(f, sb)
+            j = bisect_right(cbs, t)
+            if j >= len(cbs):
+                continue
+            if j:
+                t -= cbs[j-1]
+            b = sb*SUPER + j
+            ver = bver[b]
+            entry = wcum.get((f, b))
+            if entry is None or entry[0] != ver:
+                entry = wcum[(f, b)] = (ver, array('d', _add_accumulate(W[b*B:(b+1)*B, f]).tobytes()))
+            i = bisect_right(entry[1], t)
+            if i < B and W.item(b*B + i, f) > 0.0:
+                return b*B + i
+
+    def _make_drawer_super(self, f):
+        _, _, csb = self._superblock_cdf(f)
+        nsb = len(csb)
+        total = csb[-1]
+        B = self.BLOCK; SUPER = self.SUPER
+        W = self._W
+        weight = W.item
+        rand = np.random.rand
+        bver = self._bver
+        cache = self._wcuma
+        blocks_in = self._block_in_superblock
+        lists = {}                  # superblock -> its cumulative block sums (pool unchanged)
+
+        def draw():
+            while True:
+                t = rand() * total
+                sb = bisect_right(csb, t)
+                if sb >= nsb:
+                    continue
+                if sb:
+                    t -= csb[sb-1]
+                cbs = lists.get(sb)
+                if cbs is None:
+                    cbs = lists[sb] = blocks_in(f, sb)
+                j = bisect_right(cbs, t)
+                if j >= len(cbs):
+                    continue
+                if j:
+                    t -= cbs[j-1]
+                b = sb*SUPER + j
                 ver = bver[b]
                 entry = cache.get((f, b))
                 if entry is None or entry[0] != ver:
@@ -644,8 +803,17 @@ class BHPool:
         nb = (n + self.BLOCK - 1) // self.BLOCK
         for f in list(self._cbd):
             assert np.array_equal(self._block_cdf(f), np.cumsum(self._ST[f, :nb]))
-        # total(f) (from the cumulative block sums) equals totals()[f] bit for bit:
+        # superblock sums:
+        self._settle_superblocks()
+        SUPER = self.SUPER
+        for sb in range(self._SST.shape[1]):
+            assert np.allclose(self._SST[:, sb], self._ST[:, sb*SUPER:(sb+1)*SUPER].sum(axis=1), rtol=1e-12, atol=0)
+        # total(f) equals totals()[f] (bit for bit for pools of at most NB_SUPER blocks,
+        # whose totals are both the sequential sum of the block sums):
         tot = self.totals()
-        assert all(self.total(f) == float(tot[f]) for f in range(N_FAMILIES))
+        if nb <= self.NB_SUPER:
+            assert all(self.total(f) == float(tot[f]) for f in range(N_FAMILIES))
+        else:
+            assert all(math.isclose(self.total(f), float(tot[f]), rel_tol=1e-12, abs_tol=0.0) for f in range(N_FAMILIES))
 
 # End of file.

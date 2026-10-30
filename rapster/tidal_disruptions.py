@@ -20,7 +20,9 @@ from .constants import *
 from .functions import *
 from .stellar_evolution import *
 from .compact_accretion import *
-from .bhpool import FAM
+from bisect import bisect_right
+
+from .bhpool import FAM, _POWER_LIST
 
 def draw_TDE_BH(BH, m_star):
     """
@@ -33,7 +35,16 @@ def draw_TDE_BH(BH, m_star):
     T43 = BH.total(_I_C43)
     return BH.draw(_I_C13) if np.random.rand() * (T13 + T43) < T13 else BH.draw(_I_C43)
 
-_I_C13, _I_C43 = FAM['c13'], FAM['c43']
+_I_C13, _I_C43, _I_MASS = FAM['c13'], FAM['c43'], FAM['mass']
+
+def _apply_tdes(BH, pending):
+    """Set the masses, spins and TDE counts of the BHs in pending (slot -> [m, s, h, ...])
+    in the pool, and clear pending."""
+    for k, (m, s, h, _, _) in pending.items():
+        BH.set_mass(k, m)
+        BH.set_spin(k, s)
+        BH.set_tde_count(k, h)
+    pending.clear()
 assert (_I_C43, FAM['mass']) == (_I_C13 + 1, _I_C13 + 2)
 
 def disrupt_star(seed, t, z, tde_type, m_avg, m_star, R_star, m, s, g, h, m_mean, vSTAR, vBH, tdes, f_accreted, EoS):
@@ -119,25 +130,73 @@ def BH_TidalDisruptions(seed, t, z, k_tde, N_tde, tde_type, m_avg, m_star, R_sta
         k_tde = 0
 
     if k_tde>0: # perform BH TDE(s)
-        
+
+        # The disrupting BH is drawn with weights p = (m_star + m) m^(1/3) at the current
+        # masses, which grow with every TDE. The pool is left unchanged during the loop
+        # (its draws use cached cumulative sums) and the BHs that grow are updated at the
+        # end: p at the current masses is the pool's p (masses at the start of the loop)
+        # plus, for every TDE so far, the increase of p of its BH, so a BH is drawn from
+        # the pool with probability P0 / (P0 + P1) and from the TDEs so far otherwise, with
+        # P0 and P1 the totals of the two parts (an exact decomposition of the same
+        # distribution).
+        ms = float(m_star)
+        p13, p43 = _POWER_LIST[_I_C13], _POWER_LIST[_I_C43]
+        T13 = ms * BH.total(_I_C13)
+        P0 = T13 + BH.total(_I_C43)
+        draw13 = BH.drawer(_I_C13); draw43 = BH.drawer(_I_C43)
+        weight = BH._W.item
+        n = BH.n
+        M_tot = BH.total(_I_MASS)       # total mass of the single BHs (for the mean mass)
+        pending = {}       # slot -> [m, s, h, m^(1/3), m^(4/3)] after its TDEs so far
+        cum = []           # cumulative sums of the increases of p (one per TDE)
+        cum_slots = []
+        P1 = 0.0
+        rand = np.random.rand
+
         for i in range(k_tde):
-            
-            if BH.size==0: # BH pool exhausted mid-step
-                break
 
             N_tde+=1 # update number of BH TDEs
-            
+
             # sample the disrupting single BH, with weights p = (m_star + m)*m**(1/3):
-            k = draw_TDE_BH(BH, m_star)
-            m, s, g, h = BH.get(k)
+            while True:
+                u = rand() * (P0 + P1)
+                if u < T13:
+                    k = draw13(); break
+                if u < P0:
+                    k = draw43(); break
+                j = bisect_right(cum, u - P0)
+                if j < len(cum):               # (else a rounding miss: draw again)
+                    k = cum_slots[j]; break
+
+            entry = pending.get(k)
+            if entry is None:
+                m, s, g, h = BH.get(k)
+                w13 = weight(k, _I_C13); w43 = weight(k, _I_C43)
+            else:
+                m, s, h, w13, w43 = entry
+                g = BH.get(k)[2]
 
             m_new, s_new, h_new = disrupt_star(seed, t, z, tde_type, m_avg, m_star, R_star, m, s, g, h,
-                                               BH.mean_mass(), vSTAR, vBH, tdes, f_accreted, EoS)
+                                               M_tot / n, vSTAR, vBH, tdes, f_accreted, EoS)
+            m_new = float(m_new)
+            n13 = m_new**p13; n43 = m_new**p43     # (the pool's weights of mass m_new)
+            pending[k] = [m_new, s_new, h_new, n13, n43]
+            M_tot += m_new - m
+            dp = ms * (n13 - w13) + (n43 - w43)
+            if dp > 0.0:
+                P1 += dp
+                cum.append(P1); cum_slots.append(k)
+            elif dp < 0.0:
+                # (a mass that decreased: update the pool now and start again from it)
+                _apply_tdes(BH, pending)
+                T13 = ms * BH.total(_I_C13)
+                P0 = T13 + BH.total(_I_C43)
+                draw13 = BH.drawer(_I_C13); draw43 = BH.drawer(_I_C43)
+                M_tot = BH.total(_I_MASS)
+                cum = []; cum_slots = []; P1 = 0.0
 
-            # update BH mass, spin and TDE count:
-            BH.set_mass(k, m_new)
-            BH.set_spin(k, s_new)
-            BH.set_tde_count(k, h_new)
+        # update BH masses, spins and TDE counts:
+        _apply_tdes(BH, pending)
 
     return seed, t, z, k_tde, N_tde, tde_type, m_avg, m_star, R_star, BH, vSTAR, vBH, tdes, binaries, pairs, f_accreted, EoS
 
