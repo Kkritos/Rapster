@@ -210,7 +210,7 @@ def single_BH_TidalDisruption(seed, t, z, N_tde, tde_type, m_avg, m_star, R_star
     m, s, h = disrupt_star(seed, t, z, tde_type, m_avg, m_star, R_star, m, s, g, h, m, vSTAR, vBH, tdes, f_accreted, EoS)
     return N_tde + 1, float(m), float(s), float(g), float(h), tdes
 
-def try_BBH_star_disruption(rp, a, m1, m2, s1, s2, g1, g2, h1, h2, m_star, R_star, f_accreted, EoS, seed, t, z, tdes, m_avg, vBH, v_star):
+def try_BBH_star_disruption(rp, a, m1, m2, s1, s2, g1, g2, h1, h2, m_star, R_star, f_accreted, EoS, seed, t, z, tdes, m_avg, vBH, v_star, with_tdes=1):
     """
     Checks whether a single passage of a field star past a BBH (at pericenter rp)
     results in tidal disruption, and if so, performs the disruption (Channel A or B).
@@ -232,9 +232,13 @@ def try_BBH_star_disruption(rp, a, m1, m2, s1, s2, g1, g2, h1, h2, m_star, R_sta
     @in m_avg: average stellar mass (Msun)
     @in vBH: 3D BH velocity dispersion (km/s)
     @in v_star: 3D star velocity dispersion (km/s)
+    @in with_tdes: if =1 allow TDEs, else do not allow them (-WT 0: no disruption)
 
     @out: disrupted (bool), m1, m2, s1, s2, h1, h2, tdes (updated if disrupted=True, unchanged otherwise)
     """
+
+    if not with_tdes:
+        return False, m1, m2, s1, s2, h1, h2, tdes
 
     # whole-binary (monopole) tidal radius: treats the BBH as a single point mass
     # of total mass (m1+m2), valid when the star's pericenter stays well outside
