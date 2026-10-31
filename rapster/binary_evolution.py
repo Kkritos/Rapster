@@ -107,7 +107,7 @@ def sample_BBH_partner(m12, BH):
         if np.random.rand() * bound < p3:
             return mk, k
 
-def evolve_BBHs(seed, t, z, dt, zCl_form, binaries, hardening, mergers, BH, n_star, v_star, vBH, t_rlx, m_avg, mBH_avg, na_BH, nc_BH, N_BH, N_BBH, N_me, N_me2b, N_3cap, N_meFi, N_meRe, N_meEj, N_dis, N_ex, N_BHej, N_BBHej, N_hardening, Vc_BH, N_bb, triples, N_Triples, tdes, N_tdeBBHstar, m_min, m_max, f_accreted, EoS):
+def evolve_BBHs(seed, t, z, dt, zCl_form, binaries, hardening, mergers, BH, n_star, v_star, vBH, t_rlx, m_avg, mBH_avg, na_BH, nc_BH, N_BH, N_BBH, N_me, N_me2b, N_3cap, N_meFi, N_meRe, N_meEj, N_dis, N_ex, N_BHej, N_BBHej, N_hardening, Vc_BH, N_bb, triples, N_Triples, tdes, N_tdeBBHstar, m_min, m_max, f_accreted, EoS, with_tdes=1):
     """
     @in seed: simulation seed number
     @in t: simulation time
@@ -150,6 +150,7 @@ def evolve_BBHs(seed, t, z, dt, zCl_form, binaries, hardening, mergers, BH, n_st
     @in m_max: maximum stellar mass
     @in f_accreted: fraction of disrupted star mass accreted
     @in EoS: NS equation of state; a name registered in compact_accretion.EOS_TABLES
+    @in with_tdes: if =1 allow TDEs, else do not allow them (no BBH-star disruptions)
 
     @out: all inputs
     """
@@ -561,7 +562,7 @@ def evolve_BBHs(seed, t, z, dt, zCl_form, binaries, hardening, mergers, BH, n_st
                 if type_int==1: # check for tidal disruption on this passage
                     disrupted, m1, m2, s1, s2, h1, h2, tdes = try_BBH_star_disruption(
                         rp, a, m1, m2, s1, s2, g1, g2, h1, h2, m_star, R_star, f_accreted, EoS,
-                        seed, t, z, tdes, m_avg, vBH, v_star)
+                        seed, t, z, tdes, m_avg, vBH, v_star, with_tdes)
 
                     if disrupted:
                         N_tdeBBHstar+=1
@@ -575,7 +576,7 @@ def evolve_BBHs(seed, t, z, dt, zCl_form, binaries, hardening, mergers, BH, n_st
                             rp = uniform(0, kp_max * a)
                             disrupted, m1, m2, s1, s2, h1, h2, tdes = try_BBH_star_disruption(
                                 rp, a, m1, m2, s1, s2, g1, g2, h1, h2, m_star, R_star, f_accreted, EoS,
-                                seed, t, z, tdes, m_avg, vBH, v_star)
+                                seed, t, z, tdes, m_avg, vBH, v_star, with_tdes)
                             if disrupted:
                                 N_tdeBBHstar+=1
                                 binaries[i, 4] = m1; binaries[i, 6] = s1; binaries[i, 13] = h1

@@ -123,7 +123,7 @@ def parse_args():
     parser.add_argument('-RP', '--remnant_mass_prescription', type=int, metavar=' ', choices=[0, 1, 2, 3], default=1, help='Remnant mass prescription (0 for SEVN delayed, 1 for Fryer+2012 delayed, 2 for SEVN rapid, 3 for Fryer+2012 rapid)')
     parser.add_argument('-NS', '--with_neutron_stars', type=int, metavar=' ', default=2, choices=[0, 1, 2, 3], help='include neutron stars (if =1 with monochromatic, =2 with bimodal or =3 with uniform mass distribution) else no (if =0)')
     parser.add_argument('-NSt', '--ns_formation_time_model', type=int, metavar=' ', default=0, choices=[0, 1, 2], help='NS formation-time model: 0 for all NSs at the BH formation time (default), 1 for times drawn from the COMPAS distribution p(t), 2 for times drawn from p(t | m_NS); the NS mass distribution is set by -NS')
-    parser.add_argument('-WT', '--with_tdes', type=int, metavar=' ', choices=[0, 1], default=1, help='include tdes (if =1) else no (if =0)')
+    parser.add_argument('-WT', '--with_tdes', type=int, metavar=' ', choices=[0, 1], default=1, help='include tdes (if =1) else no (if =0): with 0, no TDEs of any kind (BH-star, BH-WD, BBH-star) and no white dwarfs')
     parser.add_argument('-Ti', '--tdes_file_indicator', type=int, metavar=' ', choices=[0, 1], default=1, help='Export tdes file (0 for no, 1 for yes)')
     parser.add_argument('-TF', '--tdes_file_name', type=str, metavar=' ', default='tdes', help='Name of .txt file containing tde parameters')
     parser.add_argument('-MBH', '--massive_black_hole_mass', type=float, metavar=' ', default=0, help='mass of the seed massive BH (if >0)')

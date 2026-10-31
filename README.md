@@ -1,7 +1,7 @@
 # Rapster
 
 <p align="center">
-	<a href="https://github.com/Kkritos/Rapster/releases"><img src="https://img.shields.io/badge/version-2.16.0-blue" alt="version"></a>
+	<a href="https://github.com/Kkritos/Rapster/releases"><img src="https://img.shields.io/badge/version-2.16.1-blue" alt="version"></a>
 	<a href="https://arxiv.org/abs/2210.10055"><img src="https://img.shields.io/badge/arXiv-2210.10055-b31b1b.svg" alt="arXiv"></a>
 	<a href="https://arxiv.org/abs/2212.06845"><img src="https://img.shields.io/badge/arXiv-2212.06845-b31b1b.svg" alt="arXiv"></a>
 	<a href="https://arxiv.org/abs/2605.21593"><img src="https://img.shields.io/badge/arXiv-2605.21593-b31b1b.svg" alt="arXiv"></a>
@@ -21,7 +21,7 @@ $\tt Rapster$ stands for $\rm RAPid\ cluSTER$ evolution.
 
 Author: Konstantinos Kritos <konstantinos.kritos@stonybrook.edu>
 
-Version: 2.16.0, October 30, 2026.
+Version: 2.16.1, October 31, 2026.
 (Thanks to Tousif Islam for helping modularize this repository!)
 
 ![LOGO](.assets/LOGO.png)
@@ -50,6 +50,10 @@ Version: 2.16.0, October 30, 2026.
 The repository provides the source code files for the current version in ``rapster/`` and all necessary data files in the ``Data/`` folder, for the rapid evolution of dense star cluster environments and the dynamical assembly of compact-object coalescences and tidal disruption events.
 
 The modeling accounts for the necessary physical processes governing the formation of compact-object binaries and cluster evolution, employing semi-analytic prescriptions described in Sec. 2 of [K. Kritos et al. PRD (2024)](https://arxiv.org/abs/2210.10055). This is our code paper, written with Vladimir Strokov, Vishal Baibhav, and Emanuele Berti.
+
+##### New in version 2.16.1:
+
+Fix: ``-WT 0`` now switches off the disruptions of stars by BBHs (``tde_type`` 21 and 22) too, which up to version 2.16.0 still happened and changed the masses, spins and TDE counts of the BHs; runs with ``-WT 0`` are affected, runs with ``-WT 1`` (the default) are byte-identical to version 2.16.0 (see ``CHANGELOG.md``).
 
 ##### New in version 2.16.0:
 
@@ -221,7 +225,7 @@ For the user’s convenience, we paste the list of optional arguments in the for
 | -RP, --remnant_mass_prescription | Remnant mass prescription (0 for SEVN delayed, 1 for Fryer+2012 delayed, 2 for SEVN rapid, 3 for Fryer+2012 rapid) | int | ``1`` |
 | -NS, --with_neutron_stars | Include neutron stars (if =1 with monochromatic at 1.4 suns by default, =2 with bimodal NS mass distribution from Rocha et al. 2023, or =3 with uniform NS mass distribution between the minimum NS mass and the TOV mass of the chosen EoS) else no (if =0); the NS formation times are set by -NSt | int | ``2`` |
 | -NSt, --ns_formation_time_model | NS formation-time model (0 for all NSs at the BH formation time of 10 Myr, 1 for times drawn from the COMPAS distribution $p(t)$ in ``Data/NS_formation.npz``, 2 for times drawn from $p(t\,\vert\,m_{\rm NS})$, i.e. correlated with the NS mass); requires -NS 1, 2 or 3 | int | ``0`` |
-| -WT, --with_tdes | Include tdes (if =1) else no (if =0) | int | ``1`` |
+| -WT, --with_tdes | Include TDEs (if =1) else no (if =0); with 0 there are no TDEs of any kind, including the disruptions of stars by BBHs (``tde_type`` 21 and 22), and no white dwarfs | int | ``1`` |
 | -Ti, --tdes_file_indicator | Export tdes file (0 for no, 1 for yes) | int | ``1`` |
 | -TF, --tdes_file_name | Name of .txt file containing tde parameters | str | ``tdes`` |
 | -MBH, --massive_black_hole_mass | Mass of the seed massive BH (if >0) | float | ``0`` |
@@ -346,6 +350,7 @@ Each test file can also be run on its own, e.g. ``python3 tests/test_regression.
 - ``tests/test_user_options.py`` checks ``-tge``, ``-fCO`` (counting all compact objects), ``-R 0`` and ``-GC``.
 - ``tests/test_speedups_2151.py`` checks the optimizations of version 2.15.1 against the code they replace: the pool's cumulative sums and draw functions, the heaviest BH, the conversion of checkpoints of 2.15.0, the interpolation of redshifts, the merger remnants, the deletion of table rows and the last mass of the Euler steps of the spin evolution.
 - ``tests/test_speedups_2160.py`` checks the optimizations of version 2.16.0, which change the random numbers drawn but not the distributions: the draws of large pools from their superblock sums against the weights (chi-square tests) and the superblock sums after random changes, the TDEs and the GW captures of a time step against the code of 2.15.1 (the pool updated after every event), and the background writer of the tables (the same files, also for a run stopped, restarted and joined).
+- ``tests/test_with_tdes.py`` checks that ``-WT 0`` switches off TDEs of every kind, including the disruptions of stars by BBHs (a run with such disruptions has none with ``-WT 0``), and that the BBH-star disruption routine does nothing with ``with_tdes=0``.
 - ``tests/test_bhpool.py`` checks the pool of single BHs (``rapster/bhpool.py``) and the samplers built on it: the pool's sums after random sequences of additions, removals and mass changes, the sampled three-body binaries, BBH-single partners, two-body captures and TDE hosts against their exact target distributions (chi-square tests with fixed seeds), the Runge-Kutta spin evolution during TDE accretion against the Euler integration it replaces, and the ZLK root solver against ``scipy.optimize.root``.
 
 Since the pool-based samplers (see ``CHANGELOG.md``) use the random numbers differently from version 2.13.1, a given seed gives a different realization than 2.13.1, with the same statistical properties.
