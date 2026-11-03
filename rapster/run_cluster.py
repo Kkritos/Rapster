@@ -43,6 +43,7 @@ from .cluster_evolution import (
     write_output,
 )
 from .stellar_evolution import init_stellar_mass_sampler
+from .bhpool import set_occupation_power
 from .compact_accretion import EOS_TABLES, accrete_gas
 from .functions import set_escape_factor
 from .ns_formation import DEFAULT_NS_FORMATION_TABLE
@@ -137,6 +138,7 @@ def parse_args():
     parser.add_argument('-analyze', '--analyze_results', type=int, metavar=' ', choices=[0, 1], default=0, help='Print analysis summary after simulation (0 for no, 1 for yes)')
     parser.add_argument('-fA', '--accreted_fraction', type=float, metavar=' ', default=0.5, help='Fraction of a disrupted star accreted by the compact object')
     parser.add_argument('-mb', '--mass_bias_power', type=float, metavar=' ', default=0.0, help='Mass bias power index p for drawing stars from IMF*m^p for TDEs')
+    parser.add_argument('-ms', '--mass_segregation_power', type=float, metavar=' ', default=0.0, help='Mass segregation of the compact objects: power alpha >= 0 of their core occupation s(m) = m^alpha, which multiplies the weights of every single BH/NS in core interactions (0: no segregation among compact objects, as before; 1.5: full energy equipartition, see README)')
     parser.add_argument('-EoS', '--equation_of_state', type=str, metavar=' ', default='APR', choices=sorted(EOS_TABLES), help='Neutron Star equation of state; one of ' + ', '.join(sorted(EOS_TABLES)))
     parser.add_argument('-RK', '--recoil_kick_model', type=int, metavar=' ', choices=[0, 1], default=0, help='GW recoil kick model (0 for Gerosa & Kesden 2016, 1 for gwModel_kick_prec_flow from Islam & Wadekar 2025)')
     parser.add_argument('-sfe', '--star_formation_efficiency', type=float, metavar=' ', default=1.0, help='Star formation efficiency epsilon in (0,1]; sets initial residual gas mass. Default 1.0 = no gas (recovers gas-free Rapster)')
@@ -185,7 +187,7 @@ def parse_args():
         'binary_fraction', 'minimum_time_step', 'maximum_time_step', 'maximum_time',
         'supernova_kick_parameter', 'galactocentric_radius', 'galactocentric_velocity',
         'spin_parameter', 'massive_black_hole_mass', 'massive_black_hole_spin',
-        'min_1g_bh_mass', 'max_1g_bh_mass', 'accreted_fraction', 'mass_bias_power',
+        'min_1g_bh_mass', 'max_1g_bh_mass', 'accreted_fraction', 'mass_bias_power', 'mass_segregation_power',
         'star_formation_efficiency', 'gas_expulsion_time', 'eddington_ratio_cap',
         'gas_sound_speed', 'escape_velocity_factor', 'bh_temperature_prefactor',
         'max_compact_object_fraction',
@@ -244,6 +246,9 @@ def parse_args():
 
     if args.bh_temperature_prefactor <= 0:
         parser.error('bh_temperature_prefactor (-cxi) must be positive')
+
+    if args.mass_segregation_power < 0:
+        parser.error('mass_segregation_power (-ms) must be >= 0')
 
     if args.checkpoint_interval <= 0 or not np.isfinite(args.checkpoint_interval):
         parser.error('checkpoint_interval (-CKdt) must be positive')
@@ -336,6 +341,7 @@ def parse_args():
         'analyze_results': bool(args.analyze_results),
         'f_accreted': args.accreted_fraction,
         'mass_bias_power': args.mass_bias_power,
+        'mass_segregation_power': args.mass_segregation_power,
         'EoS': args.equation_of_state,
         'recoil_kick_model': args.recoil_kick_model,
         'SFE': args.star_formation_efficiency,
@@ -490,6 +496,11 @@ def main():
     print('RAPSTER VERSION:', __version__)
     init_stellar_mass_sampler(config['mass_bias_power'])
     set_escape_factor(config['f_esc'])
+    # mass segregation of the compact objects (bhpool.py; 0 for runs of earlier versions):
+    alpha = config.get('mass_segregation_power', 0.0)
+    set_occupation_power(alpha)
+    if alpha:
+        print('MASS SEGREGATION OF THE COMPACT OBJECTS: core occupation s(m) = m^alpha, alpha = {:g}'.format(alpha))
     if checkpoint is None:
         print('INITIALIZING...')
         print('Initial central stellar density: {:.6g} pc^-3'.format(config['n_star']))

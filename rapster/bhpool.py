@@ -62,6 +62,18 @@ from bisect import bisect_right
 
 import numpy as np
 
+# Mass segregation of the compact objects (optional, -ms alpha, default 0). The single
+# compact objects (BHs and NSs) share the density and velocity dispersion of the BH core;
+# with alpha > 0, an object of mass m takes part in core interactions in proportion to
+# its occupation of the core, s(m) ~ m^alpha (heavier objects are more concentrated): the
+# weight of every interaction draw is multiplied by s(m) for each object it selects. As
+# all weights are powers of m, this adds alpha to the power of every weight family (2
+# alpha to the products of two weights, wv, wCwC, qq, qr) except those that are not
+# interaction weights (mass, m25), and the samplers draw exactly from the new weights.
+# set_occupation_power(alpha) sets it, before any pool is made; with alpha = 0 every
+# weight, draw and random number is the same as before.
+ALPHA = 0.0
+
 # weight families: (name, power of m, excludes the heaviest BH D)
 #   three-body binaries (three_body_binary.py):
 #     w = m^4, v = m^(5/2), wC = m^(15/4), q = m^(43/12), r = m^(7/3), and the
@@ -70,7 +82,10 @@ import numpy as np
 #     (p25 also gives sum(m^(5/2)) for the BH relaxation factor);
 #   BH-star TDEs (tidal_disruptions.py): c13 = m^(1/3), c43 = m^(4/3);
 #   two-body captures (two_body_capture.py): c27 = m^(2/7), c127 = m^(12/7);
-#   exchanges and mean mass: mass = m.
+#   exchanges and mean mass: mass = m;
+#   BH relaxation factor: m25 = m^(5/2) (= p25 for alpha = 0);
+#   occupation weights (alpha > 0): occ = s(m) = m^alpha (uniform draws, exchanges),
+#     mocc = m s(m) = m^(1 + alpha) (exchanges).
 FAMILIES = (
     ('w',    4.0,          True),
     ('v',    2.5,          True),
@@ -90,7 +105,12 @@ FAMILIES = (
     ('c13',  1/3,          False),
     ('c43',  4/3,          False),
     ('mass', 1.0,          False),
+    ('m25',  2.5,          False),
+    ('occ',  0.0,          False),
+    ('mocc', 1.0,          False),
 )
+# number of factors s(m) in each family (its power is the one above + this times alpha):
+_ALPHA_MULT = {'wv': 2, 'wCwC': 2, 'qq': 2, 'qr': 2, 'mass': 0, 'm25': 0}
 # (families used together are adjacent, so that their cumulative sums are computed
 # in one call: w..r for three-body binaries, p15..p27 for BBH-single partners,
 # c27, c127 for two-body captures, c13, c43, mass for TDEs; the order of the
@@ -100,18 +120,48 @@ _FAMILY_NAMES = tuple(name for name, _, _ in FAMILIES)
 # order of the families in version 2.15.0 (checkpoints written by it):
 _FAMILY_NAMES_2150 = ('w', 'v', 'wC', 'q', 'r', 'wv', 'wCwC', 'qq', 'qr', 'p15', 'p25', 'p17', 'p27',
                       'c13', 'c43', 'c27', 'c127', 'mass')
+# families added in version 2.17.0 (computed from the masses for checkpoints of earlier versions):
+_FAMILY_NAMES_2151 = _FAMILY_NAMES[:-3]
 N_FAMILIES = len(FAMILIES)
-_POWER_LIST = [p for _, p, _ in FAMILIES]
+_BASE_POWERS = [p for _, p, _ in FAMILIES]
+_MULT = [_ALPHA_MULT.get(name, 1) for name, _, _ in FAMILIES]
+_POWER_LIST = list(_BASE_POWERS)           # (updated in place by set_occupation_power)
 _POWERS = np.array(_POWER_LIST)[:, None]
+_I_MASS_FAM = FAM['mass']
+_N_OLD = len(_FAMILY_NAMES_2151)   # (families of versions 2.15.1-2.16.1)
+_I_OCC = FAM['occ']
 _N_EXCL = sum(e for _, _, e in FAMILIES)       # the families excluding D come first
 assert all(e for _, _, e in FAMILIES[:_N_EXCL]) and not any(e for _, _, e in FAMILIES[_N_EXCL:])
 
+
+def set_occupation_power(alpha):
+    """Set the power alpha of the core occupation s(m) = m^alpha of the compact objects
+    (see ALPHA above); call it before making a pool (and before loading a checkpoint's
+    pool, with the run's alpha). alpha = 0 gives the weights of earlier versions."""
+    global ALPHA
+    alpha = float(alpha)
+    if not alpha >= 0.0:
+        raise ValueError(f'the mass segregation power alpha must be >= 0, not {alpha}')
+    ALPHA = alpha
+    _POWER_LIST[:] = [p + k * alpha if k else p for p, k in zip(_BASE_POWERS, _MULT)]
+    _POWERS[:, 0] = _POWER_LIST
+    _weights_cache.clear()
+
+# families whose power is exactly 0 or 1 (weights 1 and m, as m**p gives them):
+def _exact_rows():
+    return ([j for j, p in enumerate(_POWER_LIST) if p == 0.0],
+            [j for j, p in enumerate(_POWER_LIST) if p == 1.0])
 
 def family_weights(m):
     """Weights of all families for the masses m (1-D array): shape (N_FAMILIES, len(m))."""
     m = np.asarray(m, dtype=float)
     W = np.exp(_POWERS * np.log(m))
-    W[FAM['mass']] = m
+    W[_I_MASS_FAM] = m
+    ones, linear = _exact_rows()
+    for j in ones:
+        W[j] = 1.0
+    for j in linear:
+        W[j] = m
     return W
 
 
@@ -214,15 +264,32 @@ class BHPool:
             n = state['n']
             for name in ('_m', '_s', '_g', '_h'):
                 a = np.zeros(cap); a[:n] = state[name]; state[name] = a
-            W = np.zeros((cap, N_FAMILIES)); W[:n] = state['_W']; state['_W'] = W
+            W = np.zeros((cap, state['_W'].shape[1])); W[:n] = state['_W']; state['_W'] = W
         # columns of the weight families in this version's order (a checkpoint of
-        # version 2.15.0 has them in its order, and the caches of that version):
-        names = state.pop('_families', _FAMILY_NAMES_2150)
+        # version 2.15.0 has them in its order, and the caches of that version; one of
+        # a version before 2.17.0 lacks the families m25, occ, mocc, which are computed
+        # from the masses):
+        names = list(state.pop('_families', _FAMILY_NAMES_2150))
         if tuple(names) != _FAMILY_NAMES:
-            perm = [list(names).index(f) for f in _FAMILY_NAMES]
-            state['_W'] = np.ascontiguousarray(state['_W'][:, perm])
-            state['_S'] = np.ascontiguousarray(state['_S'][:, perm])
-            state['_ST'] = np.ascontiguousarray(state['_ST'][perm, :])
+            W_old, S_old = state['_W'], state['_S']
+            n = state['n']
+            W = np.zeros((W_old.shape[0], N_FAMILIES))
+            S = np.zeros((S_old.shape[0], N_FAMILIES))
+            missing = [j for j, f in enumerate(_FAMILY_NAMES) if f not in names]
+            Wm = family_weights(state['_m'][:n]) if missing and n else None
+            for j, f in enumerate(_FAMILY_NAMES):
+                if f in names:
+                    W[:, j] = W_old[:, names.index(f)]
+                    S[:, j] = S_old[:, names.index(f)]
+                else:
+                    if n:
+                        W[:n, j] = Wm[j]
+                    S[:, j] = W[:, j].reshape(-1, self.BLOCK).sum(axis=1)
+            state['_W'] = W
+            state['_S'] = S
+            state['_ST'] = np.ascontiguousarray(S.T)
+            if missing:
+                state.pop('_SST', None)                     # (recomputed below)
         state.pop('_cb', None)
         state['_cbd'] = {}; state['_wcum'] = {}; state['_drawers'] = {}; state['_wcuma'] = {}; state['_cbv'] = {}
         state['_CB'] = np.zeros((N_FAMILIES, state['_S'].shape[0]))
@@ -308,8 +375,16 @@ class BHPool:
         dirty = self._dirty
         B = self.BLOCK
         W = self._W; S = self._S; ST = self._ST; ones = self._ones
+        alpha = ALPHA
         for b in dirty:
-            np.dot(ones, W[b*B:(b+1)*B], out=S[b])   # (BLAS: faster than .sum(axis=0))
+            # (BLAS: faster than .sum(axis=0); in two calls, for the families of version
+            # 2.16 and for those added in 2.17.0, as the sums a BLAS call gives for a
+            # column can depend on the number of columns: the same sums as before. The
+            # families added in 2.17.0 are used only with mass segregation, alpha > 0.)
+            Wb = W[b*B:(b+1)*B]
+            np.dot(ones, Wb[:, :_N_OLD], out=S[b, :_N_OLD])
+            if alpha:
+                np.dot(ones, Wb[:, _N_OLD:], out=S[b, _N_OLD:])
             ST[:, b] = S[b]
         bmin = min(dirty)
         d = self._cbd                          # cached cumulative sums: valid below bmin
@@ -654,6 +729,70 @@ class BHPool:
             dr = self._drawers[f] = self._make_drawer(f)
         return dr
 
+    def drawer_without_D(self, f):
+        """Function that draws a slot other than the heaviest BH D, with probability
+        proportional to its weight in family f (for samplers in which D would dominate
+        the draws of f, with mass segregation); its attribute total is the sum of the
+        weights of the other slots (computed without D, not as a difference). Valid
+        until the next change of the pool."""
+        key = ('noD', f)
+        dr = self._drawers.get(key)
+        if dr is None:
+            dr = self._drawers[key] = self._make_drawer_without_D(f)
+        return dr
+
+    def _make_drawer_without_D(self, f):
+        if self._dirty:
+            self._settle()
+        n = self.n; B = self.BLOCK; D = self.D
+        nb = (n + B - 1) // B
+        bD = D // B
+        W = self._W
+        sums = self._ST[f, :nb].copy()
+        wD_block = W[bD*B:(bD+1)*B, f].copy()
+        wD_block[D - bD*B] = 0.0
+        sums[bD] = wD_block.sum()                 # (the sum of D's block without D)
+        cbl = _add_accumulate(sums).tolist()
+        total = cbl[-1]
+        cumD = array('d', _add_accumulate(wD_block).tobytes())
+        weight = W.item
+        rand = np.random.rand
+        bver = self._bver
+        cache = self._wcuma
+
+        def draw():
+            while True:
+                t = rand() * total
+                b = bisect_right(cbl, t)
+                if b >= nb:
+                    continue                   # (rounding at the end: draw again)
+                if b:
+                    t -= cbl[b-1]
+                if b == bD:
+                    c = cumD
+                else:
+                    ver = bver[b]
+                    entry = cache.get((f, b))
+                    if entry is None or entry[0] != ver:
+                        entry = cache[(f, b)] = (ver, array('d', _add_accumulate(W[b*B:(b+1)*B, f]).tobytes()))
+                    c = entry[1]
+                i = bisect_right(c, t)
+                k = b*B + i
+                if i < B and k != D and weight(k, f) > 0.0:
+                    return k
+        draw.total = total
+        return draw
+
+    def draw_occupied_avoiding(self, excluded):
+        """Slot not in excluded (a set or tuple of slots) drawn with probability
+        proportional to its core occupation s(m) = m^alpha (alpha > 0): by rejection,
+        from the weights without D when D is excluded (D can dominate them)."""
+        dr = self.drawer_without_D(_I_OCC) if self.D in excluded else self.drawer(_I_OCC)
+        while True:
+            k = dr()
+            if k not in excluded:
+                return k
+
     def _make_drawer(self, f):
         if self.n > self.BLOCK * self.NB_SUPER:
             return self._make_drawer_super(f)
@@ -784,6 +923,13 @@ class BHPool:
         """Slot drawn uniformly."""
         return int(np.random.rand() * self.n) % self.n
 
+    def draw_occupied(self):
+        """Slot drawn with probability proportional to its core occupation s(m) = m^alpha
+        (uniformly, as draw_uniform, for alpha = 0)."""
+        if ALPHA == 0.0:
+            return self.draw_uniform()
+        return self.draw(_I_OCC)
+
     def check(self):
         """Consistency check (used by the tests): weights, block sums, D."""
         if self._dirty:
@@ -796,7 +942,10 @@ class BHPool:
             W[self.D, :_N_EXCL] = 0.0
         assert np.allclose(self._W, W, rtol=1e-12, atol=0)
         S = self._W.reshape(-1, self.BLOCK, N_FAMILIES).sum(axis=1)
-        assert np.allclose(self._S, S, rtol=1e-12, atol=0)
+        # (without mass segregation the sums of the families added in 2.17.0 are not
+        # kept up to date: they are not used)
+        F = N_FAMILIES if ALPHA else _N_OLD
+        assert np.allclose(self._S[:, :F], S[:, :F], rtol=1e-12, atol=0)
         assert np.array_equal(self._ST, self._S.T)
         assert not np.any(self._m[n:]) and not np.any(self._W[n:])
         # the kept cumulative block sums are those of np.cumsum, bit for bit:
@@ -807,13 +956,13 @@ class BHPool:
         self._settle_superblocks()
         SUPER = self.SUPER
         for sb in range(self._SST.shape[1]):
-            assert np.allclose(self._SST[:, sb], self._ST[:, sb*SUPER:(sb+1)*SUPER].sum(axis=1), rtol=1e-12, atol=0)
+            assert np.allclose(self._SST[:F, sb], self._ST[:F, sb*SUPER:(sb+1)*SUPER].sum(axis=1), rtol=1e-12, atol=0)
         # total(f) equals totals()[f] (bit for bit for pools of at most NB_SUPER blocks,
         # whose totals are both the sequential sum of the block sums):
         tot = self.totals()
         if nb <= self.NB_SUPER:
-            assert all(self.total(f) == float(tot[f]) for f in range(N_FAMILIES))
+            assert all(self.total(f) == float(tot[f]) for f in range(F))
         else:
-            assert all(math.isclose(self.total(f), float(tot[f]), rel_tol=1e-12, abs_tol=0.0) for f in range(N_FAMILIES))
+            assert all(math.isclose(self.total(f), float(tot[f]), rel_tol=1e-12, abs_tol=0.0) for f in range(F))
 
 # End of file.

@@ -1,7 +1,7 @@
 # Rapster
 
 <p align="center">
-	<a href="https://github.com/Kkritos/Rapster/releases"><img src="https://img.shields.io/badge/version-2.16.1-blue" alt="version"></a>
+	<a href="https://github.com/Kkritos/Rapster/releases"><img src="https://img.shields.io/badge/version-2.17.0-blue" alt="version"></a>
 	<a href="https://arxiv.org/abs/2210.10055"><img src="https://img.shields.io/badge/arXiv-2210.10055-b31b1b.svg" alt="arXiv"></a>
 	<a href="https://arxiv.org/abs/2212.06845"><img src="https://img.shields.io/badge/arXiv-2212.06845-b31b1b.svg" alt="arXiv"></a>
 	<a href="https://arxiv.org/abs/2605.21593"><img src="https://img.shields.io/badge/arXiv-2605.21593-b31b1b.svg" alt="arXiv"></a>
@@ -21,7 +21,7 @@ $\tt Rapster$ stands for $\rm RAPid\ cluSTER$ evolution.
 
 Author: Konstantinos Kritos <konstantinos.kritos@stonybrook.edu>
 
-Version: 2.16.1, October 31, 2026.
+Version: 2.17.0, November 3, 2026.
 (Thanks to Tousif Islam for helping modularize this repository!)
 
 ![LOGO](.assets/LOGO.png)
@@ -50,6 +50,10 @@ Version: 2.16.1, October 31, 2026.
 The repository provides the source code files for the current version in ``rapster/`` and all necessary data files in the ``Data/`` folder, for the rapid evolution of dense star cluster environments and the dynamical assembly of compact-object coalescences and tidal disruption events.
 
 The modeling accounts for the necessary physical processes governing the formation of compact-object binaries and cluster evolution, employing semi-analytic prescriptions described in Sec. 2 of [K. Kritos et al. PRD (2024)](https://arxiv.org/abs/2210.10055). This is our code paper, written with Vladimir Strokov, Vishal Baibhav, and Emanuele Berti.
+
+##### New in version 2.17.0:
+
+Mass segregation of the compact objects (``-ms``): the single BHs and NSs take part in the core interactions in proportion to their occupation of the core, $s(m)=m^\alpha$ (e.g. ``-ms 1.5``, full energy equipartition; see [Mass segregation of the compact objects](#masssegregation) below). The default ``-ms 0`` reproduces version 2.16.1 byte for byte.
 
 ##### New in version 2.16.1:
 
@@ -239,6 +243,7 @@ For the user’s convenience, we paste the list of optional arguments in the for
 | -analyze, --analyze_results | Print analysis summary after simulation (0 for no, 1 for yes) | int | ``0`` |
 | -fA, --accreted_fraction | Fraction of a disrupted star accreted by the compact object | float | ``0.5`` |
 | -mb, --mass_bias_power | Mass bias power index p for drawing stars from IMF*m^p for TDEs | float | ``0.0`` |
+| -ms, --mass_segregation_power | Mass segregation of the compact objects: power $\alpha\geq0$ of the core occupation $s(m)=m^\alpha$ that multiplies the weight of every single BH or NS in core interactions (0: none, as up to version 2.16.1; 1.5: full energy equipartition, the suggested value; see [Mass segregation of the compact objects](#masssegregation)) | float | ``0.0`` |
 | -EoS, --equation_of_state | Neutron Star equation of state; one of "APR", "APR4", "AU", "DD2", "MPA1" (the keys of ``EOS_TABLES``) | str | ``APR`` |
 | -RK, --recoil_kick_model | GW recoil kick model (0 for Gerosa & Kesden 2016, 1 for gwModel_kick_prec_flow from Islam & Wadekar 2025) | int | ``0`` |
 | -sfe, --star_formation_efficiency | Star formation efficiency epsilon in (0,1]; sets initial residual gas mass. Default 1.0 = no gas (recovers gas-free Rapster) | float | ``1.0`` |
@@ -268,6 +273,31 @@ Unless it is given with ``-n``, the initial central stellar density is set to th
 ##### Nuclear star clusters:
 
 The galaxy enters the evolution only through the tidal (Jacobi) radius of the cluster, which sets its escape rate, and through the dynamical friction that drags it inward. To simulate a cluster at the center of its galaxy, such as a nuclear star cluster, use ``-R 0``: the cluster then evolves without galactic tides (the escape rate of an isolated cluster) and does not move. A cluster that starts at ``-R`` > 0 and reaches the center by dynamical friction stops there by default (``CLUSTER REACHED GALAXY CENTER`` in ``log.txt``); with ``-GC 1`` the run continues from that point as a cluster at the center, without galactic tides. In reality such a cluster would merge with the nuclear star cluster already present, which is not modeled.
+
+<a name="masssegregation"></a>
+
+##### Mass segregation of the compact objects:
+
+By default (``-ms 0``) every single compact object, BH or NS, is equally likely to be in the core where the interactions happen: an object is drawn for a three-body binary, a GW capture, a BBH-single encounter, a TDE or an exchange with a weight that depends on its mass only through the cross section and the velocities of that interaction. In a real cluster the heavier compact objects sink deeper: the NSs and light BHs are kept out of the core of the heaviest BHs. With ``-ms`` $\alpha>0$, each single compact object of mass $m$ enters these weights with the extra factor $s(m)=m^\alpha$, its relative occupation of the core:
+- three-body binaries: $p(m_1,m_2,m_3)\propto s(m_1)s(m_2)s(m_3)\,(m_1m_2)^4m_3^{5/2}(m_1+m_2)^{-1/2}(m_1+m_2+m_3)^{-1/2}$;
+- GW captures: the BHs drawn with $p\propto m^{2/7}s(m)$, the pair accepted with probability $\propto(m_1+m_2)^{10/7}$;
+- BBH-single encounters: the single drawn with $(m_{12}+m)(m_{12}^{-2/5}+m^{-2/5})^{-1/2}m^{3/2}\,s(m)$;
+- TDEs of stars and white dwarfs by single BHs: the BH drawn with $(m_\star+m)\,m^{1/3}s(m)$;
+- exchanges into BH-star pairs and BBHs: $m\,s(m)$ and $(m_{\rm pair}+m)\,s(m)$;
+- random pairing (``-RMP 1``): $s(m)$.
+
+The rates of these events are those of the BH subsystem as before (they are set by the energy balance of the BH core, Breen & Heggie 2013); $\alpha$ changes which compact objects take part, not how many events happen. $\alpha$ must be $\geq0$, and is kept by restarts.
+
+*Value of $\alpha$.* In the core of the BHs, of nearly uniform density, a lighter species of 1D velocity dispersion $\sigma_m$ has a Gaussian density profile with a width $\propto\sigma_m$, so its density in the core, per object, scales as $\sigma_m^{-3}$. With $\sigma_m^2\propto m^{-\eta}$, $s(m)\propto m^{3\eta/2}$:
+- $\eta=1$, full energy equipartition: $\alpha=3/2$, the suggested value. NSs and light BHs are tracers heated by the heavy BHs that dominate the core, and relax towards equipartition with them; the encounter velocities of Rapster already assume it ($\sigma_m^2=\langle m_{\rm BH}\rangle v_{\rm BH}^2/(3m)$). In N-body models of evolved clusters the stars and remnants above $m_{\rm eq}\approx1.5$-$2\,M_\odot$ are in full equipartition, $\sigma\propto m^{-1/2}$ ([Bianchini et al. 2016](https://arxiv.org/abs/1603.00878)), while lighter stars reach only partial equipartition ([Trenti & van der Marel 2013](https://arxiv.org/abs/1302.2152)). The heavy component itself cannot reach equipartition with the lighter one when it is a minority ([Spitzer 1969](https://ui.adsabs.harvard.edu/abs/1969ApJ...158L.139S)), which is why the BHs form their own core.
+- $\eta=2/5$, the partial equipartition used for the BBH-single encounters ($\sigma^2\propto m^{-2/5}$, Breen & Heggie 2013; [Kritos et al. 2024](https://arxiv.org/abs/2210.10055)): $\alpha=3/5$, a weaker segregation.
+
+In Monte Carlo models the BHs keep the NSs out of the core and suppress their dynamical interactions and mergers until the BHs are depleted ([Ye et al. 2019](https://arxiv.org/abs/1902.05963), [Ye et al. 2020](https://arxiv.org/abs/1910.10740)).
+
+Notes:
+- Only the single compact objects of the pool get $s(m)$; BBHs, BH-star pairs and triples are drawn as before, and the stars are as before.
+- The weight of the single in BBH-single encounters already contains a factor $m^{3/2}$ (as in earlier versions); with $\alpha>0$ it is multiplied by $s(m)$ like the others. If that factor is read as an occupation of the core, $\alpha$ counts it twice for this channel.
+- The NSs are shielded from the BHs: in an NS-rich cluster (``-NS 1 -N 2e6 -r 0.3 -Z 0.02``, 24 seeds) twice as many NSs are still single when fewer than 10 single BHs are left (22 vs 11 of ~99 retained), and with ``-ms 1.5`` 37 BNSs merge per run instead of 24 (NSBH: 7.5 vs 8.1; BBH: 233 vs 213).
 
 ##### Stopping conditions:
 
@@ -351,6 +381,7 @@ Each test file can also be run on its own, e.g. ``python3 tests/test_regression.
 - ``tests/test_speedups_2151.py`` checks the optimizations of version 2.15.1 against the code they replace: the pool's cumulative sums and draw functions, the heaviest BH, the conversion of checkpoints of 2.15.0, the interpolation of redshifts, the merger remnants, the deletion of table rows and the last mass of the Euler steps of the spin evolution.
 - ``tests/test_speedups_2160.py`` checks the optimizations of version 2.16.0, which change the random numbers drawn but not the distributions: the draws of large pools from their superblock sums against the weights (chi-square tests) and the superblock sums after random changes, the TDEs and the GW captures of a time step against the code of 2.15.1 (the pool updated after every event), and the background writer of the tables (the same files, also for a run stopped, restarted and joined).
 - ``tests/test_with_tdes.py`` checks that ``-WT 0`` switches off TDEs of every kind, including the disruptions of stars by BBHs (a run with such disruptions has none with ``-WT 0``), and that the BBH-star disruption routine does nothing with ``with_tdes=0``.
+- ``tests/test_mass_segregation.py`` checks ``-ms``: the weights of the pool with $\alpha>0$ and their sums after random changes, the occupation draws, the three-body binaries (also with BHs taken), BBH-single partners, GW captures, TDE hosts and the TDEs of a time step against their exact targets times $s(m)$ (chi-square tests, $\alpha$ = 0.6 and 1.5, BHs and NSs), checkpoints of the pool (also those of version 2.16.1), and whole runs (the option in ``log.txt`` and the checkpoint, a run stopped, restarted and joined, a restart that tries to change ``-ms``, $\alpha<0$ refused).
 - ``tests/test_bhpool.py`` checks the pool of single BHs (``rapster/bhpool.py``) and the samplers built on it: the pool's sums after random sequences of additions, removals and mass changes, the sampled three-body binaries, BBH-single partners, two-body captures and TDE hosts against their exact target distributions (chi-square tests with fixed seeds), the Runge-Kutta spin evolution during TDE accretion against the Euler integration it replaces, and the ZLK root solver against ``scipy.optimize.root``.
 
 Since the pool-based samplers (see ``CHANGELOG.md``) use the random numbers differently from version 2.13.1, a given seed gives a different realization than 2.13.1, with the same statistical properties.

@@ -22,6 +22,7 @@ from .constants import *
 from .functions import *
 from .arraycache import ElementwiseCache
 from .fastrandom import WeightedIndex
+from . import bhpool
 from .bhpool import FAM
 
 def _sums_of_others(w):
@@ -81,8 +82,21 @@ def _efficiency_others(dist, a):
 # exp(power*log(m)) for the weight powers of fast_sample_3bodyBinary, one row per
 # power 4, 5/2, 15/4, 43/12, 7/3 (ElementwiseCache: exact, reuses unchanged BHs;
 # each row equals np.exp(power * np.log(m)) computed on its own):
+# (with mass segregation, -ms alpha > 0, each weight also has the core occupation
+# s(m) = m^alpha of its BH: alpha is added to every power; the cache is remade when
+# alpha changes)
 _WEIGHT_POWERS = np.array([4.0, 2.5, 15/4, 43/12, 7/3])[:, None]
 _weight_powers = ElementwiseCache(lambda x: np.exp(_WEIGHT_POWERS * np.log(x)), min_size=6000)
+_weight_powers_alpha = 0.0
+
+def _weight_powers_cache():
+    global _weight_powers, _weight_powers_alpha
+    alpha = bhpool.ALPHA
+    if alpha != _weight_powers_alpha:
+        powers = _WEIGHT_POWERS + alpha
+        _weight_powers = ElementwiseCache(lambda x: np.exp(powers * np.log(x)), min_size=6000)
+        _weight_powers_alpha = alpha
+    return _weight_powers
 
 
 def fast_sample_3bodyBinary(mBH, n_samples=1, return_indices=False):
@@ -123,7 +137,7 @@ def fast_sample_3bodyBinary(mBH, n_samples=1, return_indices=False):
     # massive BH D removed (set to zero). The powers are evaluated only for BHs that
     # are new or changed since the last call; the array is read-only and valid
     # until the next call (see ElementwiseCache.get_zeroed).
-    (W,) = _weight_powers.get_zeroed(m, D)
+    (W,) = _weight_powers_cache().get_zeroed(m, D)
     w, v, wC, q, r = W
     # w:  binary members, regions A: m^4
     # v:  third body, region A: m^(5/2)
@@ -168,8 +182,14 @@ def fast_sample_3bodyBinary(mBH, n_samples=1, return_indices=False):
     np.maximum(wB_first, 0.0, out=wB_first)
 
     sums = F.sum(axis=1)
-    Z_A = 2 * mD**4 / mD * sums[0]
-    Z_C = 4**(-0.25) * mD**2 * sums[1]
+    alpha = bhpool.ALPHA
+    if alpha:
+        # (D's own occupation m_D^alpha; the other BHs' are in their weights)
+        Z_A = 2 * mD**(4 + alpha) / mD * sums[0]
+        Z_C = 4**(-0.25) * mD**(2 + alpha) * sums[1]
+    else:
+        Z_A = 2 * mD**4 / mD * sums[0]
+        Z_C = 4**(-0.25) * mD**2 * sums[1]
     Z_B = sums[2] / np.sqrt(6)
 
     # weighted-draw helpers, built when first needed:
@@ -270,6 +290,12 @@ def sample_3bodyBinary(BH, exclude=None, max_trials=None):
         # region totals of the proposal weights (sums over all non-D BHs, repeats included):
         Z_A = 2 * mD**3 * W_ * V_                 # (D, x, c) and (x, D, c): m_D^4 w_x v_c / m_D
         Z_C = 4**(-0.25) * mD**2 * WC_**2         # (a, b, D): 4^(-1/4) m_D^(5/2) m_D^(-1/2) wC_a wC_b
+        alpha = bhpool.ALPHA
+        if alpha:
+            # (with mass segregation, D's own occupation m_D^alpha; the other BHs' are in
+            # the pool's weights w, v, wC, q, r)
+            Z_A = Z_A * mD**alpha
+            Z_C = Z_C * mD**alpha
         Z_B = Q_**2 * R_ / np.sqrt(6)             # (a, b, c): q_a q_b r_c / sqrt(6)
         Z = Z_A + Z_C + Z_B
 
@@ -369,13 +395,19 @@ def three_body_binary(t, z, k_3bb, mBH_avg, binaries, BH, vBH, N_3bb, N_BBH, ran
             N_3bb+=1 # update number of three-body-binaries
 
             # sample the BHs that form the 3bb (slots k1 != k2 in the pool):
-            if random_pairing:
+            if random_pairing and bhpool.ALPHA == 0.0:
                 k1 = BH.draw_uniform()
                 while k1 in taken:
                     k1 = BH.draw_uniform()
                 k2 = BH.draw_uniform()
                 while k2 == k1 or k2 in taken:
                     k2 = BH.draw_uniform()
+                m1, m2 = BH.m[k1], BH.m[k2]
+                m3 = mBH_avg
+            elif random_pairing:
+                # (with mass segregation: k1, k2 drawn with weights s(m) without replacement)
+                k1 = BH.draw_occupied_avoiding(taken)
+                k2 = BH.draw_occupied_avoiding(taken | {k1})
                 m1, m2 = BH.m[k1], BH.m[k2]
                 m3 = mBH_avg
             else:

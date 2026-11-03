@@ -80,7 +80,11 @@ def test_pool_pickle_from_version_2150_order():
     del old['_families']; old.pop('_CB'); old['_cb'] = {}
     Q = BHPool.__new__(BHPool)
     Q.__setstate__(old)
-    assert np.array_equal(Q._W, P._W) and np.array_equal(Q._S, P._S) and np.array_equal(Q._ST, P._ST)
+    # (the families added in 2.17.0 are computed from the masses: their block sums can
+    # differ from those of the pool in the last bits)
+    F = len(_FAMILY_NAMES_2150)
+    assert np.array_equal(Q._W, P._W) and np.array_equal(Q._S[:, :F], P._S[:, :F])
+    assert np.allclose(Q._S, P._S, rtol=1e-13, atol=0) and np.array_equal(Q._ST, Q._S.T)
     Q.check()
     np.random.seed(3); x = [P.draw(FAM['c43']) for _ in range(100)]
     np.random.seed(3); y = [Q.draw(FAM['c43']) for _ in range(100)]

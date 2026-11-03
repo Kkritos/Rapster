@@ -21,6 +21,7 @@ from .functions import *
 from .stellar_evolution import *
 from .tidal_disruptions import *
 from .fastrandom import choice_weighted, first_index_of
+from . import bhpool
 from .bhpool import FAM
 
 
@@ -72,8 +73,9 @@ def StarStar_to_BHstar(seed, t, z, k_ex1, N_ex1, m_avg, BH, ab, pairs, N_BHstar,
             if BH.size == 0:  # no single BHs left, exit loop
                 break
 
-            # sample the BH that substitutes one of the stars (probability ~ its mass):
-            k = BH.draw(FAM['mass'])
+            # sample the BH that substitutes one of the stars (probability ~ its mass, times
+            # its core occupation m^alpha with mass segregation, -ms alpha > 0):
+            k = BH.draw(FAM['mass']) if bhpool.ALPHA == 0.0 else BH.draw(FAM['mocc'])
             m, s, g, h = BH.get(k)
                 
             a, kss = _choose(ab, ab/np.sum(ab))
@@ -130,10 +132,19 @@ def BHstar_to_BBH(seed, t, z, k_ex2, N_ex2, m_avg, BH, pairs, binaries, N_BBH, N
             # draw a single BH that will substitute the star in the BH-star pair, with
             # probability ~ (mean pair BH mass + m): a mixture of uniform and mass-weighted draws:
             m_pairs = np.mean(pairs[:, 1])
-            if np.random.rand() * (m_pairs * BH.size + BH.total(FAM['mass'])) < m_pairs * BH.size:
-                k2 = BH.draw_uniform()
+            if bhpool.ALPHA == 0.0:
+                if np.random.rand() * (m_pairs * BH.size + BH.total(FAM['mass'])) < m_pairs * BH.size:
+                    k2 = BH.draw_uniform()
+                else:
+                    k2 = BH.draw(FAM['mass'])
             else:
-                k2 = BH.draw(FAM['mass'])
+                # (with mass segregation, -ms alpha > 0: times the core occupation m^alpha,
+                # a mixture of the families occ = m^alpha and mocc = m^(1 + alpha))
+                T0 = m_pairs * BH.total(FAM['occ'])
+                if np.random.rand() * (T0 + BH.total(FAM['mocc'])) < T0:
+                    k2 = BH.draw(FAM['occ'])
+                else:
+                    k2 = BH.draw(FAM['mocc'])
             m2, s2, g2, h2 = BH.get(k2)  # mass, spin, generation and number of TDEs of the second BH
             
             # draw a BH-star pair:
