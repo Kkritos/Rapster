@@ -2,6 +2,26 @@
 
 All notable changes to Rapster will be documented in this file.
 
+## [2.17.0] - 2026-11-03
+
+New option `-ms` (`--mass_segregation_power`) for the mass segregation of the compact objects. The default `-ms 0` gives byte-identical results to 2.16.1 for a given seed (all output files; 32 test configurations up to N = 1e8, including NSs, random pairing, IMBH seeds and multiple populations). Checkpoints of 2.15.1-2.16.1 are read (the new weight families are computed from the masses).
+
+### Added
+- **Core occupation of the compact objects, `-ms alpha`** (`bhpool.py`, `three_body_binary.py`, `two_body_capture.py`, `binary_evolution.py` through the pool, `tidal_disruptions.py` through the pool, `exchanges.py`, `cluster_evolution.py`, `run_cluster.py`). Up to 2.16.1 every single BH or NS is equally likely to be in the core: it is drawn for an interaction with a weight that depends on its mass only through the cross section and velocities of that interaction. With `-ms alpha` (alpha >= 0) each weight also has the factor s(m) = m^alpha of every single compact object it selects: three-body binaries s(m1) s(m2) s(m3) (m1 m2)^4 m3^(5/2) g; GW captures p ~ m^(2/7) s(m); BBH-single partners p3 s(m); TDE hosts (m_star + m) m^(1/3) s(m); exchanges into BH-star pairs m s(m) and into BBHs (m_pair + m) s(m); random pairing (`-RMP 1`) s(m), without replacement. The rates of the events are unchanged: alpha changes which objects take part. As all weights are powers of m, alpha is added to the powers of the pool's weight families (2 alpha for the products of two weights), and the samplers draw exactly from the new targets (their bounds hold for any alpha >= 0). Three families are added: `m25` = m^(5/2) for the BH relaxation factor psi_BH (with alpha = 0 it is still computed from `p25`, as before), `occ` = s(m) and `mocc` = m s(m). The value is printed in `log.txt` (`MASS SEGREGATION OF THE COMPACT OBJECTS ...`) when nonzero, stored in the checkpoint, and cannot be changed at a restart. Suggested value: alpha = 3/2 (full energy equipartition of the compact objects in the BH core, sigma_m^2 ~ 1/m, so that their density in the core scales as sigma_m^(-3) ~ m^(3/2); see the README, Section 4, "Mass segregation of the compact objects", for the motivation and references); alpha = 3/5 corresponds to the partial equipartition sigma^2 ~ m^(-2/5) used for the BBH-single encounters.
+- **Draws without the heaviest BH** (`BHPool.drawer_without_D`, `BHPool.draw_occupied_avoiding`). With alpha > 0 an IMBH can dominate the weights of the GW captures (m^(2/7 + alpha)) and of random pairing (m^alpha); the GW-capture sampler then draws the pairs that contain the heaviest BH and those that do not separately (exact target, acceptance >= ~0.37), and random pairing draws without replacement from the weights without the heaviest BH when it is excluded. Without this, a capture in a cluster with a 2e4 Msun BH needed up to ~1e6 proposals.
+
+### Results with alpha > 0
+- NS-rich cluster `-NS 1 -N 2e6 -r 0.3 -Z 0.02`, 24 seeds, alpha = 0 -> 1.5 (paired, mean ± standard error): BNS mergers per run 24.0 ± 0.8 -> 37.0 ± 1.3 (difference 13.0 ± 0.9); NSBH 8.1 ± 0.6 -> 7.5 ± 0.6; BBH 213 ± 2 -> 233 ± 3. The NSs are shielded from the BHs: single NSs left when fewer than 10 single BHs remain, 11 -> 22 of ~99 retained (~250 Myr).
+- Runs with a 2e4 Msun seed BH (`-N 2e6 -r 0.3 -MBH 2e4 -tM 3000`), with and without `-RMP 1`, complete in about the same time as with alpha = 0.
+
+### Notes
+- The weight of the single in BBH-single encounters already contains m^(3/2) (since earlier versions; the code paper's Eq. 13 does not have it); with alpha > 0 it is multiplied by s(m) as the others. If that factor is read as the occupation of the core, alpha counts it twice for this channel.
+- The block sums of the three new families are computed only with alpha > 0, so that the sums of the 18 families of 2.16.1 come out of the same BLAS calls as before.
+
+### Tests
+- New `tests/test_mass_segregation.py` (23 tests, alpha = 0.6 and 1.5, populations with NSs and with an IMBH): the pool's weights and sums after random changes; draws of `occ`, `mocc`, without the heaviest BH (also with superblocks) and avoiding given slots; the three-body binaries (pool and array samplers, and with BHs taken), BBH-single partners, GW captures (also with captured BHs excluded), TDE hosts and the TDEs of a step against their exact targets (chi-square tests); checkpoints of the pool, also those of 2.16.1; whole runs with `-ms 1.5` (the value in `log.txt` and the checkpoint, a run stopped, restarted and joined equal to the uninterrupted run, a restart that changes `-ms` refused, alpha < 0 refused).
+- `tests/test_speedups_2151.py`: the conversion of 2.15.0 checkpoints compares the new families' block sums to rounding.
+
 ## [2.16.1] - 2026-10-31
 
 Results with `-WT 1` (the default) are byte-identical to 2.16.0 for a given seed (all output files; 31 test configurations, and clusters with BBH-star disruptions). Runs with `-WT 0` change from the first BBH-star disruption they had (e.g. the test configuration `-S 10 -WT 0`, with one such TDE in 2.16.0 and none now).

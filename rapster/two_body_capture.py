@@ -19,6 +19,7 @@
 from .constants import *
 from .functions import *
 from .remnant import *
+from . import bhpool
 from .bhpool import FAM
 
 _SQRT_2_3 = np.sqrt(2/3)
@@ -53,6 +54,8 @@ def sample_2capture(BH, exclude=None, w_excluded=0.0, max_trials=None):
 
     @out: m1, m2, slot of m1, slot of m2 (or None, see max_trials)
     """
+    if bhpool.ALPHA != 0.0:
+        return _sample_2capture_segregated(BH, exclude, w_excluded, max_trials)
     f27 = FAM['c27']; f127 = FAM['c127']
 
     # (computed once per pool state: the pool does not change between the captures of
@@ -87,6 +90,73 @@ def sample_2capture(BH, exclude=None, w_excluded=0.0, max_trials=None):
         except (ZeroDivisionError, OverflowError):
             mi = m[i]; mj = m[j]
             accept = (mi + mj)**(10/7) / (c * (mi**(10/7) + mj**(10/7))) * q_max / (1 - BH.weight(f27, i) / S27)
+        if rand() < accept:
+            return m[i], m[j], i, j
+
+def _sample_2capture_segregated(BH, exclude=None, w_excluded=0.0, max_trials=None):
+    """
+    sample_2capture with mass segregation (alpha > 0; w = c27 = m^(2/7) s(m), c127 =
+    m^(12/7) s(m)), with the same target
+        P(i, j) ~ w_i w_j / (S - w_i) (m_i + m_j)^(10/7),   S = sum of w (available BHs),
+    drawn so that the heaviest BH D, whose weight can dominate S with an IMBH (by
+    m_D^alpha), does not make the proposals coincide. With S_x = S - w_D (the other
+    available BHs) and the convexity bound (m_i + m_j)^(10/7) <= 2^(3/7) (m_i^(10/7) +
+    m_j^(10/7)), the pairs split into
+      D) D in the pair, j the other BH: bound w_D w_j 2^(3/7) (m_D^(10/7) + m_j^(10/7)) / S_x
+         for both orders (S - w_j >= S_x); j is drawn from c27 and c127 without D;
+      O) D not in the pair: bound w_i w_j 2^(3/7) (m_i^(10/7) + m_j^(10/7)) / max(w_D, S_x)
+         (S - w_i >= w_D and >= S_x); i, j drawn from c27 and c127 without D, equal
+         pairs rejected.
+    A region is chosen with its total bound, and a candidate accepted with probability
+    target / bound (at least ~0.37, also when D dominates).
+    """
+    f27 = FAM['c27']; f127 = FAM['c127']
+    setup = BH._drawers.get('2capD')
+    if setup is None:
+        D = BH.D
+        d27 = BH.drawer_without_D(f27); d127 = BH.drawer_without_D(f127)
+        setup = BH._drawers['2capD'] = (D, BH.weight(f27, D), float(BH._m[D]), d27, d127, d27.total, d127.total)
+    D, w_D, m_D, d27, d127, T27, T127 = setup
+    S_x = T27 - w_excluded
+    if not S_x > 0.0:
+        return None
+    m = BH.m
+    mass = BH._m.item; w27 = BH._W.item
+    c = 2**(3/7)
+    mD_107 = m_D**(10/7)
+    bD = mD_107 * T27 + T127
+    Z_D = 2 * w_D / S_x * c * bD
+    Z_O = 2 * c * T27 * T127 / max(w_D, S_x)
+    Z = Z_D + Z_O
+    rand = np.random.rand
+    trials = 0
+    while True:
+        if exclude:
+            trials += 1
+            if trials > max_trials:
+                return None
+        if rand() * Z < Z_D:
+            j = d27() if rand() * bD < mD_107 * T27 else d127()
+            if exclude and j in exclude:
+                continue
+            mj = mass(j)
+            accept = (m_D + mj)**(10/7) / (c * (mD_107 + mj**(10/7)))
+            if rand() < 0.5:
+                i = D
+            else:
+                i, j = j, D
+                accept *= S_x / (w_D + (S_x - w27(i, f27)))
+        else:
+            if rand() < 0.5:
+                i = d127(); j = d27()
+            else:
+                i = d27(); j = d127()
+            if i == j:
+                continue
+            if exclude and (i in exclude or j in exclude):
+                continue
+            mi = mass(i); mj = mass(j)
+            accept = (mi + mj)**(10/7) / (c * (mi**(10/7) + mj**(10/7))) * max(w_D, S_x) / (w_D + (S_x - w27(i, f27)))
         if rand() < accept:
             return m[i], m[j], i, j
 
@@ -143,11 +213,16 @@ def two_body_capture(seed, t, dt, z, zCl_form, k_2cap, mBH_avg, binaries, BH, vB
                 break # avoid infinite loop in the sampler
             
             # sample the BHs that form the captured binary (slots k1 != k2):
-            if random_pairing:
+            if random_pairing and bhpool.ALPHA == 0.0:
                 k1 = BH.draw_uniform()
                 k2 = BH.draw_uniform()
                 while k2 == k1:
                     k2 = BH.draw_uniform()
+                m1, m2 = BH.m[k1], BH.m[k2]
+            elif random_pairing:
+                # (with mass segregation: k1, k2 drawn with weights s(m) without replacement)
+                k1 = BH.draw_occupied()
+                k2 = BH.draw_occupied_avoiding((k1,))
                 m1, m2 = BH.m[k1], BH.m[k2]
             else:
                 if BH.D in taken:

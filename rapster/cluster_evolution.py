@@ -25,6 +25,7 @@ from .triples import evolve_triples
 from .two_body_capture import two_body_capture
 from .exchanges import StarStar_to_BHstar, BHstar_to_BBH
 from .tidal_disruptions import BH_TidalDisruptions, single_BH_TidalDisruption
+from . import bhpool
 from .bhpool import BHPool, FAM
 from .compact_accretion import *
 from .remnant import configure_kick_model
@@ -857,7 +858,9 @@ def compute_cluster_properties(state, config):
 
     # BH relaxation factor:
     if i_aux1==1 and N_BH>0:
-        psi_BH = (BH.total(FAM['p25']) + np.sum(binaries[:, 4]**(5/2)) + \
+        # (sum of m^(5/2) over the single BHs: family p25, or m25 with mass segregation,
+        # -ms alpha > 0, as p25 then also has the occupation m^alpha)
+        psi_BH = (BH.total(FAM['p25'] if bhpool.ALPHA == 0.0 else FAM['m25']) + np.sum(binaries[:, 4]**(5/2)) + \
                   np.sum(binaries[:, 5]**(5/2)) + np.sum(pairs[:, 1]**(5/2)) ) \
                   / N_BH / mBH_avg**(5/2)
     else:
