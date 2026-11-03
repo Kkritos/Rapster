@@ -266,13 +266,38 @@ For the user’s convenience, we paste the list of optional arguments in the for
 | -addnmix, --add_mixing_time | Restart only: its mixing time if segregated, in half-mass relaxation times | float | ``5.0`` |
 
 
-##### Note:
+##### Note about central stellar density:
 
 Unless it is given with ``-n``, the initial central stellar density is set to the value of a Plummer density profile with the chosen number of stars $N$ and half-mass radius $r$: $n=3(1.3)^3N/(4\pi r^3)\simeq0.53N/r^3$, i.e. 5.3e5 pc^-3 for the default $N=10^6$ and $r=1\,\rm pc$. The value used is printed at the top of ``log.txt``. The cluster then evolves homologically, by assumption. If you prefer an alternative stellar density profile, a different relation may hold between $N$ and $r$; pass the density explicitly with ``-n``. (Up to version 2.13.1 the default was 5.3e5 pc^-3 whatever the values of ``-N`` and ``-r``.)
 
 ##### Nuclear star clusters:
 
-The galaxy enters the evolution only through the tidal (Jacobi) radius of the cluster, which sets its escape rate, and through the dynamical friction that drags it inward. To simulate a cluster at the center of its galaxy, such as a nuclear star cluster, use ``-R 0``: the cluster then evolves without galactic tides (the escape rate of an isolated cluster) and does not move. A cluster that starts at ``-R`` > 0 and reaches the center by dynamical friction stops there by default (``CLUSTER REACHED GALAXY CENTER`` in ``log.txt``); with ``-GC 1`` the run continues from that point as a cluster at the center, without galactic tides. In reality such a cluster would merge with the nuclear star cluster already present, which is not modeled.
+The galaxy enters the evolution only through the tidal (Jacobi) radius of the cluster, which sets its escape rate, and through the dynamical friction that drags it inward. To simulate a cluster at the center of its galaxy, such as a nuclear star cluster, use ``-R 0``: the cluster then evolves without galactic tides (the escape rate of an isolated cluster) and does not move. A cluster that starts at ``-R`` > 0 and reaches the center by dynamical friction stops there by default (``CLUSTER REACHED GALAXY CENTER`` in ``log.txt``); with ``-GC 1`` the run continues from that point as a cluster at the center, without galactic tides. ``-GC 1`` is meant for a galaxy without a nuclear star cluster: if one is already present at the center, the inspiralling cluster merges with it, which Rapster does not model. In that case stop the simulation when the cluster reaches the center (the default ``-GC 0``) and start a new simulation with ``-R 0`` and initial conditions corresponding to the merged cluster.
+
+A nuclear star cluster may host a massive BH. To include one, give its mass and spin with ``-MBH`` and ``-sBH``, e.g. ``-MBH 1e5 -sBH 0.5`` (only at the start of a run, not at a restart).
+
+In practice:
+1. Run the inspiralling cluster with ``-R`` > 0 and ``-BOi 1``, so that the BHs are written to ``outputBHs.pkl``. It stops with ``CLUSTER REACHED GALAXY CENTER``. The last row of ``evolution.txt`` gives the time ``t`` and redshift ``z`` of its arrival and its stellar mass ``M_cl``, half-mass radius ``r_h`` and mean stellar mass ``m_avg``. The last snapshot of ``outputBHs.pkl`` holds its BHs (single, in BBHs and in BH-star pairs).
+2. Choose the merged cluster: the number of stars $N=N_{\rm NSC}+M_{\rm cl}/m_{\rm avg}$, its half-mass radius (e.g. that of the nuclear star cluster or a mass-radius relation; or its central density with ``-n``), and its metallicity (e.g. the mass-weighted mean).
+3. Run the merged cluster as a new simulation at the center, starting at the redshift of the merger:
+   ```bash
+   python -m rapster.run_cluster -R 0 -z <z at arrival> -N <N> -r <r_h> -Z <Z> -MBH <M> -sBH <chi> -RF Merged
+   ```
+   This draws the stars and compact objects of the merged cluster anew, as a cluster born at that redshift.
+
+To keep the older stars and BHs of the nuclear star cluster and the BHs brought in by the inspiralling cluster instead, use a restart:
+1. Run the nuclear star cluster with ``-R 0`` from its own formation redshift up to the arrival, i.e. with ``-tM`` equal to $t_{\rm lb}(z_{\rm NSC})-t_{\rm lb}(z_{\rm arrival})$ in Myr. The lookback time is given by ``python -c "from rapster.functions import lookback_interp as L; print(float(L(z_NSC) - L(z_arrival)))"``, with the two redshifts filled in. The run ends with a checkpoint.
+2. Save the BHs of the inspiralling cluster:
+   ```bash
+   python -c "import pickle, numpy as np; d = pickle.load(open('Inspiral/outputBHs.pkl', 'rb')); np.savez('inspiral_BHs.npz', mBH=np.asarray(d['mBH'][-1]), sBH=np.asarray(d['sBH'][-1]))"
+   ```
+3. Restart the nuclear star cluster, adding those BHs, with the half-mass radius of the merged cluster:
+   ```bash
+   python -m rapster.run_cluster -RS NSC -RF NSC_merged -tM 14000 -addBH inspiral_BHs.npz -r <r_h of the merged cluster>
+   ```
+   Here ``-r`` is the half-mass radius of the merged cluster, e.g. close to that of the nuclear star cluster at the arrival (last row of ``NSC/evolution.txt``).
+
+The restart adds the BHs as first-generation BHs without TDEs, and it does not add the stars of the inspiralling cluster (a restart can add only a newly born population, ``-addN``). This is a good approximation when the inspiralling cluster is much less massive than the nuclear star cluster (see [Checkpoints and restarts](#restarts)).
 
 <a name="masssegregation"></a>
 
