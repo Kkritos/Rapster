@@ -313,7 +313,7 @@ def two_body_capture(seed, t, dt, z, zCl_form, k_2cap, mBH_avg, binaries, BH, vB
             t_left = t_lb_form - t
             if T_gw < (dt if dt <= t_left else t_left):     # (= np.min([dt, t_left]))
                 
-                if vGW_kick < v_esc_: # merger remnant retained in cluster
+                if vGW_kick < v_esc_remnant(v_esc_, v_star, vBH, m1, m2): # merger remnant retained in cluster
                     
                     retained.append((m_rem, s_rem, g_rem, h_rem))
                     

@@ -16,7 +16,8 @@ from rapster.tidal_disruptions import try_BBH_star_disruption
 ARGS = ['-N', '1e6', '-r', '0.8', '-mm', '0.08', '-mM', '200', '-Z', '0.001', '-z', '2', '-fb', '0.1',
         '-S', '4', '-s', '0.2', '-RP', '1', '-NS', '2', '-NSt', '2', '-fA', '0.3', '-mb', '2',
         '-MBH', '300', '-sBH', '0', '-fesc', '3.16227766', '-cxi', '2',
-        '-Hi', '0', '-BOi', '0', '-P', '0', '-CKi', '0']
+        '-Hi', '0', '-BOi', '0', '-P', '0', '-CKi', '0',
+        '-eta', '0']    # (the seed BH in the mean field, as in version 2.16.0; see test_massive_bh.py)
 
 
 def _run(d, wt):

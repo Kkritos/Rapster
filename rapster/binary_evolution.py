@@ -306,7 +306,7 @@ def evolve_BBHs(seed, t, z, dt, zCl_form, binaries, hardening, mergers, BH, n_st
                     g_rem = np.max([g1, g2]) + 1
                     h_rem = h1 + h2
 
-                    if vGW_kick < v_esc: # merger remnant retained in cluster
+                    if vGW_kick < v_esc_remnant(v_esc, v_star, vBH, m1, m2): # merger remnant retained in cluster
                         
                         BH.add(m_rem, s_rem, g_rem, h_rem)
                         
@@ -645,7 +645,7 @@ def evolve_BBHs(seed, t, z, dt, zCl_form, binaries, hardening, mergers, BH, n_st
                         sma = a_3bm[j_3bm]
                         eccen = np.sqrt(1 - (1 - e_3bm_c[j_3bm]) * v_3bm[j_3bm])
                         
-                        if vGW_kick < v_esc: # merger remnant retained in cluster
+                        if vGW_kick < v_esc_remnant(v_esc, v_star, vBH, mA, mB): # merger remnant retained in cluster
                             
                             BH.add(m_rem, s_rem, g_rem, h_rem)
                             

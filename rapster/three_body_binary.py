@@ -356,7 +356,7 @@ def sample_3bodyBinary(BH, exclude=None, max_trials=None):
         if rand() * bound < g:
             return m1, m2, m3, a, b
 
-def three_body_binary(t, z, k_3bb, mBH_avg, binaries, BH, vBH, N_3bb, N_BBH, random_pairing=False):
+def three_body_binary(t, z, k_3bb, mBH_avg, binaries, BH, vBH, N_3bb, N_BBH, random_pairing=False, f_others=1.0, M_MBH=0.0):
     """
     @in t: simulation time
     @in z: simulation redshift
@@ -369,6 +369,9 @@ def three_body_binary(t, z, k_3bb, mBH_avg, binaries, BH, vBH, N_3bb, N_BBH, ran
     @in N_BBH: number of BBHs
     @in random_pairing: if True, use uniform random pairing instead of the mass-weighted
                        distribution of sample_3bodyBinary
+    @in f_others: with a central massive BH of mass M_MBH (massive_bh.py), the probability
+                  that a 3bb of two other BHs forms (those inside its influence radius do
+                  not); 3bbs with the massive BH always form
 
     @out: all inputs
     """
@@ -419,6 +422,12 @@ def three_body_binary(t, z, k_3bb, mBH_avg, binaries, BH, vBH, N_3bb, N_BBH, ran
                     flush()
                     sample = sample_3bodyBinary(BH)
                 m1, m2, m3, k1, k2 = sample
+
+            # (with a central massive BH: a 3bb of two other BHs only outside its influence
+            # radius, with probability f_others)
+            if f_others < 1.0 and BH.m[k1] < M_MBH and BH.m[k2] < M_MBH and np.random.rand() >= f_others:
+                N_3bb -= 1
+                continue
 
             # initial hardness of newly formed 3bb:
             eta = sample_hardness()

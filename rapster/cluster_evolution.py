@@ -29,6 +29,7 @@ from . import bhpool
 from .bhpool import BHPool, FAM
 from .compact_accretion import *
 from .remnant import configure_kick_model
+from . import massive_bh
 from .ns_formation import NSFormationTable, sample_ns_formation_times
 from .fastrandom import poisson_draw, maxwell_draws
 from .snapshots import SnapshotStream, dump_streaming
@@ -231,7 +232,11 @@ def _new_records(config, with_populations):
         'mergers': streamed(27, 'mergers', merger_keys, 'Mi', keep=0),
         # (the last evolution rows are kept: write_output drops the last one or two rows,
         # depending on how the run ends; the last hardening row can still change)
-        'evolution': streamed(71, 'evolution', evolution_keys, 'Ei', keep=2),
+        # (with a central massive BH, -eta > 0, its columns are appended)
+        'evolution': (streamed(71 + len(massive_bh.EVOLUTION_KEYS_MBH), 'evolution',
+                               evolution_keys + massive_bh.EVOLUTION_KEYS_MBH, 'Ei', keep=2)
+                      if config.get('eta_MBH', 0.0) > 0 else
+                      streamed(71, 'evolution', evolution_keys, 'Ei', keep=2)),
         'hardening': streamed(12, 'hardening', hardening_keys, 'Hi', keep=1),
         'tdes': streamed(18, 'tdes', tdes_keys, 'Ti', keep=0, prepare=fill_R_mb),
         'populations': (streamed(len(POPULATION_KEYS), 'populations', POPULATION_KEYS, 'POPi', keep=0)
@@ -373,6 +378,10 @@ def initialize_cluster(config):
     # BH masses and natal kicks of the population (see _sample_bh_masses_and_kicks), and
     # the BHs retained (kick below the escape velocity, with the gas left at BH formation):
     mBH, vSN_kick = _sample_bh_masses_and_kicks(Mcl, Z, config)
+    # (a -MBH seed promoted to a central massive BH, -eta > 0, deepens the potential:)
+    M_seed = M_BH0 if (M_BH0 > 0 and config.get('eta_MBH', 0.0) > 0) else 0.0
+    if M_seed > 0:
+        M_retain = M_retain + M_seed
     mBH = mBH[vSN_kick < v_esc(M_retain, rh)]
 
     # optionally override BH masses from external file:
@@ -474,6 +483,10 @@ def initialize_cluster(config):
         # single BHs (and retained NSs): masses, spins, generations, TDE counts:
         'BH': BHPool(mBH, sBH, gBH, hBH),
         'mBH_avg': 0.0, 'vBH': 0.0,
+        # central massive BH (-eta > 0): its mass (0: none; a -MBH seed is promoted from the
+        # start), GW captures of BHs and TDEs by it:
+        'M_MBH': M_seed, 'N_IMRI': 0, 'N_tdeMBH': 0,
+        'with_MBH_columns': config.get('eta_MBH', 0.0) > 0,
         # NSs not yet formed (NSt > 0), sorted by formation time [Msun, Myr, km/s]:
         'mNS_pending': mNS_pending, 'tNS_pending': tNS_pending, 'vNS_pending': vNS_pending,
         'N_NS_formed': 0, 'N_NS_retained': 0,
@@ -654,7 +667,7 @@ def form_pending_compact_objects(state, config):
     if k == 0:
         return
     m = state['mCO_pending'][:k]; s = state['sCO_pending'][:k]; v = state['vCO_pending'][:k]
-    retained = v < v_esc(state['Mcl'] + state['M_gas'], state['rh'])
+    retained = v < v_esc(state['Mcl'] + state['M_gas'] + state.get('M_MBH', 0.0), state['rh'])
     n_ret = int(retained.sum())
     if n_ret > 0:
         state['BH'].add_many(m[retained], s[retained], np.ones(n_ret), np.zeros(n_ret))
@@ -698,7 +711,7 @@ def form_neutron_stars(state, config):
     vNS_new = state['vNS_pending'][:k]
 
     # retain NSs with natal kick below the current escape velocity:
-    retained = vNS_new < v_esc(state['Mcl'] + state['M_gas'], state['rh'])
+    retained = vNS_new < v_esc(state['Mcl'] + state['M_gas'] + state.get('M_MBH', 0.0), state['rh'])
     mNS_ret = mNS_new[retained]
     N_ret = mNS_ret.size
 
@@ -714,6 +727,59 @@ def form_neutron_stars(state, config):
 
     state['N_NS_formed'] = state['N_NS_formed'] + k
     state['N_NS_retained'] = state['N_NS_retained'] + N_ret
+
+
+def _bh_mean_field(i_aux1, N_BH, sum_m, sum_m25, Mcl, m_avg, rh, logLcl, c_xi):
+    """Mean-field quantities of the BH subsystem (Breen & Heggie 2013; Antonini & Gieles
+    2020) from its number of BHs N_BH, their total mass sum_m and sum of m^(5/2) sum_m25
+    (the same expressions, in the same order, as up to version 2.17.0)."""
+    # average BH mass:
+    mBH_avg = sum_m / N_BH if i_aux1==1 else 0.0
+    # total BH mass ratio and individual BH mass ratio:
+    Q_BH = N_BH * mBH_avg / Mcl
+    q_BH = mBH_avg / m_avg
+    # BH Coulomb logarithm, Lambda_BH = 0.02 N_BH (Breen & Heggie 2013), smoothly
+    # floored at 1 (their small-N_BH limit): ln(e + 0.02 N_BH) -> 1 as N_BH -> 0
+    # and -> ln(0.02 N_BH) for N_BH >> 136:
+    logLBH = np.log(np.e + lc * N_BH) if i_aux1==1 and N_BH>0 else 0.0
+    # Spitzer parameter (Spitzer 1969); stars and BHs can reach equipartition only if S < 0.16:
+    S = Q_BH * q_BH**(3/2)
+    # BH-to-star temperature ratio (xi = 1: equipartition; Breen & Heggie 2013):
+    if S < 0.16 and S > 0:
+        xi = 1
+    elif i_aux1==1:
+        # c_xi: order-unity prefactor (Breen & Heggie 2013 give only the scaling); set by -cxi
+        xi = c_xi * q_BH**(3/5) * Q_BH**(2/5) * (logLBH / logLcl)**(-2/5)
+    else:
+        xi = 0.0
+    # multimass relaxation factor, N-body calibration of Antonini & Gieles (2020, Eq. 12):
+    # psi = 1 + a1 f_BH / 0.01, with f_BH = M_BH / M_cl = Q_BH.
+    # (Replaces psi = 1 + S, which assumes equipartition and overestimates psi
+    # by a factor ~3 once S > 0.16 and the BHs decouple from the stars.)
+    psi = 1 + a1_psi * Q_BH / 0.01
+    # BH relaxation factor:
+    psi_BH = sum_m25 / N_BH / mBH_avg**(5/2) if i_aux1==1 and N_BH>0 else 0.0
+    if i_aux1==1:
+        # BH half-mass radius, core radius and velocity dispersion:
+        rh_BH = 1/xi * Q_BH * q_BH * rh
+        Core_parameter = 1.76 / Hardening_constant / psi_BH * (12 * q_BH / xi - 1) * eta_min**(-11/2) * (1+3*eta_min) * (1 + 6*eta_min) * P_3bb
+        rc_BH = rh_BH * N_BH**(-2/3) * (Core_parameter / zeta_BH / logLBH)**(1/3)
+        vBH = np.sqrt(0.4 * G_Newton * mBH_avg * N_BH / rh_BH)
+    else:
+        rh_BH = rc_BH = vBH = 0.0
+    # BH half-mass, core and mean densities:
+    Vh_BH = 4 / 3 * np.pi * rh_BH**3
+    nh_BH = N_BH / 2 / Vh_BH if i_aux1==1 else 0.0
+    nc_BH = nh_BH * (rc_BH / rh_BH)**(-2) if i_aux1==1 else 0.0
+    Vc_BH = 4 / 3 * np.pi * rc_BH**3
+    na_BH = nc_BH * 2/3 if i_aux1==1 else 0.0
+    # BH relaxation timescale:
+    tBH_rlx = t_relax(N_BH*mBH_avg, rh_BH, mBH_avg, psi_BH, logLBH) if i_aux1==1 else 1e100
+    # number of BHs in the core:
+    Nc_BH = nc_BH * Vc_BH
+    return dict(mBH_avg=mBH_avg, Q_BH=Q_BH, q_BH=q_BH, logLBH=logLBH, S=S, xi=xi, psi=psi,
+                psi_BH=psi_BH, rh_BH=rh_BH, rc_BH=rc_BH, vBH=vBH, nh_BH=nh_BH, nc_BH=nc_BH,
+                Vc_BH=Vc_BH, na_BH=na_BH, tBH_rlx=tBH_rlx, Nc_BH=Nc_BH)
 
 
 def compute_cluster_properties(state, config):
@@ -793,12 +859,6 @@ def compute_cluster_properties(state, config):
             state['N_BH'] = N_BH
             return False
 
-    # average BH mass:
-    if i_aux1==1:
-        mBH_avg = (BH.total(FAM['mass']) + np.sum(binaries[:, 4]) + np.sum(binaries[:, 5]) + np.sum(pairs[:, 1]) ) / N_BH
-    else:
-        mBH_avg = 0.0
-
     # maximum BH mass:
     if i_aux1==1:
         mBHs_max = BH.max_mass()
@@ -818,105 +878,60 @@ def compute_cluster_properties(state, config):
     else:
         mBH_max = 0.0
 
-    # total BH mass ratio:
-    Q_BH = N_BH * mBH_avg / Mcl
-
-    # individual BH mass ratio:
-    q_BH = mBH_avg / m_avg
-
     # Cluster Coulomb logarithm, Lambda = 0.02 N (Breen & Heggie 2013), smoothly floored at 1;
     # N = M_cl / <m> is the current number of stars:
     logLcl = np.log(np.e + lc * Mcl / m_avg)
 
-    # BH Coulomb logarithm, Lambda_BH = 0.02 N_BH (Breen & Heggie 2013), smoothly
-    # floored at 1 (their small-N_BH limit): ln(e + 0.02 N_BH) -> 1 as N_BH -> 0
-    # and -> ln(0.02 N_BH) for N_BH >> 136:
-    if i_aux1==1 and N_BH>0:
-        logLBH = np.log(np.e + lc * N_BH)
-    else:
-        logLBH = 0.0
-
-    # Spitzer parameter (Spitzer 1969); stars and BHs can reach
-    # energy equipartition only if S < 0.16:
-    S = Q_BH * q_BH**(3/2)
-
-    # BH-to-star temperature ratio (xi = 1: equipartition; Breen & Heggie 2013):
-    if S < 0.16 and S > 0:
-        xi = 1
-    else:
-        if i_aux1==1:
-            # c_xi: order-unity prefactor (Breen & Heggie 2013 give only the scaling); set by -cxi
-            xi = config['c_xi'] * q_BH**(3/5) * Q_BH**(2/5) * (logLBH / logLcl)**(-2/5)
-        else:
-            xi = 0.0
-
-    # multimass relaxation factor, N-body calibration of Antonini & Gieles (2020, Eq. 12):
-    # psi = 1 + a1 f_BH / 0.01, with f_BH = M_BH / M_cl = Q_BH.
-    # (Replaces psi = 1 + S, which assumes equipartition and overestimates psi
-    # by a factor ~3 once S > 0.16 and the BHs decouple from the stars.)
-    psi = 1 + a1_psi * Q_BH / 0.01
-
-    # BH relaxation factor:
-    if i_aux1==1 and N_BH>0:
-        # (sum of m^(5/2) over the single BHs: family p25, or m25 with mass segregation,
-        # -ms alpha > 0, as p25 then also has the occupation m^alpha)
-        psi_BH = (BH.total(FAM['p25'] if bhpool.ALPHA == 0.0 else FAM['m25']) + np.sum(binaries[:, 4]**(5/2)) + \
-                  np.sum(binaries[:, 5]**(5/2)) + np.sum(pairs[:, 1]**(5/2)) ) \
-                  / N_BH / mBH_avg**(5/2)
-    else:
-        psi_BH = 0.0
-
-    # BH half-mass radius:
-    if i_aux1==1:
-        rh_BH = 1/xi * Q_BH * q_BH * rh
-    else:
-        rh_BH = 0.0
-
-    # BH core radius:
-    if i_aux1==1:
-        Core_parameter = 1.76 / Hardening_constant / psi_BH * (12 * q_BH / xi - 1) * eta_min**(-11/2) * (1+3*eta_min) * (1 + 6*eta_min) * P_3bb
-        rc_BH = rh_BH * N_BH**(-2/3) * (Core_parameter / zeta_BH / logLBH)**(1/3)
-    else:
-        rc_BH = 0.0
-
-    # BH velocity dispersion:
-    if i_aux1==1:
-        vBH = np.sqrt(0.4 * G_Newton * mBH_avg * N_BH / rh_BH)
-    else:
-        vBH = 0.0
-
-    # star velocity dispersion:
+    # star velocity dispersion (without a central massive BH):
     v_star = np.sqrt(0.4 * G_Newton * Mcl / rh)
-
-    # BH half-mass volume:
-    Vh_BH = 4 / 3 * np.pi * rh_BH**3
-
-    # BH half-mass density:
-    if i_aux1==1:
-        nh_BH = N_BH / 2 / Vh_BH
-    else:
-        nh_BH = 0.0
-
-    # BH core density:
-    if i_aux1==1:
-        nc_BH = nh_BH * (rc_BH / rh_BH)**(-2)
-    else:
-        nc_BH = 0.0
-
-    # BH core volume:
-    Vc_BH = 4 / 3 * np.pi * rc_BH**3
-
-    # mean BH density:
-    if i_aux1==1:
-        na_BH = nc_BH * 2/3
-    else:
-        na_BH = 0.0
 
     # stellar density updated:
     n_star = n_star0 * (rh0 / rh)**3 * (Mcl / Mcl0) * (m_avg0 / m_avg)
     if pops.multi and pops.segregated:
         # central density of populations with their own half-mass radii (populations.py):
         n_star = n_star * pops.density_factor(t, m_avg0)
+
+    # mean field of the BH subsystem: all BHs (single, in BBHs and in BH-star pairs) ...
+    if i_aux1==1:
+        sum_m = BH.total(FAM['mass']) + np.sum(binaries[:, 4]) + np.sum(binaries[:, 5]) + np.sum(pairs[:, 1])
+        # (sum of m^(5/2) over the single BHs: family p25, or m25 with mass segregation,
+        # -ms alpha > 0, as p25 then also has the occupation m^alpha)
+        sum_m25 = BH.total(FAM['p25'] if bhpool.ALPHA == 0.0 else FAM['m25']) + np.sum(binaries[:, 4]**(5/2)) + \
+                  np.sum(binaries[:, 5]**(5/2)) + np.sum(pairs[:, 1]**(5/2))
+    else:
+        sum_m = sum_m25 = 0.0
+    mf = _bh_mean_field(i_aux1, N_BH, sum_m, sum_m25, Mcl, m_avg, rh, logLcl, config['c_xi'])
+
+    # ... or, with a central massive BH (-eta > 0, massive_bh.py), all BHs but that one:
+    M_MBH, mf_MBH = massive_bh.promote(state, config, i_aux1, N_BH, sum_m, sum_m25, mBH_max, n_star, m_avg, logLcl, _bh_mean_field)
+    if M_MBH > 0:
+        if state.get('M_MBH', 0.0) == 0.0:
+            print('CENTRAL MASSIVE BH AT t = {:.6g} Myr: M = {:.6g} Msun'.format(t, M_MBH))
+        if mf_MBH is not None:
+            mf = mf_MBH
+        # (its mass deepens the potential of the cluster: v_star, and the relaxation time below)
+        v_star = np.sqrt(0.4 * G_Newton * (Mcl + M_MBH) / rh)
+    elif state.get('M_MBH', 0.0) > 0:
+        print('NO CENTRAL MASSIVE BH FROM t = {:.6g} Myr'.format(t))
+    state['M_MBH'] = M_MBH
+    if config.get('eta_MBH', 0.0) > 0:
+        massive_bh.set_phase2_properties(state, config, M_MBH, mf_MBH)
+        if M_MBH > Mcl:
+            print('CENTRAL MASSIVE BH HEAVIER THAN THE CLUSTER (M = {:.6g} Msun > M_cl = {:.6g} Msun): '
+                  'OUTSIDE THE VALIDITY OF THE MODEL'.format(M_MBH, Mcl))
+            state['i_aux1'] = i_aux1
+            state['N_BH'] = N_BH
+            return False
+        if state.get('r_infl', 0.0) > rh and not state.get('warned_r_infl', False):
+            print('WARNING: THE INFLUENCE RADIUS OF THE CENTRAL MASSIVE BH ({:.3g} pc) EXCEEDS THE HALF-MASS '
+                  'RADIUS ({:.3g} pc) AT t = {:.6g} Myr: OUTSIDE THE VALIDITY OF THE MODEL'.format(state['r_infl'], rh, t))
+            state['warned_r_infl'] = True
+
+    mBH_avg = mf['mBH_avg']; Q_BH = mf['Q_BH']; q_BH = mf['q_BH']; logLBH = mf['logLBH']
+    S = mf['S']; xi = mf['xi']; psi = mf['psi']; psi_BH = mf['psi_BH']
+    rh_BH = mf['rh_BH']; rc_BH = mf['rc_BH']; vBH = mf['vBH']
+    nh_BH = mf['nh_BH']; nc_BH = mf['nc_BH']; Vc_BH = mf['Vc_BH']; na_BH = mf['na_BH']
+    tBH_rlx = mf['tBH_rlx']; Nc_BH = mf['Nc_BH']
 
     # half-mass volume:
     Vh = 4 * np.pi / 3 * rh**3
@@ -927,22 +942,7 @@ def compute_cluster_properties(state, config):
         nb = 0.0
 
     # relaxation timescale:
-    t_rlx = t_relax(Mcl + M_gas, rh, m_avg, psi, logLcl)
-
-    # BH relaxation timescale:
-    if i_aux1==1:
-        tBH_rlx = t_relax(N_BH*mBH_avg, rh_BH, mBH_avg, psi_BH, logLBH)
-    else:
-        tBH_rlx = 1e100
-
-    # BH subsystem core collapse:
-    if i_aux1==1:
-        tBH_cc = k_cc * tBH_rlx
-    else:
-        tBH_cc = 1e100
-
-    # Number of BHs in the core:
-    Nc_BH = nc_BH * Vc_BH
+    t_rlx = t_relax(Mcl + M_gas + M_MBH, rh, m_avg, psi, logLcl) if M_MBH > 0 else t_relax(Mcl + M_gas, rh, m_avg, psi, logLcl)
 
     # update state:
     state['i_aux1'] = i_aux1
@@ -1155,16 +1155,22 @@ def form_binaries(state, config):
     # number of 3bbs:
     k_3bb = np.min([poisson_draw(np.min([dt / t_3bb, 1e8])), int(N_BHsin / 3)])
 
-    # 3bb formation:
-    t, z, k_3bb, mBH_avg, binaries, BH, vBH, N_3bb, N_BBH = three_body_binary(t, z, k_3bb, mBH_avg, binaries, BH, vBH, N_3bb, N_BBH, random_pairing=config['random_pairing'])
+    # 3bb formation (with a central massive BH, those of two other BHs only outside its
+    # influence radius, a fraction f_3bb of them; massive_bh.py):
+    M_MBH = state.get('M_MBH', 0.0)
+    t, z, k_3bb, mBH_avg, binaries, BH, vBH, N_3bb, N_BBH = three_body_binary(t, z, k_3bb, mBH_avg, binaries, BH, vBH, N_3bb, N_BBH, random_pairing=config['random_pairing'],
+                                                                              f_others=state.get('f_3bb_MBH', 1.0) if M_MBH > 0 else 1.0, M_MBH=M_MBH)
 
     # number of 2-body captures:
     N_BHsin = N_BH - 2*N_BBH - N_BHstar - 3*N_Triples
     k_2cap = np.min([poisson_draw(np.min([dt / t_2cap, 1e8])), int(N_BHsin / 2)])
 
-    # 2-body capture(s):
+    # 2-body capture(s) (of the BHs of the mean field: a central massive BH captures BHs
+    # through its loss cone instead, massive_bh.evolve_massive_bh):
+    MBH_out = massive_bh.take_out(state, config) if M_MBH > 0 else None
     seed, t, dt, z, zCl_form, k_2cap, mBH_avg, binaries, BH, vBH, v_star, N_2cap, N_BH, N_BBH, N_me, N_meRe, N_meEj, mergers = \
         two_body_capture(seed, t, dt, z, zCl_form, k_2cap, mBH_avg, binaries, BH, vBH, v_star, N_2cap, N_BH, N_BBH, N_me, N_meRe, N_meEj, mergers, random_pairing=config['random_pairing'])
+    massive_bh.put_back(state, MBH_out)
 
     # number of star-star -> BH-star exchanges:
     N_BHsin = N_BH - 2*N_BBH - N_BHstar - 3*N_Triples
@@ -1399,6 +1405,11 @@ def evolve_tdes(state, config):
     vBH = state['vBH']; v_star = state['v_star']
     mBH_avg = state['mBH_avg']; m_avg = state['m_avg']
     N_BH = state['N_BH']; N_Triples = state['N_Triples']
+    # (a central massive BH is left out of these TDEs, as of the mean field: it disrupts
+    # stars and WDs through its loss cone, massive_bh.evolve_massive_bh)
+    M_MBH = state.get('M_MBH', 0.0)
+    if M_MBH > 0 and massive_bh.phase2(config):
+        N_BH = N_BH - 1
     N_WD = state['N_WD']; N_tdeBHWD = state['N_tdeBHWD']; N_tdeBHstar = state['N_tdeBHstar']
     n_star = state['n_star']; t_rlx = state['t_rlx']
     Mcl = state['Mcl']; rh = state['rh']
@@ -1445,7 +1456,9 @@ def evolve_tdes(state, config):
     # execute BH-WD tidal disruption events:
     if k_tdeBHWD > 0:
         tde_type = 11
+        MBH_out = massive_bh.take_out(state, config) if M_MBH > 0 else None
         seed, t, z, k_tdeBHWD, N_tdeBHWD, tde_type, m_avg, m_WD, R_WD, BH, v_WD, vBH, tdes, binaries, pairs, f_accreted, EoS = BH_TidalDisruptions(seed, t, z, k_tdeBHWD, N_tdeBHWD, tde_type, m_avg, m_WD, R_WD, BH, v_WD, vBH, tdes, binaries, pairs, f_accreted, EoS)
+        massive_bh.put_back(state, MBH_out)
 
     # micro-TDEs:
     v_BHstar = np.sqrt(v_star**2 + vBH**2)
@@ -1462,7 +1475,9 @@ def evolve_tdes(state, config):
         # Sample star mass from evolving mass function:
         m_star, R_star = get_star(t, tBH_form, m_min, m_max)
 
+        MBH_out = massive_bh.take_out(state, config) if M_MBH > 0 else None
         seed, t, z, k_tdeBHstar, N_tdeBHstar, tde_type, m_avg, m_star, R_star, BH, v_star, vBH, tdes, binaries, pairs, f_accreted, EoS = BH_TidalDisruptions(seed, t, z, k_tdeBHstar, N_tdeBHstar, tde_type, m_avg, m_star, R_star, BH, v_star, vBH, tdes, binaries, pairs, f_accreted, EoS)
+        massive_bh.put_back(state, MBH_out)
 
     # write back:
     state['seed'] = seed; state['t'] = t; state['z'] = z
@@ -1476,7 +1491,7 @@ def evolve_tdes(state, config):
 
 
 def record_evolution(state):
-    """Append a row of 71 time-dependent quantities to the evolution array.
+    """Append a row of 71 time-dependent quantities (80 with -eta > 0, massive_bh.py) to the evolution array.
 
     Records the current cluster and BH subsystem state (masses, radii, densities,
     velocities, timescales, event counts, TDE statistics) as a single row in
@@ -1531,7 +1546,8 @@ def record_evolution(state):
                                        nh_BH, nc_BH, na_BH, N_3bb, N_2cap, N_3cap, N_BHej, N_BBHej, N_dis, N_ex, t_bb, N_bb,
                                        N_meFi, N_me2b, t_ex1, t_ex2, k_ex1, k_ex2, N_ex1, N_ex2, N_BHstar, t_pp, k_pp, N_pp, v_esc_cl(v_star, vBH),
                                        2*vBH, N_Triples, N_ZLK, N_WD, v_WD, k_tdeBHWD, N_tdeBHWD, dN_WDformdt, dN_WDevdt, dN_tdeBHWDdt, k_tdeBHstar,
-                                       dN_tdeBHstardt, N_tdeBHstar, N_tdeBBHstar, M_gas])
+                                       dN_tdeBHstardt, N_tdeBHstar, N_tdeBBHstar, M_gas]
+                              + (massive_bh.evolution_columns(state) if state.get('with_MBH_columns') else []))
 
     # rows of populations.txt (when populations are configured, -POP); the number of rows
     # written after each evolution row is kept for the last few, as the last evolution
