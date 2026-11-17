@@ -45,7 +45,8 @@ from .cluster_evolution import (
 from .stellar_evolution import init_stellar_mass_sampler
 from .bhpool import set_occupation_power
 from .compact_accretion import EOS_TABLES, accrete_gas
-from .functions import set_escape_factor
+from .functions import set_escape_factor, set_massive_bh
+from .massive_bh import evolve_massive_bh
 from .ns_formation import DEFAULT_NS_FORMATION_TABLE
 from .populations import read_populations_file, DEFAULT_N_MIX
 from .restart import (RESTART_OPTIONS, checkpoint_path, save_checkpoint, load_checkpoint,
@@ -138,6 +139,8 @@ def parse_args():
     parser.add_argument('-analyze', '--analyze_results', type=int, metavar=' ', choices=[0, 1], default=0, help='Print analysis summary after simulation (0 for no, 1 for yes)')
     parser.add_argument('-fA', '--accreted_fraction', type=float, metavar=' ', default=0.5, help='Fraction of a disrupted star accreted by the compact object')
     parser.add_argument('-mb', '--mass_bias_power', type=float, metavar=' ', default=0.0, help='Mass bias power index p for drawing stars from IMF*m^p for TDEs')
+    parser.add_argument('-eta', '--massive_bh_promotion', type=float, metavar=' ', default=3.0, help='central massive BH: the heaviest BH is promoted to a central massive BH, out of the mean field of the BH subsystem, once its influence radius exceeds eta times its wandering radius in the BH core (0: never, as up to version 2.17.0; see README and -MBHph)')
+    parser.add_argument('-MBHph', '--massive_bh_physics', type=int, metavar=' ', default=0, help='physics of a central massive BH (with -eta > 0): 1 for its loss-cone GW captures of BHs and TDEs, the escape velocity in its potential and no 3bbs of other BHs inside its influence radius (development, see README); 0 for none (default)')
     parser.add_argument('-ms', '--mass_segregation_power', type=float, metavar=' ', default=0.0, help='Mass segregation of the compact objects: power alpha >= 0 of their core occupation s(m) = m^alpha, which multiplies the weights of every single BH/NS in core interactions (0: no segregation among compact objects, as before; 1.5: full energy equipartition, see README)')
     parser.add_argument('-EoS', '--equation_of_state', type=str, metavar=' ', default='APR', choices=sorted(EOS_TABLES), help='Neutron Star equation of state; one of ' + ', '.join(sorted(EOS_TABLES)))
     parser.add_argument('-RK', '--recoil_kick_model', type=int, metavar=' ', choices=[0, 1], default=0, help='GW recoil kick model (0 for Gerosa & Kesden 2016, 1 for gwModel_kick_prec_flow from Islam & Wadekar 2025)')
@@ -187,7 +190,7 @@ def parse_args():
         'binary_fraction', 'minimum_time_step', 'maximum_time_step', 'maximum_time',
         'supernova_kick_parameter', 'galactocentric_radius', 'galactocentric_velocity',
         'spin_parameter', 'massive_black_hole_mass', 'massive_black_hole_spin',
-        'min_1g_bh_mass', 'max_1g_bh_mass', 'accreted_fraction', 'mass_bias_power', 'mass_segregation_power',
+        'min_1g_bh_mass', 'max_1g_bh_mass', 'accreted_fraction', 'mass_bias_power', 'mass_segregation_power', 'massive_bh_promotion',
         'star_formation_efficiency', 'gas_expulsion_time', 'eddington_ratio_cap',
         'gas_sound_speed', 'escape_velocity_factor', 'bh_temperature_prefactor',
         'max_compact_object_fraction',
@@ -247,6 +250,10 @@ def parse_args():
     if args.bh_temperature_prefactor <= 0:
         parser.error('bh_temperature_prefactor (-cxi) must be positive')
 
+    if not (np.isfinite(args.massive_bh_promotion) and args.massive_bh_promotion >= 0):
+        parser.error('massive_bh_promotion (-eta) must be >= 0')
+    if args.massive_bh_physics not in (0, 1):
+        parser.error('massive_bh_physics (-MBHph) must be 0 or 1')
     if args.mass_segregation_power < 0:
         parser.error('mass_segregation_power (-ms) must be >= 0')
 
@@ -342,6 +349,8 @@ def parse_args():
         'f_accreted': args.accreted_fraction,
         'mass_bias_power': args.mass_bias_power,
         'mass_segregation_power': args.mass_segregation_power,
+        'eta_MBH': args.massive_bh_promotion,
+        'MBH_physics': args.massive_bh_physics,
         'EoS': args.equation_of_state,
         'recoil_kick_model': args.recoil_kick_model,
         'SFE': args.star_formation_efficiency,
@@ -496,6 +505,7 @@ def main():
     print('RAPSTER VERSION:', __version__)
     init_stellar_mass_sampler(config['mass_bias_power'])
     set_escape_factor(config['f_esc'])
+    set_massive_bh(0.0, 0.0)          # (no central massive BH until promoted, massive_bh.py)
     # mass segregation of the compact objects (bhpool.py; 0 for runs of earlier versions):
     alpha = config.get('mass_segregation_power', 0.0)
     set_occupation_power(alpha)
@@ -540,7 +550,7 @@ def main():
     # checkpoints (restart.py), every CKdt Myr of simulated time:
     next_checkpoint = _next_checkpoint_time(state['t'], config['CKdt'])
 
-    while state['t']<config['t_max'] and state['R_gal']>=0 and state['Mcl']>0 and compact_object_mass(state)<config['fCO_max']*state['Mcl']:
+    while state['t']<config['t_max'] and state['R_gal']>=0 and state['Mcl']>0 and compact_object_mass(state) - state.get('M_MBH', 0.0)<config['fCO_max']*state['Mcl']:
 
         # checkpoint at the start of the step:
         if config['CKi'] == 1 and state['t'] >= next_checkpoint:
@@ -578,6 +588,9 @@ def main():
         # tidal disruption events:
         evolve_tdes(state, config)
 
+        # GW captures of BHs and TDEs by a central massive BH (-eta > 0):
+        evolve_massive_bh(state, config)
+
         # append evolution record:
         record_evolution(state)
 
@@ -600,7 +613,7 @@ def main():
         # they occur): say which condition
         if not state['t'] < config['t_max']:
             print('MAXIMUM SIMULATION TIME REACHED (t_max = {:.6g} Myr)'.format(config['t_max']))
-        elif not compact_object_mass(state) < config['fCO_max']*state['Mcl']:
+        elif not compact_object_mass(state) - state.get('M_MBH', 0.0) < config['fCO_max']*state['Mcl']:
             print('COMPACT OBJECTS REACHED A FRACTION fCO_max = {:.3g} OF THE CLUSTER MASS'.format(config['fCO_max']))
         elif not state['R_gal'] >= 0:
             print('CLUSTER REACHED GALAXY CENTER')

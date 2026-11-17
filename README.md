@@ -1,7 +1,7 @@
 # Rapster
 
 <p align="center">
-	<a href="https://github.com/Kkritos/Rapster/releases"><img src="https://img.shields.io/badge/version-2.17.0-blue" alt="version"></a>
+	<a href="https://github.com/Kkritos/Rapster/releases"><img src="https://img.shields.io/badge/version-2.18.0-blue" alt="version"></a>
 	<a href="https://arxiv.org/abs/2210.10055"><img src="https://img.shields.io/badge/arXiv-2210.10055-b31b1b.svg" alt="arXiv"></a>
 	<a href="https://arxiv.org/abs/2212.06845"><img src="https://img.shields.io/badge/arXiv-2212.06845-b31b1b.svg" alt="arXiv"></a>
 	<a href="https://arxiv.org/abs/2605.21593"><img src="https://img.shields.io/badge/arXiv-2605.21593-b31b1b.svg" alt="arXiv"></a>
@@ -21,7 +21,7 @@ $\tt Rapster$ stands for $\rm RAPid\ cluSTER$ evolution.
 
 Author: Konstantinos Kritos <konstantinos.kritos@stonybrook.edu>
 
-Version: 2.17.0, November 3, 2026.
+Version: 2.18.0, November 17, 2026.
 (Thanks to Tousif Islam for helping modularize this repository!)
 
 ![LOGO](.assets/LOGO.png)
@@ -50,6 +50,10 @@ Version: 2.17.0, November 3, 2026.
 The repository provides the source code files for the current version in ``rapster/`` and all necessary data files in the ``Data/`` folder, for the rapid evolution of dense star cluster environments and the dynamical assembly of compact-object coalescences and tidal disruption events.
 
 The modeling accounts for the necessary physical processes governing the formation of compact-object binaries and cluster evolution, employing semi-analytic prescriptions described in Sec. 2 of [K. Kritos et al. PRD (2024)](https://arxiv.org/abs/2210.10055). This is our code paper, written with Vladimir Strokov, Vishal Baibhav, and Emanuele Berti.
+
+##### New in version 2.18.0:
+
+Central massive BH (``-eta``, default 3): a BH much heavier than the others, a ``-MBH`` seed or a BH grown by mergers and accretion, is taken out of the mean-field model of the BH subsystem once it settles at the center (its influence radius exceeds ``-eta`` times its wandering radius in the BH core). Up to version 2.17.0 such a BH made the BH subsystem relax $10^3$–$10^4$ times too fast and formed spurious binaries; ``-MBH`` seeds of $10^4$–$10^6\,M_\odot$ were outside the validity of the code. ``-eta 0`` reproduces version 2.17.0 byte for byte, and runs in which no BH is promoted have the same results as with ``-eta 0``. For development, ``-MBHph 1`` adds its physics: GW captures of BHs (IMRIs, merger channel 7) and TDEs of stars and white dwarfs (``tde_type`` 31, 32) through its loss cone, the escape velocity in its potential, and no three-body binaries of other BHs inside its influence radius (see [Central massive BH](#massivebh) and ``CHANGELOG.md``).
 
 ##### New in version 2.17.0:
 
@@ -232,8 +236,10 @@ For the user’s convenience, we paste the list of optional arguments in the for
 | -WT, --with_tdes | Include TDEs (if =1) else no (if =0); with 0 there are no TDEs of any kind, including the disruptions of stars by BBHs (``tde_type`` 21 and 22), and no white dwarfs | int | ``1`` |
 | -Ti, --tdes_file_indicator | Export tdes file (0 for no, 1 for yes) | int | ``1`` |
 | -TF, --tdes_file_name | Name of .txt file containing tde parameters | str | ``tdes`` |
-| -MBH, --massive_black_hole_mass | Mass of the seed massive BH (if >0) | float | ``0`` |
+| -MBH, --massive_black_hole_mass | Mass of the seed massive BH (if >0); with ``-eta`` > 0 it is a central massive BH from the start (see [Central massive BH](#massivebh)) | float | ``0`` |
 | -sBH, --massive_black_hole_spin | Spin of the seed massive BH (from 0 to 1) | float | ``0`` |
+| -eta, --massive_bh_promotion | Central massive BH: the heaviest BH is promoted once its influence radius exceeds ``-eta`` times its wandering radius in the BH core; ``0`` never (as up to version 2.17.0); see [Central massive BH](#massivebh) | float | ``3.0`` |
+| -MBHph, --massive_bh_physics | Physics of the central massive BH (development): ``1`` for its loss-cone GW captures of BHs and TDEs, the escape velocity in its potential and no three-body binaries of other BHs inside its influence radius; ``0`` none | int | ``0`` |
 | -RF, --results_folder_name | Name of the folder where output files will be exported | str | ``Results`` |
 | -BMD, --bh_mass_distribution | Initial BH mass distribution (0 for Kroupa+collapse, 1 for uniform, 2 for Salpeter, 3 for log-uniform) | int | ``0`` |
 | -mBH1gMin, --min_1g_bh_mass | Minimum 1g BH mass for uniform/Salpeter/log-uniform sampling [Msun] | float | ``3.0`` |
@@ -274,7 +280,7 @@ Unless it is given with ``-n``, the initial central stellar density is set to th
 
 The galaxy enters the evolution only through the tidal (Jacobi) radius of the cluster, which sets its escape rate, and through the dynamical friction that drags it inward. To simulate a cluster at the center of its galaxy, such as a nuclear star cluster, use ``-R 0``: the cluster then evolves without galactic tides (the escape rate of an isolated cluster) and does not move. A cluster that starts at ``-R`` > 0 and reaches the center by dynamical friction stops there by default (``CLUSTER REACHED GALAXY CENTER`` in ``log.txt``); with ``-GC 1`` the run continues from that point as a cluster at the center, without galactic tides. ``-GC 1`` is meant for a galaxy without a nuclear star cluster: if one is already present at the center, the inspiralling cluster merges with it, which Rapster does not model. In that case stop the simulation when the cluster reaches the center (the default ``-GC 0``) and start a new simulation with ``-R 0`` and initial conditions corresponding to the merged cluster.
 
-A nuclear star cluster may host a massive BH. To include one, give its mass and spin with ``-MBH`` and ``-sBH``, e.g. ``-MBH 1e5 -sBH 0.5`` (only at the start of a run, not at a restart).
+A nuclear star cluster may host a massive BH. To include one, give its mass and spin with ``-MBH`` and ``-sBH``, e.g. ``-MBH 1e5 -sBH 0.5`` (only at the start of a run, not at a restart). It is a central massive BH from the start (``-eta`` > 0, the default; see [Central massive BH](#massivebh)); its influence radius should stay well inside the half-mass radius (``log.txt`` warns otherwise).
 
 In practice:
 1. Run the inspiralling cluster with ``-R`` > 0 and ``-BOi 1``, so that the BHs are written to ``outputBHs.pkl``. It stops with ``CLUSTER REACHED GALAXY CENTER``. The last row of ``evolution.txt`` gives the time ``t`` and redshift ``z`` of its arrival and its stellar mass ``M_cl``, half-mass radius ``r_h`` and mean stellar mass ``m_avg``. The last snapshot of ``outputBHs.pkl`` holds its BHs (single, in BBHs and in BH-star pairs).
@@ -324,6 +330,38 @@ Notes:
 - The weight of the single in BBH-single encounters already contains a factor $m^{3/2}$ (as in earlier versions); with $\alpha>0$ it is multiplied by $s(m)$ like the others. If that factor is read as an occupation of the core, $\alpha$ counts it twice for this channel.
 - The NSs are shielded from the BHs: in an NS-rich cluster (``-NS 1 -N 2e6 -r 0.3 -Z 0.02``, 24 seeds) twice as many NSs are still single when fewer than 10 single BHs are left (22 vs 11 of ~99 retained), and with ``-ms 1.5`` 37 BNSs merge per run instead of 24 (NSBH: 7.5 vs 8.1; BBH: 233 vs 213).
 
+<a name="massivebh"></a>
+
+##### Central massive BH:
+
+Rapster describes the BH subsystem by a mean field (Breen & Heggie 2013): the average BH mass, the half-mass and core radii, the velocity dispersion and the relaxation time of the BHs. A BH much heavier than the others breaks it: for example the BH relaxation factor $\psi_{\rm BH}=\sum m^{5/2}/(N_{\rm BH}\langle m_{\rm BH}\rangle^{5/2})$ is then dominated by that one BH, and the BH subsystem relaxes $10^3$–$10^4$ times too fast. Such a BH is a ``-MBH`` seed, or a BH grown by repeated mergers and accretion.
+
+*Promotion (Phase 1).* At every step the heaviest BH (single, in a BBH, a BH-star pair or a triple), of mass $M$, is promoted to a central massive BH once its influence radius exceeds ``-eta`` $=\eta$ times its wandering radius in the core of the other BHs:
+- influence radius $r_{\rm infl}=GM/\sigma^2$;
+- wandering radius (Brownian motion in energy equipartition in the harmonic core; Bahcall & Wolf 1976; Chatterjee, Hernquist & Loeb 2002) $r_{\rm wand}^2=\langle v^2\rangle/\omega^2$, with $\langle v^2\rangle=3(m/M)\sigma^2$ and $\omega^2=4\pi G\rho_{\rm c}/3$;
+- so $r_{\rm infl}\geq\eta\,r_{\rm wand}$ $\Leftrightarrow$ $M^3\geq\eta^2\,9m\sigma^6/(4\pi G^3\rho_{\rm c})$, with $\sigma=v_{\rm BH}/\sqrt3$, $\rho_{\rm c}=n_{\rm c,BH}\langle m_{\rm BH}\rangle+n_\star\langle m\rangle$ and $m=\langle m_{\rm BH}\rangle$ of the other BHs;
+- and $M\geq10\,\langle m_{\rm BH}\rangle$: the wandering radius assumes $M\gg m$, and in small BH cores (a few BHs) $r_{\rm infl}\geq\eta\,r_{\rm wand}$ already holds for second- and third-generation remnants.
+
+The critical mass scales as $\eta^{2/3}$. In a cluster with $N=10^6$, $r_{\rm h}=1$ pc ($\langle m_{\rm BH}\rangle\approx23\,M_\odot$, about 20 BHs in the BH core) it is $\approx64\,M_\odot$ for $\eta=1$, $\approx130\,M_\odot$ for $\eta=3$ (close to $r_{\rm infl}=r_{\rm c,BH}$, where the BH dominates the core and $M\gg m$ holds) and $\approx300\,M_\odot$ for $\eta=10$. With the condition $M\geq10\,\langle m_{\rm BH}\rangle$ ($\approx230\,M_\odot$ there) no ordinary second- or third-generation remnant is promoted. In dense clusters the results hardly depend on $\eta$: in two nuclear star clusters that grow an IMBH ($N=10^8$, $r_{\rm h}=1$ pc and $N=3\times10^7$, $r_{\rm h}=0.3$ pc, ``-R 0 -s 0 -Z 0.0002``, 3 Gyr), $\eta=1$, 3 and 10 gave final masses within 10% of each other. A promoted BH stays promoted while the heaviest BH is at least as heavy, i.e. until it is ejected; a ``-MBH`` seed is promoted from the start. The mean field is then that of the other BHs; the massive BH adds to the mass that sets the stellar velocity dispersion, the relaxation time and the natal-kick retention (not to $M_{\rm cl}$), and is left out of the ``-fCO`` stopping condition. It keeps forming binaries (whose hardening heats the core), merging and accreting.
+
+*Its physics (Phase 2, ``-MBHph 1``, for development).*
+- Escape velocity of the BHs and BBHs from the radius $\max(r_{\rm c,BH},r_{\rm infl})$ in its potential: $v_{\rm esc}^2=f_{\rm esc}^2(v_\star^2+v_{\rm BH}^2)+2GM/\max(r_{\rm c,BH},r_{\rm infl})$; the remnant of a merger of the massive BH itself is retained if its kick is below $f_{\rm esc}(v_\star^2+v_{\rm BH}^2)^{1/2}$ (its own potential does not hold it).
+- Three-body binaries of two other BHs form only outside its influence radius: those of the mean-field rate are kept with probability $f_{\rm 3bb}=1-\min(1,2M/(N_{\rm c,BH}\langle m_{\rm BH}\rangle))$, the fraction of the BH core outside $r_{\rm infl}$ (which holds $2M$). Those with the massive BH always form.
+- BHs, stars and white dwarfs reach it through its loss cone, instead of the mean-field GW captures and TDEs, from which it is left out (see *Loss cone* below).
+
+*Loss cone (``-MBHph 1``).* While the massive BH is a single BH (in a binary it takes part in the BBH evolution instead), GW captures of BHs and TDEs of stars and white dwarfs by it happen at loss-cone rates (``massive_bh.py``: ``loss_cone_rate``, ``imri_rate``, ``tde_rate``, ``evolve_massive_bh``), as Poisson numbers in each step.
+- *General rate.* For each kind of object the rate interpolates between the full and the empty loss cone (e.g. Merritt 2013, Sec. 6.1): $\Gamma=1/(1/\Gamma_{\rm full}+t_{\rm r}L/N_{\rm in})$, equivalently $N_{\rm in}/(t_{\rm r}(L+q))$ with $q=P/(t_{\rm r}J_{\rm lc}^2/J_{\rm c}^2)$. $\Gamma_{\rm full}$ is the gravitationally focused rate of encounters with pericenter inside the loss-cone radius $r_{\rm lc}$; $N_{\rm in}/(t_{\rm r}L)$ is the rate at which the $N_{\rm in}$ objects bound within the influence radius diffuse into the loss cone by two-body relaxation, on the relaxation time $t_{\rm r}$ there, with $L=\ln(J_{\rm c}^2/J_{\rm lc}^2)\approx\ln(r_{\rm infl}/2r_{\rm lc})$. With less than one bound object ($N_{\rm in}<1$) the objects arrive on unbound orbits, for which the loss cone is always full: $\Gamma=\Gamma_{\rm full}$.
+- *GW captures of BHs (IMRIs).* Full loss cone: Rapster's two-body GW capture cross section (``functions.Rate_cap``) for the pair $M$, $m=\langle m_{\rm BH}\rangle$, with the massive BH at rest, $\Sigma_{\rm cap}=2\pi(85\pi/6\sqrt2)^{2/7}G^2(M+m)^{10/7}(Mm)^{2/7}/(c^{10/7}v^{18/7})$ and $\Gamma_{\rm full}=n_{\rm c,BH}\Sigma_{\rm cap}v$, $v=v_{\rm BH}$ (for $M=m$ this is the rate of ``Rate_cap``). Empty loss cone: a singular isothermal sphere at $r_{\rm infl}=GM/\sigma^2$ ($\sigma=v_{\rm BH}/\sqrt3$), which holds a mass $2M$: $N_{\rm in}=\min(2M/m,N_{\rm s}-1)$ ($N_{\rm s}$ single BHs), $\rho(r_{\rm infl})=\sigma^2/(2\pi Gr_{\rm infl}^2)$ and $t_{\rm r}=0.34\sigma^3/(G^2m\rho\ln\Lambda)=0.68\pi GM^2/(m\sigma^3\ln\Lambda)$ with $\ln\Lambda=\ln(e+M/m)$; $r_{\rm lc}$ is the largest pericenter at which the GW energy radiated in the encounter, $85\pi G^{7/2}\mu^2(M+m)^{5/2}/(12\sqrt2c^5r_{\rm p}^{7/2})$, exceeds $\mu v^2/2$. In each capture the BH is drawn from the other single BHs with weights $m^{2/7}s(m)$ (as in Rapster's two-body captures), and the orbit is sampled as in ``two_body_capture`` (Maxwellian relative velocity with 1D dispersion $v_{\rm BH}/\sqrt3$). If its GW time is shorter than the step, it merges (merger channel ``7``; remnant mass, spin and kick from ``merger_remnant`` at the actual mass ratio; retained if the kick is below $f_{\rm esc}(v_\star^2+v_{\rm BH}^2)^{1/2}$); otherwise the pair joins the BBHs (formation channel 7) and is hardened and merges as they do. The massive BH is taken out of the pool during the mean-field two-body captures.
+- *TDEs of stars and white dwarfs* (``tde_type`` 31 and 32). Full loss cone: Rapster's micro-TDE rate of one BH of mass $M$ at rest, $\Gamma_{\rm full}=2\sqrt{2(3\pi-8)}\,G(M+m_\star)n_\star R_\star(M/m_\star)^{1/3}/v_\star$, with the central stellar density, $R_\star=R_\odot$ and $v_\star$ for stars, and $n_{\rm WD}$, $R_{\rm WD}$, $v_{\rm WD}$ for white dwarfs (as in ``evolve_tdes``). Empty loss cone: a Bahcall–Wolf cusp of the light objects, $n\propto r^{-3/2}$, within $r_{\rm infl,\star}=GM/\sigma_\star^2$, $N_{\rm in}=(8\pi/3)\,n\,r_{\rm infl,\star}^3$, the stellar relaxation time $t_{\rm r}=0.34\sigma_\star^3/(G^2n_\star\langle m\rangle^2\ln\Lambda)$ and $L=\ln(r_{\rm infl,\star}/2r_{\rm t})$ with $r_{\rm t}=R_\star(M/m_\star)^{1/3}$. Each TDE is computed as Rapster's TDEs (``disrupt_star``, the star drawn from the stellar mass function): the massive BH accretes $f_{\rm acc}m_\star$, and its spin and TDE count are updated. The massive BH is left out of the mean-field TDE draws, and $N_{\rm BH}-1$ BHs enter the mean-field TDE rates.
+- *Which limit applies.* For stars around $M\lesssim10^4\,M_\odot$ in star clusters $N_{\rm in}$ is small (e.g. $\approx0.07$ for $M=300\,M_\odot$, $n_\star=10^5$ pc$^{-3}$, $v_\star=30$ km/s), and the rate is the focused one. For BHs, in a cluster with $N=10^6$, $r_{\rm h}=1$ pc, the full loss cone limits the rate for $M=10^3\,M_\odot$ ($\Gamma_{\rm full}\approx0.06$ Myr$^{-1}$, against $\approx2$ Myr$^{-1}$ for the diffusive rate) and diffusion for $M=10^4\,M_\odot$ ($\approx0.3$ Myr$^{-1}$). In dense nuclear star clusters the BH core density is very high ($r_{\rm c,BH}\sim3\times10^{-4}$ pc), and both limits are large.
+- *Caveats.* (i) The full IMRI rate uses the core density of the other BHs from the mean field, which ignores the potential of the massive BH; once $r_{\rm infl}\gg r_{\rm c,BH}$ the BHs around it form a cusp instead (an estimate from the innermost BHs of a Bahcall–Wolf cusp agrees within a factor $\sim2$ for $M=10^3\,M_\odot$, but is not used). (ii) The focusing uses $v=v_{\rm BH}$, while inside $r_{\rm infl}$ the orbits are Keplerian and faster; as $\Gamma_{\rm full}\propto v^{-11/7}$, it is overestimated when $r_{\rm infl}\gg r_{\rm c,BH}$. (iii) The singular isothermal sphere used for $N_{\rm in}$ and $t_{\rm r}$ is not consistent with Rapster's $(n_{\rm c,BH},r_{\rm c,BH},v_{\rm BH})$ to better than factors of a few: the rates are order-of-magnitude estimates. (iv) Plunges and extreme-mass-ratio inspirals are not distinguished, only captures that merge in the step from those that become BBHs.
+
+Phase 2 changes the results strongly where it applies: in dense nuclear star clusters ($N=3\times10^7$–$10^8$, $r_{\rm h}=0.3$–$1$ pc, ``-R 0``) a promoted BH grows by loss-cone GW captures to $\sim5\times10^5$–$7\times10^5\,M_\odot$ in 3 Gyr, as Rapster's BH core there is very dense ($r_{\rm c,BH}\sim3\times10^{-4}$ pc); it is therefore off by default until it is validated.
+
+With ``-eta`` > 0, nine columns are appended to ``evolution.txt``: $M_{\rm MBH}$, $\chi_{\rm MBH}$, $g_{\rm MBH}$, $r_{\rm infl}$, $f_{\rm 3bb}$, $N_{\rm IMRI}$, $N_{\rm tde,MBH}$, $\Gamma_{\rm IMRI}$, $\Gamma_{\rm tde,MBH}$ (columns 72–80; 0 while there is no central massive BH). ``log.txt`` states when a BH is promoted (``CENTRAL MASSIVE BH AT t = ...``) and when there is no longer one.
+
+Limits of validity. The model holds while the influence radius stays inside the BH half-mass radius and $M$ is much smaller than the cluster: ``log.txt`` warns when $r_{\rm infl}>r_{\rm h}$, and the run stops when $M>M_{\rm cl}$ (``CENTRAL MASSIVE BH HEAVIER THAN THE CLUSTER``). Rapster has no self-consistent cusp: the BH core of the other BHs is the mean field of version 2.17.0, which ignores the potential of the massive BH, and the loss-cone rates are order-of-magnitude estimates. ``-MBH`` seeds of $10^4$–$10^6\,M_\odot$ in clusters of $10^5$–$10^6\,M_\odot$ remain at or beyond these limits.
+
 ##### Stopping conditions:
 
 A simulation ends when one of the following happens, and the reason is written in ``log.txt``:
@@ -332,7 +370,8 @@ A simulation ends when one of the following happens, and the reason is written i
 - ``CLUSTER DISSOLVED``: the stellar mass (or the half-mass radius) of the cluster drops to zero.
 - ``CLUSTER REACHED GALAXY CENTER``: by dynamical friction (unless ``-GC 1``).
 - ``BH SUBSYSTEM EVAPORATED``: no BHs are left (and none are still to form: NSs with ``-NSt 1/2``, or BHs and NSs of stellar populations born later, see ``-POP``).
-- ``COMPACT OBJECTS REACHED A FRACTION fCO_max ... OF THE CLUSTER MASS``: the BHs and NSs (single, in binaries, triples and BH-star pairs) exceed the fraction ``-fCO`` of the stellar mass. Beyond this point the compact objects dominate the cluster and the assumptions behind the Breen & Heggie (2013) energy-flow balance used for the BH subsystem no longer hold; a larger ``-fCO`` extrapolates the model into that regime.
+- ``CENTRAL MASSIVE BH HEAVIER THAN THE CLUSTER``: a central massive BH (``-eta`` > 0) heavier than the stellar mass of the cluster, outside the validity of the model.
+- ``COMPACT OBJECTS REACHED A FRACTION fCO_max ... OF THE CLUSTER MASS``: the BHs and NSs (single, in binaries, triples and BH-star pairs; without a central massive BH) exceed the fraction ``-fCO`` of the stellar mass. Beyond this point the compact objects dominate the cluster and the assumptions behind the Breen & Heggie (2013) energy-flow balance used for the BH subsystem no longer hold; a larger ``-fCO`` extrapolates the model into that regime.
 
 <a name="runningasimulation"></a>
 ### 5. Running a simulation
@@ -406,6 +445,7 @@ Each test file can also be run on its own, e.g. ``python3 tests/test_regression.
 - ``tests/test_speedups_2151.py`` checks the optimizations of version 2.15.1 against the code they replace: the pool's cumulative sums and draw functions, the heaviest BH, the conversion of checkpoints of 2.15.0, the interpolation of redshifts, the merger remnants, the deletion of table rows and the last mass of the Euler steps of the spin evolution.
 - ``tests/test_speedups_2160.py`` checks the optimizations of version 2.16.0, which change the random numbers drawn but not the distributions: the draws of large pools from their superblock sums against the weights (chi-square tests) and the superblock sums after random changes, the TDEs and the GW captures of a time step against the code of 2.15.1 (the pool updated after every event), and the background writer of the tables (the same files, also for a run stopped, restarted and joined).
 - ``tests/test_with_tdes.py`` checks that ``-WT 0`` switches off TDEs of every kind, including the disruptions of stars by BBHs (a run with such disruptions has none with ``-WT 0``), and that the BBH-star disruption routine does nothing with ``with_tdes=0``.
+- ``tests/test_massive_bh.py`` checks ``-eta``: the promotion criterion and its threshold, the loss-cone rates in their limits (the full loss cone is the GW capture rate of functions.Rate_cap and the micro-TDE rate), the escape velocities, the three-body binaries of the other BHs, the massive BH taken out of the pool, the promotion bookkeeping, and whole runs (a run without promotion is the same with ``-eta 0`` and ``-eta 3``; a ``-MBH`` run with ``-MBHph 1`` stopped, restarted and joined; a restart cannot change ``-eta``; ``-MBHph 0`` has no Phase-2 events; the stopping conditions).
 - ``tests/test_mass_segregation.py`` checks ``-ms``: the weights of the pool with $\alpha>0$ and their sums after random changes, the occupation draws, the three-body binaries (also with BHs taken), BBH-single partners, GW captures, TDE hosts and the TDEs of a time step against their exact targets times $s(m)$ (chi-square tests, $\alpha$ = 0.6 and 1.5, BHs and NSs), checkpoints of the pool (also those of version 2.16.1), and whole runs (the option in ``log.txt`` and the checkpoint, a run stopped, restarted and joined, a restart that tries to change ``-ms``, $\alpha<0$ refused).
 - ``tests/test_bhpool.py`` checks the pool of single BHs (``rapster/bhpool.py``) and the samplers built on it: the pool's sums after random sequences of additions, removals and mass changes, the sampled three-body binaries, BBH-single partners, two-body captures and TDE hosts against their exact target distributions (chi-square tests with fixed seeds), the Runge-Kutta spin evolution during TDE accretion against the Euler integration it replaces, and the ZLK root solver against ``scipy.optimize.root``.
 
@@ -593,6 +633,7 @@ CBC assembly channel (third column of mergers file), the ``-`` sign means BBH wa
 -    ``4``: von Zeipel-Lidov-Kozai (ZLK) merger
 - ``(-)5``: ZLK remnant CBC
 -    ``6``: binary-single capture
+-    ``7``: GW capture of a BH by the central massive BH (``-eta`` > 0)
 
 b) Column description of evolution .txt file:
 
@@ -669,6 +710,15 @@ b) Column description of evolution .txt file:
 | 69 | $N_{\rm tde,BHstar}$ | Cumulative number of BH-star TDEs |
 | 70 | $N_{\rm tde,BBHstar}$ | Cumulative number of BBH-star TDEs |
 | 71 | $M_{\rm gas}$ | Residual gas mass ($M_\odot$) |
+| 72 | $M_{\rm MBH}$ | Mass of the central massive BH ($M_\odot$; 0: none); columns 72-80 with ``-eta`` > 0 only |
+| 73 | $\chi_{\rm MBH}$ | Its spin |
+| 74 | $g_{\rm MBH}$ | Its generation |
+| 75 | $r_{\rm infl}$ | Its influence radius $GM/\sigma_{\rm BH}^2$ ($\rm pc$) |
+| 76 | $f_{\rm 3bb}$ | Fraction of the three-body binaries of two other BHs that form |
+| 77 | $N_{\rm IMRI}$ | Cumulative number of GW captures of BHs by it (``-MBHph 1``) |
+| 78 | $N_{\rm tde,MBH}$ | Cumulative number of TDEs by it (``-MBHph 1``) |
+| 79 | $\Gamma_{\rm IMRI}$ | Its loss-cone rate of GW captures ($\rm Myr^{-1}$) |
+| 80 | $\Gamma_{\rm tde,MBH}$ | Its loss-cone rate of TDEs ($\rm Myr^{-1}$) |
 
 c) Column description of hardening .txt file:
 
@@ -731,6 +781,8 @@ TDE type is an integer index that corresponds to the following (CO may be a BH o
 - ``11``: CO/WD TDE during single CO - single WD encounter
 - ``21``: CO/star hard-TDE during binary CO - single star encounter
 - ``22``: CO-CO/star soft-TDE during binary CO - single star encounter. The star is disrupted by the binary as a whole and its debris is shared by both COs, so each such event has two rows, one per CO (``N_tdeBBHstar`` in the evolution file counts events).
+- ``31``: TDE of a star by the central massive BH (``-eta`` > 0), at its loss-cone rate
+- ``32``: TDE of a WD by the central massive BH
 
 e) Column description of populations .txt file (with ``-POP``; one row per population and time step, at the same times as ``evolution.txt``):
 

@@ -408,15 +408,42 @@ def set_escape_factor(f):
         raise ValueError('escape-velocity prefactor must be positive')
     F_ESC = float(f)
 
+# central massive BH (-eta, massive_bh.py): its mass and the term 2 G M / max(r_cBH, r_infl)
+# [(km/s)^2] that it adds to the square of the escape velocity of the BHs and BBHs (0: no
+# central massive BH; set at every step by compute_cluster_properties)
+MBH_MASS = 0.0
+MBH_PHI = 0.0
+
+def set_massive_bh(M, phi):
+    """Mass [Msun] of the central massive BH and its escape-velocity term phi = 2 G M /
+    max(r_cBH, r_infl) [(km/s)^2] (0, 0: none)."""
+    global MBH_MASS, MBH_PHI
+    MBH_MASS = float(M)
+    MBH_PHI = float(phi)
+
 def v_esc_cl(v_star, vBH):
     """
     @in v_star: 3D rms velocity of stars [km/s]
     @in vBH: 3D rms velocity of BHs [km/s]
     
-    @out: escape velocity used for retention/ejection of BHs and BBHs [km/s]
+    @out: escape velocity used for retention/ejection of BHs and BBHs [km/s]; with a
+          central massive BH, from the radius max(r_cBH, r_infl) in its potential:
+          v_esc^2 = F_ESC^2 (v_star^2 + vBH^2) + 2 G M / max(r_cBH, r_infl)
     """
     
-    return F_ESC * np.sqrt(v_star**2 + vBH**2)
+    if MBH_PHI == 0.0:
+        return F_ESC * np.sqrt(v_star**2 + vBH**2)
+    return np.sqrt(F_ESC**2 * (v_star**2 + vBH**2) + MBH_PHI)
+
+def v_esc_remnant(v_esc, v_star, vBH, m1, m2):
+    """
+    Escape velocity for the retention of the remnant of a merger of m1 and m2 [km/s]:
+    v_esc, except for a merger of the central massive BH itself, which its own potential
+    does not hold (then F_ESC sqrt(v_star^2 + vBH^2)).
+    """
+    if MBH_PHI != 0.0 and (m1 >= MBH_MASS or m2 >= MBH_MASS):
+        return F_ESC * np.sqrt(v_star**2 + vBH**2)
+    return v_esc
 
 def v_esc(Mcl, rh):
     """

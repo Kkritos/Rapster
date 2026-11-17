@@ -137,7 +137,7 @@ def evolve_triples(seed, t, z, zCl_form, triples, binaries, BH, mBH_avg, N_Tripl
                     
                     BH.add(m2, s2, g2, h2)
 
-                    if vGW_kick > v_esc_cl(v_star, vBH): # merger remnant is ejected
+                    if vGW_kick > v_esc_remnant(v_esc_cl(v_star, vBH), v_star, vBH, m0, m1): # merger remnant is ejected
 
                         N_BH = N_BH - 1
 
