@@ -144,6 +144,8 @@ def parse_args():
     parser.add_argument('-ms', '--mass_segregation_power', type=float, metavar=' ', default=0.0, help='Mass segregation of the compact objects: power alpha >= 0 of their core occupation s(m) = m^alpha, which multiplies the weights of every single BH/NS in core interactions (0: no segregation among compact objects, as before; 1.5: full energy equipartition, see README)')
     parser.add_argument('-EoS', '--equation_of_state', type=str, metavar=' ', default='APR', choices=sorted(EOS_TABLES), help='Neutron Star equation of state; one of ' + ', '.join(sorted(EOS_TABLES)))
     parser.add_argument('-RK', '--recoil_kick_model', type=int, metavar=' ', choices=[0, 1], default=0, help='GW recoil kick model (0 for Gerosa & Kesden 2016, 1 for gwModel_kick_prec_flow from Islam & Wadekar 2025)')
+    parser.add_argument('-k', '--cosmological_coupling', type=float, metavar=' ', default=0.0, help='Cosmological coupling index k in [-3, 3], M ~ a^k (0 = no coupling)')
+    parser.add_argument('-pbf', '--primordial_binaries_fraction', type=float, metavar=' ', default=0.0, help='Fraction of the BHs paired up as primordial BH binaries [0, 1] (0 = none; needs bbh_df.csv)')
     parser.add_argument('-sfe', '--star_formation_efficiency', type=float, metavar=' ', default=1.0, help='Star formation efficiency epsilon in (0,1]; sets initial residual gas mass. Default 1.0 = no gas (recovers gas-free Rapster)')
     parser.add_argument('-tge', '--gas_expulsion_time', type=float, metavar=' ', default=10.0, help='Gas expulsion timescale [Myr]')
     parser.add_argument('-fEdd', '--eddington_ratio_cap', type=float, metavar=' ', default=1.0, help='Eddington ratio ceiling for gas accretion onto compact objects (1.0 = hard Eddington cap)')
@@ -353,6 +355,8 @@ def parse_args():
         'MBH_physics': args.massive_bh_physics,
         'EoS': args.equation_of_state,
         'recoil_kick_model': args.recoil_kick_model,
+        'k_cosmo': args.cosmological_coupling,
+        'pbf': args.primordial_binaries_fraction,
         'SFE': args.star_formation_efficiency,
         't_ge': args.gas_expulsion_time,
         'fCO_max': args.max_compact_object_fraction,

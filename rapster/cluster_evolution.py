@@ -30,6 +30,8 @@ from .bhpool import BHPool, FAM
 from .compact_accretion import *
 from .remnant import configure_kick_model
 from . import massive_bh
+from .cosmo_coupling import apply_cosmological_coupling
+from .primordial_binaries import extract_primordial_binaries
 from .ns_formation import NSFormationTable, sample_ns_formation_times
 from .fastrandom import poisson_draw, maxwell_draws
 from .snapshots import SnapshotStream, dump_streaming
@@ -455,6 +457,11 @@ def initialize_cluster(config):
     gBH = np.ones(mBH.size)
     hBH = np.zeros(mBH.size)
 
+    # initial BH quantities for the primordial binaries and the cosmological coupling:
+    mBH_avg_ini = np.mean(mBH) if mBH.size > 0 else 0.0
+    vBH_ini = np.sqrt(0.4 * G_Newton * mBH_avg_ini * mBH.size / rh) if mBH.size > 0 else 0.0
+    z_i_0 = redshift_interp(lookback_interp(zCl_form) - tBH_form)
+
     # data arrays:
     binaries = np.zeros(shape=(1, 15))
     pairs = np.zeros(shape=(1, 5))
@@ -504,6 +511,8 @@ def initialize_cluster(config):
         't': 0, 'z': zCl_form, 'dt': dt_min, 'zCl_form': zCl_form, 'seed': seed,
         # aux:
         'i_aux1': 0,
+        # cosmological coupling and primordial binaries:
+        'z_i': z_i_0, 'z_i_0': z_i_0, 'mBH_avg_ini': mBH_avg_ini, 'vBH_ini': vBH_ini, 'pbf_done': False,
         # tracking lists (snapshots for -BOi 1 are kept on disk, see snapshots.py):
         'simulation_times': [], 'black_hole_masses': snapshot_list(), 'black_hole_spins': snapshot_list(),
         'black_hole_generations': snapshot_list(), 'black_hole_tdes': snapshot_list()
@@ -847,6 +856,22 @@ def compute_cluster_properties(state, config):
     if t>tBH_form and i_aux1==0 and (BH.size>0 or not NSs_pending):
         N_BH = BH.size
         i_aux1 = 1
+        # primordial binaries (once, when the BH subsystem first forms):
+        if config.get('pbf', 0.0) > 0.0 and not state['pbf_done']:
+            binaries, n_prim = extract_primordial_binaries(
+                BH, binaries, config['pbf'], R_sun, G_Newton,
+                state['mBH_avg_ini'], state['vBH_ini'], tBH_form, state['z_i_0'])
+            state['binaries'] = binaries
+            N_BBH = binaries.shape[0] - 1
+            state['N_BBH'] = N_BBH
+            N_BH = BH.size + 2 * N_BBH
+            state['pbf_done'] = True
+
+    # cosmological coupling, every time step after BH formation:
+    if t > tBH_form and config.get('k_cosmo', 0.0) != 0.0:
+        state['z_i'] = apply_cosmological_coupling(
+            t, tBH_form, state['z'], state['z_i'], state['z_i_0'],
+            config['k_cosmo'], binaries, BH, pairs, m_avg)
 
     # check if BH subsystem has fully evaporated:
     if i_aux1==1 and N_BH<=0:
