@@ -871,7 +871,7 @@ def compute_cluster_properties(state, config):
     if t > tBH_form and config.get('k_cosmo', 0.0) != 0.0:
         state['z_i'] = apply_cosmological_coupling(
             t, tBH_form, state['z'], state['z_i'], state['z_i_0'],
-            config['k_cosmo'], binaries, BH, pairs, m_avg)
+            config['k_cosmo'], binaries, BH, pairs, m_avg, state['triples'])
 
     # check if BH subsystem has fully evaporated:
     if i_aux1==1 and N_BH<=0:

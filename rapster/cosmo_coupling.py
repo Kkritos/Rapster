@@ -7,11 +7,11 @@ BH-star pairs.
 import numpy as np
 
 
-def apply_cosmological_coupling(t, tBH_form, z, z_i, z_i_0, k_cosmo, binaries, BH, pairs, m_avg):
+def apply_cosmological_coupling(t, tBH_form, z, z_i, z_i_0, k_cosmo, binaries, BH, pairs, m_avg, triples=None):
     """
     Scale masses, spins and semi-major axes by factor = ((1+z_i)/(1+z))**k_cosmo
-    (z_i is the redshift of the previous application). Modifies BH, binaries and
-    pairs in place. Returns the redshift z_i to use at the next step.
+    (z_i is the redshift of the previous application). Modifies BH, binaries, pairs
+    and triples in place. Returns the redshift z_i to use at the next step.
     """
     if t > tBH_form and z <= z_i_0:
         factor = ((1 + z_i) / (1 + z))**k_cosmo
@@ -38,6 +38,15 @@ def apply_cosmological_coupling(t, tBH_form, z, z_i, z_i_0, k_cosmo, binaries, B
             pairs[:, 0] *= ((1 - x) + x * factor) / factor**2
             pairs[:, 1] *= factor
             pairs[:, 2] = np.minimum(1.0, pairs[:, 2] * (factor**(-3)))
+
+        if triples is not None and triples.shape[0] > 1:
+            # all three BHs grow by f: the inner and the outer orbit both conserve their
+            # angular momentum, a -> a f^-3 (mass ratios, hence the hierarchy and
+            # stability of the triple, and the eccentricities are unchanged):
+            triples[:, 0] *= factor**(-3)
+            triples[:, 1] *= factor**(-3)
+            triples[:, 4:7] *= factor
+            triples[:, 7:10] = np.minimum(1.0, triples[:, 7:10] * (factor**(-3)))
 
         return z
 
