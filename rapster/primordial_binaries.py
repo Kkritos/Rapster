@@ -9,18 +9,19 @@ import numpy as np
 import pandas as pd
 
 _dir = os.path.dirname(os.path.abspath(__file__))
+_DATA_DIR = os.path.join(_dir, '..', 'Data')
 _sma_cache = {}
 
 
 def _sma_samples_AU():
-    """Semi-major axes [AU] from bbh_df.csv (next to this file, or in the working directory)."""
+    """Semi-major axes [AU] from Data/bbh_df.csv (or, failing that, bbh_df.csv in the working directory)."""
     if 'sma' not in _sma_cache:
-        for path in (os.path.join(_dir, 'bbh_df.csv'), 'bbh_df.csv'):
+        for path in (os.path.join(_DATA_DIR, 'bbh_df.csv'), 'bbh_df.csv'):
             if os.path.exists(path):
                 _sma_cache['sma'] = pd.read_csv(path)['SemiMajorAxis_AU'].values
                 break
         else:
-            raise FileNotFoundError('bbh_df.csv (primordial binaries, -pbf > 0) not found in the package folder or the working directory')
+            raise FileNotFoundError('bbh_df.csv (primordial binaries, -pbf > 0) not found in the Data folder or the working directory')
     return _sma_cache['sma']
 
 
