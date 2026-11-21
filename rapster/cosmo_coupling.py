@@ -21,12 +21,12 @@ def apply_cosmological_coupling(t, tBH_form, z, z_i, z_i_0, k_cosmo, binaries, B
             binaries[:, 5] *= factor
             # exact BBH semi-major axis scaling (both components grow equally):
             binaries[:, 2] *= factor**(-3)
-            binaries[:, 6] = np.minimum(1.0, binaries[:, 6] * (factor**(-3)))
-            binaries[:, 7] = np.minimum(1.0, binaries[:, 7] * (factor**(-3)))
+            binaries[:, 6] = np.minimum(1.0, binaries[:, 6] * (factor**(-2)))  # spin: χ=cJ/(GM²), J conserved
+            binaries[:, 7] = np.minimum(1.0, binaries[:, 7] * (factor**(-2)))  # spin: χ=cJ/(GM²), J conserved
 
         if BH.size > 0:
             BH.set_all_masses(BH.m * factor)
-            BH.set_all_spins(np.minimum(1.0, BH.s * (factor**(-3))))
+            BH.set_all_spins(np.minimum(1.0, BH.s * (factor**(-2)))  # spin: χ=cJ/(GM²), J conserved)
 
         if pairs.shape[0] > 1:
             # BH mass fraction of the pair, using CURRENT masses
@@ -37,7 +37,7 @@ def apply_cosmological_coupling(t, tBH_form, z, z_i, z_i_0, k_cosmo, binaries, B
             # exact BH-star semi-major axis scaling (only the BH mass grows):
             pairs[:, 0] *= ((1 - x) + x * factor) / factor**2
             pairs[:, 1] *= factor
-            pairs[:, 2] = np.minimum(1.0, pairs[:, 2] * (factor**(-3)))
+            pairs[:, 2] = np.minimum(1.0, pairs[:, 2] * (factor**(-2)))  # spin: χ=cJ/(GM²), J conserved
 
         if triples is not None and triples.shape[0] > 1:
             # all three BHs grow by f: the inner and the outer orbit both conserve their
@@ -46,7 +46,7 @@ def apply_cosmological_coupling(t, tBH_form, z, z_i, z_i_0, k_cosmo, binaries, B
             triples[:, 0] *= factor**(-3)
             triples[:, 1] *= factor**(-3)
             triples[:, 4:7] *= factor
-            triples[:, 7:10] = np.minimum(1.0, triples[:, 7:10] * (factor**(-3)))
+            triples[:, 7:10] = np.minimum(1.0, triples[:, 7:10] * (factor**(-2)))  # spin: χ=cJ/(GM²), J conserved
 
         return z
 
