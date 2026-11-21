@@ -1,7 +1,7 @@
 '''
 Cosmological coupling of the black holes: M ~ a^k (k = -3 ... 3), applied once per
-time step after the BH formation time, to the single BHs (BHPool), the BBHs and the
-BH-star pairs.
+time step after the BH formation time, to the single BHs (BHPool), the BBHs, the
+BH-star pairs and triples.
 '''
 
 import numpy as np
