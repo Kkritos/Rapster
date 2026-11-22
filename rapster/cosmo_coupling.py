@@ -26,7 +26,7 @@ def apply_cosmological_coupling(t, tBH_form, z, z_i, z_i_0, k_cosmo, binaries, B
 
         if BH.size > 0:
             BH.set_all_masses(BH.m * factor)
-            BH.set_all_spins(np.minimum(1.0, BH.s * (factor**(-2)))  # spin: χ=cJ/(GM²), J conserved)
+            BH.set_all_spins(np.minimum(1.0, BH.s * (factor**(-2))))  # spin: χ=cJ/(GM²), J conserved
 
         if pairs.shape[0] > 1:
             # BH mass fraction of the pair, using CURRENT masses
