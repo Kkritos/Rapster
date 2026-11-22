@@ -597,6 +597,10 @@ class BHPool:
     def set_spin(self, k, s):
         self._s[k] = s
 
+    def set_all_spins(self, s):
+        """Replace all spins (cosmological coupling)."""
+        self._s[:self.n] = s
+
     def set_tde_count(self, k, h):
         self._h[k] = h
 
